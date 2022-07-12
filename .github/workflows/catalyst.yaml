@@ -1,0 +1,57 @@
+on: 
+  pull_request:
+  push:
+    branches:
+      - main
+
+name: catalyst
+
+jobs:
+  test:
+    name: test
+    runs-on: ${{ matrix.config.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        config:
+          - { os: ubuntu-latest,  target: 'x86_64-unknown-linux-gnu' }
+        include:
+          - os: ubuntu-latest
+    
+    steps:
+      - name: install rust nightly
+        uses: actions-rs/toolchain@v1
+        with:
+            toolchain: nightly
+            target: ${{ matrix.config.target }}
+            override: true
+            components: rustfmt, clippy
+      
+      - name: cargo check
+        uses: actions-rs/cargo@v1
+        working-directory: ./catalyst
+        with:
+          command: check
+
+      - name: cargo fmt
+        uses: actions-rs/cargo@v1
+        with:
+          command: fmt
+      
+      - name: cargo clippy
+        uses: actions-rs/cargo@v1
+        with:
+          command: clippy   
+      
+      - name: run tests
+        uses: actions-rs/cargo@v1
+        with:
+          command: test
+
+      - name: run coverage
+        uses: actions-rs/tarpaulin@v0.1
+
+      - name: upload to codecov.io
+        uses: codecov/codecov-action@v2
+        with:
+          token: ${{ secrets.CODECOV_TOKEN }}
