@@ -1,4 +1,4 @@
-use js_sandbox::{Script, AnyError};
+use js_sandbox::{AnyError, Script};
 
 fn main() -> Result<(), AnyError> {
     let mut script = Script::from_file("examples/main.ts")?;

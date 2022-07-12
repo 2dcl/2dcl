@@ -17,7 +17,7 @@ jobs:
           - { os: ubuntu-latest,  target: 'x86_64-unknown-linux-gnu' }
         include:
           - os: ubuntu-latest
-    
+
     steps:
       - name: install rust nightly
         uses: actions-rs/toolchain@v1
@@ -29,7 +29,6 @@ jobs:
       
       - name: cargo check
         uses: actions-rs/cargo@v1
-        working-directory: ./catalyst
         with:
           command: check
 
