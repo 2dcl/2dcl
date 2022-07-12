@@ -1,5 +1,0 @@
-#!/bin/bash
-
-rustup default nightly
-cargo doc --no-deps --lib --examples
-echo "/ /catalyst" > target/doc/_redirects

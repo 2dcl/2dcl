@@ -1,8 +1,8 @@
 use std::fmt;
 
-use serde::de::{self, Visitor, Deserializer, Deserialize};
+use serde::de::{self, Deserialize, Deserializer, Visitor};
 
-#[derive(Debug, PartialEq)]
+#[derive(Debug, PartialEq, Eq)]
 pub struct Parcel(pub i16, pub i16);
 
 struct ParcelVisitor;
@@ -16,22 +16,21 @@ impl<'de> Visitor<'de> for ParcelVisitor {
 
     fn visit_str<E>(self, s: &str) -> Result<Self::Value, E>
     where
-      E: de::Error,
+        E: de::Error,
     {
-      let mut split = s.split(",");
-      let x = split.next();
-      let y = split.next();
-      if let (Some(x), Some(y)) = (x, y) {
-        if let (Ok(x), Ok(y)) = (x.parse::<i16>(), y.parse::<i16>()) {
-          Ok(Parcel(x, y))
+        let mut split = s.split(',');
+        let x = split.next();
+        let y = split.next();
+        if let (Some(x), Some(y)) = (x, y) {
+            if let (Ok(x), Ok(y)) = (x.parse::<i16>(), y.parse::<i16>()) {
+                Ok(Parcel(x, y))
+            } else {
+                Err(de::Error::invalid_value(de::Unexpected::Str(s), &self))
+            }
         } else {
-          Err(de::Error::invalid_value(de::Unexpected::Str(s), &self))
+            Err(de::Error::invalid_value(de::Unexpected::Str(s), &self))
         }
-      } else {
-          Err(de::Error::invalid_value(de::Unexpected::Str(s), &self))
-      }
     }
-
 }
 
 impl<'de> Deserialize<'de> for Parcel {
@@ -43,14 +42,13 @@ impl<'de> Deserialize<'de> for Parcel {
     }
 }
 
-
 #[cfg(test)]
 mod test {
-  use super::*;
+    use super::*;
 
-#[test]
-  fn it_can_deserialize_parcel() {
-    let parcel : Parcel = serde_json::from_str("\"-1,10\"").unwrap();
-    assert_eq!(parcel, Parcel(-1,10));
-  }
+    #[test]
+    fn it_can_deserialize_parcel() {
+        let parcel: Parcel = serde_json::from_str("\"-1,10\"").unwrap();
+        assert_eq!(parcel, Parcel(-1, 10));
+    }
 }
