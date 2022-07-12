@@ -1,5 +1,6 @@
 extern crate catalyst;
 
+use dcl_common::Parcel;
 use catalyst::*;
 
 use serde::{Deserialize};

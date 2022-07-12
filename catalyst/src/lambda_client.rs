@@ -1,3 +1,4 @@
+use dcl_common::Parcel;
 use crate::*;
 use serde::{Deserialize};
 

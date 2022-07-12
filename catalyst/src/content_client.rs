@@ -26,6 +26,8 @@ impl ContentClient {
 #[cfg(test)]
 mod tests {
   use super::*;
+  
+  use dcl_common::Parcel;
   use tempdir::TempDir;
   use std::fs;
   use httpmock::prelude::*;
