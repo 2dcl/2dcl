@@ -1,5 +1,5 @@
-use dcl_common::ContentId;
 use crate::*;
+use dcl_common::ContentId;
 use dcl_common::Parcel;
 use serde::Deserialize;
 
