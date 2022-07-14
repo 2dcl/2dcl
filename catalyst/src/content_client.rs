@@ -1,4 +1,7 @@
 use crate::*;
+
+use dcl_common::Result;
+
 use std::fs::File;
 
 use std::io::Write;

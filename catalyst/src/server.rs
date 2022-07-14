@@ -1,4 +1,4 @@
-use crate::Result;
+use dcl_common::Result;
 use reqwest::Client as ReqwestClient;
 use serde::Deserialize;
 

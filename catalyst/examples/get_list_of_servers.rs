@@ -1,6 +1,7 @@
 extern crate catalyst;
 
 use catalyst::*;
+use dcl_common::Result;
 
 #[tokio::main]
 async fn main() -> Result<()> {

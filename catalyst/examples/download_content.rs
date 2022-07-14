@@ -1,7 +1,7 @@
 extern crate catalyst;
 
 use catalyst::*;
-use dcl_common::Parcel;
+use dcl_common::{ Parcel, Result };
 
 use serde::Deserialize;
 use std::fs;

@@ -1,6 +1,5 @@
 use crate::*;
-use dcl_common::ContentId;
-use dcl_common::Parcel;
+use dcl_common::{ ContentId, Parcel, Result};
 use serde::Deserialize;
 
 /// `LambdaClient` implements all the request to interact with [Catalyst Lambda](https://decentraland.github.io/catalyst-api-specs/#tag/Lambdas).
