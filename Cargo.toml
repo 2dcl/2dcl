@@ -3,5 +3,5 @@ resolver = "2"
 members = [
   "dcl-common",
   "catalyst",
-  "scene-runtime"
+  # "scene-runtime"
 ]

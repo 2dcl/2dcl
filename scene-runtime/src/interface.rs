@@ -1,6 +1,11 @@
-use dcl_common::*;
+
+use serde::Deserialize;
 use deno_core::op;
 use deno_core::Extension;
+
+
+#[derive(Debug, Deserialize)]
+struct EntityId(String);
 
 // fn log() {}
 // fn openExternalUrl(url: String) {}
