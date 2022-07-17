@@ -15,8 +15,6 @@ pub use entity::Entity;
 pub use entity::EntityId;
 pub use entity::EntityType;
 
-mod entity_information;
-pub use entity_information::EntityInformation;
 
 mod content_id;
 pub use content_id::ContentId;
@@ -29,3 +27,9 @@ pub mod server;
 pub use server::Server;
 
 
+// Responses
+mod entity_information;
+pub use entity_information::EntityInformation;
+
+mod snapshot;
+pub use snapshot::Snapshot;

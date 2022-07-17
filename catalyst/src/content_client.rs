@@ -27,6 +27,12 @@ impl ContentClient {
         Ok(result)
     }
 
+    pub async fn snapshot(server: &Server) -> Result<Snapshot>
+    {
+        let result : Snapshot = server.get("/content/snapshot").await?;
+        Ok(result)
+    }
+
     pub async fn scene_files_for_parcels(server: &Server, parcels: &Vec<Parcel>) -> Result<Vec<SceneFile>>
     {
         let pointers = ParcelPointer { pointers: parcels };        
@@ -117,6 +123,28 @@ mod tests {
         m.assert();
 
         let expected : EntityInformation = serde_json::from_str(response).unwrap();
+        assert_eq!(result, expected);
+    }
+
+    #[test]
+    fn it_gets_snapshot() {
+        let response = include_str!("../fixtures/snapshot.json");
+        let server = MockServer::start();
+
+        let m = server.mock(|when, then| {
+            when.method(GET)
+                .path("/content/snapshot");
+            then.status(200).body(response);
+        });
+
+        let server = Server::new(server.url(""));
+        let result : Snapshot = tokio_test::block_on(
+            ContentClient::snapshot(&server)
+        ).unwrap();
+
+        m.assert();
+
+        let expected : Snapshot = serde_json::from_str(response).unwrap();
         assert_eq!(result, expected);
     }
 
