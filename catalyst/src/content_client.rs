@@ -33,6 +33,22 @@ impl ContentClient {
         Ok(result)
     }
 
+    pub async fn snapshot_entities(server: &Server, entity_type: EntityType, snapshot: &Snapshot ) -> Result<()>
+    {
+
+        let hash : &ContentId = match entity_type {
+            EntityType::Scene => &snapshot.entities.scene.hash,
+            EntityType::Profile => &snapshot.entities.profile.hash,
+            EntityType::Wearable => &snapshot.entities.wearable.hash
+        };
+
+        let result : EntityInformation = server.get(
+            format!("/content/contents/{}", hash)
+        ).await?;
+        // Ok(result)
+        Ok(())
+    }
+
     pub async fn scene_files_for_parcels(server: &Server, parcels: &Vec<Parcel>) -> Result<Vec<SceneFile>>
     {
         let pointers = ParcelPointer { pointers: parcels };        
@@ -146,6 +162,34 @@ mod tests {
 
         let expected : Snapshot = serde_json::from_str(response).unwrap();
         assert_eq!(result, expected);
+    }
+
+    #[test]
+    fn it_gets_snapshot_entities() {
+        let response = include_str!("../fixtures/snapshot_entities_scene.json");
+        let server = MockServer::start();
+
+        let m = server.mock(|when, then| {
+            when.method(GET)
+                .path("/content/contents/a-hash");
+            then.status(200).body(response);
+        });
+        let server = Server::new(server.url(""));
+        let snapshot : Snapshot = serde_json::from_str(
+            include_str!("../fixtures/snapshot.json")
+        ).unwrap();
+
+        // TODO(fran): Implement this using raw_get because it's not json
+        // let result : Vec<SceneSnapshot> = tokio_test::block_on(
+        //     ContentClient::snapshot_entities(&server, EntityType::Scene,
+        //         &snapshot)
+        // ).unwrap();
+
+        m.assert();
+
+        // let expected : Snapshot = serde_json::from_str(response).unwrap();
+        // assert_eq!(result, expected);
+        assert!(false);
     }
 
     #[test]

@@ -33,3 +33,4 @@ pub use entity_information::EntityInformation;
 
 mod snapshot;
 pub use snapshot::Snapshot;
+pub use snapshot::EntitySnapshot;
