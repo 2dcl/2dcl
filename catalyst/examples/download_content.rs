@@ -4,17 +4,6 @@ use catalyst::*;
 
 use dcl_common::{Parcel, Result};
 
-use serde::Deserialize;
-use std::fs;
-use std::path::Path;
-
-#[derive(Debug, Deserialize)]
-struct Scene {
-    parcel_id: String,
-    root_cid: String,
-    scene_cid: String,
-}
-
 #[tokio::main]
 async fn main() -> Result<()> {
     let server = Server::production();

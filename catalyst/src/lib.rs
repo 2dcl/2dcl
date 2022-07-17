@@ -15,6 +15,9 @@ pub use entity::Entity;
 pub use entity::EntityId;
 pub use entity::EntityType;
 
+mod entity_information;
+pub use entity_information::EntityInformation;
+
 mod content_id;
 pub use content_id::ContentId;
 

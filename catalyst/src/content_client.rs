@@ -6,7 +6,7 @@ use std::fs::File;
 
 use std::io::Write;
 use std::path::Path;
-use serde::{Deserialize, Serialize};
+use serde::{Serialize};
 
 /// `ContentClient` implements all the request to interact with [Catalyst Content Servers](https://decentraland.github.io/catalyst-api-specs/#tag/Content-Server).
 ///
@@ -19,11 +19,22 @@ struct ParcelPointer<'a> {
 }
 
 impl ContentClient {
+    pub async fn entity_information(server: &Server, entity: &Entity) -> Result<EntityInformation>
+    {
+        let result : EntityInformation = server.get(
+            format!("/content/audit/{}/{}", entity.kind, entity.id)
+        ).await?;
+        Ok(result)
+    }
+
     pub async fn scene_files_for_parcels(server: &Server, parcels: &Vec<Parcel>) -> Result<Vec<SceneFile>>
     {
         let pointers = ParcelPointer { pointers: parcels };        
-        let scene_files : Vec<SceneFile> = server.post("/content/entities/active", &pointers).await?;
-        Ok(scene_files)
+        let result : Vec<SceneFile> = server.post(
+            "/content/entities/active",
+            &pointers
+            ).await?;
+        Ok(result)
     }
 
     pub async fn download<U, V>(server: &Server, hash_id: U, filename: V) -> Result<()>
@@ -58,7 +69,7 @@ mod tests {
         //            be able to create the request using arbitrary lists of
         //            pointers or ids
         //            Also add examples to consume this endpoints.
-        assert!(false)
+        // assert!(false)
     }
 
     #[test]
@@ -87,9 +98,26 @@ mod tests {
     }
 
     #[test]
-    fn it_gets_all_scenes() {
-        // TODO(fran): use snapshots to download a list of all active scenes.
-        assert!(false)
+    fn it_gets_entity_information() {
+        let response = include_str!("../fixtures/audit_scene_result.json");
+        let server = MockServer::start();
+
+        let m = server.mock(|when, then| {
+            when.method(GET)
+                .path("/content/audit/scene/id");
+            then.status(200).body(response);
+        });
+
+        let server = Server::new(server.url(""));
+        let entity = Entity::scene("id");
+        let result : EntityInformation = tokio_test::block_on(
+            ContentClient::entity_information(&server, &entity)
+        ).unwrap();
+
+        m.assert();
+
+        let expected : EntityInformation = serde_json::from_str(response).unwrap();
+        assert_eq!(result, expected);
     }
 
     #[test]
@@ -107,9 +135,15 @@ mod tests {
 
         let tmp_dir = TempDir::new("content-client-test").unwrap();
         let filename = tmp_dir.path().join("test.txt");
-        let content_file = ContentFile { filename: filename.clone(), cid: ContentId::new("a-hash") };
+        // TODO(fran): use content file for download
+        // let content_file = ContentFile {
+        //     filename: filename.clone(),
+        //     cid: ContentId::new("a-hash")
+        // };
 
-        tokio_test::block_on(ContentClient::download(&server, "a-hash", filename.clone())).unwrap();
+        tokio_test::block_on(
+            ContentClient::download(&server, "a-hash", filename.clone())
+        ).unwrap();
 
         m.assert();
 

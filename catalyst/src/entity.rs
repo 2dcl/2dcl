@@ -1,4 +1,6 @@
 use std::fmt;
+use serde_json::json;
+
 use serde::{Serialize, Deserialize};
 
 #[derive(Debug, Deserialize, Eq, PartialEq)]
@@ -8,7 +10,6 @@ pub struct Entity {
 }
 
 impl Entity {
-
   pub fn new<T>(kind: EntityType, id: T) -> Entity
   where T: AsRef<str>
   {
@@ -34,7 +35,7 @@ impl Entity {
   }
 }
 
-#[derive(Debug, Deserialize, Eq, PartialEq)]
+#[derive(Debug, Deserialize, Serialize, Eq, PartialEq)]
 pub enum EntityType {
   #[serde(rename = "profile")]
   Profile,
@@ -42,6 +43,17 @@ pub enum EntityType {
   Scene,
   #[serde(rename = "wearable")]
   Wearable
+}
+
+impl fmt::Display for EntityType {
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+        let serialization = match self {
+          EntityType::Profile => "profile",
+          EntityType::Scene => "scene",
+          EntityType::Wearable => "wearable",
+        };
+        write!(f, "{}", serialization)
+    }
 }
 
 #[derive(Debug, PartialEq, Eq, Deserialize, Serialize)]
