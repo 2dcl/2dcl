@@ -1,3 +1,5 @@
+use serde::Serialize;
+use serde::Serializer;
 use std::fmt;
 
 use serde::de::{self, Deserialize, Deserializer, Visitor};
@@ -33,6 +35,15 @@ impl<'de> Visitor<'de> for ParcelVisitor {
     }
 }
 
+impl Serialize for Parcel {
+    fn serialize<S>(&self, serializer: S) -> Result<S::Ok, S::Error>
+    where
+        S: Serializer,
+    {
+        serializer.serialize_str(format!("{},{}", self.0, self.1).as_str())
+    }
+}
+
 impl<'de> Deserialize<'de> for Parcel {
     fn deserialize<D>(deserializer: D) -> Result<Parcel, D::Error>
     where
@@ -50,5 +61,12 @@ mod test {
     fn it_can_deserialize_parcel() {
         let parcel: Parcel = serde_json::from_str("\"-1,10\"").unwrap();
         assert_eq!(parcel, Parcel(-1, 10));
+    }
+
+    #[test]
+    fn it_can_serialize_parcel() {
+        let parcel = Parcel(-1,10);
+        let serialized = serde_json::to_string(&parcel).unwrap();
+        assert_eq!(serialized, "\"-1,10\"");
     }
 }

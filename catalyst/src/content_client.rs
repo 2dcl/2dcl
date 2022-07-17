@@ -1,15 +1,31 @@
 use crate::*;
+
+use dcl_common::{Parcel, Result};
+
 use std::fs::File;
 
 use std::io::Write;
 use std::path::Path;
+use serde::{Deserialize, Serialize};
 
 /// `ContentClient` implements all the request to interact with [Catalyst Content Servers](https://decentraland.github.io/catalyst-api-specs/#tag/Content-Server).
 ///
 #[derive(Default)]
 pub struct ContentClient {}
 
+#[derive(Serialize)]
+struct ParcelPointer<'a> {
+    pointers: &'a Vec<Parcel>
+}
+
 impl ContentClient {
+    pub async fn scene_files_for_parcels(server: &Server, parcels: &Vec<Parcel>) -> Result<Vec<SceneFile>>
+    {
+        let pointers = ParcelPointer { pointers: parcels };        
+        let scene_files : Vec<SceneFile> = server.post("/content/entities/active", &pointers).await?;
+        Ok(scene_files)
+    }
+
     pub async fn download<U, V>(server: &Server, hash_id: U, filename: V) -> Result<()>
     where
         U: AsRef<str> + std::fmt::Display,
@@ -29,48 +45,51 @@ impl ContentClient {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use dcl_common::*;
+    use dcl_common::Parcel;
+    
     use httpmock::prelude::*;
     use std::fs;
     use tempdir::TempDir;
 
     #[test]
     fn it_implements_active_entities() {
-        let response = "{ 
-      \"data\": [{
-        \"parcel_id\": \"-9,-9\",
-        \"root_cid\": \"QmaGgvj8EyWXFuyMs9GM7nrxzNSVFgByvu5PBniUfPYm6Q\",
-        \"scene_cid\": \"QmQ2bvXj4DVsBM1m25YyM3quJLdApA1uaoDTe7LBJi9k2d\"
-      }]
-    }";
+        //TODO(fran): We want to use /content/entities/active to download
+        //            entity files. It should support any serializable to
+        //            be able to create the request using arbitrary lists of
+        //            pointers or ids
+        //            Also add examples to consume this endpoints.
+        assert!(false)
+    }
 
+    #[test]
+    fn it_gets_scene_files_from_parcels() {
+        let response = include_str!("../fixtures/scenes_from_parcels.json");
         let server = MockServer::start();
 
         let m = server.mock(|when, then| {
-            when.path("/lambdas/contentv2/scenes");
+            when.method(POST)
+                .path("/content/entities/active")
+                .body_contains("{\"pointers\":[\"0,0\"]}");
             then.status(200).body(response);
         });
 
         let server = Server::new(server.url(""));
 
-        let scenes = tokio_test::block_on(LambdaClient::scenes(
-            &server,
-            &Parcel(-1, -1),
-            &Parcel(1, 1),
-        ))
-        .unwrap();
+        let parcels = vec![Parcel(0,0)];
+        let result : Vec<SceneFile> = tokio_test::block_on(
+            ContentClient::scene_files_for_parcels(&server, &parcels)
+        ).unwrap();
 
         m.assert();
 
-        assert_eq!(scenes[0].parcel_id, Parcel(-9, -9));
-        assert_eq!(
-            scenes[0].root_cid,
-            ContentId("QmaGgvj8EyWXFuyMs9GM7nrxzNSVFgByvu5PBniUfPYm6Q".to_string())
-        );
-        assert_eq!(
-            scenes[0].scene_cid,
-            ContentId("QmQ2bvXj4DVsBM1m25YyM3quJLdApA1uaoDTe7LBJi9k2d".to_string())
-        );
+        let expected : Vec<SceneFile> = serde_json::from_str(response).unwrap();
+        assert_eq!(result, expected);
+    }
+
+    #[test]
+    fn it_gets_all_scenes() {
+        // TODO(fran): use snapshots to download a list of all active scenes.
+        assert!(false)
     }
 
     #[test]
@@ -88,6 +107,7 @@ mod tests {
 
         let tmp_dir = TempDir::new("content-client-test").unwrap();
         let filename = tmp_dir.path().join("test.txt");
+        let content_file = ContentFile { filename: filename.clone(), cid: ContentId::new("a-hash") };
 
         tokio_test::block_on(ContentClient::download(&server, "a-hash", filename.clone())).unwrap();
 
