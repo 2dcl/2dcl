@@ -121,13 +121,12 @@ impl ContentClient {
         Ok(result)
     }
 
-    pub async fn download<U, V>(server: &Server, hash_id: U, filename: V) -> Result<()>
+    pub async fn download<V>(server: &Server, content_id: ContentId, filename: V) -> Result<()>
     where
-        U: AsRef<str> + std::fmt::Display,
         V: AsRef<Path>,
     {
         let response = server
-            .raw_get(format!("/content/contents/{}", hash_id))
+            .raw_get(format!("/content/contents/{}", content_id))
             .await?;
         let mut dest = File::create(filename)?;
         let content = response.bytes().await?;
@@ -369,13 +368,8 @@ mod tests {
 
         let tmp_dir = TempDir::new("content-client-test").unwrap();
         let filename = tmp_dir.path().join("test.txt");
-        // TODO(fran): use content file for download
-        // let content_file = ContentFile {
-        //     filename: filename.clone(),
-        //     cid: ContentId::new("a-hash")
-        // };
 
-        tokio_test::block_on(ContentClient::download(&server, "a-hash", filename.clone())).unwrap();
+        tokio_test::block_on(ContentClient::download(&server, ContentId::new("a-hash"), filename.clone())).unwrap();
 
         m.assert();
 
