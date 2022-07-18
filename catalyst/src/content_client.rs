@@ -1,5 +1,5 @@
 use serde::{Deserialize, Serialize};
-use std::fs::File;
+use std::fs::{self, File};
 use std::io::Write;
 use std::path::Path;
 
@@ -68,6 +68,11 @@ impl ContentClient {
         let response = server
             .raw_get(format!("/content/contents/{}", content_id))
             .await?;
+
+        if let Some(parent) = filename.as_ref().parent() {
+            fs::create_dir_all(parent)?;
+        }
+
         let mut dest = File::create(filename)?;
         let content = response.bytes().await?;
         dest.write_all(&content)?;

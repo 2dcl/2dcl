@@ -101,10 +101,8 @@ impl Server {
         U: AsRef<str> + std::fmt::Display,
         R: for<'a> Deserialize<'a>,
     {
-        println!("{}", path);
         let response = self.raw_get(path).await?;
         let text = response.text().await?;
-        println!("{}", text);
         let status: R = serde_json::from_str(text.as_str())?;
         Ok(status)
     }
