@@ -1,5 +1,6 @@
 use dcl_common::Parcel;
-use crate::{ContentId, Entity};
+use crate::{ContentId, Entity, EntityId, EntityType};
+use crate::entity_information::AuthChain;
 use serde::Deserialize;
 
 #[derive(Debug, Deserialize, PartialEq)]
@@ -12,24 +13,27 @@ pub struct Snapshot {
 
 #[derive(Debug, Deserialize, PartialEq)]
 pub struct EntitySnapshots {
-  pub scene: EntitySnapshot,
-  pub profile: EntitySnapshot,
-  pub wearable: EntitySnapshot,
-  pub store: EntitySnapshot
+  pub scene: EntityTypeSnapshot,
+  pub profile: EntityTypeSnapshot,
+  pub wearable: EntityTypeSnapshot,
+  pub store: EntityTypeSnapshot
 }
 
 #[derive(Debug, Deserialize, PartialEq)]
 #[serde(rename_all = "camelCase")]
-pub struct EntitySnapshot {
+pub struct EntityTypeSnapshot {
   pub hash: ContentId,
   pub last_included_deployment_timestamp: u64, // TODO(fran): use chrono?
 }
 
-#[derive(Debug, Deserialize, PartialEq)]
-pub struct SceneSnapshot {
-  pub entity: Entity,
-  pub pointers: Vec<Parcel>,
-  local_timestamp: u64 // TODO(fran): use chrono?
+#[derive(Debug, Deserialize)]
+#[serde(rename_all = "camelCase")]
+pub struct EntitySnapshot<T> {
+  pub entity_id: EntityId,
+  pub entity_type: EntityType,
+  pub pointers: Vec<T>,
+  pub local_timestamp: u64, // TODO(fran): use chrono?
+  pub auth_chain: Vec<AuthChain>
 }
 
 #[cfg(test)]

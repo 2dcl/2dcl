@@ -35,5 +35,7 @@ pub use entity_information::EntityInformation;
 
 mod snapshot;
 pub use snapshot::Snapshot;
+pub use snapshot::EntityTypeSnapshot;
 pub use snapshot::EntitySnapshot;
-pub use snapshot::SceneSnapshot;
+
+pub type Urn = String;

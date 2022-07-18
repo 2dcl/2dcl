@@ -13,6 +13,7 @@ pub struct AuthChain {
   #[serde(rename="type")]
   pub kind: AuthChainType,
   pub payload: String,
+  #[serde(skip)]
   pub signature: String
 }
 
@@ -23,6 +24,7 @@ pub enum AuthChainType {
   Signer,
   EcdsaEphemeral,
   EcdsaSignedEntity,
+  #[serde(rename="ECDSA_EIP_1654_EPHEMERAL")]
   EcdsaEip1654Ephemeral,
   EcdsaEip1654SignedEntity
 }

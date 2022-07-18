@@ -24,7 +24,7 @@ impl<'de> Visitor<'de> for ParcelVisitor {
         let x = split.next();
         let y = split.next();
         if let (Some(x), Some(y)) = (x, y) {
-            if let (Ok(x), Ok(y)) = (x.parse::<i16>(), y.parse::<i16>()) {
+            if let (Ok(x), Ok(y)) = (x.trim().parse::<i16>(), y.trim().parse::<i16>()) {
                 Ok(Parcel(x, y))
             } else {
                 Err(de::Error::invalid_value(de::Unexpected::Str(s), &self))
