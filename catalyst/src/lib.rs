@@ -18,23 +18,18 @@ pub use entity::EntityType;
 mod content_id;
 pub use content_id::ContentId;
 
-mod entity_files;
-pub use entity_files::ContentFile;
-pub use entity_files::SceneFile;
+pub mod entity_files;
 
-pub mod server;
+mod server;
 pub use server::Server;
 
 pub mod status;
-pub use status::ContentServerStatus;
 
-// Responses
-mod entity_information;
-pub use entity_information::EntityInformation;
+pub mod entity_information;
+pub mod snapshot;
 
-mod snapshot;
-pub use snapshot::EntitySnapshot;
-pub use snapshot::EntityTypeSnapshot;
-pub use snapshot::Snapshot;
+// Represents an id in the form of a hash, used for content files and entities.
+pub type HashId = String;
 
+// Represents a content file using the resource name
 pub type Urn = String;

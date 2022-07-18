@@ -37,8 +37,8 @@ pub struct EntitySnapshot<T> {
 
 #[cfg(test)]
 mod test {
+    use crate::snapshot::Snapshot;
     use crate::ContentId;
-    use crate::Snapshot;
 
     #[test]
     fn it_deserializes_from_json() {

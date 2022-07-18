@@ -1,7 +1,10 @@
+use serde::{Deserialize, Serialize};
 use std::fmt;
 
-use serde::{Deserialize, Serialize};
+use crate::HashId;
 
+/// Represents an entity from the server (scene, wearable, profile)
+///
 #[derive(Debug, Deserialize, Eq, PartialEq)]
 pub struct Entity {
     pub kind: EntityType,
@@ -9,6 +12,18 @@ pub struct Entity {
 }
 
 impl Entity {
+    /// Constructs a new `Entity` with an `EntityType` and an id as a string.
+    ///
+    /// # Example
+    ///
+    /// ```
+    /// use catalyst::Entity;
+    /// use catalyst::EntityType;
+    /// let entity = Entity::new(EntityType::Scene, "bafkreiabfxgn375iwwgtx2i5zhhtge2affusbt7sndnf7wqbkeuz4f36ki");
+    ///
+    /// assert_eq!(entity.kind, EntityType::Scene);
+    /// assert_eq!(entity.id.hash(), "bafkreiabfxgn375iwwgtx2i5zhhtge2affusbt7sndnf7wqbkeuz4f36ki");
+    /// ```
     pub fn new<T>(kind: EntityType, id: T) -> Entity
     where
         T: AsRef<str>,
@@ -19,6 +34,18 @@ impl Entity {
         }
     }
 
+    /// Constructs a new `Profile` entity with id as a string.
+    ///
+    /// # Example
+    ///
+    /// ```
+    /// use catalyst::Entity;
+    /// use catalyst::EntityType;
+    /// let entity = Entity::profile("bafkreiabfxgn375iwwgtx2i5zhhtge2affusbt7sndnf7wqbkeuz4f36ki");
+    ///
+    /// assert_eq!(entity.kind, EntityType::Profile);
+    /// assert_eq!(entity.id.hash(), "bafkreiabfxgn375iwwgtx2i5zhhtge2affusbt7sndnf7wqbkeuz4f36ki");
+    /// ```
     pub fn profile<T>(id: T) -> Entity
     where
         T: AsRef<str>,
@@ -26,6 +53,18 @@ impl Entity {
         Entity::new(EntityType::Profile, id)
     }
 
+    /// Constructs a new `Scene` entity with id as a string.
+    ///
+    /// # Example
+    ///
+    /// ```
+    /// use catalyst::Entity;
+    /// use catalyst::EntityType;
+    /// let entity = Entity::scene("bafkreiabfxgn375iwwgtx2i5zhhtge2affusbt7sndnf7wqbkeuz4f36ki");
+    ///
+    /// assert_eq!(entity.kind, EntityType::Scene);
+    /// assert_eq!(entity.id.hash(), "bafkreiabfxgn375iwwgtx2i5zhhtge2affusbt7sndnf7wqbkeuz4f36ki");
+    /// ```
     pub fn scene<T>(id: T) -> Entity
     where
         T: AsRef<str>,
@@ -33,6 +72,18 @@ impl Entity {
         Entity::new(EntityType::Scene, id)
     }
 
+    /// Constructs a new `Wearable` entity with id as a string.
+    ///
+    /// # Example
+    ///
+    /// ```
+    /// use catalyst::Entity;
+    /// use catalyst::EntityType;
+    /// let entity = Entity::wearable("bafkreiabfxgn375iwwgtx2i5zhhtge2affusbt7sndnf7wqbkeuz4f36ki");
+    ///
+    /// assert_eq!(entity.kind, EntityType::Wearable);
+    /// assert_eq!(entity.id.hash(), "bafkreiabfxgn375iwwgtx2i5zhhtge2affusbt7sndnf7wqbkeuz4f36ki");
+    /// ```
     pub fn wearable<T>(id: T) -> Entity
     where
         T: AsRef<str>,
@@ -41,6 +92,8 @@ impl Entity {
     }
 }
 
+/// All available entity types
+///
 #[derive(Debug, Deserialize, Serialize, Eq, PartialEq)]
 pub enum EntityType {
     #[serde(rename = "profile")]
@@ -62,15 +115,48 @@ impl fmt::Display for EntityType {
     }
 }
 
+/// Represents a hash that is used in the context of an entity id.
+///
+/// This struct implements `Display` to simplify the formatting of urls and messages.
+///
+/// ```
+/// let entityId = catalyst::EntityId::new("a-missing-entity");
+/// let message = format!("entity missing: {}", entityId);
+/// assert_eq!(message, "entity missing: a-missing-entity");
+/// ```
 #[derive(Debug, PartialEq, Eq, Deserialize, Serialize)]
-pub struct EntityId(String);
+pub struct EntityId(HashId);
 
 impl EntityId {
+    /// Constructs a new entity id with id as a string.
+    ///
+    /// # Example
+    ///
+    /// ```
+    /// use catalyst::EntityId;
+    /// let id = EntityId::new("bafkreiabfxgn375iwwgtx2i5zhhtge2affusbt7sndnf7wqbkeuz4f36ki");
+    ///
+    /// assert_eq!(id.hash(), "bafkreiabfxgn375iwwgtx2i5zhhtge2affusbt7sndnf7wqbkeuz4f36ki");
+    /// ```
     pub fn new<T>(id: T) -> EntityId
     where
         T: AsRef<str>,
     {
         EntityId(id.as_ref().to_string())
+    }
+
+    /// Returns the hash for this id
+    ///
+    /// # Example
+    ///
+    /// ```
+    /// use catalyst::EntityId;
+    /// let id = EntityId::new("bafkreiabfxgn375iwwgtx2i5zhhtge2affusbt7sndnf7wqbkeuz4f36ki");
+    ///
+    /// assert_eq!(id.hash(), "bafkreiabfxgn375iwwgtx2i5zhhtge2affusbt7sndnf7wqbkeuz4f36ki");
+    /// ```
+    pub fn hash(&self) -> &HashId {
+        &self.0
     }
 }
 
@@ -110,6 +196,12 @@ mod test {
         let id = EntityId::new("id");
         let id_string = format!("{}", id);
         assert_eq!(id_string, "id");
+    }
+
+    #[test]
+    fn entity_id_implements_hash() {
+        let id = EntityId::new("a-hash");
+        assert_eq!(id.hash(), "a-hash");
     }
 
     #[test]

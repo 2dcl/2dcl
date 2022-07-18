@@ -139,7 +139,7 @@ impl Server {
         Ok(status)
     }
 
-    /// Executes a `¨POST` request to `path` with body `body`.
+    /// Executes a `POST` request to `path` with body `body`.
     /// The response is returned as is using `reqwest::Response`.
     /// For automatic deserialization of JSON response see `post`.
     pub async fn raw_post<U, B>(&self, path: U, body: &B) -> Result<reqwest::Response>

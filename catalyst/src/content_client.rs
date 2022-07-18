@@ -3,10 +3,14 @@ use std::fs::File;
 use std::io::Write;
 use std::path::Path;
 
+use crate::entity_files::SceneFile;
+use crate::entity_information::EntityInformation;
+use crate::snapshot::{EntitySnapshot, Snapshot};
+use crate::status::ContentServerStatus;
 use crate::*;
 use dcl_common::{Parcel, Result};
 
-/// `ContentClient` implements all the request to interact with [Catalyst Content Servers](https://decentraland.github.io/catalyst-api-specs/#tag/Content-Server).
+/// Implements all the request to interact with [Catalyst Content Servers](https://decentraland.github.io/catalyst-api-specs/#tag/Content-Server).
 ///
 #[derive(Default)]
 pub struct ContentClient {}
@@ -24,13 +28,8 @@ pub struct ContentFileStatus {
 }
 
 impl ContentClient {
-    pub async fn entity_information(server: &Server, entity: &Entity) -> Result<EntityInformation> {
-        let result = server
-            .get(format!("/content/audit/{}/{}", entity.kind, entity.id))
-            .await?;
-        Ok(result)
-    }
-
+    /// Returns a list of entity ids related to the given ContentId hash.
+    /// [See on Catalyst API Docs](https://decentraland.github.io/catalyst-api-specs/#operation/getListEntityIdsByHashId)
     pub async fn active_entities(server: &Server, content_id: &ContentId) -> Result<Vec<EntityId>> {
         let result = server
             .get(format!("/content/contents/{}/active-entities", content_id))
@@ -38,6 +37,8 @@ impl ContentClient {
         Ok(result)
     }
 
+    /// Returns the availability state for all the given ContentIds.
+    /// [See on Catalyst API Docs](https://decentraland.github.io/catalyst-api-specs/#operation/getIfFileExists)
     pub async fn content_files_exists(
         server: &Server,
         content: &Vec<ContentId>,
@@ -49,7 +50,7 @@ impl ContentClient {
                 cids.push('&');
             }
             cids.push_str("cid=");
-            cids.push_str(&cid.0);
+            cids.push_str(cid.hash());
         }
 
         let result = server
@@ -58,28 +59,43 @@ impl ContentClient {
         Ok(result)
     }
 
-    pub async fn status(server: &Server) -> Result<ContentServerStatus> {
-        let result = server.get("/content/status").await?;
+    /// Download the file referenced by `content_id` in the path given by `filename`.
+    /// [See on Catalyst API Docs](https://decentraland.github.io/catalyst-api-specs/#operation/getContentFile)
+    pub async fn download<V>(server: &Server, content_id: ContentId, filename: V) -> Result<()>
+    where
+        V: AsRef<Path>,
+    {
+        let response = server
+            .raw_get(format!("/content/contents/{}", content_id))
+            .await?;
+        let mut dest = File::create(filename)?;
+        let content = response.bytes().await?;
+        dest.write_all(&content)?;
+
+        Ok(())
+    }
+
+    /// Get information about the given `entity`.
+    /// [See on Catalyst API Docs](https://decentraland.github.io/catalyst-api-specs/#operation/getEntityInformation)
+    pub async fn entity_information(server: &Server, entity: &Entity) -> Result<EntityInformation> {
+        let result = server
+            .get(format!("/content/audit/{}/{}", entity.kind, entity.id))
+            .await?;
         Ok(result)
     }
 
-    pub async fn challenge(server: &Server) -> Result<String> {
-        #[derive(Deserialize)]
-        #[serde(rename_all = "camelCase")]
-        struct Response {
-            challenge_text: String,
-        }
-
-        let result: Response = server.get("/content/challenge").await?;
-
-        Ok(result.challenge_text)
-    }
-
-    pub async fn snapshot(server: &Server) -> Result<Snapshot> {
-        let result = server.get("/content/snapshot").await?;
+    /// Returns the scene content files for all the scenes that own the given `parcels`.
+    /// [See on Catalyst API Docs](https://decentraland.github.io/catalyst-api-specs/#operation/getListOfEntities)
+    pub async fn scene_files_for_parcels(
+        server: &Server,
+        parcels: &Vec<Parcel>,
+    ) -> Result<Vec<SceneFile>> {
+        let pointers = ParcelPointer { pointers: parcels };
+        let result: Vec<SceneFile> = server.post("/content/entities/active", &pointers).await?;
         Ok(result)
     }
 
+    /// Returns a list of entities (in the form of `EntitySnapshot`) for the given `entity_type` and `snapshot`.
     pub async fn snapshot_entities<T>(
         server: &Server,
         entity_type: EntityType,
@@ -112,27 +128,18 @@ impl ContentClient {
         Ok(result)
     }
 
-    pub async fn scene_files_for_parcels(
-        server: &Server,
-        parcels: &Vec<Parcel>,
-    ) -> Result<Vec<SceneFile>> {
-        let pointers = ParcelPointer { pointers: parcels };
-        let result: Vec<SceneFile> = server.post("/content/entities/active", &pointers).await?;
+    /// Returns a snapshot that includes the content ids for the entities available in the snapshot.
+    /// [See on Catalyst API Docs](https://decentraland.github.io/catalyst-api-specs/#operation/getActiveEntities)
+    pub async fn snapshot(server: &Server) -> Result<Snapshot> {
+        let result = server.get("/content/snapshot").await?;
         Ok(result)
     }
 
-    pub async fn download<V>(server: &Server, content_id: ContentId, filename: V) -> Result<()>
-    where
-        V: AsRef<Path>,
-    {
-        let response = server
-            .raw_get(format!("/content/contents/{}", content_id))
-            .await?;
-        let mut dest = File::create(filename)?;
-        let content = response.bytes().await?;
-        dest.write_all(&content)?;
-
-        Ok(())
+    /// Returns information about the status of the server.
+    /// [See on Catalyst API Docs](https://decentraland.github.io/catalyst-api-specs/#operation/getStatus)
+    pub async fn status(server: &Server) -> Result<ContentServerStatus> {
+        let result = server.get("/content/status").await?;
+        Ok(result)
     }
 }
 
@@ -264,24 +271,6 @@ mod tests {
 
         let expected: ContentServerStatus = serde_json::from_str(response).unwrap();
         assert_eq!(result, expected);
-    }
-
-    #[test]
-    fn it_gets_challenge() {
-        let response = "{\"challengeText\": \"challenge-text-result\"}";
-        let server = MockServer::start();
-
-        let m = server.mock(|when, then| {
-            when.method(GET).path("/content/challenge");
-            then.status(200).body(response);
-        });
-
-        let server = Server::new(server.url(""));
-        let result = tokio_test::block_on(ContentClient::challenge(&server)).unwrap();
-
-        m.assert();
-
-        assert_eq!(result, "challenge-text-result");
     }
 
     #[test]

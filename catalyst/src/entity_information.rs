@@ -31,7 +31,7 @@ pub enum AuthChainType {
 
 #[cfg(test)]
 mod test {
-    use crate::EntityInformation;
+    use crate::entity_information::EntityInformation;
 
     #[test]
     fn it_deserializes_from_json() {

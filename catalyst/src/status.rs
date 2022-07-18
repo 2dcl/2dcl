@@ -24,7 +24,7 @@ pub struct SynchronizationStatus {}
 
 #[cfg(test)]
 mod test {
-    use crate::*;
+    use crate::status::ContentServerStatus;
 
     #[test]
     fn it_deserializes_content_status_from_json() {
