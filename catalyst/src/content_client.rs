@@ -33,6 +33,17 @@ impl ContentClient {
         Ok(result)
     }
 
+    pub async fn challenge(server: &Server) -> Result<String>
+    {
+        #[derive(Deserialize)]
+        #[serde(rename_all = "camelCase")]
+        struct Response { challenge_text: String }
+        
+        let result : Response = server.get("/content/challenge").await?;
+        
+        Ok(result.challenge_text)
+    }
+
     pub async fn snapshot(server: &Server) -> Result<Snapshot>
     {
         let result = server.get("/content/snapshot").await?;
@@ -178,6 +189,27 @@ mod tests {
 
         let expected : ContentServerStatus = serde_json::from_str(response).unwrap();
         assert_eq!(result, expected);
+    }
+
+    #[test]
+    fn it_gets_challenge() {
+        let response = "{\"challengeText\": \"challenge-text-result\"}";
+        let server = MockServer::start();
+
+        let m = server.mock(|when, then| {
+            when.method(GET)
+                .path("/content/challenge");
+            then.status(200).body(response);
+        });
+
+        let server = Server::new(server.url(""));
+        let result = tokio_test::block_on(
+            ContentClient::challenge(&server)
+        ).unwrap();
+
+        m.assert();
+
+        assert_eq!(result, "challenge-text-result");
     }
 
     #[test]
