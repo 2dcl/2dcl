@@ -1,4 +1,5 @@
-use crate::ContentId;
+use dcl_common::Parcel;
+use crate::{ContentId, Entity};
 use serde::Deserialize;
 
 #[derive(Debug, Deserialize, PartialEq)]
@@ -22,6 +23,13 @@ pub struct EntitySnapshots {
 pub struct EntitySnapshot {
   pub hash: ContentId,
   pub last_included_deployment_timestamp: u64, // TODO(fran): use chrono?
+}
+
+#[derive(Debug, Deserialize, PartialEq)]
+pub struct SceneSnapshot {
+  pub entity: Entity,
+  pub pointers: Vec<Parcel>,
+  local_timestamp: u64 // TODO(fran): use chrono?
 }
 
 #[cfg(test)]

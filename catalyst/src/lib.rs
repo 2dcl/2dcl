@@ -26,6 +26,8 @@ pub use entity_files::ContentFile;
 pub mod server;
 pub use server::Server;
 
+pub mod status;
+pub use status::ContentServerStatus;
 
 // Responses
 mod entity_information;
@@ -34,3 +36,4 @@ pub use entity_information::EntityInformation;
 mod snapshot;
 pub use snapshot::Snapshot;
 pub use snapshot::EntitySnapshot;
+pub use snapshot::SceneSnapshot;

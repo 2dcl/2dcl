@@ -6,7 +6,7 @@ use std::fs::File;
 
 use std::io::Write;
 use std::path::Path;
-use serde::{Serialize};
+use serde::{Serialize, Deserialize};
 
 /// `ContentClient` implements all the request to interact with [Catalyst Content Servers](https://decentraland.github.io/catalyst-api-specs/#tag/Content-Server).
 ///
@@ -21,19 +21,26 @@ struct ParcelPointer<'a> {
 impl ContentClient {
     pub async fn entity_information(server: &Server, entity: &Entity) -> Result<EntityInformation>
     {
-        let result : EntityInformation = server.get(
+        let result = server.get(
             format!("/content/audit/{}/{}", entity.kind, entity.id)
         ).await?;
         Ok(result)
     }
 
-    pub async fn snapshot(server: &Server) -> Result<Snapshot>
+    pub async fn status(server: &Server) -> Result<ContentServerStatus>
     {
-        let result : Snapshot = server.get("/content/snapshot").await?;
+        let result = server.get("/content/status").await?;
         Ok(result)
     }
 
-    pub async fn snapshot_entities(server: &Server, entity_type: EntityType, snapshot: &Snapshot ) -> Result<()>
+    pub async fn snapshot(server: &Server) -> Result<Snapshot>
+    {
+        let result = server.get("/content/snapshot").await?;
+        Ok(result)
+    }
+
+    pub async fn snapshot_entities<T>(server: &Server, entity_type: EntityType, snapshot: &Snapshot ) -> Result<T>
+        where T: for<'a> Deserialize<'a>
     {
 
         let hash : &ContentId = match entity_type {
@@ -42,11 +49,15 @@ impl ContentClient {
             EntityType::Wearable => &snapshot.entities.wearable.hash
         };
 
-        let result : EntityInformation = server.get(
-            format!("/content/contents/{}", hash)
-        ).await?;
-        // Ok(result)
-        Ok(())
+        let result = server.raw_get(format!("/content/contents/{}", hash)).await?;
+
+        let text = result.text().await?;
+        // let result : Vec<T> = vec!();
+
+        text.split('\n').for_each(|json| panic!("{}", json) );
+        // let result =
+        let result : T = serde_json::from_str(&text)?;
+        Ok(result)
     }
 
     pub async fn scene_files_for_parcels(server: &Server, parcels: &Vec<Parcel>) -> Result<Vec<SceneFile>>
@@ -143,6 +154,28 @@ mod tests {
     }
 
     #[test]
+    fn it_gets_status() {
+        let response = include_str!("../fixtures/content_server_status.json");
+        let server = MockServer::start();
+
+        let m = server.mock(|when, then| {
+            when.method(GET)
+                .path("/content/status");
+            then.status(200).body(response);
+        });
+
+        let server = Server::new(server.url(""));
+        let result : ContentServerStatus = tokio_test::block_on(
+            ContentClient::status(&server)
+        ).unwrap();
+
+        m.assert();
+
+        let expected : ContentServerStatus = serde_json::from_str(response).unwrap();
+        assert_eq!(result, expected);
+    }
+
+    #[test]
     fn it_gets_snapshot() {
         let response = include_str!("../fixtures/snapshot.json");
         let server = MockServer::start();
@@ -171,7 +204,7 @@ mod tests {
 
         let m = server.mock(|when, then| {
             when.method(GET)
-                .path("/content/contents/a-hash");
+                .path("/content/contents/bafybeiep3b54f6rzh5lgx647m4alfydi65smdz63y4gtpxnu2ero4trlsy");
             then.status(200).body(response);
         });
         let server = Server::new(server.url(""));
@@ -179,11 +212,13 @@ mod tests {
             include_str!("../fixtures/snapshot.json")
         ).unwrap();
 
-        // TODO(fran): Implement this using raw_get because it's not json
-        // let result : Vec<SceneSnapshot> = tokio_test::block_on(
-        //     ContentClient::snapshot_entities(&server, EntityType::Scene,
-        //         &snapshot)
-        // ).unwrap();
+        let result : Vec<SceneSnapshot> = tokio_test::block_on(
+            ContentClient::snapshot_entities(
+                &server,
+                EntityType::Scene,
+                &snapshot
+            )
+        ).unwrap();
 
         m.assert();
 

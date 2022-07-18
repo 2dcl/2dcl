@@ -1,0 +1,22 @@
+{
+    "synchronizationStatus":
+    {
+        "lastSyncWithDAO": 1658163081777,
+        "synchronizationState": "Syncing"
+    },
+    "snapshot":
+    {
+        "entities":
+        {
+            "profile": 1271297,
+            "scene": 23477,
+            "store": 890,
+            "wearable": 17350
+        },
+        "lastUpdatedTime": 1658150252772
+    },
+    "version": "v3",
+    "commitHash": "bda11cb3722082732c0965144d2548864a2bd14a",
+    "catalystVersion": "4.8.0",
+    "ethNetwork": "mainnet"
+}
