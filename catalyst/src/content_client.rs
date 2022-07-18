@@ -5,8 +5,6 @@ use serde::{Serialize, Deserialize};
 
 use dcl_common::{Parcel, Result};
 use crate::*;
-use crate::entity_information::AuthChain;
-
 
 /// `ContentClient` implements all the request to interact with [Catalyst Content Servers](https://decentraland.github.io/catalyst-api-specs/#tag/Content-Server).
 ///
@@ -23,6 +21,14 @@ impl ContentClient {
     {
         let result = server.get(
             format!("/content/audit/{}/{}", entity.kind, entity.id)
+        ).await?;
+        Ok(result)
+    }
+
+    pub async fn active_entities(server: &Server, content_id: &ContentId) -> Result<Vec<EntityId>>
+    {
+        let result = server.get(
+            format!("/content/contents/{}/active-entities", content_id)
         ).await?;
         Ok(result)
     }
@@ -168,6 +174,30 @@ mod tests {
         let expected : EntityInformation = serde_json::from_str(response).unwrap();
         assert_eq!(result, expected);
     }
+
+    #[test]
+    fn it_gets_active_entities() {
+        let response = "[\"entity-id\"]";
+        let server = MockServer::start();
+
+        let m = server.mock(|when, then| {
+            when.method(GET)
+                .path("/content/contents/an-id/active-entities");
+            then.status(200).body(response);
+        });
+
+        let server = Server::new(server.url(""));
+        let content_id = ContentId::new("an-id");
+        let result = tokio_test::block_on(
+            ContentClient::active_entities(&server, &content_id)
+        ).unwrap();
+
+        m.assert();
+
+        assert_eq!(result, vec!(EntityId::new("entity-id")));
+    }
+
+
 
     #[test]
     fn it_gets_status() {
