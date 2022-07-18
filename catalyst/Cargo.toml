@@ -6,7 +6,7 @@ edition = "2021"
 [dependencies]
 serde = { version = "1.0", features = ["derive"] }
 serde_json = "1.0"
-reqwest = "0.11"
+reqwest = { version = "0.11", features = ["json"] }
 js-sandbox = "0.1.6"
 dcl-common = { path = "../dcl-common" }
 
@@ -15,3 +15,4 @@ httpmock = "0.6"
 tokio-test = "0.4.2"
 tokio = { version = "1", features = ["full"] }
 tempdir = "0.3"
+futures = "0.3.21"

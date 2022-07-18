@@ -1,6 +1,6 @@
-use crate::Result;
+use dcl_common::Result;
 use reqwest::Client as ReqwestClient;
-use serde::Deserialize;
+use serde::{Deserialize, Serialize};
 
 /// A *single* catalyst server.
 ///
@@ -96,12 +96,6 @@ impl Server {
     /// The response is parsed as JSON and deserialized in the result.
     /// If you need to deal with the result by hand, use `get_raw`.
     ///
-    /// # Example
-    ///
-    /// ```
-    /// let server = catalyst::Server::production();
-    /// assert_eq!(server.base_url, "https://peer.decentraland.org")
-    /// ```
     pub async fn get<U, R>(&self, path: U) -> Result<R>
     where
         U: AsRef<str> + std::fmt::Display,
@@ -109,13 +103,12 @@ impl Server {
     {
         let response = self.raw_get(path).await?;
         let text = response.text().await?;
-        // println!("{}", text);
         let status: R = serde_json::from_str(text.as_str())?;
         Ok(status)
     }
 
     /// Executes a `GET` request to `path`.
-    /// The response is returned as is using `reqwest::Respnse`.
+    /// The response is returned as is using `reqwest::Response`.
     /// For automatic deserialization of JSON response see `get`.
     pub async fn raw_get<U>(&self, path: U) -> Result<reqwest::Response>
     where
@@ -127,11 +120,44 @@ impl Server {
             .send()
             .await?)
     }
+
+    /// Executes a `POST` request to `path` with body `body`.
+    /// The response is parsed as JSON and deserialized in the result.
+    /// If you need to deal with the result by hand, use `get_raw`.
+    ///
+    pub async fn post<U, B, R>(&self, path: U, body: &B) -> Result<R>
+    where
+        U: AsRef<str> + std::fmt::Display,
+        B: for<'a> Serialize,
+        R: for<'a> Deserialize<'a>,
+    {
+        let response = self.raw_post(path, body).await?;
+        let text = response.text().await?;
+        let status: R = serde_json::from_str(text.as_str())?;
+        Ok(status)
+    }
+
+    /// Executes a `POST` request to `path` with body `body`.
+    /// The response is returned as is using `reqwest::Response`.
+    /// For automatic deserialization of JSON response see `post`.
+    pub async fn raw_post<U, B>(&self, path: U, body: &B) -> Result<reqwest::Response>
+    where
+        U: AsRef<str> + std::fmt::Display,
+        B: for<'a> Serialize,
+    {
+        Ok(self
+            .http_client
+            .post(format!("{}{}", self.base_url, path))
+            .json(&body)
+            .send()
+            .await?)
+    }
 }
 
 #[cfg(test)]
 mod tests {
     use super::*;
+    use dcl_common::Parcel;
     use httpmock::prelude::*;
 
     #[test]
@@ -207,6 +233,49 @@ mod tests {
 
         let response: reqwest::Response =
             tokio_test::block_on(server.raw_get("/lambdas/status")).unwrap();
+        let body = tokio_test::block_on(response.text()).unwrap();
+
+        m.assert();
+        assert_eq!(body, "this_is_not_json");
+    }
+
+    #[test]
+    fn it_supports_custom_path_with_post() {
+        let response = "\"0,0\"";
+
+        let server = MockServer::start();
+
+        let m = server.mock(|when, then| {
+            when.method(POST).path("/echo").body_contains("\"0,0\"");
+            then.status(200).body(response);
+        });
+
+        let server = Server::new(server.url(""));
+
+        let parcels = Parcel(0, 0);
+        let response: Parcel = tokio_test::block_on(server.post("/echo", &parcels)).unwrap();
+        m.assert();
+        assert_eq!(response, Parcel(0, 0));
+    }
+
+    #[test]
+    fn it_supports_custom_path_with_raw_post() {
+        let response = "this_is_not_json";
+
+        let server = MockServer::start();
+
+        let m = server.mock(|when, then| {
+            when.method(POST)
+                .path("/some/path")
+                .body_contains("[\"0,0\"]");
+            then.status(200).body(response);
+        });
+
+        let server = Server::new(server.url(""));
+
+        let parcels = vec![Parcel(0, 0)];
+        let response: reqwest::Response =
+            tokio_test::block_on(server.raw_post("/some/path", &parcels)).unwrap();
         let body = tokio_test::block_on(response.text()).unwrap();
 
         m.assert();

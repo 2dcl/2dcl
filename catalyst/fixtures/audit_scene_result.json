@@ -1,0 +1,13 @@
+{
+  "version": "v3",
+  "localTimestamp": 1657830110701,
+  "authChain": [{
+    "type": "SIGNER",
+    "payload": "0xe2b6024873d218b2e83b462d3658d8d7c3f55a18",
+    "signature": ""
+  }, {
+    "type": "ECDSA_SIGNED_ENTITY",
+    "payload": "bafkreiabfxgn375iwwgtx2i5zhhtge2affusbt7sndnf7wqbkeuz4f36ki",
+    "signature": "0x6c7683aae68ac52e42ba1fc4d7d11eb2d45176a3ed02df4732611a034b9abcd675eb5dc846ca01ff601dbd740290dd1b751fd634fe1532ddf0cf6371981c38b01c"
+  }]
+}

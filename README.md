@@ -6,6 +6,9 @@ A Rust workspace with several useful libraries to work with Decentraland
 
 For more information see README.md in each library
 
+This project exists thanks to the Decentraland DAO's grants. [Here is our proposal](https://governance.decentraland.org/proposal/?id=1959b490-f726-11ec-805c-77efd746e6b7). We're eternally grateful that we can make this happen thanks to the Decentraland community.
+
+
 ## In this repository
 
 1. `dcl-common` — A collection of types used in multiple projects.
