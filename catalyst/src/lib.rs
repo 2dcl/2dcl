@@ -15,13 +15,12 @@ pub use entity::Entity;
 pub use entity::EntityId;
 pub use entity::EntityType;
 
-
 mod content_id;
 pub use content_id::ContentId;
 
 mod entity_files;
-pub use entity_files::SceneFile;
 pub use entity_files::ContentFile;
+pub use entity_files::SceneFile;
 
 pub mod server;
 pub use server::Server;
@@ -34,8 +33,8 @@ mod entity_information;
 pub use entity_information::EntityInformation;
 
 mod snapshot;
-pub use snapshot::Snapshot;
-pub use snapshot::EntityTypeSnapshot;
 pub use snapshot::EntitySnapshot;
+pub use snapshot::EntityTypeSnapshot;
+pub use snapshot::Snapshot;
 
 pub type Urn = String;

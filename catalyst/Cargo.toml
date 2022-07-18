@@ -9,7 +9,6 @@ serde_json = "1.0"
 reqwest = { version = "0.11", features = ["json"] }
 js-sandbox = "0.1.6"
 dcl-common = { path = "../dcl-common" }
-chrono = { verison = "0.4", features = ["serde"] }
 
 [dev-dependencies]
 httpmock = "0.6"

@@ -1,13 +1,13 @@
 extern crate catalyst;
 
 use catalyst::*;
-use dcl_common::{ Result };
+use dcl_common::Result;
 
 #[tokio::main]
 async fn main() -> Result<()> {
-    let server = Server::development();
+    let server = Server::production();
 
-    let scene = server.raw_get("/content/status").await?;
+    let scene = server.raw_get("/content/available-content/?cid=QmWFLwHGfvhB9a1epaRpS38HEwbHvhpaYzHEsNhDRgon7P&cid=MfWFLwHGfvhB9a1epaRpJ38HEwbHvhpaYzHEsNhDRgon8H").await?;
 
     // let scene = server.raw_get("/content/snapshot").await?;
 

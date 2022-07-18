@@ -1,0 +1,10 @@
+[
+    {
+        "cid": "a-cid",
+        "available": true
+    },
+    {
+        "cid": "another-cid",
+        "available": false
+    }
+]

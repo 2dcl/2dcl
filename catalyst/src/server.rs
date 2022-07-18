@@ -1,6 +1,6 @@
 use dcl_common::Result;
 use reqwest::Client as ReqwestClient;
-use serde::{Serialize, Deserialize};
+use serde::{Deserialize, Serialize};
 
 /// A *single* catalyst server.
 ///
@@ -101,8 +101,10 @@ impl Server {
         U: AsRef<str> + std::fmt::Display,
         R: for<'a> Deserialize<'a>,
     {
+        println!("{}", path);
         let response = self.raw_get(path).await?;
         let text = response.text().await?;
+        println!("{}", text);
         let status: R = serde_json::from_str(text.as_str())?;
         Ok(status)
     }
@@ -125,7 +127,7 @@ impl Server {
     /// The response is parsed as JSON and deserialized in the result.
     /// If you need to deal with the result by hand, use `get_raw`.
     ///
-    pub async fn post<U, B, R>(&self, path: U, body: &B ) -> Result<R>
+    pub async fn post<U, B, R>(&self, path: U, body: &B) -> Result<R>
     where
         U: AsRef<str> + std::fmt::Display,
         B: for<'a> Serialize,
@@ -137,11 +139,10 @@ impl Server {
         Ok(status)
     }
 
-
     /// Executes a `¨POST` request to `path` with body `body`.
     /// The response is returned as is using `reqwest::Response`.
     /// For automatic deserialization of JSON response see `post`.
-    pub async fn raw_post<U, B>(&self, path: U, body: &B ) -> Result<reqwest::Response>
+    pub async fn raw_post<U, B>(&self, path: U, body: &B) -> Result<reqwest::Response>
     where
         U: AsRef<str> + std::fmt::Display,
         B: for<'a> Serialize,
@@ -153,7 +154,6 @@ impl Server {
             .send()
             .await?)
     }
-
 }
 
 #[cfg(test)]
@@ -248,20 +248,16 @@ mod tests {
         let server = MockServer::start();
 
         let m = server.mock(|when, then| {
-            when.method(POST)
-                .path("/echo")
-                .body_contains("\"0,0\"");
+            when.method(POST).path("/echo").body_contains("\"0,0\"");
             then.status(200).body(response);
         });
 
         let server = Server::new(server.url(""));
 
-        let parcels = Parcel(0,0);
-        let response: Parcel =
-            tokio_test::block_on(
-                server.post("/echo", &parcels)).unwrap();
+        let parcels = Parcel(0, 0);
+        let response: Parcel = tokio_test::block_on(server.post("/echo", &parcels)).unwrap();
         m.assert();
-        assert_eq!(response, Parcel(0,0));
+        assert_eq!(response, Parcel(0, 0));
     }
 
     #[test]
@@ -279,14 +275,12 @@ mod tests {
 
         let server = Server::new(server.url(""));
 
-        let parcels = vec!(Parcel(0,0));
+        let parcels = vec![Parcel(0, 0)];
         let response: reqwest::Response =
-            tokio_test::block_on(
-                server.raw_post("/some/path", &parcels)).unwrap();
+            tokio_test::block_on(server.raw_post("/some/path", &parcels)).unwrap();
         let body = tokio_test::block_on(response.text()).unwrap();
 
         m.assert();
         assert_eq!(body, "this_is_not_json");
     }
-
 }

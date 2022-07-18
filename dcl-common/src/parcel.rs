@@ -65,7 +65,7 @@ mod test {
 
     #[test]
     fn it_can_serialize_parcel() {
-        let parcel = Parcel(-1,10);
+        let parcel = Parcel(-1, 10);
         let serialized = serde_json::to_string(&parcel).unwrap();
         assert_eq!(serialized, "\"-1,10\"");
     }

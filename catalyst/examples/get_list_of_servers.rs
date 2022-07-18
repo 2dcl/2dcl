@@ -1,6 +1,5 @@
 extern crate catalyst;
 
-
 use dcl_common::Result;
 
 #[tokio::main]

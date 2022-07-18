@@ -1,10 +1,10 @@
+use serde::{Deserialize, Serialize};
 use std::fs::File;
 use std::io::Write;
 use std::path::Path;
-use serde::{Serialize, Deserialize};
 
-use dcl_common::{Parcel, Result};
 use crate::*;
+use dcl_common::{Parcel, Result};
 
 /// `ContentClient` implements all the request to interact with [Catalyst Content Servers](https://decentraland.github.io/catalyst-api-specs/#tag/Content-Server).
 ///
@@ -13,68 +13,98 @@ pub struct ContentClient {}
 
 #[derive(Serialize)]
 struct ParcelPointer<'a> {
-    pointers: &'a Vec<Parcel>
+    pointers: &'a Vec<Parcel>,
+}
+
+#[derive(Debug, Deserialize, Eq, PartialEq)]
+pub struct ContentFileStatus {
+    #[serde(rename = "cid")]
+    pub id: ContentId,
+    pub available: bool,
 }
 
 impl ContentClient {
-    pub async fn entity_information(server: &Server, entity: &Entity) -> Result<EntityInformation>
-    {
-        let result = server.get(
-            format!("/content/audit/{}/{}", entity.kind, entity.id)
-        ).await?;
+    pub async fn entity_information(server: &Server, entity: &Entity) -> Result<EntityInformation> {
+        let result = server
+            .get(format!("/content/audit/{}/{}", entity.kind, entity.id))
+            .await?;
         Ok(result)
     }
 
-    pub async fn active_entities(server: &Server, content_id: &ContentId) -> Result<Vec<EntityId>>
-    {
-        let result = server.get(
-            format!("/content/contents/{}/active-entities", content_id)
-        ).await?;
+    pub async fn active_entities(server: &Server, content_id: &ContentId) -> Result<Vec<EntityId>> {
+        let result = server
+            .get(format!("/content/contents/{}/active-entities", content_id))
+            .await?;
         Ok(result)
     }
 
-    pub async fn status(server: &Server) -> Result<ContentServerStatus>
-    {
+    pub async fn content_files_exists(
+        server: &Server,
+        content: &Vec<ContentId>,
+    ) -> Result<Vec<ContentFileStatus>> {
+        let mut cids = String::new();
+
+        for cid in content {
+            if cid != &content[0] {
+                cids.push('&');
+            }
+            cids.push_str("cid=");
+            cids.push_str(&cid.0);
+        }
+
+        let result = server
+            .get(format!("/content/available-content/?{}", cids))
+            .await?;
+        Ok(result)
+    }
+
+    pub async fn status(server: &Server) -> Result<ContentServerStatus> {
         let result = server.get("/content/status").await?;
         Ok(result)
     }
 
-    pub async fn challenge(server: &Server) -> Result<String>
-    {
+    pub async fn challenge(server: &Server) -> Result<String> {
         #[derive(Deserialize)]
         #[serde(rename_all = "camelCase")]
-        struct Response { challenge_text: String }
-        
-        let result : Response = server.get("/content/challenge").await?;
-        
+        struct Response {
+            challenge_text: String,
+        }
+
+        let result: Response = server.get("/content/challenge").await?;
+
         Ok(result.challenge_text)
     }
 
-    pub async fn snapshot(server: &Server) -> Result<Snapshot>
-    {
+    pub async fn snapshot(server: &Server) -> Result<Snapshot> {
         let result = server.get("/content/snapshot").await?;
         Ok(result)
     }
 
-    pub async fn snapshot_entities<T>(server: &Server, entity_type: EntityType, snapshot: &Snapshot ) -> Result<Vec<EntitySnapshot<T>>>
-        where T: for<'a> Deserialize<'a>
+    pub async fn snapshot_entities<T>(
+        server: &Server,
+        entity_type: EntityType,
+        snapshot: &Snapshot,
+    ) -> Result<Vec<EntitySnapshot<T>>>
+    where
+        T: for<'a> Deserialize<'a>,
     {
-
-        let hash : &ContentId = match entity_type {
+        let hash: &ContentId = match entity_type {
             EntityType::Scene => &snapshot.entities.scene.hash,
             EntityType::Profile => &snapshot.entities.profile.hash,
-            EntityType::Wearable => &snapshot.entities.wearable.hash
+            EntityType::Wearable => &snapshot.entities.wearable.hash,
         };
 
-        let response = server.raw_get(format!("/content/contents/{}", hash)).await?;
+        let response = server
+            .raw_get(format!("/content/contents/{}", hash))
+            .await?;
 
         let text = response.text().await?;
 
-        let mut result : Vec<EntitySnapshot<T>> = vec!();
+        let mut result: Vec<EntitySnapshot<T>> = vec![];
 
         for line in text.lines() {
             if line.find('{') == Some(0) {
-                let snapshot : EntitySnapshot<T> = serde_json::from_str(line)?;
+                let snapshot: EntitySnapshot<T> = serde_json::from_str(line)?;
                 result.push(snapshot);
             }
         }
@@ -82,13 +112,12 @@ impl ContentClient {
         Ok(result)
     }
 
-    pub async fn scene_files_for_parcels(server: &Server, parcels: &Vec<Parcel>) -> Result<Vec<SceneFile>>
-    {
-        let pointers = ParcelPointer { pointers: parcels };        
-        let result : Vec<SceneFile> = server.post(
-            "/content/entities/active",
-            &pointers
-            ).await?;
+    pub async fn scene_files_for_parcels(
+        server: &Server,
+        parcels: &Vec<Parcel>,
+    ) -> Result<Vec<SceneFile>> {
+        let pointers = ParcelPointer { pointers: parcels };
+        let result: Vec<SceneFile> = server.post("/content/entities/active", &pointers).await?;
         Ok(result)
     }
 
@@ -112,20 +141,9 @@ impl ContentClient {
 mod tests {
     use super::*;
     use dcl_common::Parcel;
-    
     use httpmock::prelude::*;
     use std::fs;
     use tempdir::TempDir;
-
-    #[test]
-    fn it_implements_active_entities() {
-        //TODO(fran): We want to use /content/entities/active to download
-        //            entity files. It should support any serializable to
-        //            be able to create the request using arbitrary lists of
-        //            pointers or ids
-        //            Also add examples to consume this endpoints.
-        // assert!(false)
-    }
 
     #[test]
     fn it_gets_scene_files_from_parcels() {
@@ -141,14 +159,49 @@ mod tests {
 
         let server = Server::new(server.url(""));
 
-        let parcels = vec![Parcel(0,0)];
-        let result : Vec<SceneFile> = tokio_test::block_on(
-            ContentClient::scene_files_for_parcels(&server, &parcels)
-        ).unwrap();
+        let parcels = vec![Parcel(0, 0)];
+        let result: Vec<SceneFile> =
+            tokio_test::block_on(ContentClient::scene_files_for_parcels(&server, &parcels))
+                .unwrap();
 
         m.assert();
 
-        let expected : Vec<SceneFile> = serde_json::from_str(response).unwrap();
+        let expected: Vec<SceneFile> = serde_json::from_str(response).unwrap();
+        assert_eq!(result, expected);
+    }
+
+    #[test]
+    fn it_implements_content_files_exist() {
+        let response = include_str!("../fixtures/available_content.json");
+        let server = MockServer::start();
+
+        let m = server.mock(|when, then| {
+            when.method(GET)
+                .path("/content/available-content/")
+                .query_param("cid", "a-cid")
+                .query_param("cid", "another-cid");
+            then.status(200).body(response);
+        });
+
+        let server = Server::new(server.url(""));
+        let cids = vec![ContentId::new("a-cid"), ContentId::new("another-cid")];
+
+        let result: Vec<ContentFileStatus> =
+            tokio_test::block_on(ContentClient::content_files_exists(&server, &cids)).unwrap();
+
+        m.assert();
+
+        let expected = vec![
+            ContentFileStatus {
+                id: ContentId::new("a-cid"),
+                available: true,
+            },
+            ContentFileStatus {
+                id: ContentId::new("another-cid"),
+                available: false,
+            },
+        ];
+
         assert_eq!(result, expected);
     }
 
@@ -158,20 +211,18 @@ mod tests {
         let server = MockServer::start();
 
         let m = server.mock(|when, then| {
-            when.method(GET)
-                .path("/content/audit/scene/id");
+            when.method(GET).path("/content/audit/scene/id");
             then.status(200).body(response);
         });
 
         let server = Server::new(server.url(""));
         let entity = Entity::scene("id");
-        let result : EntityInformation = tokio_test::block_on(
-            ContentClient::entity_information(&server, &entity)
-        ).unwrap();
+        let result: EntityInformation =
+            tokio_test::block_on(ContentClient::entity_information(&server, &entity)).unwrap();
 
         m.assert();
 
-        let expected : EntityInformation = serde_json::from_str(response).unwrap();
+        let expected: EntityInformation = serde_json::from_str(response).unwrap();
         assert_eq!(result, expected);
     }
 
@@ -188,16 +239,13 @@ mod tests {
 
         let server = Server::new(server.url(""));
         let content_id = ContentId::new("an-id");
-        let result = tokio_test::block_on(
-            ContentClient::active_entities(&server, &content_id)
-        ).unwrap();
+        let result =
+            tokio_test::block_on(ContentClient::active_entities(&server, &content_id)).unwrap();
 
         m.assert();
 
         assert_eq!(result, vec!(EntityId::new("entity-id")));
     }
-
-
 
     #[test]
     fn it_gets_status() {
@@ -205,19 +253,17 @@ mod tests {
         let server = MockServer::start();
 
         let m = server.mock(|when, then| {
-            when.method(GET)
-                .path("/content/status");
+            when.method(GET).path("/content/status");
             then.status(200).body(response);
         });
 
         let server = Server::new(server.url(""));
-        let result : ContentServerStatus = tokio_test::block_on(
-            ContentClient::status(&server)
-        ).unwrap();
+        let result: ContentServerStatus =
+            tokio_test::block_on(ContentClient::status(&server)).unwrap();
 
         m.assert();
 
-        let expected : ContentServerStatus = serde_json::from_str(response).unwrap();
+        let expected: ContentServerStatus = serde_json::from_str(response).unwrap();
         assert_eq!(result, expected);
     }
 
@@ -227,15 +273,12 @@ mod tests {
         let server = MockServer::start();
 
         let m = server.mock(|when, then| {
-            when.method(GET)
-                .path("/content/challenge");
+            when.method(GET).path("/content/challenge");
             then.status(200).body(response);
         });
 
         let server = Server::new(server.url(""));
-        let result = tokio_test::block_on(
-            ContentClient::challenge(&server)
-        ).unwrap();
+        let result = tokio_test::block_on(ContentClient::challenge(&server)).unwrap();
 
         m.assert();
 
@@ -248,19 +291,16 @@ mod tests {
         let server = MockServer::start();
 
         let m = server.mock(|when, then| {
-            when.method(GET)
-                .path("/content/snapshot");
+            when.method(GET).path("/content/snapshot");
             then.status(200).body(response);
         });
 
         let server = Server::new(server.url(""));
-        let result : Snapshot = tokio_test::block_on(
-            ContentClient::snapshot(&server)
-        ).unwrap();
+        let result: Snapshot = tokio_test::block_on(ContentClient::snapshot(&server)).unwrap();
 
         m.assert();
 
-        let expected : Snapshot = serde_json::from_str(response).unwrap();
+        let expected: Snapshot = serde_json::from_str(response).unwrap();
         assert_eq!(result, expected);
     }
 
@@ -270,22 +310,19 @@ mod tests {
         let server = MockServer::start();
 
         let m = server.mock(|when, then| {
-            when.method(GET)
-                .path("/content/contents/bafybeiep3b54f6rzh5lgx647m4alfydi65smdz63y4gtpxnu2ero4trlsy");
+            when.method(GET).path(
+                "/content/contents/bafybeiep3b54f6rzh5lgx647m4alfydi65smdz63y4gtpxnu2ero4trlsy",
+            );
             then.status(200).body(response);
         });
         let server = Server::new(server.url(""));
-        let snapshot : Snapshot = serde_json::from_str(
-            include_str!("../fixtures/snapshot.json")
-        ).unwrap();
+        let snapshot: Snapshot =
+            serde_json::from_str(include_str!("../fixtures/snapshot.json")).unwrap();
 
-        let result : Vec<EntitySnapshot<Parcel>> = tokio_test::block_on(
-            ContentClient::snapshot_entities(
-                &server,
-                EntityType::Scene,
-                &snapshot
-            )
-        ).unwrap();
+        let result: Vec<EntitySnapshot<Parcel>> = tokio_test::block_on(
+            ContentClient::snapshot_entities(&server, EntityType::Scene, &snapshot),
+        )
+        .unwrap();
 
         m.assert();
 
@@ -298,22 +335,19 @@ mod tests {
         let server = MockServer::start();
 
         let m = server.mock(|when, then| {
-            when.method(GET)
-                .path("/content/contents/bafybeifk2e6dsuwqz24s5bwxvhvajinr7tb7n6jzwzvafd6q4pwuy3jmua");
+            when.method(GET).path(
+                "/content/contents/bafybeifk2e6dsuwqz24s5bwxvhvajinr7tb7n6jzwzvafd6q4pwuy3jmua",
+            );
             then.status(200).body(response);
         });
         let server = Server::new(server.url(""));
-        let snapshot : Snapshot = serde_json::from_str(
-            include_str!("../fixtures/snapshot.json")
-        ).unwrap();
+        let snapshot: Snapshot =
+            serde_json::from_str(include_str!("../fixtures/snapshot.json")).unwrap();
 
-        let result : Vec<EntitySnapshot<Urn>> = tokio_test::block_on(
-            ContentClient::snapshot_entities(
-                &server,
-                EntityType::Wearable,
-                &snapshot
-            )
-        ).unwrap();
+        let result: Vec<EntitySnapshot<Urn>> = tokio_test::block_on(
+            ContentClient::snapshot_entities(&server, EntityType::Wearable, &snapshot),
+        )
+        .unwrap();
 
         m.assert();
 
@@ -341,9 +375,7 @@ mod tests {
         //     cid: ContentId::new("a-hash")
         // };
 
-        tokio_test::block_on(
-            ContentClient::download(&server, "a-hash", filename.clone())
-        ).unwrap();
+        tokio_test::block_on(ContentClient::download(&server, "a-hash", filename.clone())).unwrap();
 
         m.assert();
 
