@@ -369,7 +369,12 @@ mod tests {
         let tmp_dir = TempDir::new("content-client-test").unwrap();
         let filename = tmp_dir.path().join("test.txt");
 
-        tokio_test::block_on(ContentClient::download(&server, ContentId::new("a-hash"), filename.clone())).unwrap();
+        tokio_test::block_on(ContentClient::download(
+            &server,
+            ContentId::new("a-hash"),
+            filename.clone(),
+        ))
+        .unwrap();
 
         m.assert();
 

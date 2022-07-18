@@ -27,7 +27,7 @@ pub enum AuthChainType {
     #[serde(rename = "ECDSA_EIP_1654_EPHEMERAL")]
     EcdsaEip1654Ephemeral,
     EcdsaEip1654SignedEntity,
-} 
+}
 
 #[cfg(test)]
 mod test {
