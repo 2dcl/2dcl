@@ -34,6 +34,7 @@ use bevy::{
           .add_startup_system(load_gltf)
           .add_system(gltf_manual_entity)
           .add_system(remove_colliders)
+          .add_system(center_boundig_box)
           .add_system(pan_orbit_camera);
          // .add_system(main_camera_cube_rotator_system);
   
@@ -295,11 +296,8 @@ use bevy::{
       spawned: bool
   }
   
-  struct MyGLTFScene {
-     scene: Handle<Scene>
-  }
-  
-fn CenterBoundigBox(
+
+fn center_boundig_box(
     //mut commands: Commands,
     meshes: Res<Assets<Mesh>>,
 )
@@ -309,7 +307,7 @@ fn CenterBoundigBox(
 
   for mesh in meshes.iter()
   {
-    meshes.get(mesh).unwrap().attribute(Mesh::ATTRIBUTE_POSITION);
+    println!("{:?}", meshes.get(mesh.0).unwrap().attribute(Mesh::ATTRIBUTE_POSITION).unwrap());
     
   }
 
@@ -332,9 +330,6 @@ fn CenterBoundigBox(
       mut commands: Commands,
       my: Res<MyAssetPack>,
       assets_gltf: Res<Assets<Gltf>>,
-      mut assets_scenes: ResMut<Assets<Scene>>,
-      //assets_gltfmesh: Res<Assets<GltfMesh>>,
-      //assets_gltfnode: Res<Assets<GltfNode>>,
       mut config: ResMut<GltfSpawnCheck>,
   ) {
       if !config.spawned
