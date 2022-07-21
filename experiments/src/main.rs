@@ -34,7 +34,7 @@ use bevy::{
           .add_startup_system(load_gltf)
           .add_system(gltf_manual_entity)
           .add_system(remove_colliders)
-          .add_system(center_boundig_box)
+        //  .add_system(center_boundig_box)
           .add_system(pan_orbit_camera);
          // .add_system(main_camera_cube_rotator_system);
   
