@@ -15,7 +15,7 @@ use bevy::{
               BindGroup, BindGroupDescriptor, BindGroupEntry, BindGroupLayout,
               BindGroupLayoutDescriptor, BindGroupLayoutEntry, BindingResource, BindingType,
               Extent3d, SamplerBindingType, ShaderStages, TextureDescriptor, TextureDimension,
-              TextureFormat, TextureSampleType, TextureUsages, TextureViewDimension,
+              TextureFormat, TextureSampleType, TextureUsages, TextureViewDimension, VertexFormat,
           },
           renderer::RenderDevice,
           view::RenderLayers,
@@ -25,16 +25,18 @@ use bevy::{
   
   use bevy::gltf::Gltf;
   use bevy::input::mouse::*;
+  use  bevy::render::mesh::VertexAttributeValues;
+ 
   fn main() {
       let mut app = App::new();
       app.add_plugins(DefaultPlugins)
           .add_plugin(Material2dPlugin::<PostProcessingMaterial>::default())
           .insert_resource(Msaa { samples: 1 })
-          .add_startup_system(setup)
+       //   .add_startup_system(setup)
           .add_startup_system(load_gltf)
           .add_system(gltf_manual_entity)
-          .add_system(remove_colliders)
           .add_system(center_boundig_box)
+           .add_system(remove_colliders)
           .add_system(pan_orbit_camera);
          // .add_system(main_camera_cube_rotator_system);
   
@@ -141,7 +143,7 @@ use bevy::{
           brightness: 1.0,
       });
   
-      let translation = Vec3::new(160.0,  6.5, -92.47139);
+      let translation = Vec3::new(0.0,  500.0, -0.0);
       let radius = translation.length();
   
       let rotation_angle: f32 = -30.0;
@@ -161,9 +163,11 @@ use bevy::{
           };
   
       // Main camera, first to render
-      commands.spawn_bundle(orthographic_camera).insert(PanOrbitCamera {
+      commands.spawn_bundle(orthographic_camera)
+      .insert(PanOrbitCamera {
           radius,
-          ..Default::default()});
+          ..Default::default()}) 
+          .insert(Name::new("Camera"));
   
       // This specifies the layer used for the post processing camera, which will be attached to the post processing camera and 2d quad.
       let post_processing_pass_layer = RenderLayers::layer((RenderLayers::TOTAL_LAYERS - 1) as u8);
@@ -293,24 +297,189 @@ use bevy::{
   
   
   struct GltfSpawnCheck {
-      spawned: bool
+      spawned: bool,
+      centered: bool
   }
   
 
 fn center_boundig_box(
-    //mut commands: Commands,
-    meshes: Res<Assets<Mesh>>,
+   // meshes: Res<Assets<Mesh>>,
+    mut transforms: Query<(&mut GlobalTransform, &Name)>,
+    mut config: ResMut<GltfSpawnCheck>,
+    mut commands: Commands,
+    mut meshes: ResMut<Assets<Mesh>>,
+    mut post_processing_materials: ResMut<Assets<PostProcessingMaterial>>,
+    mut images: ResMut<Assets<Image>>,
+    mut materials: ResMut<Assets<StandardMaterial>>,
 )
 {
-  let min_limit: Vec3;
-  let max_limit: Vec3;
+
+    
+if config.spawned && !config.centered
+{
+  //Finding bounding box
+  let mut min_limit: Vec3 = Vec3::new(f32::MAX, f32::MAX, f32::MAX);
+  let mut max_limit: Vec3= Vec3::new(f32::MIN,f32::MIN, f32::MIN);
 
   for mesh in meshes.iter()
   {
-    let mesh_limits = meshes.get(mesh.0).unwrap().attribute(Mesh::ATTRIBUTE_POSITION).unwrap();
-    println!("{:?}", mesh_limits);
+    let vertex_attribute= meshes.get(mesh.0).unwrap().attribute(Mesh::ATTRIBUTE_POSITION).unwrap();
+   if let VertexAttributeValues::Float32x3(vertices) = vertex_attribute
+   {
+        for vertex in vertices
+        {
+            if vertex[0]<min_limit.x
+            {
+                min_limit.x = vertex[0];
+            }
+            if vertex[1]<min_limit.y
+            {
+                min_limit.y = vertex[1];
+            }
+            if vertex[2]<min_limit.z
+            {
+                min_limit.z = vertex[2];
+            }
+
+            if vertex[0]>max_limit.x
+            {
+                max_limit.x = vertex[0];
+            }
+            if vertex[1]>max_limit.y
+            {
+                max_limit.y = vertex[1];
+            }
+            if vertex[2]>max_limit.z
+            {
+                max_limit.z = vertex[2];
+            }
+         
+        }
+   }
     
   }
+  
+
+  let camera_translation: Vec3 = Vec3::new(
+    (min_limit.x+max_limit.x)/2.0, 
+    max_limit.y+5.0, 
+    (min_limit.z+max_limit.z)/2.0
+    );
+
+    println!("min_limit: {:?} max_limit: {:?} camera_translation: {:?}",min_limit,max_limit,camera_translation); 
+
+    let size = Extent3d {
+        width: 512,//window.physical_width(),
+        height: 512,//window.physical_height(),
+        ..default()
+    };
+
+    // This is the texture that will be rendered to.
+    let mut image = Image {
+        texture_descriptor: TextureDescriptor {
+            label: None,
+            size,
+            dimension: TextureDimension::D2,
+            format: TextureFormat::Bgra8UnormSrgb,
+            mip_level_count: 1,
+            sample_count: 1,
+            usage: TextureUsages::TEXTURE_BINDING
+                | TextureUsages::COPY_DST
+                | TextureUsages::RENDER_ATTACHMENT,
+        },
+        ..default()
+    };
+
+    // fill image.data with zeroes
+    image.resize(size);
+
+    let image_handle = images.add(image);
+
+    // Light
+    // NOTE: Currently lights are ignoring render layers - see https://github.com/bevyengine/bevy/issues/3462
+    commands.spawn_bundle(DirectionalLightBundle {
+        transform: Transform::identity().looking_at(Vec3::Z*-1.0, Vec3::Y),
+        directional_light: DirectionalLight {
+             illuminance: 800.0,
+             ..default()
+        },
+        ..default()
+    });
+
+    commands.insert_resource(AmbientLight {
+        color: Color::WHITE,
+        brightness: 1.0,
+    });
+
+    let rotation_angle: f32 = -30.0;
+
+    let mut orthographic_camera = OrthographicCameraBundle::new_3d();
+    orthographic_camera.transform = Transform { 
+        translation: camera_translation, 
+        rotation: Quat::from_axis_angle(Vec3::X,rotation_angle.to_radians() ), //Quat::from_vec4(Vec4::new(-0.18687499, -0.4096998, -0.086150594, 0.88870704)), 
+        scale: Vec3::new(1.0, 1.0, 1.0) };
+        orthographic_camera.camera = Camera {
+           target: RenderTarget::Image(image_handle.clone()),
+            ..default()
+        };
+        orthographic_camera.orthographic_projection = OrthographicProjection{
+            scale: 0.25,
+            ..default()
+        };
+
+    // Main camera, first to render
+    commands.spawn_bundle(orthographic_camera);
+
+    // This specifies the layer used for the post processing camera, which will be attached to the post processing camera and 2d quad.
+    let post_processing_pass_layer = RenderLayers::layer((RenderLayers::TOTAL_LAYERS - 1) as u8);
+
+    let quad_handle = meshes.add(Mesh::from(shape::Quad::new(Vec2::new(
+        size.width as f32,
+        size.height as f32,
+    ))));
+
+    // This material has the texture that has been rendered.
+    let material_handle = post_processing_materials.add(PostProcessingMaterial {
+        source_image: image_handle,
+    });
+
+    // Post processing 2d quad, with material using the render texture done by the main camera, with a custom shader.
+    commands
+        .spawn_bundle(MaterialMesh2dBundle {
+            mesh: quad_handle.into(),
+            material: material_handle,
+            transform: Transform {
+                translation: Vec3::new(0.0, 0.0, 1.5),
+                ..default()
+            },
+            ..default()
+        })
+        .insert(post_processing_pass_layer);
+
+    // The post-processing pass camera.
+    commands
+       .spawn_bundle(OrthographicCameraBundle::new_2d())
+       .insert(post_processing_pass_layer);
+
+
+       //debug
+       /*
+       commands.spawn_bundle(PbrBundle {
+        mesh: meshes.add(Mesh::from(shape::Cube { size: 10.0 })),
+        material: materials.add(Color::rgb(0.0, 1.0, 0.0).into()),
+        transform: Transform::from_translation(min_limit),
+        ..default()});
+        commands.spawn_bundle(PbrBundle {
+            mesh: meshes.add(Mesh::from(shape::Cube { size: 10.0 })),
+            material: materials.add(Color::rgb(0.0, 0.0, 1.0).into()),
+            transform: Transform::from_translation(max_limit),
+            ..default()});
+ */
+
+
+        
+config.centered = true;
+}
 
 }
   fn remove_colliders(
@@ -324,9 +493,11 @@ fn center_boundig_box(
               commands.entity(entity).despawn();
   
           }
+          
       }
       
   }
+
   fn gltf_manual_entity(
       mut commands: Commands,
       my: Res<MyAssetPack>,
@@ -337,69 +508,12 @@ fn center_boundig_box(
       {
           
           if  let Some(gltf) = assets_gltf.get(&my.0) {
-            /* let mut world = World::new();
-  
-          let mut MyScene = gltf.scenes[0].clone();
-           let mut world = &assets_scenes.get_mut(&MyScene).unwrap().world;
-          let mut query = world.query::<(&Entity, &Name)>();
-          
-          for (entity,name) in query.iter_mut(&mut world) {
-              if name.contains("collider")
-              {
-                  println!("{} ends with collider", name);
-              }
-          }*/  
-          commands.spawn_scene(gltf.scenes[0].clone());
-          // Get the GLTF Mesh named "CarWheel"
-          // (unwrap safety: we know the GLTF has loaded already)
-          // Iterate over everything.
-  /* 
-           for (name, node) in &gltf.named_nodes {
-              
-         
-              if!name.contains("_collider"){
-            //  println!("{} doesnt end with collider", name);
-              let current_node = assets_gltfnode.get(node).unwrap();
-              if let Some(mesh) = current_node.mesh.clone()
-              {
-              let current_mesh = assets_gltfmesh.get(mesh).unwrap();
-              //let material = current_mesh.primitives[0].material.clone().unwrap();
-              if let Some(material) = current_mesh.primitives[0].material.clone()
-              {   println!("{} has material", name);
-  
-                  commands.spawn_bundle(PbrBundle {
-                      mesh: current_mesh.primitives[0].mesh.clone(),
-                      // (unwrap: material is optional, we assume this primitive has one)
-                      material: material,
-                      transform: current_node.transform,
-                      ..Default::default()
-                      });
-                      }
-          // Spawn a PBR entity with the mesh and material of the first GLTF Primitive
-            
-              else
-              {
-                  println!("{} doesnt have material", name);
-                  commands.spawn_bundle(PbrBundle {
-                      mesh: current_mesh.primitives[0].mesh.clone(),
-                      transform: current_node.transform,
-                      // (unwrap: material is optional, we assume this primitive has one)
-                      ..Default::default()
-                      });
-                      }
-  
-              }
-              else
-              {
-                  println!("{} ends with collider", name);
-              }
-              
-          }  }
-        */
+
           println!("Finished spawning"); 
-          config.spawned =true;
-         
-      }
+          commands.spawn_scene(gltf.scenes[0].clone());
+
+          config.spawned =true; 
+        }
       }
       
   }
@@ -410,9 +524,9 @@ fn center_boundig_box(
       mut commands: Commands,
       ass: Res<AssetServer>,
   ) {
-      let gltf = ass.load("core_building.glb");
+      let gltf = ass.load("agora.glb");
       commands.insert_resource(MyAssetPack(gltf));
-      commands.insert_resource(GltfSpawnCheck {spawned:false});
+      commands.insert_resource(GltfSpawnCheck {spawned:false, centered: false});
   }
   
   
