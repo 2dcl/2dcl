@@ -9,9 +9,9 @@
 //!     cargo run --example client ws://127.0.0.1:12345/
 
 use futures_util::SinkExt;
-use std::{env};
+use std::env;
 
-use futures_util::{StreamExt};
+use futures_util::StreamExt;
 
 use tokio::net::{TcpListener, TcpStream};
 
@@ -20,13 +20,14 @@ use tokio::task;
 use dcl_common::Result;
 
 pub async fn start() -> Result<()> {
-    let addr = env::args().nth(1).unwrap_or_else(|| "127.0.0.1:8080".to_string());
+    let addr = env::args()
+        .nth(1)
+        .unwrap_or_else(|| "127.0.0.1:8080".to_string());
 
     // Create the event loop and TCP listener we'll accept connections on.
     let try_socket = TcpListener::bind(&addr).await;
     let listener = try_socket.expect("Failed to bind");
     println!("Listening on: {}", addr);
-
 
     task::spawn(async move {
         while let Ok((stream, _)) = listener.accept().await {
@@ -38,10 +39,14 @@ pub async fn start() -> Result<()> {
 }
 
 async fn accept_connection(stream: TcpStream) {
-    let addr = stream.peer_addr().expect("connected streams should have a peer address");
+    let addr = stream
+        .peer_addr()
+        .expect("connected streams should have a peer address");
     println!("Peer address: {}", addr);
 
-    let mut ws_stream = tokio_tungstenite::accept_async(stream).await.expect("Error during the websocket handshake occurred");
+    let mut ws_stream = tokio_tungstenite::accept_async(stream)
+        .await
+        .expect("Error during the websocket handshake occurred");
 
     println!("New WebSocket connection: {}", addr);
 
@@ -50,7 +55,6 @@ async fn accept_connection(stream: TcpStream) {
         println!("{:?}", msg);
         if msg.is_text() || msg.is_binary() {
             ws_stream.send(msg).await.unwrap();
-
         }
     }
 }
