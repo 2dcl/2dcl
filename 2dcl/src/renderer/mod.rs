@@ -111,12 +111,11 @@ fn setup(
                     transform.translation = entity_transform.location.extend(0.0);
                     transform.rotation = Quat::from_euler(
                         EulerRot::XYZ,
-                        entity_transform.rotation.x,
-                        entity_transform.rotation.y,
-                        entity_transform.rotation.z);
+                        entity_transform.rotation.x.to_radians(),
+                        entity_transform.rotation.y.to_radians(),
+                        entity_transform.rotation.z.to_radians());
 
                     transform.scale = entity_transform.scale.extend(1.0);
-                    println!("{:?}", transform);
                 }
 
                 if let Component::SpriteRenderer(sprite_renderer) = component
@@ -135,7 +134,8 @@ fn setup(
                 sprite: sprite.clone(),
                 texture: texture.clone(),
                 ..default()
-                });
+                })
+                .insert(Name::new(entity.name.clone()));
             }
         }
 
