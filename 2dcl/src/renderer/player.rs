@@ -1,11 +1,13 @@
-use bevy::prelude::*;
+use bevy::{prelude::*, sprite::collide_aabb::collide};
 use bevy_inspector_egui::Inspectable;
+
+use super::scene_deserializer::BoxCollider;
 
 pub struct PlayerPlugin;
 
 pub const TILE_SIZE: f32 = 25.0;
 
-#[derive(Component, Inspectable,Default)]
+#[derive(Component, Inspectable, Default)]
 pub struct Player
 {
     speed: f32
@@ -76,6 +78,7 @@ fn spawn_player(
 fn player_movement
 (
     mut player_query: Query<(&Player, &mut Transform)>,
+    wall_query: Query<(&Transform, &BoxCollider, Without<Player>)>,
     keyboard: Res<Input<KeyCode>>,
     time: Res<Time>
 )
@@ -83,23 +86,63 @@ fn player_movement
 
     let (player, mut transform) = player_query.single_mut();
 
+    let mut y_delta = 0.0;
     if keyboard.pressed(KeyCode::W)
     {
-        transform.translation.y += player.speed * TILE_SIZE * time.delta_seconds();
+        y_delta += player.speed * TILE_SIZE * time.delta_seconds();
     }
 
     if keyboard.pressed(KeyCode::S)
     {
-        transform.translation.y -= player.speed * TILE_SIZE * time.delta_seconds();
+        y_delta -= player.speed * TILE_SIZE * time.delta_seconds();
     }
 
+    let mut x_delta = 0.0;
     if keyboard.pressed(KeyCode::A)
     {
-        transform.translation.x -= player.speed * TILE_SIZE * time.delta_seconds();
+        x_delta -= player.speed * TILE_SIZE * time.delta_seconds();
     }
 
     if keyboard.pressed(KeyCode::D)
     {
-        transform.translation.x += player.speed * TILE_SIZE * time.delta_seconds();
+        x_delta += player.speed * TILE_SIZE * time.delta_seconds();
     }
+
+    let target = transform.translation + Vec3::new(x_delta,0.0,0.0);
+
+    if wall_collision_check(target, &wall_query)
+    {
+        transform.translation = target;
+    }
+
+    let target = transform.translation + Vec3::new(0.0,y_delta,0.0);
+
+    if wall_collision_check(target, &wall_query)
+    {
+        transform.translation = target;
+    }
+}
+
+fn wall_collision_check(
+    target_player_pos: Vec3,
+    wall_query: &Query<(&Transform, &BoxCollider, Without<Player>)>
+) -> bool
+{
+    
+    for (wall,collider, player) in wall_query.iter()
+    {
+        let collision = collide(
+            target_player_pos,
+            Vec2::new(TILE_SIZE,TILE_SIZE*2.0) * 0.9,
+            wall.translation + collider.center.extend(0.0),
+            collider.size
+        );
+
+        if collision.is_some()
+        {
+            return false;
+        }
+    }
+
+   return true;
 }
