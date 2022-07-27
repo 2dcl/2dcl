@@ -1,0 +1,67 @@
+#!/bin/bash
+
+# git clone git@github.com:decentraland/protocol.git
+
+mkdir -p protocol/src/ecs_components
+mkdir -p protocol/src/kernel_apis
+mkdir -p protocol/src/kernel_comms_v1
+mkdir -p protocol/src/kernel_comms_v2
+mkdir -p protocol/src/renderer_protocol
+
+protoc --rust_out protocol/src/ecs_components \
+  -I../protocol \
+  -I../protocol/ecs/components \
+  ../protocol/ecs/components/Animator.proto \
+  ../protocol/ecs/components/AudioSource.proto \
+  ../protocol/ecs/components/AudioStream.proto \
+  ../protocol/ecs/components/AvatarAttach.proto \
+  ../protocol/ecs/components/AvatarModifierArea.proto \
+  ../protocol/ecs/components/AvatarShape.proto \
+  ../protocol/ecs/components/Billboard.proto \
+  ../protocol/ecs/components/BoxShape.proto \
+  ../protocol/ecs/components/CameraModeArea.proto \
+  ../protocol/ecs/components/CylinderShape.proto \
+  ../protocol/ecs/components/GLTFShape.proto \
+  ../protocol/ecs/components/NFTShape.proto \
+  ../protocol/ecs/components/OnPointerDown.proto \
+  ../protocol/ecs/components/OnPointerDownResult.proto \
+  ../protocol/ecs/components/OnPointerUp.proto \
+  ../protocol/ecs/components/OnPointerUpResult.proto \
+  ../protocol/ecs/components/PlaneShape.proto \
+  ../protocol/ecs/components/SphereShape.proto \
+  ../protocol/ecs/components/TextShape.proto \
+  ../protocol/ecs/components/UiTransform.proto
+
+protoc --rust_out protocol/src/kernel_apis \
+  -I../protocol \
+  -I../protocol/kernel/apis \
+  ../protocol/kernel/apis/CommunicationsController.proto \
+  ../protocol/kernel/apis/DevTools.proto \
+  ../protocol/kernel/apis/EngineAPI.proto \
+  ../protocol/kernel/apis/EnvironmentAPI.proto \
+  ../protocol/kernel/apis/EthereumController.proto \
+  ../protocol/kernel/apis/ExperimentalAPI.proto \
+  ../protocol/kernel/apis/ParcelIdentity.proto \
+  ../protocol/kernel/apis/Permissions.proto \
+  ../protocol/kernel/apis/Players.proto \
+  ../protocol/kernel/apis/PortableExperiences.proto \
+  ../protocol/kernel/apis/RestrictedActions.proto \
+  ../protocol/kernel/apis/SceneStateStorageController.proto \
+  ../protocol/kernel/apis/SignedFetch.proto \
+  ../protocol/kernel/apis/SocialController.proto \
+  ../protocol/kernel/apis/UserActionModule.proto \
+  ../protocol/kernel/apis/UserIdentity.proto \
+  --experimental_allow_proto3_optional
+
+protoc --rust_out protocol/src/kernel_comms_v1 \
+  -I../protocol \
+  ../protocol/kernel/comms/v1/broker.proto \
+  ../protocol/kernel/comms/v1/comms.proto
+
+protoc --rust_out protocol/src/kernel_comms_v2 \
+  -I../protocol \
+  ../protocol/kernel/comms/v1/comms.proto
+
+protoc --rust_out protocol/src/renderer_protocol \
+  -I../protocol \
+  ../protocol/renderer-protocol/RendererProtocol.proto
