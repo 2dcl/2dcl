@@ -1,9 +1,10 @@
 use bevy::prelude::*;
 use serde::Deserialize;
+use std::clone;
 use std::fs::File;
 use std::io::BufReader;
 use serde_json::Result;
-
+use bevy_inspector_egui::Inspectable;
 
 
 #[derive(Deserialize, Debug)]
@@ -15,12 +16,12 @@ struct Scene {
 #[derive(Deserialize, Debug)]
 struct Entitiy {
     name: String,
-    components: Vec<Component>,
+    components: Vec<EntityComponent>,
 }
 
 
 #[derive(Deserialize, Debug)]
-enum Component{
+enum EntityComponent{
     Transform(EntityTransform),
     SpriteRenderer(SpriteRenderer),
     CircleCollider(CircleCollider),
@@ -43,22 +44,22 @@ struct SpriteRenderer {
     layer: i32,
 }
 
-#[derive(Deserialize, Debug)]
-struct CircleCollider {
-    center: Vec2,
-    raius: i32,
+#[derive(Deserialize, Debug, Component, Inspectable, Clone)]
+pub struct CircleCollider {
+    pub center: Vec2,
+    pub raius: i32,
 }
 
-#[derive(Deserialize, Debug)]
-struct BoxCollider {
-    center: Vec2,
-    size: Vec2,
+#[derive(Deserialize, Debug, Component, Inspectable, Clone)]
+pub struct BoxCollider {
+    pub center: Vec2,
+    pub size: Vec2,
 }
 
-#[derive(Deserialize, Debug)]
-struct AlphaCollider {
-    sprite: String,
-    channel: i32,
+#[derive(Deserialize, Debug, Component, Inspectable, Clone)]
+pub struct AlphaCollider {
+    pub sprite: String,
+    pub channel: i32,
 }
 
 
@@ -81,8 +82,6 @@ fn setup(
     asset_server: Res<AssetServer>,
 
 ) {
-
-
     if let Ok(file) = File::open("./assets/scene.json")
     {
         let reader = BufReader::new(file);
@@ -96,11 +95,12 @@ fn setup(
                 let mut transform = Transform::identity();
                 let mut texture: Handle<Image> = Handle::default();
                 let mut sprite = Sprite::default();
-                     
+                
+                //Finding entity paramters
                for component in entity.components.iter()
                {
                 
-                if let Component::Transform(entity_transform) = component
+                if let EntityComponent::Transform(entity_transform) = component
                 {
 
                     transform.translation = entity_transform.location.extend(0.0);
@@ -113,7 +113,7 @@ fn setup(
                     transform.scale = entity_transform.scale.extend(1.0);
                 }
 
-                if let Component::SpriteRenderer(sprite_renderer) = component
+                if let EntityComponent::SpriteRenderer(sprite_renderer) = component
                 {
                     sprite.color = Color::Rgba { 
                         red: sprite_renderer.color.x, 
@@ -122,15 +122,41 @@ fn setup(
                         alpha:  sprite_renderer.color.w};
                     texture = asset_server.load(&sprite_renderer.sprite);
                 }
-               }
 
-               commands.spawn_bundle(SpriteBundle {
+
+                
+               }
+               
+                //Spawning Entity
+               let mut spawn_bundle = commands.spawn_bundle(SpriteBundle {
                 transform,
                 sprite: sprite.clone(),
                 texture: texture.clone(),
                 ..default()
-                })
-                .insert(Name::new(entity.name.clone()));
+                });
+                
+                spawn_bundle.insert(Name::new(entity.name.clone()));
+
+                //Inserting components
+                for component in entity.components.iter()
+                {
+                    if let EntityComponent::BoxCollider(collider) = component
+                    {  
+                        spawn_bundle.insert(collider.clone());
+                    }
+    
+                    if let EntityComponent::CircleCollider(collider) = component
+                    {
+                        spawn_bundle.insert(collider.clone());
+                    }
+    
+                    
+                    if let EntityComponent::AlphaCollider(collider) = component
+                    {
+                        spawn_bundle.insert(collider.clone());
+                    }
+                }
+
             }
         }
 
