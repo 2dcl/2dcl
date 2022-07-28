@@ -11,7 +11,6 @@
 use dcl_protocol::renderer_protocol::RendererProtocol::CRDTManyMessages;
 use protobuf::Message;
 
-use futures_util::SinkExt;
 use std::env;
 
 use futures_util::StreamExt;
