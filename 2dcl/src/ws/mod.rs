@@ -8,8 +8,8 @@
 //!
 //!     cargo run --example client ws://127.0.0.1:12345/
 
-use protobuf::Message;
 use dcl_protocol::renderer_protocol::RendererProtocol::CRDTManyMessages;
+use protobuf::Message;
 
 use futures_util::SinkExt;
 use std::env;
@@ -21,7 +21,6 @@ use tokio::net::{TcpListener, TcpStream};
 use tokio::task;
 
 use dcl_common::Result;
-
 
 pub async fn start() -> Result<()> {
     let addr = env::args()
@@ -57,14 +56,9 @@ async fn accept_connection(stream: TcpStream) {
     while let Some(msg) = ws_stream.next().await {
         let msg = msg.unwrap();
         println!("{:?}", msg);
-        // if msg.is_binary() {
-        //     let message = CRDTManyMessages::parse_from_bytes(msg.into_data().as_slice());
-        //     println!("{:?}", message);
-        // }
-
-
-        // if msg.is_text() || msg.is_binary() {
-        //     ws_stream.send(msg).await.unwrap();
-        // }
+        if msg.is_binary() {
+            let message = CRDTManyMessages::parse_from_bytes(msg.into_data().as_slice());
+            println!("{:?}", message);
+        }
     }
 }

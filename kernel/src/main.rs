@@ -57,6 +57,9 @@ pub fn main() -> wry::Result<()> {
         if let Event::WindowEvent {
             event: WindowEvent::CloseRequested,
             ..
-        } = event { *control_flow = ControlFlow::Exit }
+        } = event
+        {
+            *control_flow = ControlFlow::Exit
+        }
     });
 }
