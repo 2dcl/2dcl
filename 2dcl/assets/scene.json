@@ -18,6 +18,12 @@
 						"scale": [ 0.25, 0.25 ]
 
 					}
+				},
+				{
+					"BoxCollider": {
+						"center":  [ 2.5, -5.0 ],
+						"size":  [ 50.0, 105.0 ]
+					}
 				}
 
 			]
@@ -41,9 +47,9 @@
 					}
 				},
 				{
-					"BoxCollider": {
-						"center":  [ 10.0, -5.0 ],
-						"size":  [ 210.0, 100.0 ]
+					"AlphaCollider": {
+						"sprite": "alpha_collider.png",
+						"channel": 3
 					}
 				}
 			]

@@ -1,15 +1,15 @@
 use bevy::{prelude::*, sprite::collide_aabb::collide};
 use bevy_inspector_egui::Inspectable;
 
-use super::scene_deserializer::BoxCollider;
+use super::{scene_deserializer::BoxCollider, collision::*};
 
 pub struct PlayerPlugin;
 
 
 pub const PLAYER_SCALE: f32 = 0.5;
-pub const PLAYER_SPEED: f32 = 100.0;
-pub const TILE_SIZE: [f32;2] = [96.0,105.0];
-pub const ANIMATION_PLAY_SPEED: f32 = 5.0;
+pub const PLAYER_SPEED: f32 = 300.0;
+pub const TEXTURE_ATLAS_TILE_SIZE: [f32;2] = [96.0,105.0];
+pub const ANIMATION_PLAY_RATE: f32 = 15.0;
 
 pub const LEFT_IDLE_ANIMATION_START: usize = 10;
 pub const LEFT_IDLE_ANIMATION_FRAME_LENGTH: usize = 3;
@@ -61,7 +61,7 @@ fn load_texture_atlas(
     let texture = assets.load("player.png");
     let atlas = TextureAtlas::from_grid_with_padding(
         texture, 
-        Vec2::new(TILE_SIZE[0],TILE_SIZE[1]),
+        Vec2::new(TEXTURE_ATLAS_TILE_SIZE[0],TEXTURE_ATLAS_TILE_SIZE[1]),
          10, 
          8, 
          Vec2::splat(1.0));
@@ -75,7 +75,7 @@ fn spawn_player(
     atlas: Res<PlayerTextureAtlas>,)
 {
     let mut sprite = TextureAtlasSprite::new(0);
-    sprite.custom_size = Some(Vec2::new(TILE_SIZE[0],TILE_SIZE[1])*PLAYER_SCALE);
+    sprite.custom_size = Some(Vec2::new(TEXTURE_ATLAS_TILE_SIZE[0],TEXTURE_ATLAS_TILE_SIZE[1])*PLAYER_SCALE);
 
     let player = commands.spawn_bundle(SpriteSheetBundle{
     sprite,
@@ -87,7 +87,7 @@ fn spawn_player(
     ..default()
     })
     .insert(Name::new("Player"))
-    .insert(AnimationTimer(Timer::from_seconds(1.0/ANIMATION_PLAY_SPEED, true)))
+    .insert(AnimationTimer(Timer::from_seconds(1.0/ANIMATION_PLAY_RATE, true)))
     .insert(Player
         {
             speed: PLAYER_SPEED,
@@ -108,6 +108,7 @@ fn player_movement
     mut player_query: Query<(&mut Player, &mut Transform)>,
     wall_query: Query<(&Transform, &BoxCollider, Without<Player>)>,
     keyboard: Res<Input<KeyCode>>,
+    collision_map: Res<CollisionMap>,
     time: Res<Time>
 )
 {  
@@ -155,14 +156,14 @@ fn player_movement
 
         let target = transform.translation + Vec3::new(x_delta,0.0,0.0);
 
-        if wall_collision_check(target, &wall_query)
+        if collision_check(target, &wall_query, collision_map.clone())
         {
             transform.translation = target;
         }
 
         let target = transform.translation + Vec3::new(0.0,y_delta,0.0);
 
-        if wall_collision_check(target, &wall_query)
+        if collision_check(target, &wall_query, collision_map.clone())
         {
             transform.translation = target;
         }
@@ -178,17 +179,18 @@ fn player_movement
 
 }
 
-fn wall_collision_check(
+fn collision_check(
     target_player_pos: Vec3,
-    wall_query: &Query<(&Transform, &BoxCollider, Without<Player>)>
+    box_collision_query: &Query<(&Transform, &BoxCollider, Without<Player>)>,
+    collision_map: CollisionMap
 ) -> bool
 {
-    
-    for (wall,collider, _player) in wall_query.iter()
+    //box colliders
+    for (wall,collider, _player) in box_collision_query.iter()
     {
         let collision = collide(
             target_player_pos,
-            Vec2::new(TILE_SIZE[0],TILE_SIZE[1]) * PLAYER_SCALE * 0.9,
+            Vec2::new(TEXTURE_ATLAS_TILE_SIZE[0],TEXTURE_ATLAS_TILE_SIZE[1]) * PLAYER_SCALE * 0.9,
             wall.translation + collider.center.extend(0.0),
             collider.size
         );
@@ -198,8 +200,26 @@ fn wall_collision_check(
             return false;
         }
     }
+    
+    for collision_location in collision_map.collision_locations
+    {
+        //Alpha colliders
+        let collision = collide(
+            target_player_pos,
+            Vec2::new(TEXTURE_ATLAS_TILE_SIZE[0],TEXTURE_ATLAS_TILE_SIZE[1]) * PLAYER_SCALE * 0.9,
+            collision_location.extend(0.0), //wall.translation + collider.center.extend(0.0),
+            Vec2::splat(collision_map.tile_size)
+        );
 
-   return true;
+        if collision.is_some()
+        {
+            return false;
+        }
+
+    }
+
+    return true;
+
 }
 
 #[derive(Component, Deref, DerefMut)]
@@ -218,8 +238,8 @@ fn animate_sprite(
     for (mut timer, mut sprite, texture_atlas_handle, player) in &mut query.iter_mut() 
     {
       
-       let mut animation_start: usize = 0;
-       let mut animation_end: usize = 0;
+       let animation_start: usize;
+       let animation_end: usize;
 
         match player.animation_state
         {

@@ -4,7 +4,9 @@ use std::fs::File;
 use std::io::BufReader;
 use serde_json::Result;
 use bevy_inspector_egui::Inspectable;
-
+use super::collision::*;
+use image::io::Reader as ImageReader;
+use image::DynamicImage;
 
 #[derive(Deserialize, Debug)]
 struct Scene {
@@ -55,7 +57,7 @@ pub struct BoxCollider {
     pub size: Vec2,
 }
 
-#[derive(Deserialize, Debug, Component, Inspectable, Clone)]
+#[derive(Deserialize, Debug, Inspectable, Clone)]
 pub struct AlphaCollider {
     pub sprite: String,
     pub channel: i32,
@@ -79,6 +81,7 @@ impl Plugin for SceneDeserializerPlugin
 fn setup(
     mut commands: Commands,
     asset_server: Res<AssetServer>,
+    mut collision_map: ResMut<CollisionMap>
 
 ) {
     if let Ok(file) = File::open("./assets/scene.json")
@@ -152,13 +155,38 @@ fn setup(
                     
                     if let EntityComponent::AlphaCollider(collider) = component
                     {
-                        spawn_bundle.insert(collider.clone());
+                        if let Ok(reader) = ImageReader::open("./assets/".to_owned()+&collider.sprite)
+                        {
+                            if let Ok(dynamic_image) = reader.decode()
+                            {
+                                if let DynamicImage::ImageRgba8(image) = dynamic_image
+                                {
+                                    let mut pixels = image.pixels().into_iter();
+
+                                    let rows = image.rows().len();
+                                    let columns = pixels.len()/rows;
+                                    let mut index =0;
+                                    let strating_world_location =
+                                    
+                                    transform.translation.truncate() - (Vec2::new((columns as f32)/2.0 , (rows as f32)/2.0)* collision_map.tile_size);
+                                    
+
+                                    
+                                    while pixels.len() >0
+                                    {   
+                                        if pixels.next().unwrap()[collider.channel as usize] > 0 
+                                        {
+                                            let world_location = strating_world_location + (Vec2::new((index%columns) as f32,(index/columns) as f32)*collision_map.tile_size);
+                                            collision_map.collision_locations.push(world_location);
+                                        }                             
+                                        index +=1;
+                                    }
+                                }
+                            }
+                        }
                     }
                 }
-
             }
         }
-
     }
-
 }
