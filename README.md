@@ -11,9 +11,10 @@ This project exists thanks to the Decentraland DAO's grants. [Here is our propos
 
 ## In this repository
 
-1. `dcl-common` — A collection of types used in multiple projects.
-1. `catalyst` — Rust client library for Decentraland's Catalyst API
-
+1. `common` — A collection of types used in multiple projects.
+2. `catalyst` — Rust client library for Decentraland's Catalyst API
+3. `kernel` — A rust-based kernel launcher using [wry](https://github.com/tauri-apps/wry) for cross-platform webview use.
+4. `protcol`  — [Decentraland's protocol](https://github.com/decentraland/protocol) protobuf classes compiled for Rust usage.
 ## :warning: :warning: THIS REPOSITORY IS EXTREMELY WORK IN PROGRESS :warning: :warning:
 
 This project is in active development and is not suitable for production use at this time. 

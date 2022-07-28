@@ -32,6 +32,13 @@ protoc --rust_out protocol/src/ecs_components \
   ../protocol/ecs/components/TextShape.proto \
   ../protocol/ecs/components/UiTransform.proto
 
+protoc --rust_out protocol/src/ecs_components \
+  -I../protocol \
+  ../protocol/ecs/components/common/ActionButton.proto \
+  ../protocol/ecs/components/common/Color3.proto \
+  ../protocol/ecs/components/common/id.proto \
+  ../protocol/ecs/components/common/Vector3.proto
+  
 protoc --rust_out protocol/src/kernel_apis \
   -I../protocol \
   -I../protocol/kernel/apis \
@@ -51,6 +58,12 @@ protoc --rust_out protocol/src/kernel_apis \
   ../protocol/kernel/apis/SocialController.proto \
   ../protocol/kernel/apis/UserActionModule.proto \
   ../protocol/kernel/apis/UserIdentity.proto \
+  --experimental_allow_proto3_optional
+
+protoc --rust_out protocol/src/kernel_apis \
+  -I../protocol \
+  ../protocol/kernel/apis/common/ContentMapping.proto \
+  ../protocol/kernel/apis/common/UserData.proto \
   --experimental_allow_proto3_optional
 
 protoc --rust_out protocol/src/kernel_comms_v1 \
