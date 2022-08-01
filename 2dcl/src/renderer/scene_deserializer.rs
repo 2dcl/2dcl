@@ -3,7 +3,7 @@ use serde::Deserialize;
 use std::fs::File;
 use std::io::BufReader;
 use serde_json::Result;
-use bevy_inspector_egui::Inspectable;
+//use bevy_inspector_egui::Inspectable;
 use super::collision::*;
 use image::io::Reader as ImageReader;
 use image::DynamicImage;
@@ -45,19 +45,19 @@ struct SpriteRenderer {
     layer: i32,
 }
 
-#[derive(Deserialize, Debug, Component, Inspectable, Clone)]
+#[derive(Deserialize, Debug, Component, Clone)]
 pub struct CircleCollider {
     pub center: Vec2,
     pub raius: i32,
 }
 
-#[derive(Deserialize, Debug, Component, Inspectable, Clone)]
+#[derive(Deserialize, Debug, Component, Clone)]
 pub struct BoxCollider {
     pub center: Vec2,
     pub size: Vec2,
 }
 
-#[derive(Deserialize, Debug, Inspectable, Clone)]
+#[derive(Deserialize, Debug, Clone)]
 pub struct AlphaCollider {
     pub sprite: String,
     pub channel: i32,

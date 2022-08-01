@@ -1,5 +1,5 @@
 use bevy::{prelude::*, sprite::collide_aabb::collide};
-use bevy_inspector_egui::Inspectable;
+//use bevy_inspector_egui::Inspectable;
 
 use super::{scene_deserializer::BoxCollider, collision::*};
 
@@ -20,7 +20,7 @@ pub const LEFT_WALKING_ANIMATION_FRAME_LENGTH: usize = 10;
 pub const RIGHT_WALKING_ANIMATION_START: usize = 70;
 pub const RIGHT_WALKING_ANIMATION_FRAME_LENGTH: usize = 10;
 
-#[derive(Component, Inspectable, Default)]
+#[derive(Component, Default)]
 pub struct Player
 {
     speed: f32,
@@ -29,7 +29,7 @@ pub struct Player
 }
 
 
-#[derive(Inspectable, Default)]
+#[derive( Default)]
 enum AnimationState
 {
     #[default]
@@ -64,7 +64,8 @@ fn load_texture_atlas(
         Vec2::new(TEXTURE_ATLAS_TILE_SIZE[0],TEXTURE_ATLAS_TILE_SIZE[1]),
          10, 
          8, 
-         Vec2::splat(1.0));
+         Vec2::splat(1.0),
+        Vec2::ZERO);
 
     let atlas_handle = texture_atlases.add(atlas);
     commands.insert_resource(PlayerTextureAtlas(atlas_handle));
@@ -95,7 +96,7 @@ fn spawn_player(
             is_facing_right: true
         }).id();
 
-    let mut camera_bundle = OrthographicCameraBundle::new_2d();
+    let mut camera_bundle = Camera2dBundle::default();
     camera_bundle.transform.translation = Vec3::new(0.0,0.0,1.0);
     let camera_entity = commands.spawn_bundle(camera_bundle).id();
     commands.entity(player).push_children(&[camera_entity]);
