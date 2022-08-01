@@ -6,7 +6,7 @@ mod scene_deserializer;
 mod collision;
 
 use player::PlayerPlugin;
-use debug::DebugPlugin;
+//use debug::DebugPlugin;
 use collision::CollisionPlugin;
 use scene_deserializer::SceneDeserializerPlugin;
 
@@ -18,7 +18,7 @@ pub fn start() {
         .add_plugins(DefaultPlugins)
         .add_plugin(SceneDeserializerPlugin)
         .add_plugin(PlayerPlugin)
-        .add_plugin(DebugPlugin)
+      //  .add_plugin(DebugPlugin)
         .add_plugin(CollisionPlugin)
         .run();
 }
