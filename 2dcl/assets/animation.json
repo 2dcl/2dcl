@@ -1,0 +1,101 @@
+{
+  "frames": 
+    [
+      {
+        "startPosition": [ 0, 0 ],
+        "size": [ 42, 52 ],
+        "rotated": false,
+        "trimmed": false,
+        "duration": 110
+      },
+      {
+        "startPosition": [ 42, 0 ],
+        "size": [ 42, 52 ],
+        "rotated": false,
+        "trimmed": false,
+        "duration": 110
+      },
+      {
+        "startPosition": [ 84, 0 ],
+        "size": [ 42, 52 ],
+        "rotated": false,
+        "trimmed": false,
+        "duration": 110
+      },
+      {
+        "startPosition": [ 126, 0 ],
+        "size": [ 42, 52 ],
+        "rotated": false,
+        "trimmed": false,
+        "duration": 110
+      },
+      {
+        "startPosition": [ 168, 0 ],
+        "size": [ 42, 52 ],
+        "rotated": false,
+        "trimmed": false,
+        "duration": 110
+      },
+      {
+        "startPosition": [ 218, 0 ],
+        "size": [ 42, 52 ],
+        "rotated": false,
+        "trimmed": false,
+        "duration": 110
+      },
+      {
+        "startPosition": [ 252, 0 ],
+        "size": [ 42, 52 ],
+        "rotated": false,
+        "trimmed": false,
+        "duration": 110
+      },
+      {
+        "startPosition": [ 294, 0 ],
+        "size": [ 42, 52 ],
+        "rotated": false,
+        "trimmed": false,
+        "duration": 110
+      },
+      {
+        "startPosition": [ 336, 0 ],
+        "size": [ 42, 52 ],
+        "rotated": false,
+        "trimmed": false,
+        "duration": 110
+      },
+      {
+        "startPosition": [ 378, 0 ],
+        "size": [ 42, 52 ],
+        "rotated": false,
+        "trimmed": false,
+        "duration": 110
+      },
+      {
+        "startPosition": [ 420, 0 ],
+        "size": [ 42, 52 ],
+        "rotated": false,
+        "trimmed": false,
+        "duration": 110
+      }
+    ]
+  ,
+  "meta": {
+    "image": "2DCL_BaseCharacterAnimations.png",
+    "format": "RGBA8888",
+    "size": [ 462, 52 ],
+    "scale": 1,
+    "frameTags": [
+      {
+        "name": "Run",
+        "from": 0,
+        "to": 8
+      },
+      {
+        "name": "Idle",
+        "from": 9,
+        "to": 10
+      }
+    ]
+  }
+}
