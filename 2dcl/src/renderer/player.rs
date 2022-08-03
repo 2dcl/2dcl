@@ -1,7 +1,7 @@
 use bevy::{prelude::*, sprite::collide_aabb::collide};
 //use bevy_inspector_egui::Inspectable;
 
-use super::{scene_deserializer::BoxCollider, collision::*};
+use super::{scene_deserializer::BoxCollider, collision::*, animations::*};
 
 pub struct PlayerPlugin;
 
@@ -42,17 +42,17 @@ impl Plugin for  PlayerPlugin
 
     fn build(&self, app: &mut App) {
     app
-        .add_startup_system_to_stage(StartupStage::PreStartup, load_texture_atlas)
+       // .add_startup_system_to_stage(StartupStage::PreStartup, load_texture_atlas)
         .add_startup_system(spawn_player)
-        .add_system(animate_sprite)
+       // .add_system(animate_sprite)
         .add_system(player_movement)
         ;
     }
 }
 
-struct PlayerTextureAtlas(Handle<TextureAtlas>);
+//struct PlayerTextureAtlas(Handle<TextureAtlas>);
 
-fn load_texture_atlas(
+/*fn load_texture_atlas(
     mut commands: Commands,
     assets: Res<AssetServer>,
     mut texture_atlases: ResMut<Assets<TextureAtlas>>
@@ -70,43 +70,45 @@ fn load_texture_atlas(
     let atlas_handle = texture_atlases.add(atlas);
     commands.insert_resource(PlayerTextureAtlas(atlas_handle));
 
-}
+}*/
 fn spawn_player(
     mut commands: Commands, 
-    atlas: Res<PlayerTextureAtlas>,)
+    assets: Res<AssetServer>,
+    mut texture_atlases: ResMut<Assets<TextureAtlas>>,
+    //atlas: Res<PlayerTextureAtlas>,
+)
 {
-    let mut sprite = TextureAtlasSprite::new(0);
-    sprite.custom_size = Some(Vec2::new(TEXTURE_ATLAS_TILE_SIZE[0],TEXTURE_ATLAS_TILE_SIZE[1])*PLAYER_SCALE);
-
+  
+    let animator = get_animator( "./assets/player_animation.json".to_string(), assets,texture_atlases);
+    let sprite = TextureAtlasSprite::new(0);
     let player = commands.spawn_bundle(SpriteSheetBundle{
-    sprite,
-    texture_atlas: atlas.0.clone(),
-    transform: Transform{
-        translation: Vec3::new(0.0,0.0,5.0),
+        sprite,
+        texture_atlas: animator.animations[0].atlas.clone(),
+        transform: Transform{
+            translation: Vec3::new(0.0,0.0,5.0),
+            ..default()
+        },
         ..default()
-    },
-    ..default()
-    })
-    .insert(Name::new("Player"))
-    .insert(AnimationTimer(Timer::from_seconds(1.0/ANIMATION_PLAY_RATE, true)))
-    .insert(Player
-        {
-            speed: PLAYER_SPEED,
-            animation_state: AnimationState::Idle,
-            is_facing_right: true
-        }).id();
-
-    let mut camera_bundle = Camera2dBundle::default();
-    camera_bundle.transform.translation = Vec3::new(0.0,0.0,1.0);
-    let camera_entity = commands.spawn_bundle(camera_bundle).id();
-    commands.entity(player).push_children(&[camera_entity]);
- 
+        })
+        .insert(Name::new("Player"))
+        .insert(animator)
+        .insert(Player
+            {
+                speed: PLAYER_SPEED,
+                animation_state: AnimationState::Idle,
+                is_facing_right: true
+            }).id();
+    
+        let mut camera_bundle = Camera2dBundle::default();
+        camera_bundle.transform.translation = Vec3::new(0.0,0.0,1.0);
+        let camera_entity = commands.spawn_bundle(camera_bundle).id();
+        commands.entity(player).push_children(&[camera_entity]);
 }
 
 
 fn player_movement
 (
-    mut player_query: Query<(&mut Player, &mut Transform)>,
+    mut player_query: Query<(&mut Player, &mut Transform, &mut Animator)>,
     wall_query: Query<(&Transform, &BoxCollider, Without<Player>)>,
     keyboard: Res<Input<KeyCode>>,
     collision_map: Res<CollisionMap>,
@@ -114,7 +116,7 @@ fn player_movement
 )
 {  
 
-    let (mut player, mut transform) = player_query.single_mut();
+    let (mut player, mut transform,  animator) = player_query.single_mut();
 
     let mut y_delta = 0.0;
     if keyboard.pressed(KeyCode::W)
@@ -146,6 +148,7 @@ fn player_movement
 
     if walking
     {
+      //  change_animator_state(animator, "Run".to_string());
         if x_delta > 0.0
         {
             player.is_facing_right = true;
@@ -173,6 +176,7 @@ fn player_movement
     }
     else
     {
+       // change_animator_state(animator,"Idle".to_string());
         player.animation_state = AnimationState::Idle;
     }
 
