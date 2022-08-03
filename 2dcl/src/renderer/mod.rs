@@ -1,5 +1,4 @@
 use bevy::prelude::*;
-
 mod player;
 mod debug;
 mod scene_deserializer;
@@ -20,7 +19,7 @@ pub fn start() {
     App::new()
         .insert_resource(Msaa { samples: 4 })
         .add_plugins(DefaultPlugins)
-       // .add_plugin(AnimationsPlugin)
+        .add_plugin(AnimationsPlugin)
         .add_plugin(SceneDeserializerPlugin)
         .add_plugin(PlayerPlugin)
         //.add_plugin(RenderToTexturePlugin)
