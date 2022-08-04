@@ -1,5 +1,5 @@
 use bevy::{prelude::*, sprite::collide_aabb::collide};
-//use bevy_inspector_egui::Inspectable;
+use bevy_inspector_egui::Inspectable;
 
 use super::{scene_deserializer::BoxCollider, collision::*, animations::*};
 
@@ -8,84 +8,47 @@ pub struct PlayerPlugin;
 
 pub const PLAYER_SCALE: f32 = 0.5;
 pub const PLAYER_SPEED: f32 = 300.0;
-pub const TEXTURE_ATLAS_TILE_SIZE: [f32;2] = [96.0,105.0];
-pub const ANIMATION_PLAY_RATE: f32 = 15.0;
+pub const PLAYER_COLLIDER: Vec2 = Vec2::new(50.0,100.0);
 
-pub const LEFT_IDLE_ANIMATION_START: usize = 10;
-pub const LEFT_IDLE_ANIMATION_FRAME_LENGTH: usize = 3;
-pub const RIGHT_IDLE_ANIMATION_START: usize = 30;
-pub const RIGHT_IDLE_ANIMATION_FRAME_LENGTH: usize = 3;
-pub const LEFT_WALKING_ANIMATION_START: usize = 50;
-pub const LEFT_WALKING_ANIMATION_FRAME_LENGTH: usize = 10;
-pub const RIGHT_WALKING_ANIMATION_START: usize = 70;
-pub const RIGHT_WALKING_ANIMATION_FRAME_LENGTH: usize = 10;
 
-#[derive(Component, Default)]
+#[derive(Component, Default, Inspectable)]
 pub struct Player
 {
     speed: f32,
-    animation_state: AnimationState,
-    is_facing_right: bool
+    collider: Vec2,
 }
 
 
-#[derive( Default)]
-enum AnimationState
-{
-    #[default]
-    Idle,
-    Walking
-}
 
 impl Plugin for  PlayerPlugin
 {
 
     fn build(&self, app: &mut App) {
     app
-       // .add_startup_system_to_stage(StartupStage::PreStartup, load_texture_atlas)
         .add_startup_system(spawn_player)
-       // .add_system(animate_sprite)
         .add_system(player_movement)
         ;
     }
 }
 
-//struct PlayerTextureAtlas(Handle<TextureAtlas>);
 
-/*fn load_texture_atlas(
-    mut commands: Commands,
-    assets: Res<AssetServer>,
-    mut texture_atlases: ResMut<Assets<TextureAtlas>>
-)
-{
-    let texture = assets.load("player.png");
-    let atlas = TextureAtlas::from_grid_with_padding(
-        texture, 
-        Vec2::new(TEXTURE_ATLAS_TILE_SIZE[0],TEXTURE_ATLAS_TILE_SIZE[1]),
-         10, 
-         8, 
-         Vec2::splat(1.0),
-        Vec2::ZERO);
-
-    let atlas_handle = texture_atlases.add(atlas);
-    commands.insert_resource(PlayerTextureAtlas(atlas_handle));
-
-}*/
 fn spawn_player(
     mut commands: Commands, 
     assets: Res<AssetServer>,
     mut texture_atlases: ResMut<Assets<TextureAtlas>>,
-    //atlas: Res<PlayerTextureAtlas>,
 )
 {
   
     let animator = get_animator( "./assets/player_animation.json".to_string(), assets,texture_atlases);
-    let sprite = TextureAtlasSprite::new(0);
+    let mut sprite = TextureAtlasSprite::new(0);
+
+   
     let player = commands.spawn_bundle(SpriteSheetBundle{
         sprite,
-        texture_atlas: animator.animations[0].atlas.clone(),
+        texture_atlas: animator.atlas.clone(),
         transform: Transform{
             translation: Vec3::new(0.0,0.0,5.0),
+            scale: Vec3::ONE * PLAYER_SCALE,
             ..default()
         },
         ..default()
@@ -95,8 +58,7 @@ fn spawn_player(
         .insert(Player
             {
                 speed: PLAYER_SPEED,
-                animation_state: AnimationState::Idle,
-                is_facing_right: true
+                collider: PLAYER_COLLIDER 
             }).id();
     
         let mut camera_bundle = Camera2dBundle::default();
@@ -108,7 +70,7 @@ fn spawn_player(
 
 fn player_movement
 (
-    mut player_query: Query<(&mut Player, &mut Transform, &mut Animator)>,
+    mut player_query: Query<(&mut Player, &mut Transform, &mut Animator, &mut TextureAtlasSprite,)>,
     wall_query: Query<(&Transform, &BoxCollider, Without<Player>)>,
     keyboard: Res<Input<KeyCode>>,
     collision_map: Res<CollisionMap>,
@@ -116,7 +78,7 @@ fn player_movement
 )
 {  
 
-    let (mut player, mut transform,  animator) = player_query.single_mut();
+    let (mut player, mut transform,  animator, mut sprite) = player_query.single_mut();
 
     let mut y_delta = 0.0;
     if keyboard.pressed(KeyCode::W)
@@ -148,36 +110,34 @@ fn player_movement
 
     if walking
     {
-      //  change_animator_state(animator, "Run".to_string());
+        change_animator_state(animator, "Run".to_string());
         if x_delta > 0.0
         {
-            player.is_facing_right = true;
+            sprite.flip_x = false;
         }
         else if x_delta< 0.0
         {
-            player.is_facing_right = false;
+            sprite.flip_x = true;
         }
 
         let target = transform.translation + Vec3::new(x_delta,0.0,0.0);
 
-        if collision_check(target, &wall_query, collision_map.clone())
+        if collision_check(target, player.collider,&wall_query, collision_map.clone())
         {
             transform.translation = target;
         }
 
         let target = transform.translation + Vec3::new(0.0,y_delta,0.0);
 
-        if collision_check(target, &wall_query, collision_map.clone())
+        if collision_check(target, player.collider,&wall_query, collision_map.clone())
         {
             transform.translation = target;
         }
-        
-        player.animation_state = AnimationState::Walking;
     }
     else
     {
-       // change_animator_state(animator,"Idle".to_string());
-        player.animation_state = AnimationState::Idle;
+        
+        change_animator_state(animator,"Idle".to_string());
     }
 
     
@@ -186,6 +146,7 @@ fn player_movement
 
 fn collision_check(
     target_player_pos: Vec3,
+    target_player_collider: Vec2,
     box_collision_query: &Query<(&Transform, &BoxCollider, Without<Player>)>,
     collision_map: CollisionMap
 ) -> bool
@@ -195,7 +156,7 @@ fn collision_check(
     {
         let collision = collide(
             target_player_pos,
-            Vec2::new(TEXTURE_ATLAS_TILE_SIZE[0],TEXTURE_ATLAS_TILE_SIZE[1]) * PLAYER_SCALE * 0.9,
+            target_player_collider,
             wall.translation + collider.center.extend(0.0),
             collider.size
         );
@@ -211,7 +172,7 @@ fn collision_check(
         //Alpha colliders
         let collision = collide(
             target_player_pos,
-            Vec2::new(TEXTURE_ATLAS_TILE_SIZE[0],TEXTURE_ATLAS_TILE_SIZE[1]) * PLAYER_SCALE * 0.9,
+            target_player_collider,
             collision_location.extend(0.0), //wall.translation + collider.center.extend(0.0),
             Vec2::splat(collision_map.tile_size)
         );
@@ -227,76 +188,3 @@ fn collision_check(
 
 }
 
-#[derive(Component, Deref, DerefMut)]
-struct AnimationTimer(Timer);
-
-fn animate_sprite(
-    time: Res<Time>,
-    texture_atlases: Res<Assets<TextureAtlas>>,
-    mut query: Query<(
-        &mut AnimationTimer,
-        &mut TextureAtlasSprite,
-        &Handle<TextureAtlas>,
-        &Player
-    )>,
-) {
-    for (mut timer, mut sprite, texture_atlas_handle, player) in &mut query.iter_mut() 
-    {
-      
-       let animation_start: usize;
-       let animation_end: usize;
-
-        match player.animation_state
-        {
-
-            AnimationState::Idle => { 
-                if player.is_facing_right
-                {
-                    animation_start = RIGHT_IDLE_ANIMATION_START;
-                    animation_end = RIGHT_IDLE_ANIMATION_START + RIGHT_IDLE_ANIMATION_FRAME_LENGTH;
-                }
-                else
-                {
-                    animation_start = LEFT_IDLE_ANIMATION_START;
-                    animation_end = LEFT_IDLE_ANIMATION_START + LEFT_IDLE_ANIMATION_FRAME_LENGTH;
-                }
-            }
-
-            AnimationState::Walking => { 
-                if player.is_facing_right
-                {
-                    animation_start = RIGHT_WALKING_ANIMATION_START;
-                    animation_end = RIGHT_WALKING_ANIMATION_START + RIGHT_WALKING_ANIMATION_FRAME_LENGTH;
-                }
-                else
-                {
-                    animation_start = LEFT_WALKING_ANIMATION_START;
-                    animation_end = LEFT_WALKING_ANIMATION_START + LEFT_WALKING_ANIMATION_FRAME_LENGTH;
-                }
-                
-            }
-            
-        }
-
-        if sprite.index < animation_start || sprite.index >= animation_end
-        {
-            sprite.index = animation_start;
-            timer.reset();
-        }
-        else{
-            timer.tick(time.delta());
-            if timer.just_finished() {
-
-                let mut new_index = sprite.index + 1;
-                
-                if new_index >= animation_end
-                {
-                    new_index = animation_start;
-                }
-
-                let texture_atlas = texture_atlases.get(texture_atlas_handle).unwrap();
-                sprite.index = (new_index) % texture_atlas.textures.len();
-            }
-        }
-    }
-}

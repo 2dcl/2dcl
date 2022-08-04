@@ -8,7 +8,7 @@ mod animations;
 
 use player::PlayerPlugin;
 use animations::AnimationsPlugin;
-//use debug::DebugPlugin;
+use debug::DebugPlugin;
 use collision::CollisionPlugin;
 use scene_deserializer::SceneDeserializerPlugin;
 use render_to_texture::RenderToTexturePlugin;
@@ -23,7 +23,7 @@ pub fn start() {
         .add_plugin(SceneDeserializerPlugin)
         .add_plugin(PlayerPlugin)
         //.add_plugin(RenderToTexturePlugin)
-       // .add_plugin(DebugPlugin)
+        .add_plugin(DebugPlugin)
         .add_plugin(CollisionPlugin)
         .run();
 }

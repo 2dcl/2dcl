@@ -1,8 +1,7 @@
-//Plugin is outdated
 
-/*use bevy::prelude::*; 
-//use bevy_inspector_egui::RegisterInspectable;
-//use bevy_inspector_egui::WorldInspectorPlugin;
+use bevy::prelude::*; 
+use bevy_inspector_egui::RegisterInspectable;
+use bevy_inspector_egui::WorldInspectorPlugin;
 
 use super::player::Player;
 
@@ -27,4 +26,4 @@ impl Plugin for DebugPlugin{
             .register_inspectable::<Player>();
         }
     }    
-}*/
+}

@@ -69,14 +69,14 @@
         "size": [ 42, 52 ],
         "rotated": false,
         "trimmed": false,
-        "duration": 110
+        "duration": 550
       },
       {
         "start_position": [ 420, 0 ],
         "size": [ 42, 52 ],
         "rotated": false,
         "trimmed": false,
-        "duration": 110
+        "duration": 550
       }
     ]
   ,
