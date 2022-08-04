@@ -1,11 +1,11 @@
 use bevy::prelude::*; 
-//use bevy_inspector_egui::Inspectable;
+use bevy_inspector_egui::Inspectable;
 
 
 pub const TILE_SIZE: f32 = 0.5;
 
 
-#[derive(Default, Clone)]
+#[derive(Default, Clone, Inspectable)]
 pub struct CollisionMap
 {
     pub collision_locations: Vec<Vec2>,
