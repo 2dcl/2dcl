@@ -33,36 +33,50 @@ struct Meta
     image: String,
     format: String,
     size: [i32; 2],
-    scale: i32,
+    scale: f32,
+    layer: i32,
     frame_tags:Vec<FrameTag>
 }
 
-#[derive(Deserialize, Debug, Default)]
+#[derive(Deserialize, Debug)]
 struct FrameTag
 {
     name: String,
     from: i32,
-    to: i32
+    to: i32,
+    direction: Direction,
 
 }
 
-#[derive(Default, Component, Debug)]
+#[derive(Component, Debug)]
 pub struct Animator
 {
-    pub animations: Vec<Animation>,
+    animations: Vec<Animation>,
     pub atlas: Handle<TextureAtlas>, 
-    pub frame_durations: Vec<f32>,
-    pub timer:Timer,
-    pub current_animation: Animation,
+    pub layer: i32,
+    pub scale: f32,
+    frame_durations: Vec<f32>,
+    timer:Timer,
+    current_animation: Animation,
 }
 
-#[derive(Default, Debug, Clone)]
+#[derive(Debug, Clone)]
 pub struct Animation
 {
-    pub name: String,
+    name: String,
     from: usize,
-    to: usize
+    to: usize,
+    direction: Direction,
 }
+
+#[derive(Deserialize, Debug, Clone)]
+pub enum Direction {
+    forward,
+    backward,
+    pingpong,
+    pingpong_forward,
+    pingpong_backward,
+} 
 
 
 pub struct AnimationsPlugin;
@@ -93,13 +107,82 @@ pub fn update_animations
 
         if animator.timer.just_finished() 
         {           
- 
-            let mut new_index = sprite.index + 1;
-
-            if new_index < animator.current_animation.from || new_index > animator.current_animation.to
+            let mut new_index = sprite.index;
+            match animator.current_animation.direction
             {
-                new_index = animator.current_animation.from;
+                Direction::forward =>
+                {
+                    new_index+= 1;
+
+                    if new_index < animator.current_animation.from || new_index > animator.current_animation.to
+                    {
+                        new_index = animator.current_animation.from;
+                    }
+                }
+
+                Direction::backward =>
+                {
+                    if new_index <= animator.current_animation.from || new_index > animator.current_animation.to
+                    {   
+                        new_index = animator.current_animation.to;
+                    }
+                    else 
+                    {
+                        new_index -=1;
+                    }
+                }
+                Direction::pingpong =>
+                {
+                    new_index+= 1;
+                    animator.current_animation.direction = Direction::pingpong_forward;
+                    if new_index < animator.current_animation.from || new_index > animator.current_animation.to
+                    {
+                        animator.current_animation.direction = Direction::pingpong_backward;
+                        if animator.current_animation.from<=animator.current_animation.to-1
+                        {
+                            new_index = animator.current_animation.to-1;
+                        }
+                        else
+                        {
+                            new_index-=1;
+                        }
+                    }
+                }
+
+                Direction::pingpong_forward =>
+                {
+                    new_index+= 1;
+                    if new_index < animator.current_animation.from || new_index > animator.current_animation.to
+                    {
+                        animator.current_animation.direction = Direction::pingpong_backward;
+                        if animator.current_animation.from<=animator.current_animation.to-1
+                        {
+                            new_index = animator.current_animation.to-1;
+                        }
+                        else
+                        {
+                            new_index-=1;
+                        }
+                    }
+                }
+
+                Direction::pingpong_backward =>
+                {
+                    if new_index <= animator.current_animation.from || new_index > animator.current_animation.to && animator.current_animation.from +1 <= animator.current_animation.to
+                    {   
+                        animator.current_animation.direction = Direction::pingpong_forward;
+                        new_index = animator.current_animation.from+1;    
+                        
+                    }
+                    else 
+                    {
+                        new_index -=1;
+                    }
+
+                }
+
             }
+
 
             sprite.index = new_index;
 
@@ -139,14 +222,14 @@ pub fn change_animator_state
 
 pub fn get_animator(
     path: String,
-    assets: Res<AssetServer>,
-    mut texture_atlases: ResMut<Assets<TextureAtlas>>,
+    assets: &Res<AssetServer>,
+    texture_atlases: &mut ResMut<Assets<TextureAtlas>>,
 
 ) -> Animator
 
 {
     let mut animator_data = AnimatorData::default();
-    if let Ok(file) = File::open(path)
+    if let Ok(file) = File::open(path.clone())
     {
         let reader = BufReader::new(file);
         let result_data: Result<AnimatorData> = serde_json::from_reader(reader);
@@ -165,7 +248,6 @@ pub fn get_animator(
 
     }
 
-    
     let texture = assets.load(&animator_data.meta.image);
     let mut animations: Vec<Animation> = Vec::default();
     let mut frame_durations: Vec<f32> = Vec::default();
@@ -198,7 +280,8 @@ pub fn get_animator(
             animations.push(Animation{
             name: frame_tag.name,
             from: frame_tag.from as usize,
-            to: frame_tag.to as usize
+            to: frame_tag.to as usize,
+            direction: frame_tag.direction,
         });
     }
     
@@ -206,6 +289,8 @@ pub fn get_animator(
     let current_duration = frame_durations[0].clone();
     let animator = Animator{
         animations,
+        scale: animator_data.meta.scale,
+        layer: animator_data.meta.layer,
         atlas: texture_atlases.add(atlas),
         frame_durations,
         timer:Timer::from_seconds(current_duration, true),

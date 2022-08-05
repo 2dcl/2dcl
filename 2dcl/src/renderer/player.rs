@@ -1,6 +1,6 @@
 use bevy::{prelude::*, sprite::collide_aabb::collide};
 use bevy_inspector_egui::Inspectable;
-
+use std::fs;
 use super::{scene_deserializer::BoxCollider, collision::*, animations::*};
 
 pub struct PlayerPlugin;
@@ -8,8 +8,7 @@ pub struct PlayerPlugin;
 
 pub const PLAYER_SCALE: f32 = 0.5;
 pub const PLAYER_SPEED: f32 = 300.0;
-pub const PLAYER_COLLIDER: Vec2 = Vec2::new(50.0,100.0);
-
+pub const PLAYER_COLLIDER: Vec2 = Vec2::new(10.0,40.0);
 
 #[derive(Component, Default, Inspectable)]
 pub struct Player
@@ -39,16 +38,16 @@ fn spawn_player(
 )
 {
   
-    let animator = get_animator( "./assets/player_animation.json".to_string(), assets,texture_atlases);
-    let mut sprite = TextureAtlasSprite::new(0);
-
-   
+    let texture_atlases_mut_ref = &mut texture_atlases;
+    let animator = get_animator( "./assets/player_animation.json".to_string(), &assets, texture_atlases_mut_ref);
+    let sprite = TextureAtlasSprite::new(0);
+    
     let player = commands.spawn_bundle(SpriteSheetBundle{
         sprite,
         texture_atlas: animator.atlas.clone(),
         transform: Transform{
-            translation: Vec3::new(0.0,0.0,5.0),
-            scale: Vec3::ONE * PLAYER_SCALE,
+            translation: Vec3::new(0.0,0.0,animator.layer as f32),
+            scale: Vec3::ONE * PLAYER_SCALE * animator.scale,
             ..default()
         },
         ..default()
@@ -59,12 +58,44 @@ fn spawn_player(
             {
                 speed: PLAYER_SPEED,
                 collider: PLAYER_COLLIDER 
-            }).id();
+            })
+        .id();
     
         let mut camera_bundle = Camera2dBundle::default();
         camera_bundle.transform.translation = Vec3::new(0.0,0.0,1.0);
         let camera_entity = commands.spawn_bundle(camera_bundle).id();
         commands.entity(player).push_children(&[camera_entity]);
+
+
+    let wearables_path = fs::read_dir("./assets/wearables/").unwrap();
+    for path in wearables_path {
+        
+        let path_string =   path.unwrap().path().display().to_string();
+        if path_string.ends_with(".json")
+        {  
+            
+            let wearable_animator = get_animator( path_string, &assets,texture_atlases_mut_ref);
+            let wearable_sprite = TextureAtlasSprite::new(0);
+  
+            let wearable = commands.spawn_bundle(SpriteSheetBundle{
+                sprite: wearable_sprite,
+                texture_atlas: wearable_animator.atlas.clone(),
+                transform: Transform{
+                    translation: Vec3::new(0.0,0.0,wearable_animator.layer as f32),
+                    scale: Vec3::ONE * PLAYER_SCALE * wearable_animator.scale,
+                    ..default()
+                },
+                ..default()
+                })
+                .insert(Name::new("Wearable"))
+                .insert(wearable_animator)
+                .id();
+                commands.entity(player).push_children(&[wearable]);
+
+        }
+
+    }
+
 }
 
 
