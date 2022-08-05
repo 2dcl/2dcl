@@ -81,11 +81,11 @@
     ]
   ,
   "meta": {
-    "image": "2DCL_BaseCharacterAnimations.png",
+    "image": "wearables/2DCL_BaseCharacterAnimations.png",
     "format": "RGBA8888",
     "size": [ 462, 52 ],
-    "scale": 1.0,
-    "layer": 1,
+    "scale": 0.25,
+    "layer": 3,
     "frame_tags": [
       {
         "name": "Run",
