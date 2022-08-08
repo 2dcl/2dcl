@@ -84,7 +84,7 @@
     "image": "2DCL_BaseCharacterAnimations.png",
     "format": "RGBA8888",
     "size": [ 462, 52 ],
-    "scale": 1.0,
+    "scale": 1,
     "layer": 1,
     "frame_tags": [
       {

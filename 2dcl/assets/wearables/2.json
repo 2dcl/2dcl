@@ -84,7 +84,7 @@
     "image": "wearables/2DCL_BaseCharacterAnimations.png",
     "format": "RGBA8888",
     "size": [ 462, 52 ],
-    "scale": 3,
+    "scale": 0.75,
     "layer": 2,
     "frame_tags": [
       {
