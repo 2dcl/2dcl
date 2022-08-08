@@ -1,6 +1,6 @@
-use bevy::{prelude::*, sprite::collide_aabb::collide};
+use bevy::{prelude::*, sprite::collide_aabb::collide, ecs::system::EntityCommands, utils::tracing::Id};
 use bevy_inspector_egui::Inspectable;
-use std::fs;
+use std::{fs, borrow::BorrowMut};
 use super::{scene_deserializer::BoxCollider, collision::*, animations::*};
 
 pub struct PlayerPlugin;
@@ -62,7 +62,7 @@ fn spawn_player(
         .id();
     
         let mut camera_bundle = Camera2dBundle::default();
-        camera_bundle.transform.translation = Vec3::new(0.0,0.0,1.0);
+        camera_bundle.transform.translation = Vec3::new(0.0,0.0,100.0);
         let camera_entity = commands.spawn_bundle(camera_bundle).id();
         commands.entity(player).push_children(&[camera_entity]);
 
@@ -82,7 +82,7 @@ fn spawn_player(
                 texture_atlas: wearable_animator.atlas.clone(),
                 transform: Transform{
                     translation: Vec3::new(0.0,0.0,wearable_animator.layer as f32),
-                    scale: Vec3::ONE * PLAYER_SCALE * wearable_animator.scale,
+                    scale: Vec3::ONE * wearable_animator.scale,
                     ..default()
                 },
                 ..default()
@@ -101,17 +101,21 @@ fn spawn_player(
 
 fn player_movement
 (
-    mut player_query: Query<(&mut Player, &mut Transform, &mut Animator, &mut TextureAtlasSprite,)>,
-    wall_query: Query<(&Transform, &BoxCollider, Without<Player>)>,
+    mut player_query: Query<(&mut Player, &mut Transform, &mut Animator, &mut TextureAtlasSprite, &Children)>,
+    mut player_children:  Query<(&mut Animator, &mut TextureAtlasSprite, Without<Player>)>,
+    box_collision_query: Query<(&Transform, &BoxCollider, Without<Player>)>,
     keyboard: Res<Input<KeyCode>>,
     collision_map: Res<CollisionMap>,
-    time: Res<Time>
+    time: Res<Time>,
+
 )
 {  
 
-    let (mut player, mut transform,  animator, mut sprite) = player_query.single_mut();
-
+    let (mut player, mut transform,  mut animator, mut sprite, children) = player_query.single_mut();
+    
     let mut y_delta = 0.0;
+    let mut animation_state = "Idle";
+
     if keyboard.pressed(KeyCode::W)
     {
         y_delta += player.speed * PLAYER_SCALE * time.delta_seconds();
@@ -139,9 +143,12 @@ fn player_movement
         walking = true;
     }
 
+
+
     if walking
     {
-        change_animator_state(animator, "Run".to_string());
+        animation_state = "Run";
+
         if x_delta > 0.0
         {
             sprite.flip_x = false;
@@ -153,25 +160,30 @@ fn player_movement
 
         let target = transform.translation + Vec3::new(x_delta,0.0,0.0);
 
-        if collision_check(target, player.collider,&wall_query, collision_map.clone())
+        if collision_check(target, player.collider,&box_collision_query, collision_map.clone())
         {
             transform.translation = target;
         }
 
         let target = transform.translation + Vec3::new(0.0,y_delta,0.0);
 
-        if collision_check(target, player.collider,&wall_query, collision_map.clone())
+        if collision_check(target, player.collider,&box_collision_query, collision_map.clone())
         {
             transform.translation = target;
         }
     }
-    else
-    {
-        
-        change_animator_state(animator,"Idle".to_string());
-    }
 
-    
+    change_animator_state(animator,animation_state.to_string());
+
+    for &child in children.clone().iter() {
+            
+        if let Ok(mut wearable) = player_children.get_mut(child)
+        {
+         
+            change_animator_state(wearable.0,animation_state.to_string());
+            wearable.1.flip_x = sprite.flip_x;
+        }
+    } 
 
 }
 
