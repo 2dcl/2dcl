@@ -3,7 +3,7 @@ mod player;
 mod debug;
 mod scene_deserializer;
 mod collision;
-mod render_to_texture;
+//mod render_to_texture;
 mod animations;
 
 use player::PlayerPlugin;
@@ -11,7 +11,7 @@ use animations::AnimationsPlugin;
 use debug::DebugPlugin;
 use collision::CollisionPlugin;
 use scene_deserializer::SceneDeserializerPlugin;
-use render_to_texture::RenderToTexturePlugin;
+//use render_to_texture::RenderToTexturePlugin;
 
 
 

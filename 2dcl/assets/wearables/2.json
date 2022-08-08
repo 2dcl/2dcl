@@ -1,104 +1,119 @@
-{
-  "frames": 
-    [
-      {
-        "start_position": [ 0, 0 ],
-        "size": [ 42, 52 ],
-        "rotated": false,
-        "trimmed": false,
-        "duration": 110
-      },
-      {
-        "start_position": [ 42, 0 ],
-        "size": [ 42, 52 ],
-        "rotated": false,
-        "trimmed": false,
-        "duration": 110
-      },
-      {
-        "start_position": [ 84, 0 ],
-        "size": [ 42, 52 ],
-        "rotated": false,
-        "trimmed": false,
-        "duration": 110
-      },
-      {
-        "start_position": [ 126, 0 ],
-        "size": [ 42, 52 ],
-        "rotated": false,
-        "trimmed": false,
-        "duration": 110
-      },
-      {
-        "start_position": [ 168, 0 ],
-        "size": [ 42, 52 ],
-        "rotated": false,
-        "trimmed": false,
-        "duration": 110
-      },
-      {
-        "start_position": [ 210, 0 ],
-        "size": [ 42, 52 ],
-        "rotated": false,
-        "trimmed": false,
-        "duration": 110
-      },
-      {
-        "start_position": [ 252, 0 ],
-        "size": [ 42, 52 ],
-        "rotated": false,
-        "trimmed": false,
-        "duration": 110
-      },
-      {
-        "start_position": [ 294, 0 ],
-        "size": [ 42, 52 ],
-        "rotated": false,
-        "trimmed": false,
-        "duration": 110
-      },
-      {
-        "start_position": [ 336, 0 ],
-        "size": [ 42, 52 ],
-        "rotated": false,
-        "trimmed": false,
-        "duration": 110
-      },
-      {
-        "start_position": [ 378, 0 ],
-        "size": [ 42, 52 ],
-        "rotated": false,
-        "trimmed": false,
-        "duration": 550
-      },
-      {
-        "start_position": [ 420, 0 ],
-        "size": [ 42, 52 ],
-        "rotated": false,
-        "trimmed": false,
-        "duration": 550
-      }
-    ]
-  ,
-  "meta": {
-    "image": "wearables/2DCL_BaseCharacterAnimations.png",
-    "format": "RGBA8888",
-    "size": [ 462, 52 ],
-    "scale": 0.75,
-    "layer": 2,
-    "frame_tags": [
-      {
-        "name": "Run",
-        "from": 0,
-        "to": 8,
-        "direction": "forward"
-      },
-      {
-        "name": "Idle",
-        "from": 9,
-        "to": 10,
-        "direction": "forward"
-      }
-    ]
+{ "frames": [
+  {
+   "filename": "2DCL_BaseCharacterAnimations 0.aseprite",
+   "frame": { "x": 0, "y": 0, "w": 42, "h": 52 },
+   "rotated": false,
+   "trimmed": false,
+   "spriteSourceSize": { "x": 0, "y": 0, "w": 42, "h": 52 },
+   "sourceSize": { "w": 42, "h": 52 },
+   "duration": 110
+  },
+  {
+   "filename": "2DCL_BaseCharacterAnimations 1.aseprite",
+   "frame": { "x": 42, "y": 0, "w": 42, "h": 52 },
+   "rotated": false,
+   "trimmed": false,
+   "spriteSourceSize": { "x": 0, "y": 0, "w": 42, "h": 52 },
+   "sourceSize": { "w": 42, "h": 52 },
+   "duration": 110
+  },
+  {
+   "filename": "2DCL_BaseCharacterAnimations 2.aseprite",
+   "frame": { "x": 84, "y": 0, "w": 42, "h": 52 },
+   "rotated": false,
+   "trimmed": false,
+   "spriteSourceSize": { "x": 0, "y": 0, "w": 42, "h": 52 },
+   "sourceSize": { "w": 42, "h": 52 },
+   "duration": 110
+  },
+  {
+   "filename": "2DCL_BaseCharacterAnimations 3.aseprite",
+   "frame": { "x": 126, "y": 0, "w": 42, "h": 52 },
+   "rotated": false,
+   "trimmed": false,
+   "spriteSourceSize": { "x": 0, "y": 0, "w": 42, "h": 52 },
+   "sourceSize": { "w": 42, "h": 52 },
+   "duration": 110
+  },
+  {
+   "filename": "2DCL_BaseCharacterAnimations 4.aseprite",
+   "frame": { "x": 168, "y": 0, "w": 42, "h": 52 },
+   "rotated": false,
+   "trimmed": false,
+   "spriteSourceSize": { "x": 0, "y": 0, "w": 42, "h": 52 },
+   "sourceSize": { "w": 42, "h": 52 },
+   "duration": 110
+  },
+  {
+   "filename": "2DCL_BaseCharacterAnimations 5.aseprite",
+   "frame": { "x": 210, "y": 0, "w": 42, "h": 52 },
+   "rotated": false,
+   "trimmed": false,
+   "spriteSourceSize": { "x": 0, "y": 0, "w": 42, "h": 52 },
+   "sourceSize": { "w": 42, "h": 52 },
+   "duration": 110
+  },
+  {
+   "filename": "2DCL_BaseCharacterAnimations 6.aseprite",
+   "frame": { "x": 252, "y": 0, "w": 42, "h": 52 },
+   "rotated": false,
+   "trimmed": false,
+   "spriteSourceSize": { "x": 0, "y": 0, "w": 42, "h": 52 },
+   "sourceSize": { "w": 42, "h": 52 },
+   "duration": 110
+  },
+  {
+   "filename": "2DCL_BaseCharacterAnimations 7.aseprite",
+   "frame": { "x": 294, "y": 0, "w": 42, "h": 52 },
+   "rotated": false,
+   "trimmed": false,
+   "spriteSourceSize": { "x": 0, "y": 0, "w": 42, "h": 52 },
+   "sourceSize": { "w": 42, "h": 52 },
+   "duration": 110
+  },
+  {
+   "filename": "2DCL_BaseCharacterAnimations 8.aseprite",
+   "frame": { "x": 336, "y": 0, "w": 42, "h": 52 },
+   "rotated": false,
+   "trimmed": false,
+   "spriteSourceSize": { "x": 0, "y": 0, "w": 42, "h": 52 },
+   "sourceSize": { "w": 42, "h": 52 },
+   "duration": 110
+  },
+  {
+   "filename": "2DCL_BaseCharacterAnimations 9.aseprite",
+   "frame": { "x": 378, "y": 0, "w": 42, "h": 52 },
+   "rotated": false,
+   "trimmed": false,
+   "spriteSourceSize": { "x": 0, "y": 0, "w": 42, "h": 52 },
+   "sourceSize": { "w": 42, "h": 52 },
+   "duration": 110
+  },
+  {
+   "filename": "2DCL_BaseCharacterAnimations 10.aseprite",
+   "frame": { "x": 420, "y": 0, "w": 42, "h": 52 },
+   "rotated": false,
+   "trimmed": false,
+   "spriteSourceSize": { "x": 0, "y": 0, "w": 42, "h": 52 },
+   "sourceSize": { "w": 42, "h": 52 },
+   "duration": 110
   }
+],
+"meta": {
+ "app": "https://www.aseprite.org/",
+ "version": "1.2.39-x64",
+ "image": "wearable.png",
+ "format": "RGBA8888",
+ "size": { "w": 462, "h": 52 },
+ "scale": "0.5",
+ "frameTags": [
+  { "name": "Run", "from": 0, "to": 8, "direction": "forward" },
+  { "name": "Idle", "from": 9, "to": 10, "direction": "forward" }
+ ],
+ "layers": [
+  { "name": "Running_Camo", "opacity": 255, "blendMode": "normal" }
+ ],
+ "slices": [
+ ]
+}
 }
