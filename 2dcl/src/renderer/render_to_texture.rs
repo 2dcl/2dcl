@@ -10,10 +10,8 @@ use bevy::{
     },
 };
 
-use std::io::Cursor;
-use image::io::Reader as ImageReader;
+
 use image::*;
-use image::Pixel;
 pub struct RenderToTexturePlugin;
 
 impl Plugin for RenderToTexturePlugin

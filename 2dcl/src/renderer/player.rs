@@ -1,6 +1,6 @@
-use bevy::{prelude::*, sprite::collide_aabb::collide, ecs::system::EntityCommands, utils::tracing::Id};
+use bevy::{prelude::*, sprite::collide_aabb::collide};
 use bevy_inspector_egui::Inspectable;
-use std::{fs, borrow::BorrowMut};
+use std::{fs, path::PathBuf};
 use super::{scene_deserializer::BoxCollider, collision::*, animations::*};
 
 pub struct PlayerPlugin;
@@ -39,14 +39,17 @@ fn spawn_player(
 {
   
     let texture_atlases_mut_ref = &mut texture_atlases;
-    let animator = get_animator( "./assets/player_animation.json".to_string(), &assets, texture_atlases_mut_ref);
+    let mut path = PathBuf::new();
+    path.push("./assets/player_animation.json");
+
+    let animator = get_animator( path, &assets, texture_atlases_mut_ref);
     let sprite = TextureAtlasSprite::new(0);
     
     let player = commands.spawn_bundle(SpriteSheetBundle{
         sprite,
         texture_atlas: animator.atlas.clone(),
         transform: Transform{
-            translation: Vec3::new(0.0,0.0,animator.layer as f32),
+            translation: Vec3::new(0.0,0.0,1.0),
             scale: Vec3::ONE * PLAYER_SCALE * animator.scale,
             ..default()
         },
@@ -67,21 +70,23 @@ fn spawn_player(
         commands.entity(player).push_children(&[camera_entity]);
 
 
+        
     let wearables_path = fs::read_dir("./assets/wearables/").unwrap();
     for path in wearables_path {
         
         let path_string =   path.unwrap().path().display().to_string();
         if path_string.ends_with(".json")
         {  
-            
-            let wearable_animator = get_animator( path_string, &assets,texture_atlases_mut_ref);
+            let mut file_path = PathBuf::new();
+            file_path.push(path_string);
+            let wearable_animator = get_animator( file_path, &assets,texture_atlases_mut_ref);
             let wearable_sprite = TextureAtlasSprite::new(0);
   
             let wearable = commands.spawn_bundle(SpriteSheetBundle{
                 sprite: wearable_sprite,
                 texture_atlas: wearable_animator.atlas.clone(),
                 transform: Transform{
-                    translation: Vec3::new(0.0,0.0,wearable_animator.layer as f32),
+                    translation: Vec3::new(0.0,0.0,2.0),
                     scale: Vec3::ONE * wearable_animator.scale,
                     ..default()
                 },
@@ -111,7 +116,7 @@ fn player_movement
 )
 {  
 
-    let (mut player, mut transform,  mut animator, mut sprite, children) = player_query.single_mut();
+    let (player, mut transform, animator, mut sprite, children) = player_query.single_mut();
     
     let mut y_delta = 0.0;
     let mut animation_state = "Idle";

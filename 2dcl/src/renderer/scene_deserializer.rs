@@ -105,7 +105,7 @@ fn setup(
                 if let EntityComponent::Transform(entity_transform) = component
                 {
 
-                    transform.translation = entity_transform.location.extend(0.0);
+                    transform.translation = transform.translation + entity_transform.location.extend(0.0);
                     transform.rotation = Quat::from_euler(
                         EulerRot::XYZ,
                         entity_transform.rotation.x.to_radians(),
@@ -123,6 +123,7 @@ fn setup(
                         blue: sprite_renderer.color.z, 
                         alpha:  sprite_renderer.color.w};
                     texture = asset_server.load(&sprite_renderer.sprite);
+                    transform.translation = transform.translation + Vec3::new(0.0,0.0, sprite_renderer.layer as f32);
                 }
 
 

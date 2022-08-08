@@ -1,59 +1,16 @@
-use bevy::prelude::*;
-use bevy_inspector_egui::Inspectable;
+use bevy::{prelude::*};
 use serde::Deserialize;
 use std::fs::File;
-use std::io::BufReader;
-use serde_json::Result;
+use std::path::Path;
 use bevy::sprite::Rect;
 use bevy::utils::Duration;
-
-
-#[derive(Deserialize, Debug, Default)]
-struct AnimatorData {
-  
-    frames: Vec<FrameData>,
-    meta: Meta
-}
-
-
-#[derive(Deserialize, Debug, Default)]
-struct FrameData
-{   
-    start_position: [i32; 2],
-    size:[i32; 2],
-    rotated: bool,
-    trimmed: bool,
-    duration: i32
-
-}
-
-#[derive(Deserialize, Debug, Default)]
-struct Meta
-{
-    image: String,
-    format: String,
-    size: [i32; 2],
-    scale: f32,
-    layer: i32,
-    frame_tags:Vec<FrameTag>
-}
-
-#[derive(Deserialize, Debug)]
-struct FrameTag
-{
-    name: String,
-    from: i32,
-    to: i32,
-    direction: Direction,
-
-}
+use std::path::PathBuf;
 
 #[derive(Component, Debug)]
 pub struct Animator
 {
     animations: Vec<Animation>,
-    pub atlas: Handle<TextureAtlas>, 
-    pub layer: i32,
+    pub atlas: Handle<TextureAtlas>,
     pub scale: f32,
     frame_durations: Vec<f32>,
     timer:Timer,
@@ -71,14 +28,13 @@ pub struct Animation
 
 #[derive(Deserialize, Debug, Clone)]
 pub enum Direction {
-    forward,
-    backward,
-    pingpong,
-    pingpong_forward,
-    pingpong_backward,
+    Forward,
+    Reverse,
+    PingpongForward,
+    PingpongReverse,
 } 
 
-
+ 
 pub struct AnimationsPlugin;
 
 impl Plugin for  AnimationsPlugin
@@ -110,7 +66,7 @@ pub fn update_animations
             let mut new_index = sprite.index;
             match animator.current_animation.direction
             {
-                Direction::forward =>
+                Direction::Forward =>
                 {
                     new_index+= 1;
 
@@ -120,7 +76,7 @@ pub fn update_animations
                     }
                 }
 
-                Direction::backward =>
+                Direction::Reverse =>
                 {
                     if new_index <= animator.current_animation.from || new_index > animator.current_animation.to
                     {   
@@ -131,13 +87,13 @@ pub fn update_animations
                         new_index -=1;
                     }
                 }
-                Direction::pingpong =>
+
+                Direction::PingpongForward =>
                 {
                     new_index+= 1;
-                    animator.current_animation.direction = Direction::pingpong_forward;
                     if new_index < animator.current_animation.from || new_index > animator.current_animation.to
                     {
-                        animator.current_animation.direction = Direction::pingpong_backward;
+                        animator.current_animation.direction = Direction::PingpongReverse;
                         if animator.current_animation.from<=animator.current_animation.to-1
                         {
                             new_index = animator.current_animation.to-1;
@@ -149,28 +105,11 @@ pub fn update_animations
                     }
                 }
 
-                Direction::pingpong_forward =>
-                {
-                    new_index+= 1;
-                    if new_index < animator.current_animation.from || new_index > animator.current_animation.to
-                    {
-                        animator.current_animation.direction = Direction::pingpong_backward;
-                        if animator.current_animation.from<=animator.current_animation.to-1
-                        {
-                            new_index = animator.current_animation.to-1;
-                        }
-                        else
-                        {
-                            new_index-=1;
-                        }
-                    }
-                }
-
-                Direction::pingpong_backward =>
+                Direction::PingpongReverse =>
                 {
                     if new_index <= animator.current_animation.from || new_index > animator.current_animation.to && animator.current_animation.from +1 <= animator.current_animation.to
                     {   
-                        animator.current_animation.direction = Direction::pingpong_forward;
+                        animator.current_animation.direction = Direction::PingpongForward;
                         new_index = animator.current_animation.from+1;    
                         
                     }
@@ -221,34 +160,27 @@ pub fn change_animator_state
 
 
 pub fn get_animator(
-    path: String,
+    path: PathBuf,
     assets: &Res<AssetServer>,
     texture_atlases: &mut ResMut<Assets<TextureAtlas>>,
 
 ) -> Animator
 
 {
-    let mut animator_data = AnimatorData::default();
-    if let Ok(file) = File::open(path.clone())
-    {
-        let reader = BufReader::new(file);
-        let result_data: Result<AnimatorData> = serde_json::from_reader(reader);
-        if result_data.is_ok()
-        {
-            animator_data = result_data.unwrap();
-        }
-        else
-        {
-            println!("AnimatorData is not ok");
-        }
-    }
-    else
-    {   
-        println!("Error: file not found");
 
-    }
+    let file = File::open(&path).unwrap();
+    let spritesheet: aseprite::SpritesheetData = serde_json::from_reader(file).unwrap();
+    
 
-    let texture = assets.load(&animator_data.meta.image);
+
+    let mut image_path = PathBuf::new();
+    image_path.push("..");
+    image_path.push(path);
+    image_path.pop();
+    image_path.push(&spritesheet.meta.image.unwrap());
+ 
+    let p = Path::new(&image_path);
+    let texture = assets.load(p);
     let mut animations: Vec<Animation> = Vec::default();
     let mut frame_durations: Vec<f32> = Vec::default();
   
@@ -256,41 +188,58 @@ pub fn get_animator(
     let mut atlas = TextureAtlas::new_empty
     (
         texture.clone(), 
-        Vec2::new(animator_data.meta.size[0] as f32,animator_data.meta.size[1] as f32)
+        Vec2::new(spritesheet.meta.size.w as f32,spritesheet.meta.size.h as f32)
     );
 
-    for  i in 0..animator_data.frames.len()
+    for frame in spritesheet.frames
     {
-        frame_durations.push( animator_data.frames[i].duration as f32 / 1000.0);
+        frame_durations.push( frame.duration as f32 / 1000.0);
         let min = Vec2::new(
-            animator_data.frames[i].start_position[0] as f32,
-            animator_data.frames[i].start_position[1] as f32
+            frame.frame.x as f32,
+            frame.frame.y as f32
         );
 
         let max = Vec2::new(
-            animator_data.frames[i].size[0] as f32 + min.x,
-            animator_data.frames[i].size[1] as f32 + min.y
+            min.x + frame.frame.w as f32,
+            min.y + frame.frame.h as f32,
         );
+
         atlas.add_texture(Rect{min, max});
 
     }
     
-    for frame_tag in animator_data.meta.frame_tags
+
+    
+    for frame_tag in spritesheet.meta.frame_tags.unwrap()
     {
+        let  direction;
+        match frame_tag.direction
+        {
+            aseprite::Direction::Forward => { direction = Direction::Forward }
+            aseprite::Direction::Reverse => { direction = Direction::Reverse }
+            aseprite::Direction::Pingpong => { direction = Direction::PingpongForward }
+        }
+
             animations.push(Animation{
             name: frame_tag.name,
             from: frame_tag.from as usize,
             to: frame_tag.to as usize,
-            direction: frame_tag.direction,
+            direction,
         });
     }
+    
+    let scale;
+    match  spritesheet.meta.scale.parse::<f32>() 
+    {
+        Ok(v) => {scale = v;}
+        Err(_e) => {scale = 1.0;}
+    } 
     
     let current_animation = animations[0].clone();
     let current_duration = frame_durations[0].clone();
     let animator = Animator{
         animations,
-        scale: animator_data.meta.scale,
-        layer: animator_data.meta.layer,
+        scale: scale,
         atlas: texture_atlases.add(atlas),
         frame_durations,
         timer:Timer::from_seconds(current_duration, true),
