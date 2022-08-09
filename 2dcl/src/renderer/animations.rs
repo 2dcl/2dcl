@@ -5,6 +5,7 @@ use std::path::Path;
 use bevy::sprite::Rect;
 use bevy::utils::Duration;
 use std::path::PathBuf;
+use std::io::Error;
 
 #[derive(Component, Debug)]
 pub struct Animator
@@ -159,28 +160,40 @@ pub fn change_animator_state
 }
 
 
-pub fn get_animator(
-    path: PathBuf,
+pub fn get_animator <P>(
+    path: P,
     assets: &Res<AssetServer>,
     texture_atlases: &mut ResMut<Assets<TextureAtlas>>,
 
-) -> Animator
+) ->  Result<Animator, String>
 
+where
+    P: AsRef<Path>
 {
 
-    let file = File::open(&path).unwrap();
-    let spritesheet: aseprite::SpritesheetData = serde_json::from_reader(file).unwrap();
-    
+    let file: File;
 
+    match  File::open(&path)
+    {
+        Ok(v) => {file = v;}
+        Err(e) => {return Err(e.to_string());}
+    } 
+
+    let spritesheet: aseprite::SpritesheetData;
+    
+    match serde_json::from_reader(file)
+    {
+        Ok(v) => {spritesheet = v;}
+        Err(e) => {return Err(e.to_string());}
+    } 
 
     let mut image_path = PathBuf::new();
     image_path.push("..");
     image_path.push(path);
     image_path.pop();
-    image_path.push(&spritesheet.meta.image.unwrap());
+    image_path.push(&spritesheet.meta.image.unwrap_or_default());
  
-    let p = Path::new(&image_path);
-    let texture = assets.load(p);
+    let texture = assets.load(image_path);
     let mut animations: Vec<Animation> = Vec::default();
     let mut frame_durations: Vec<f32> = Vec::default();
   
@@ -210,7 +223,7 @@ pub fn get_animator(
     
 
     
-    for frame_tag in spritesheet.meta.frame_tags.unwrap()
+    for frame_tag in spritesheet.meta.frame_tags.unwrap_or_default()
     {
         let  direction;
         match frame_tag.direction
@@ -246,6 +259,6 @@ pub fn get_animator(
         current_animation,
     };
 
-    return animator;
+    return Ok(animator);
 }
 
