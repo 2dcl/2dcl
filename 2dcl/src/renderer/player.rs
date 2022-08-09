@@ -39,10 +39,7 @@ fn spawn_player(
 {
   
     let texture_atlases_mut_ref = &mut texture_atlases;
-    let mut path = PathBuf::new();
-    path.push("./assets/player_animation.json");
-
-    let animator = get_animator( path, &assets, texture_atlases_mut_ref);
+    let animator = get_animator( "./assets/player_animation.json", &assets, texture_atlases_mut_ref).unwrap();
     let sprite = TextureAtlasSprite::new(0);
     
     let player = commands.spawn_bundle(SpriteSheetBundle{
@@ -77,9 +74,8 @@ fn spawn_player(
         let path_string =   path.unwrap().path().display().to_string();
         if path_string.ends_with(".json")
         {  
-            let mut file_path = PathBuf::new();
-            file_path.push(path_string);
-            let wearable_animator = get_animator( file_path, &assets,texture_atlases_mut_ref);
+
+            let wearable_animator = get_animator( path_string, &assets,texture_atlases_mut_ref).unwrap();
             let wearable_sprite = TextureAtlasSprite::new(0);
   
             let wearable = commands.spawn_bundle(SpriteSheetBundle{
