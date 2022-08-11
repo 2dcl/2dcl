@@ -5,6 +5,7 @@ mod scene_deserializer;
 mod collision;
 //mod render_to_texture;
 mod animations;
+mod player_sprite_maker;
 
 use player::PlayerPlugin;
 use animations::AnimationsPlugin;
