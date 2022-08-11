@@ -1,7 +1,7 @@
 use bevy::{prelude::*, sprite::collide_aabb::collide};
 use bevy_inspector_egui::Inspectable;
-use std::{fs, path::PathBuf};
-use super::{scene_deserializer::BoxCollider, collision::*, animations::*};
+use std::fs;
+use super::{scene_deserializer::BoxCollider, collision::*, animations::*,player_sprite_maker::*};
 
 pub struct PlayerPlugin;
 
@@ -96,6 +96,8 @@ fn spawn_player(
         }
 
     }
+
+    make_player_spritesheet("./assets/player_animation.json".to_owned(), "./assets/wearables/".to_owned());
 
 }
 

@@ -162,7 +162,7 @@ pub fn change_animator_state
 
 pub fn get_animator <P>(
     path: P,
-    assets: &Res<AssetServer>,
+    : &Res<AssetServer>,
     texture_atlases: &mut ResMut<Assets<TextureAtlas>>,
 
 ) ->  Result<Animator, String>

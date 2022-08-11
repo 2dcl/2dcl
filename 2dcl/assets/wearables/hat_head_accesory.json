@@ -102,10 +102,10 @@
 "meta": {
  "app": "https://www.aseprite.org/",
  "version": "1.2.39-x64",
- "image": "wearable.png",
+ "image": "hat.png",
  "format": "RGBA8888",
  "size": { "w": 462, "h": 52 },
- "scale": "0.5",
+ "scale": "1.0",
  "frameTags": [
   { "name": "Run", "from": 0, "to": 8, "direction": "forward" },
   { "name": "Idle", "from": 9, "to": 10, "direction": "forward" }
