@@ -38,8 +38,11 @@ fn spawn_player(
 )
 {
   
+    make_player_spritesheet("./assets/wearables/".to_owned(), "E:/test.json".to_owned());
+
+
     let texture_atlases_mut_ref = &mut texture_atlases;
-    let animator = get_animator( "./assets/player_animation.json", &assets, texture_atlases_mut_ref).unwrap();
+    let animator = get_animator( "E:/test.json", &assets, texture_atlases_mut_ref).unwrap();
     let sprite = TextureAtlasSprite::new(0);
     
     let player = commands.spawn_bundle(SpriteSheetBundle{
@@ -67,38 +70,9 @@ fn spawn_player(
         commands.entity(player).push_children(&[camera_entity]);
 
 
-        
-    let wearables_path = fs::read_dir("./assets/wearables/").unwrap();
-    for path in wearables_path {
-        
-        let path_string =   path.unwrap().path().display().to_string();
-        if path_string.ends_with(".json")
-        {  
+    
 
-            let wearable_animator = get_animator( path_string, &assets,texture_atlases_mut_ref).unwrap();
-            let wearable_sprite = TextureAtlasSprite::new(0);
-  
-            let wearable = commands.spawn_bundle(SpriteSheetBundle{
-                sprite: wearable_sprite,
-                texture_atlas: wearable_animator.atlas.clone(),
-                transform: Transform{
-                    translation: Vec3::new(0.0,0.0,2.0),
-                    scale: Vec3::ONE * wearable_animator.scale,
-                    ..default()
-                },
-                ..default()
-                })
-                .insert(Name::new("Wearable"))
-                .insert(wearable_animator)
-                .id();
-                commands.entity(player).push_children(&[wearable]);
-
-        }
-
-    }
-
-    make_player_spritesheet("./assets/player_animation.json".to_owned(), "./assets/wearables/".to_owned());
-
+    
 }
 
 
