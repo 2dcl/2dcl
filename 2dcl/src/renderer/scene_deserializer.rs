@@ -1,28 +1,30 @@
 use bevy::prelude::*;
-use serde::Deserialize;
+use serde::{Deserialize, Serialize};
 use std::fs::File;
 use std::io::BufReader;
+use std::path::Path;
 use serde_json::Result;
 use bevy_inspector_egui::Inspectable;
 use super::collision::*;
 use image::io::Reader as ImageReader;
 use image::DynamicImage;
 
-#[derive(Deserialize, Debug)]
-struct Scene {
-    name: String,
-    entities: Vec<Entitiy>,
+
+#[derive(Deserialize, Serialize, Debug)]
+pub struct Scene {
+   pub name: String,
+   pub entities: Vec<Entitiy>,
 }
 
-#[derive(Deserialize, Debug)]
-struct Entitiy {
-    name: String,
-    components: Vec<EntityComponent>,
+#[derive(Deserialize, Serialize, Debug)]
+pub struct Entitiy {
+    pub name: String,
+    pub components: Vec<EntityComponent>,
 }
 
 
-#[derive(Deserialize, Debug)]
-enum EntityComponent{
+#[derive(Deserialize, Serialize, Debug)]
+pub enum EntityComponent{
     Transform(EntityTransform),
     SpriteRenderer(SpriteRenderer),
     CircleCollider(CircleCollider),
@@ -30,34 +32,34 @@ enum EntityComponent{
     AlphaCollider(AlphaCollider)
 }
 
-#[derive(Deserialize, Debug)]
-struct EntityTransform {
-    location: Vec2,
-    rotation: Vec3,
-    scale: Vec2,
+#[derive(Deserialize, Serialize, Debug)]
+pub struct EntityTransform {
+    pub location: Vec2,
+    pub rotation: Vec3,
+    pub scale: Vec2,
 
 }
 
-#[derive(Deserialize, Debug)]
-struct SpriteRenderer {
-    sprite: String,
-    color: Vec4,
-    layer: i32,
+#[derive(Deserialize, Serialize, Debug)]
+pub struct SpriteRenderer {
+    pub sprite: String,
+    pub color: Vec4,
+    pub layer: i32,
 }
 
-#[derive(Deserialize, Debug, Component, Clone, Inspectable)]
+#[derive(Deserialize, Serialize, Debug, Component, Clone, Inspectable)]
 pub struct CircleCollider {
     pub center: Vec2,
     pub raius: i32,
 }
 
-#[derive(Deserialize, Debug, Component, Clone, Inspectable)]
+#[derive(Deserialize, Serialize, Debug, Component, Clone, Inspectable)]
 pub struct BoxCollider {
     pub center: Vec2,
     pub size: Vec2,
 }
 
-#[derive(Deserialize, Debug, Clone, Inspectable)]
+#[derive(Deserialize, Serialize, Debug, Clone, Inspectable)]
 pub struct AlphaCollider {
     pub sprite: String,
     pub channel: i32,
@@ -71,14 +73,35 @@ impl Plugin for SceneDeserializerPlugin
 {
     fn build(&self, app: &mut App)
     {
-         app.add_startup_system(setup);
+         app.add_startup_system(load_scene);
     }
 
 }
 
+pub fn save_scene <P>(scene: Scene, path: P)
+where
+    P: AsRef<Path>
+{
+    let writer;
+
+    match File::create(path)
+    {
+        Ok(v) => writer = v,
+        Err(_e) => return
+    } 
 
 
-fn setup(
+
+    match serde_json::to_writer(&writer, &scene)
+    {
+        Ok(_v) => println!("writing json"),
+        Err(_e) => return
+    }
+    
+}
+
+
+fn load_scene(
     mut commands: Commands,
     asset_server: Res<AssetServer>,
     mut collision_map: ResMut<CollisionMap>
