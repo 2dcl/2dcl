@@ -20,7 +20,7 @@ use scene_deserializer::SceneDeserializerPlugin;
 pub fn start() {
       psd_reader::psd_read();
     App::new()
-        .insert_resource(Msaa { samples: 4 })
+        .insert_resource(Msaa { samples: 1 })
         .add_plugins(DefaultPlugins)
         .add_plugin(AnimationsPlugin)
         .add_plugin(SceneDeserializerPlugin)
