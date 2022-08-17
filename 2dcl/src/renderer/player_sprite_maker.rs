@@ -32,10 +32,6 @@ where
 {
     let mut wearables :Vec<WearableData> = Vec::new();
 
-  //  let file: File;
-
-
-
     let wearables_dir;
 
     match fs::read_dir(wearables_path.clone())
@@ -54,37 +50,37 @@ where
             Err(_e) => continue
         } 
 
-        if wearable_path_string.ends_with("body.json")
+        if wearable_path_string.to_lowercase().trim_end().ends_with("body.json")
         {   
             wearables.push(WearableData{json_path: wearable_path_string,wearable_type: WearableType::Body});
             continue;
         }
 
-        if wearable_path_string.ends_with("feet.json")
+        if wearable_path_string.to_lowercase().trim_end().ends_with("feet.json")
         {
             wearables.push(WearableData{json_path: wearable_path_string,wearable_type: WearableType::Feet});
             continue;
         }
         
-        if wearable_path_string.ends_with("lower.json")
+        if wearable_path_string.to_lowercase().trim_end().ends_with("lower.json")
         {   
             wearables.push(WearableData{json_path: wearable_path_string,wearable_type: WearableType::Lower});
             continue;
         }
 
-        if wearable_path_string.ends_with("upper.json")
+        if wearable_path_string.to_lowercase().trim_end().ends_with("upper.json")
         {   
             wearables.push(WearableData{json_path: wearable_path_string,wearable_type: WearableType::Upper});
             continue;
         }
 
-        if wearable_path_string.ends_with("head_accesory.json")
+        if wearable_path_string.to_lowercase().trim_end().ends_with("headaccessory.json")
         {   
             wearables.push(WearableData{json_path: wearable_path_string,wearable_type: WearableType::HeadAccesory});
             continue;
         }
 
-        if wearable_path_string.ends_with("hair.json")
+        if wearable_path_string.to_lowercase().trim_end().ends_with("hair.json")
         {   
             wearables.push(WearableData{json_path: wearable_path_string,wearable_type: WearableType::Hair});
             continue;
@@ -141,15 +137,21 @@ where
             
             }
             
-            if let  DynamicImage::ImageRgba8(dynamic_image) =  ImageReader::open(image_path).unwrap().decode().unwrap()
+            let image_reader;
+            println!("{:?}",image_path);
+            match ImageReader::open(image_path)
+            {
+                Ok(v) => image_reader = v,
+                Err(_e) => return false
+            }
+
+            if let  DynamicImage::ImageRgba8(dynamic_image) =  image_reader.decode().unwrap()
            {
                 final_image = Some(dynamic_image);
            }
         }
 
-    }
-    println!("saving image");
-       
+    }       
         
          
     let mut output_image_path = PathBuf::new();    
@@ -226,7 +228,7 @@ where
     wearable_image_path.push(&wearable_spritesheet.meta.image.unwrap_or_default());
     
     let wearable_image;
-    
+
     match  ImageReader::open(wearable_image_path)
     {
         Ok(v) => wearable_image = v.decode().unwrap_or_default(),

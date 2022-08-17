@@ -6,6 +6,7 @@ mod collision;
 //mod render_to_texture;
 mod animations;
 mod player_sprite_maker;
+mod psd_reader;
 
 use player::PlayerPlugin;
 use animations::AnimationsPlugin;
@@ -17,6 +18,7 @@ use scene_deserializer::SceneDeserializerPlugin;
 
 
 pub fn start() {
+      psd_reader::psd_read();
     App::new()
         .insert_resource(Msaa { samples: 4 })
         .add_plugins(DefaultPlugins)
@@ -27,7 +29,8 @@ pub fn start() {
         .add_plugin(DebugPlugin)
         .add_plugin(CollisionPlugin)
         .run();
-}
+       
+    }
 
 
 

@@ -1,6 +1,5 @@
 use bevy::{prelude::*, sprite::collide_aabb::collide};
 use bevy_inspector_egui::Inspectable;
-use std::fs;
 use super::{scene_deserializer::BoxCollider, collision::*, animations::*,player_sprite_maker::*};
 
 pub struct PlayerPlugin;
@@ -38,11 +37,10 @@ fn spawn_player(
 )
 {
   
-    make_player_spritesheet("./assets/wearables/".to_owned(), "E:/test.json".to_owned());
-
-
+    make_player_spritesheet("./assets/wearables/".to_owned(), "./assets/player.json".to_owned());
+    
     let texture_atlases_mut_ref = &mut texture_atlases;
-    let animator = get_animator( "E:/test.json", &assets, texture_atlases_mut_ref).unwrap();
+    let animator = get_animator( "./assets/player.json", &assets, texture_atlases_mut_ref).unwrap();
     let sprite = TextureAtlasSprite::new(0);
     
     let player = commands.spawn_bundle(SpriteSheetBundle{
@@ -64,13 +62,10 @@ fn spawn_player(
             })
         .id();
     
-        let mut camera_bundle = Camera2dBundle::default();
-        camera_bundle.transform.translation = Vec3::new(0.0,0.0,100.0);
+        let mut camera_bundle = Camera2dBundle::new_with_far(500.0);
         let camera_entity = commands.spawn_bundle(camera_bundle).id();
         commands.entity(player).push_children(&[camera_entity]);
 
-
-    
 
     
 }
