@@ -1,4 +1,4 @@
-use bevy::{prelude::*, sprite::collide_aabb::collide};
+use bevy::{prelude::*, sprite::collide_aabb::collide, render::camera::ScalingMode};
 use bevy_inspector_egui::Inspectable;
 use super::{scene_deserializer::BoxCollider, collision::*, animations::*,player_sprite_maker::*};
 
@@ -63,6 +63,7 @@ fn spawn_player(
         .id();
     
         let mut camera_bundle = Camera2dBundle::new_with_far(500.0);
+        camera_bundle.projection.scale = 0.5;
         let camera_entity = commands.spawn_bundle(camera_bundle).id();
         commands.entity(player).push_children(&[camera_entity]);
 
