@@ -94,7 +94,7 @@ where
 
     match serde_json::to_writer(&writer, &scene)
     {
-        Ok(_v) => println!("writing json"),
+        Ok(_v) => println!("saved json scene"),
         Err(_e) => return
     }
     

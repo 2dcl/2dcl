@@ -138,7 +138,6 @@ where
             }
             
             let image_reader;
-            println!("{:?}",image_path);
             match ImageReader::open(image_path)
             {
                 Ok(v) => image_reader = v,
@@ -182,7 +181,7 @@ where
 
     match serde_json::to_writer(&writer, &final_spritesheet)
     {
-        Ok(_v) => println!("writing json"),
+        Ok(_v) => println!("saved player json"),
         Err(_e) => return false
     }
     
@@ -191,7 +190,7 @@ where
        
         match  dynamic_image.save(output_image_path)
         {
-            Ok(_v) => println!("writing image"),
+            Ok(_v) => println!("saved player image"),
             Err(_e) => return false
         }
     }

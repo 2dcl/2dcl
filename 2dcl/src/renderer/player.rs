@@ -1,6 +1,6 @@
-use bevy::{prelude::*, sprite::collide_aabb::collide, render::camera::ScalingMode};
+use bevy::{prelude::*, sprite::collide_aabb::collide};
 use bevy_inspector_egui::Inspectable;
-use super::{scene_deserializer::BoxCollider, collision::*, animations::*,player_sprite_maker::*};
+use super::{scene_deserializer::BoxCollider, collision::*, animations::*};
 
 pub struct PlayerPlugin;
 
@@ -29,16 +29,12 @@ impl Plugin for  PlayerPlugin
     }
 }
 
-
 fn spawn_player(
     mut commands: Commands, 
     assets: Res<AssetServer>,
     mut texture_atlases: ResMut<Assets<TextureAtlas>>,
 )
-{
-  
-    make_player_spritesheet("./assets/wearables/".to_owned(), "./assets/player.json".to_owned());
-    
+{   
     let texture_atlases_mut_ref = &mut texture_atlases;
     let animator = get_animator( "./assets/player.json", &assets, texture_atlases_mut_ref).unwrap();
     let sprite = TextureAtlasSprite::new(0);

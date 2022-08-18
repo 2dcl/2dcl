@@ -5,7 +5,6 @@ use std::path::Path;
 use bevy::sprite::Rect;
 use bevy::utils::Duration;
 use std::path::PathBuf;
-use std::io::Error;
 
 #[derive(Component, Debug)]
 pub struct Animator

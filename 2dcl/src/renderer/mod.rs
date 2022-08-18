@@ -18,7 +18,9 @@ use scene_deserializer::SceneDeserializerPlugin;
 
 
 pub fn start() {
-      psd_reader::psd_read();
+    psd_reader::psd_read();
+    player_sprite_maker::make_player_spritesheet("./assets/wearables/".to_owned(), "./assets/player.json".to_owned());
+
     App::new()
         .insert_resource(Msaa { samples: 1 })
         .add_plugins(DefaultPlugins)
