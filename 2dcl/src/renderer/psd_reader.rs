@@ -10,7 +10,7 @@ use super::scene_deserializer::Entitiy;
 pub fn psd_read()
 {
 
-    let psd_bytes = include_bytes!("../../assets/2DCL_psdSceneTest.psd");
+    let psd_bytes = include_bytes!("../../assets/scene.psd");
 
     let psd;
 
@@ -43,7 +43,11 @@ pub fn psd_read()
             let mut save_path = "./assets/".to_owned();
             save_path = save_path + layer.name() + ".png";
 
-            img.save(save_path);
+            match img.save(save_path.clone())
+            {
+                Ok(_v) => println!("saved image {:?}", save_path),
+                Err(_e) => println!("couldnt save image{:?}", save_path)
+            }
             let mut components: Vec<EntityComponent> = Vec::new();
 
             let sprite_renderer = EntityComponent::SpriteRenderer{
