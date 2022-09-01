@@ -1,4 +1,4 @@
-
+# Mostly from https://nixos.wiki/wiki/Rust with modifications to run Bevy
 { pkgs ? import <nixpkgs> {} }:
   pkgs.mkShell rec {
     buildInputs = with pkgs; [
