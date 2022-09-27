@@ -187,7 +187,7 @@ where
     } 
 
     let mut image_path = PathBuf::new();
-    image_path.push("..");
+    image_path.push("../..");
     image_path.push(path);
     image_path.pop();
     image_path.push(&spritesheet.meta.image.unwrap_or_default());

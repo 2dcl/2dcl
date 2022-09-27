@@ -1,4 +1,5 @@
 use bevy::prelude::*;
+use bevy::sprite::Anchor;
 use serde::{Deserialize, Serialize};
 use std::fs::File;
 use std::io::BufReader;
@@ -8,6 +9,7 @@ use bevy_inspector_egui::Inspectable;
 use super::collision::*;
 use image::io::Reader as ImageReader;
 use image::DynamicImage;
+use bevy::render::texture::ImageSampler;
 
 
 #[derive(Deserialize, Serialize, Debug)]
@@ -40,12 +42,29 @@ pub struct EntityTransform {
 
 }
 
+
 #[derive(Deserialize, Serialize, Debug)]
 pub struct SpriteRenderer {
     pub sprite: String,
     pub color: Vec4,
     pub layer: i32,
+    pub anchor: EntityAnchor
 }
+
+#[derive(Deserialize, Serialize, Debug, Clone, Inspectable)]
+pub enum EntityAnchor{
+    Center,
+    BottomLeft,
+    BottomCenter,
+    BottomRight,
+    CenterLeft,
+    CenterRight,
+    TopLeft,
+    TopCenter,
+    TopRight,
+    Custom(Vec2),
+}
+
 
 #[derive(Deserialize, Serialize, Debug, Component, Clone, Inspectable)]
 pub struct CircleCollider {
@@ -63,6 +82,7 @@ pub struct BoxCollider {
 pub struct AlphaCollider {
     pub sprite: String,
     pub channel: i32,
+    pub anchor: EntityAnchor
 }
 
 
@@ -104,10 +124,10 @@ where
 fn load_scene(
     mut commands: Commands,
     asset_server: Res<AssetServer>,
-    mut collision_map: ResMut<CollisionMap>
+    mut collision_map: ResMut<CollisionMap>,
 
 ) {
-    if let Ok(file) = File::open("./assets/scene.json")
+    if let Ok(file) = File::open("./2dcl/assets/scene.json")
     {
         let reader = BufReader::new(file);
         let scene: Result<Scene> = serde_json::from_reader(reader);
@@ -118,84 +138,91 @@ fn load_scene(
             for entity in  scene.entities.iter()
             {
                 let mut transform = Transform::identity();
-                let mut texture: Handle<Image> = Handle::default();
-                let mut sprite = Sprite::default();
-                
-                //Finding entity paramters
-               for component in entity.components.iter()
-               {
-                
-                if let EntityComponent::Transform(entity_transform) = component
+
+                for component in entity.components.iter()
                 {
+                    if let EntityComponent::Transform(entity_transform) = component
+                    {       
+                        transform.translation = transform.translation + entity_transform.location.extend(entity_transform.location.y * -1.0);
+                        transform.rotation = Quat::from_euler(
+                            EulerRot::XYZ,
+                            entity_transform.rotation.x.to_radians(),
+                            entity_transform.rotation.y.to_radians(),
+                            entity_transform.rotation.z.to_radians());
 
-                    transform.translation = transform.translation + entity_transform.location.extend(0.0);
-                    transform.rotation = Quat::from_euler(
-                        EulerRot::XYZ,
-                        entity_transform.rotation.x.to_radians(),
-                        entity_transform.rotation.y.to_radians(),
-                        entity_transform.rotation.z.to_radians());
-
-                    transform.scale = entity_transform.scale.extend(1.0);
+                        transform.scale = entity_transform.scale.extend(1.0);
+                    }  
                 }
-
-                if let EntityComponent::SpriteRenderer(sprite_renderer) = component
-                {
-                    sprite.color = Color::Rgba { 
-                        red: sprite_renderer.color.x, 
-                        green: sprite_renderer.color.y, 
-                        blue: sprite_renderer.color.z, 
-                        alpha:  sprite_renderer.color.w};
-                    texture = asset_server.load(&sprite_renderer.sprite);
-                    transform.translation = transform.translation + Vec3::new(0.0,0.0, sprite_renderer.layer as f32);
-                }
-
-
                 
-               }
-               
                 //Spawning Entity
-               let mut spawn_bundle = commands.spawn_bundle(SpriteBundle {
-                transform,
-                sprite: sprite.clone(),
-                texture: texture.clone(),
-                ..default()
-                });
-                
-                spawn_bundle.insert(Name::new(entity.name.clone()));
+                let spawned_entity = commands.spawn()
+                    .insert(Name::new(entity.name.clone()))
+                    .insert(Visibility{is_visible: true})
+                    .insert(GlobalTransform::default())
+                    .insert(ComputedVisibility::default())
+                    .insert(transform)
+                    .id();
 
                 //Inserting components
                 for component in entity.components.iter()
                 {
+                    
+                    if let EntityComponent::SpriteRenderer(sprite_renderer) = component
+                    {
+                        let mut sprite_bundle = commands.spawn_bundle(SpriteBundle {
+                            sprite: Sprite{
+                                color: Color::Rgba { 
+                                    red: sprite_renderer.color.x, 
+                                    green: sprite_renderer.color.y, 
+                                    blue: sprite_renderer.color.z, 
+                                    alpha:  sprite_renderer.color.w},
+                                    anchor: entity_anchor_to_anchor(sprite_renderer.anchor.clone()),
+                                ..default()
+                            },
+                            texture: asset_server.load(&sprite_renderer.sprite),
+                            transform: Transform::from_translation(Vec3{x:0.0,y:0.0,z:sprite_renderer.layer as f32 * 100.0  }),
+                            ..default()
+                            })
+                            .insert(Name::new(entity.name.clone() + " - sprite renderer"))
+                            .id();
+                        
+                            commands.entity(spawned_entity).add_child(sprite_bundle);
+                    }
+
                     if let EntityComponent::BoxCollider(collider) = component
-                    {  
-                        spawn_bundle.insert(collider.clone());
+                    {      
+                        commands.entity(spawned_entity).insert(collider.clone());
                     }
     
                     if let EntityComponent::CircleCollider(collider) = component
                     {
-                        spawn_bundle.insert(collider.clone());
+                        commands.entity(spawned_entity).insert(collider.clone());
                     }
-    
+                    
                     
                     if let EntityComponent::AlphaCollider(collider) = component
                     {
-                        if let Ok(reader) = ImageReader::open("./assets/".to_owned()+&collider.sprite)
+                        if let Ok(reader) = ImageReader::open("./2dcl/assets/".to_owned()+&collider.sprite)
                         {
                             if let Ok(dynamic_image) = reader.decode()
                             {
                                 if let DynamicImage::ImageRgba8(image) = dynamic_image
                                 {
                                     let mut pixels = image.pixels().into_iter();
-
+                                    
                                     let rows = image.rows().len();
                                     let columns = pixels.len()/rows;
+
+                                    let fixed_translation = get_fixed_translation_by_anchor(
+                                        Vec2{x:columns as f32, y: rows as f32},
+                                        transform.translation,
+                                        collider.anchor.clone()
+                                    );
                                     let mut index =0;
                                     let strating_world_location =
                                     
-                                    transform.translation.truncate() - (Vec2::new((columns as f32)/2.0 , (rows as f32)/2.0)* collision_map.tile_size);
-                                    
-
-                                    
+                                    fixed_translation.truncate() - (Vec2::new((columns as f32)/2.0 , (rows as f32)/2.0)* collision_map.tile_size);
+                                     
                                     while pixels.len() >0
                                     {   
                                         if pixels.next().unwrap()[collider.channel as usize] > 0 
@@ -212,5 +239,46 @@ fn load_scene(
                 }
             }
         }
+        else
+        {   
+            println!("{:?}",scene);
+        }
+    }
+}
+
+
+fn entity_anchor_to_anchor(anchor: EntityAnchor) -> Anchor
+{
+    match anchor
+    {
+        EntityAnchor::BottomCenter => return Anchor::BottomCenter,
+        EntityAnchor::BottomLeft => return Anchor::BottomLeft,
+        EntityAnchor::BottomRight => return Anchor::BottomRight,
+        EntityAnchor::Center => return Anchor::Center,
+        EntityAnchor::CenterLeft => return Anchor::CenterLeft,
+        EntityAnchor::CenterRight => return Anchor::CenterRight,
+        EntityAnchor::Custom(vec) => return Anchor::Custom(vec),
+        EntityAnchor::TopCenter => return Anchor::TopCenter,
+        EntityAnchor::TopLeft => return Anchor::TopLeft,
+        EntityAnchor::TopRight => return Anchor::TopRight
+    }
+}
+
+
+fn  get_fixed_translation_by_anchor(size: Vec2, translation: Vec3, anchor: EntityAnchor) -> Vec3
+{
+
+    match anchor
+    {
+        EntityAnchor::BottomCenter => return Vec3{x:translation.x, y:translation.y +size.y/2.0, z:translation.z},
+        EntityAnchor::BottomLeft => return  Vec3{x:translation.x + size.x/2.0, y:translation.y +size.y/2.0, z:translation.z},
+        EntityAnchor::BottomRight => return Vec3{x:translation.x - size.x/2.0, y:translation.y +size.y/2.0, z:translation.z},
+        EntityAnchor::Center => return translation,
+        EntityAnchor::CenterLeft => return Vec3{x:translation.x + size.x/2.0, y:translation.y, z:translation.z},
+        EntityAnchor::CenterRight => return Vec3{x:translation.x - size.x/2.0, y:translation.y, z:translation.z},
+        EntityAnchor::Custom(vec) => return Vec3{x:translation.x - vec.x, y:translation.y - vec.y, z:translation.z},
+        EntityAnchor::TopCenter => return Vec3{x:translation.x, y:translation.y - size.y/2.0, z:translation.z},
+        EntityAnchor::TopLeft => return Vec3{x:translation.x + size.x/2.0, y:translation.y -size.y/2.0, z:translation.z},
+        EntityAnchor::TopRight => return  Vec3{x:translation.x - size.x/2.0, y:translation.y -size.y/2.0, z:translation.z},
     }
 }

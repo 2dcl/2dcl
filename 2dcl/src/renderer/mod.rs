@@ -1,4 +1,4 @@
-use bevy::prelude::*;
+use bevy::{prelude::*, render::{render_resource::FilterMode, texture::ImageSettings}};
 mod player;
 mod debug;
 mod scene_deserializer;
@@ -13,16 +13,19 @@ use animations::AnimationsPlugin;
 use debug::DebugPlugin;
 use collision::CollisionPlugin;
 use scene_deserializer::SceneDeserializerPlugin;
-//use render_to_texture::RenderToTexturePlugin;
+use bevy::render::render_resource::SamplerDescriptor;
 
 
 
 pub fn start() {
-    psd_reader::psd_read();
-    player_sprite_maker::make_player_spritesheet("./assets/wearables/".to_owned(), "./assets/player.json".to_owned());
+   // psd_reader::psd_read();
+    player_sprite_maker::make_player_spritesheet("./2dcl/assets/wearables/".to_owned(), "./2dcl/assets/player.json".to_owned());
 
     App::new()
         .insert_resource(Msaa { samples: 1 })
+        .insert_resource(ImageSettings{default_sampler: SamplerDescriptor { 
+            mag_filter: FilterMode::Nearest,
+           ..default()}})
         .add_plugins(DefaultPlugins)
         .add_plugin(AnimationsPlugin)
         .add_plugin(SceneDeserializerPlugin)

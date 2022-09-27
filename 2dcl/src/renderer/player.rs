@@ -1,11 +1,11 @@
-use bevy::{prelude::*, sprite::collide_aabb::collide};
+use bevy::{prelude::*, sprite::{collide_aabb::collide, Anchor}};
 use bevy_inspector_egui::Inspectable;
 use super::{scene_deserializer::BoxCollider, collision::*, animations::*};
 
 pub struct PlayerPlugin;
 
 
-pub const PLAYER_SCALE: f32 = 0.5;
+pub const PLAYER_SCALE: f32 = 1.0;
 pub const PLAYER_SPEED: f32 = 300.0;
 pub const PLAYER_COLLIDER: Vec2 = Vec2::new(10.0,40.0);
 
@@ -36,32 +36,44 @@ fn spawn_player(
 )
 {   
     let texture_atlases_mut_ref = &mut texture_atlases;
-    let animator = get_animator( "./assets/player.json", &assets, texture_atlases_mut_ref).unwrap();
-    let sprite = TextureAtlasSprite::new(0);
-    
-    let player = commands.spawn_bundle(SpriteSheetBundle{
-        sprite,
-        texture_atlas: animator.atlas.clone(),
-        transform: Transform{
-            translation: Vec3::new(0.0,0.0,1.0),
-            scale: Vec3::ONE * PLAYER_SCALE * animator.scale,
-            ..default()
-        },
-        ..default()
-        })
+    let animator = get_animator( "./2dcl/assets/player.json", &assets, texture_atlases_mut_ref).unwrap();
+    let mut sprite = TextureAtlasSprite::new(0);
+    sprite.anchor = Anchor::BottomCenter;
+
+    //Spawning Entity
+    let player = commands.spawn()
         .insert(Name::new("Player"))
-        .insert(animator)
+        .insert(Visibility{is_visible: true})
+        .insert(GlobalTransform::default())
+        .insert(ComputedVisibility::default())
+        .insert(Transform::default())
         .insert(Player
             {
                 speed: PLAYER_SPEED,
                 collider: PLAYER_COLLIDER 
             })
         .id();
+        
+    let player_sprite = commands.spawn_bundle(SpriteSheetBundle{
+        sprite,
+        texture_atlas: animator.atlas.clone(),
+        transform: Transform{
+            scale: Vec3::ONE * PLAYER_SCALE * animator.scale,
+            ..default()
+        },
+        ..default()
+        })
+        .insert(Name::new("Player - sprite renderer"))
+        .insert(animator)
+        .id();
     
-        let mut camera_bundle = Camera2dBundle::new_with_far(500.0);
+        let mut camera_bundle = Camera2dBundle::new_with_far(1000.0);
+        camera_bundle.transform = Transform::from_translation(Vec3{x:0.0,y:0.0,z:500.0});
         camera_bundle.projection.scale = 0.5;
         let camera_entity = commands.spawn_bundle(camera_bundle).id();
-        commands.entity(player).push_children(&[camera_entity]);
+        
+        commands.entity(player).add_child(camera_entity);
+        commands.entity(player).add_child(player_sprite);
 
 
     
@@ -70,18 +82,17 @@ fn spawn_player(
 
 fn player_movement
 (
-    mut player_query: Query<(&mut Player, &mut Transform, &mut Animator, &mut TextureAtlasSprite, &Children)>,
-    mut player_children:  Query<(&mut Animator, &mut TextureAtlasSprite, Without<Player>)>,
+    mut player_query: Query<(&mut Player, &mut Transform, &Children)>,
+    mut player_renderer_query:  Query<(&mut Animator, &mut TextureAtlasSprite, Without<Player>)>,
     box_collision_query: Query<(&Transform, &BoxCollider, Without<Player>)>,
     keyboard: Res<Input<KeyCode>>,
     collision_map: Res<CollisionMap>,
-    time: Res<Time>,
+    time: Res<Time>
 
 )
 {  
 
-    let (player, mut transform, animator, mut sprite, children) = player_query.single_mut();
-    
+    let (player, mut transform, children) = player_query.single_mut();
     let mut y_delta = 0.0;
     let mut animation_state = "Idle";
 
@@ -113,18 +124,15 @@ fn player_movement
     }
 
 
+    let mut flip_x = false;
 
     if walking
     {
         animation_state = "Run";
 
-        if x_delta > 0.0
+        if x_delta< 0.0
         {
-            sprite.flip_x = false;
-        }
-        else if x_delta< 0.0
-        {
-            sprite.flip_x = true;
+            flip_x = true;
         }
 
         let target = transform.translation + Vec3::new(x_delta,0.0,0.0);
@@ -134,7 +142,7 @@ fn player_movement
             transform.translation = target;
         }
 
-        let target = transform.translation + Vec3::new(0.0,y_delta,0.0);
+        let target = transform.translation + Vec3::new(0.0,y_delta,y_delta * -1.0);
 
         if collision_check(target, player.collider,&box_collision_query, collision_map.clone())
         {
@@ -142,15 +150,13 @@ fn player_movement
         }
     }
 
-    change_animator_state(animator,animation_state.to_string());
-
     for &child in children.clone().iter() {
-            
-        if let Ok(mut wearable) = player_children.get_mut(child)
+               
+        if let Ok(mut sprite_renderer) = player_renderer_query.get_mut(child)
         {
          
-            change_animator_state(wearable.0,animation_state.to_string());
-            wearable.1.flip_x = sprite.flip_x;
+            change_animator_state(sprite_renderer.0,animation_state.to_string());
+            sprite_renderer.1.flip_x = flip_x;
         }
     } 
 
@@ -167,7 +173,7 @@ fn collision_check(
     for (wall,collider, _player) in box_collision_query.iter()
     {
         let collision = collide(
-            target_player_pos,
+              Vec3{x:target_player_pos.x,y:target_player_pos.y+target_player_collider.y/2.0,z:0.0},
             target_player_collider,
             wall.translation + collider.center.extend(0.0),
             collider.size
@@ -181,6 +187,7 @@ fn collision_check(
     
     for collision_location in collision_map.collision_locations
     {
+       
         //Alpha colliders
         let collision = collide(
             target_player_pos,

@@ -5,6 +5,7 @@ use std::fs::File;
 use std::path::Path;
 use std::path::PathBuf;
 use std::fs;
+use std::fmt::Debug;
 
 #[derive(Debug, Eq, Ord, PartialEq, PartialOrd)]
 enum WearableType{
@@ -28,18 +29,19 @@ pub fn make_player_spritesheet <P>(
     output_file: P,
 ) -> bool
 where
-    P: AsRef<Path> + Clone
+    P: AsRef<Path> + Clone + Debug
 {
     let mut wearables :Vec<WearableData> = Vec::new();
 
     let wearables_dir;
-
+    println!("Wearable path exists? {:?}",wearables_path.clone());
     match fs::read_dir(wearables_path.clone())
     {
         Ok(v) => wearables_dir = v,
         Err(_e) => return false
     } 
     
+    println!("Wearable path found");
     for wearable_path in wearables_dir
     {
         let wearable_path_string;

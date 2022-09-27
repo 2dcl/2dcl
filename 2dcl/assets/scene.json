@@ -1,1 +1,59 @@
-{"name":"2DCL_psdSceneTest","entities":[{"name":"Layer 10 copy","components":[{"SpriteRenderer":{"sprite":"Layer 10 copy.png","color":[1.0,1.0,1.0,1.0],"layer":133}}]},{"name":"Layer 10","components":[{"SpriteRenderer":{"sprite":"Layer 10.png","color":[1.0,1.0,1.0,1.0],"layer":132}}]},{"name":"Layer 2","components":[{"SpriteRenderer":{"sprite":"Layer 2.png","color":[1.0,1.0,1.0,1.0],"layer":131}}]},{"name":"Layer 3","components":[{"SpriteRenderer":{"sprite":"Layer 3.png","color":[1.0,1.0,1.0,1.0],"layer":130}}]},{"name":"Layer 4","components":[{"SpriteRenderer":{"sprite":"Layer 4.png","color":[1.0,1.0,1.0,1.0],"layer":129}}]},{"name":"Layer 5","components":[{"SpriteRenderer":{"sprite":"Layer 5.png","color":[1.0,1.0,1.0,1.0],"layer":128}}]},{"name":"Layer 7","components":[{"SpriteRenderer":{"sprite":"Layer 7.png","color":[1.0,1.0,1.0,1.0],"layer":127}}]},{"name":"Layer 8","components":[{"SpriteRenderer":{"sprite":"Layer 8.png","color":[1.0,1.0,1.0,1.0],"layer":126}}]},{"name":"Layer 9","components":[{"SpriteRenderer":{"sprite":"Layer 9.png","color":[1.0,1.0,1.0,1.0],"layer":125}}]},{"name":"Tree02","components":[{"SpriteRenderer":{"sprite":"Tree02.png","color":[1.0,1.0,1.0,1.0],"layer":124}}]},{"name":"Tree01","components":[{"SpriteRenderer":{"sprite":"Tree01.png","color":[1.0,1.0,1.0,1.0],"layer":123}}]},{"name":"Layer 6","components":[{"SpriteRenderer":{"sprite":"Layer 6.png","color":[1.0,1.0,1.0,1.0],"layer":122}}]}]}
+{
+  "name": "2DCL_psdSceneTest",
+  "entities": [
+    {
+      "name": "Barra_centro",
+      "components": [
+        {
+          "SpriteRenderer": {
+            "sprite": "Barra_centro.png",
+            "color": [ 1.0, 1.0, 1.0, 1.0 ],
+            "layer": 1,
+            "anchor": "BottomCenter"
+          }
+        },
+        {
+          "Transform": {
+            "location": [ 0.0, 90.0 ],
+            "rotation": [ 0.0, 0.0, 0.0 ],
+            "scale": [ 1.0, 1.0 ]
+          }
+        },
+        {
+          "AlphaCollider": {
+            "sprite": "Barra_centro.png",
+            "channel": 3,
+            "anchor": "BottomCenter"
+          }
+        }
+      ]
+    },
+    {
+      "name": "Circular Bar",
+      "components": [
+        {
+          "SpriteRenderer": {
+            "sprite": "Circular Bar.png",
+            "color": [ 1.0, 1.0, 1.0, 1.0 ],
+            "layer": 0,
+            "anchor": "Center"
+          }
+        },
+        {
+          "Transform": {
+            "location": [ 0.0, 100.0 ],
+            "rotation": [ 0.0, 0.0, 0.0 ],
+            "scale": [ 1.0, 1.0 ]
+          }
+        },
+        {
+          "AlphaCollider": {
+            "sprite": "Circular Bar.png",
+            "channel": 3,
+            "anchor": "Center"
+          }
+        }
+      ]
+    }
+  ]
+}

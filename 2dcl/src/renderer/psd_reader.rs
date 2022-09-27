@@ -1,3 +1,4 @@
+use bevy::prelude::Vec2;
 use bevy::prelude::Vec4;
 use psd::*;
 use image::*;
@@ -5,6 +6,7 @@ use crate::renderer::scene_deserializer;
 use crate::renderer::scene_deserializer::EntityComponent;
 use crate::renderer::scene_deserializer::SpriteRenderer;
 use super::scene_deserializer::Entitiy;
+use super::scene_deserializer::EntityAnchor;
 
 
 pub fn psd_read()
@@ -55,7 +57,7 @@ pub fn psd_read()
                     sprite: layer.name().to_owned() + ".png",
                     color: Vec4::new(1.0,1.0,1.0,1.0),
                     layer:layer_z,
-
+                    anchor: EntityAnchor::BottomCenter
                 }
             };
             components.push(sprite_renderer);
