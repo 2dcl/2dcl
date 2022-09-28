@@ -2,7 +2,7 @@ use bevy::prelude::*;
 use bevy_inspector_egui::Inspectable;
 
 
-pub const TILE_SIZE: f32 = 0.5;
+pub const TILE_SIZE: f32 = 1.0;
 
 
 #[derive(Default, Clone, Inspectable)]

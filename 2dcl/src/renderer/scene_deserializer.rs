@@ -1,6 +1,7 @@
 use bevy::prelude::*;
 use bevy::sprite::Anchor;
 use serde::{Deserialize, Serialize};
+use std::borrow::BorrowMut;
 use std::fs::File;
 use std::io::BufReader;
 use std::path::Path;
@@ -8,7 +9,7 @@ use serde_json::Result;
 use bevy_inspector_egui::Inspectable;
 use super::collision::*;
 use image::io::Reader as ImageReader;
-use image::DynamicImage;
+use image::{DynamicImage, ImageFormat};
 use bevy::render::texture::ImageSampler;
 
 
@@ -124,7 +125,7 @@ where
 fn load_scene(
     mut commands: Commands,
     asset_server: Res<AssetServer>,
-    mut collision_map: ResMut<CollisionMap>,
+    mut collision_map: ResMut<CollisionMap>
 
 ) {
     if let Ok(file) = File::open("./2dcl/assets/scene.json")
@@ -162,31 +163,63 @@ fn load_scene(
                     .insert(ComputedVisibility::default())
                     .insert(transform)
                     .id();
-
                 //Inserting components
                 for component in entity.components.iter()
                 {
                     
                     if let EntityComponent::SpriteRenderer(sprite_renderer) = component
                     {
-                        let mut sprite_bundle = commands.spawn_bundle(SpriteBundle {
-                            sprite: Sprite{
-                                color: Color::Rgba { 
-                                    red: sprite_renderer.color.x, 
-                                    green: sprite_renderer.color.y, 
-                                    blue: sprite_renderer.color.z, 
-                                    alpha:  sprite_renderer.color.w},
-                                    anchor: entity_anchor_to_anchor(sprite_renderer.anchor.clone()),
-                                ..default()
-                            },
-                            texture: asset_server.load(&sprite_renderer.sprite),
-                            transform: Transform::from_translation(Vec3{x:0.0,y:0.0,z:sprite_renderer.layer as f32 * 100.0  }),
-                            ..default()
-                            })
-                            .insert(Name::new(entity.name.clone() + " - sprite renderer"))
-                            .id();
-                        
-                            commands.entity(spawned_entity).add_child(sprite_bundle);
+                        if let Ok(mut reader) = ImageReader::open("./2dcl/assets/".to_owned()+&sprite_renderer.sprite)
+                        {
+                            reader.set_format(ImageFormat::Png);
+                            if let Ok(dynamic_image) = reader.decode()
+                            {
+                                if let DynamicImage::ImageRgba8(image) = dynamic_image
+                                {
+                                   
+                                    let mut pixels = image.pixels().into_iter();
+                                    let rows = image.rows().len();
+                                    let columns = pixels.len()/rows;
+
+
+                                    let texture: Handle<Image> = asset_server.load(&sprite_renderer.sprite);
+
+                                    transform.translation = Vec3{
+                                        x:transform.translation.x,
+                                        y:transform.translation.y,
+                                        z:transform.translation.z + sprite_renderer.layer as f32 * 100.0
+                                    };
+
+                                    let sprite = Sprite{
+                                            color: Color::Rgba { 
+                                                red: sprite_renderer.color.x, 
+                                                green: sprite_renderer.color.y, 
+                                                blue: sprite_renderer.color.z, 
+                                                alpha:  sprite_renderer.color.w},
+                                                anchor: entity_anchor_to_anchor(Vec2{x:columns as f32, y:rows as f32},sprite_renderer.anchor.clone()),
+                                            ..default()
+                                        };
+
+                                        
+                                    commands.entity(spawned_entity).insert(texture);
+                                    commands.entity(spawned_entity).insert(transform);
+                                    commands.entity(spawned_entity).insert(sprite);
+
+                                }
+                                else
+                                {
+                                    println!("!DynamicImage for {:?}",entity.name.clone()); 
+                                }
+                            }
+                            else
+                            {
+                                println!("!decode for {:?}",entity.name.clone());  
+                            }
+                        }
+                        else
+                        {
+                            println!("!ImageReader::open for {:?}",entity.name.clone());
+                        }
                     }
 
                     if let EntityComponent::BoxCollider(collider) = component
@@ -202,8 +235,9 @@ fn load_scene(
                     
                     if let EntityComponent::AlphaCollider(collider) = component
                     {
-                        if let Ok(reader) = ImageReader::open("./2dcl/assets/".to_owned()+&collider.sprite)
-                        {
+                        if let Ok(mut reader) = ImageReader::open("./2dcl/assets/".to_owned()+&collider.sprite)
+                        {        
+                            reader.set_format(ImageFormat::Png);
                             if let Ok(dynamic_image) = reader.decode()
                             {
                                 if let DynamicImage::ImageRgba8(image) = dynamic_image
@@ -247,7 +281,7 @@ fn load_scene(
 }
 
 
-fn entity_anchor_to_anchor(anchor: EntityAnchor) -> Anchor
+fn entity_anchor_to_anchor(size: Vec2, anchor: EntityAnchor) -> Anchor
 {
     match anchor
     {
@@ -257,7 +291,7 @@ fn entity_anchor_to_anchor(anchor: EntityAnchor) -> Anchor
         EntityAnchor::Center => return Anchor::Center,
         EntityAnchor::CenterLeft => return Anchor::CenterLeft,
         EntityAnchor::CenterRight => return Anchor::CenterRight,
-        EntityAnchor::Custom(vec) => return Anchor::Custom(vec),
+        EntityAnchor::Custom(vec) => return Anchor::Custom(vec/size),
         EntityAnchor::TopCenter => return Anchor::TopCenter,
         EntityAnchor::TopLeft => return Anchor::TopLeft,
         EntityAnchor::TopRight => return Anchor::TopRight

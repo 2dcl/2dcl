@@ -6,8 +6,8 @@ pub struct PlayerPlugin;
 
 
 pub const PLAYER_SCALE: f32 = 1.0;
-pub const PLAYER_SPEED: f32 = 300.0;
-pub const PLAYER_COLLIDER: Vec2 = Vec2::new(10.0,40.0);
+pub const PLAYER_SPEED: f32 = 200.0;
+pub const PLAYER_COLLIDER: Vec2 = Vec2::new(20.0,45.0);
 
 #[derive(Component, Default, Inspectable)]
 pub struct Player
@@ -123,17 +123,9 @@ fn player_movement
         walking = true;
     }
 
-
-    let mut flip_x = false;
-
     if walking
     {
         animation_state = "Run";
-
-        if x_delta< 0.0
-        {
-            flip_x = true;
-        }
 
         let target = transform.translation + Vec3::new(x_delta,0.0,0.0);
 
@@ -155,8 +147,16 @@ fn player_movement
         if let Ok(mut sprite_renderer) = player_renderer_query.get_mut(child)
         {
          
+            if x_delta > 0.0
+            {
+                sprite_renderer.1.flip_x = false;
+            }
+            else if x_delta< 0.0
+            {
+                sprite_renderer.1.flip_x = true;
+            }
+
             change_animator_state(sprite_renderer.0,animation_state.to_string());
-            sprite_renderer.1.flip_x = flip_x;
         }
     } 
 
@@ -173,7 +173,7 @@ fn collision_check(
     for (wall,collider, _player) in box_collision_query.iter()
     {
         let collision = collide(
-              Vec3{x:target_player_pos.x,y:target_player_pos.y+target_player_collider.y/2.0,z:0.0},
+            Vec3{x:target_player_pos.x,y:target_player_pos.y+target_player_collider.y/2.0,z:0.0},
             target_player_collider,
             wall.translation + collider.center.extend(0.0),
             collider.size
@@ -190,7 +190,7 @@ fn collision_check(
        
         //Alpha colliders
         let collision = collide(
-            target_player_pos,
+            Vec3{x:target_player_pos.x,y:target_player_pos.y+target_player_collider.y/2.0,z:0.0},
             target_player_collider,
             collision_location.extend(0.0), //wall.translation + collider.center.extend(0.0),
             Vec2::splat(collision_map.tile_size)
