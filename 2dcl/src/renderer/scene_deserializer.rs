@@ -40,7 +40,6 @@ pub struct EntityTransform {
     pub location: Vec2,
     pub rotation: Vec3,
     pub scale: Vec2,
-
 }
 
 
@@ -49,6 +48,8 @@ pub struct SpriteRenderer {
     pub sprite: String,
     pub color: Vec4,
     pub layer: i32,
+    pub flip_x: bool,
+    pub flip_y: bool,
     pub anchor: EntityAnchor
 }
 
@@ -187,9 +188,8 @@ fn load_scene(
                                     transform.translation = Vec3{
                                         x:transform.translation.x,
                                         y:transform.translation.y,
-                                        z:transform.translation.z + sprite_renderer.layer as f32 * 100.0
+                                        z:transform.translation.z + sprite_renderer.layer as f32 * 500.0
                                     };
-
                                     let sprite = Sprite{
                                             color: Color::Rgba { 
                                                 red: sprite_renderer.color.x, 
@@ -197,6 +197,8 @@ fn load_scene(
                                                 blue: sprite_renderer.color.z, 
                                                 alpha:  sprite_renderer.color.w},
                                                 anchor: entity_anchor_to_anchor(Vec2{x:columns as f32, y:rows as f32},sprite_renderer.anchor.clone()),
+                                                flip_x: sprite_renderer.flip_x,
+                                                flip_y: sprite_renderer.flip_y,
                                             ..default()
                                         };
 
@@ -206,19 +208,7 @@ fn load_scene(
                                     commands.entity(spawned_entity).insert(sprite);
 
                                 }
-                                else
-                                {
-                                    println!("!DynamicImage for {:?}",entity.name.clone()); 
-                                }
                             }
-                            else
-                            {
-                                println!("!decode for {:?}",entity.name.clone());  
-                            }
-                        }
-                        else
-                        {
-                            println!("!ImageReader::open for {:?}",entity.name.clone());
                         }
                     }
 

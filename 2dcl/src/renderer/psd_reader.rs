@@ -57,6 +57,8 @@ pub fn psd_read()
                     sprite: layer.name().to_owned() + ".png",
                     color: Vec4::new(1.0,1.0,1.0,1.0),
                     layer:layer_z,
+                    flip_x: false,
+                    flip_y: false,
                     anchor: EntityAnchor::BottomCenter
                 }
             };

@@ -7,7 +7,7 @@ pub struct PlayerPlugin;
 
 pub const PLAYER_SCALE: f32 = 1.0;
 pub const PLAYER_SPEED: f32 = 200.0;
-pub const PLAYER_COLLIDER: Vec2 = Vec2::new(20.0,45.0);
+pub const PLAYER_COLLIDER: Vec2 = Vec2::new(20.0,5.0);
 
 #[derive(Component, Default, Inspectable)]
 pub struct Player
@@ -41,20 +41,7 @@ fn spawn_player(
     sprite.anchor = Anchor::BottomCenter;
 
     //Spawning Entity
-    let player = commands.spawn()
-        .insert(Name::new("Player"))
-        .insert(Visibility{is_visible: true})
-        .insert(GlobalTransform::default())
-        .insert(ComputedVisibility::default())
-        .insert(Transform::default())
-        .insert(Player
-            {
-                speed: PLAYER_SPEED,
-                collider: PLAYER_COLLIDER 
-            })
-        .id();
-        
-    let player_sprite = commands.spawn_bundle(SpriteSheetBundle{
+    let player = commands.spawn_bundle(SpriteSheetBundle{
         sprite,
         texture_atlas: animator.atlas.clone(),
         transform: Transform{
@@ -63,18 +50,22 @@ fn spawn_player(
         },
         ..default()
         })
-        .insert(Name::new("Player - sprite renderer"))
         .insert(animator)
+        .insert(Name::new("Player"))
+        .insert(Player
+            {
+                speed: PLAYER_SPEED,
+                collider: PLAYER_COLLIDER 
+            })
         .id();
     
-        let mut camera_bundle = Camera2dBundle::new_with_far(1000.0);
-        camera_bundle.transform = Transform::from_translation(Vec3{x:0.0,y:0.0,z:500.0});
+        let mut camera_bundle = Camera2dBundle::new_with_far(10000.0);
+        camera_bundle.transform = Transform::from_translation(Vec3{x:0.0,y:0.0,z:5000.0});
+
         camera_bundle.projection.scale = 0.5;
         let camera_entity = commands.spawn_bundle(camera_bundle).id();
         
         commands.entity(player).add_child(camera_entity);
-        commands.entity(player).add_child(player_sprite);
-
 
     
 }
@@ -82,8 +73,8 @@ fn spawn_player(
 
 fn player_movement
 (
-    mut player_query: Query<(&mut Player, &mut Transform, &Children)>,
-    mut player_renderer_query:  Query<(&mut Animator, &mut TextureAtlasSprite, Without<Player>)>,
+    mut player_query: Query<(&mut Player, &mut Transform, &mut Animator, &mut TextureAtlasSprite)>,
+   // mut player_renderer_query:  Query<(&mut Animator, &mut TextureAtlasSprite, Without<Player>)>,
     box_collision_query: Query<(&Transform, &BoxCollider, Without<Player>)>,
     keyboard: Res<Input<KeyCode>>,
     collision_map: Res<CollisionMap>,
@@ -92,7 +83,7 @@ fn player_movement
 )
 {  
 
-    let (player, mut transform, children) = player_query.single_mut();
+    let (player, mut transform, mut animator, mut texture_atlas) = player_query.single_mut();
     let mut y_delta = 0.0;
     let mut animation_state = "Idle";
 
@@ -142,23 +133,16 @@ fn player_movement
         }
     }
 
-    for &child in children.clone().iter() {
-               
-        if let Ok(mut sprite_renderer) = player_renderer_query.get_mut(child)
-        {
-         
-            if x_delta > 0.0
-            {
-                sprite_renderer.1.flip_x = false;
-            }
-            else if x_delta< 0.0
-            {
-                sprite_renderer.1.flip_x = true;
-            }
+    if x_delta > 0.0
+    {
+        texture_atlas.flip_x = false;
+    }
+    else if x_delta< 0.0
+    {
+        texture_atlas.flip_x = true;
+    }
 
-            change_animator_state(sprite_renderer.0,animation_state.to_string());
-        }
-    } 
+    change_animator_state(animator,animation_state.to_string()); 
 
 }
 

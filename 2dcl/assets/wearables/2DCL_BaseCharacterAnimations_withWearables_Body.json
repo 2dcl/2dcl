@@ -87,7 +87,7 @@
     "trimmed": false,
     "spriteSourceSize": { "x": 0, "y": 0, "w": 42, "h": 52 },
     "sourceSize": { "w": 42, "h": 52 },
-    "duration": 350
+    "duration": 1500
    },
    {
     "filename": "2DCL_BaseCharacterAnimations_withWearables_Body 10.aseprite",
@@ -96,7 +96,7 @@
     "trimmed": false,
     "spriteSourceSize": { "x": 0, "y": 0, "w": 42, "h": 52 },
     "sourceSize": { "w": 42, "h": 52 },
-    "duration": 350
+    "duration": 1500
    }
  ],
  "meta": {

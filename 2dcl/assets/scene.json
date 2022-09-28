@@ -8,7 +8,9 @@
           "SpriteRenderer": {
             "sprite": "Barra_centro.png",
             "color": [ 1.0, 1.0, 1.0, 1.0 ],
-            "layer": 1,
+            "layer": 0,
+            "flip_x": false,
+            "flip_y": false,
             "anchor": "BottomCenter"
           }
         },
@@ -17,13 +19,6 @@
             "location": [ 0.0, 90.0 ],
             "rotation": [ 0.0, 0.0, 0.0 ],
             "scale": [ 1.0, 1.0 ]
-          }
-        },
-        {
-          "AlphaCollider": {
-            "sprite": "Barra_centro.png",
-            "channel": 3,
-            "anchor": "BottomCenter"
           }
         }
       ]
@@ -36,6 +31,8 @@
             "sprite": "Circular Bar.png",
             "color": [ 1.0, 1.0, 1.0, 1.0 ],
             "layer": 0,
+            "flip_x": false,
+            "flip_y": false,
             "anchor": "Center"
           }
         },
@@ -53,6 +50,3188 @@
             "anchor": "Center"
           }
         }
+      ]
+    },
+    {
+      "name": "Bar_InParquet",
+      "components": [
+        {
+          "SpriteRenderer": {
+            "sprite": "Bar_InParquet.png",
+            "color": [ 1.0, 1.0, 1.0, 1.0 ],
+            "layer": -3,
+            "flip_x": false,
+            "flip_y": false,
+            "anchor": "Center"
+          }
+        },
+        {
+          "Transform": {
+            "location": [ 0.0, 0.0 ],
+            "rotation": [ 0.0, 0.0, 0.0 ],
+            "scale": [ 1.0, 1.0 ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "Empedrado",
+      "components": [
+        {
+          "SpriteRenderer": {
+            "sprite": "Empedrado.png",
+            "color": [ 1.0, 1.0, 1.0, 1.0 ],
+            "layer": -5,
+            "flip_x": false,
+            "flip_y": false,
+            "anchor": "Center"
+          }
+        },
+        {
+          "Transform": {
+            "location": [ 0.0, 0.0 ],
+            "rotation": [ 0.0, 0.0, 0.0 ],
+            "scale": [ 1.0, 1.0 ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "Pasto Rojo",
+      "components": [
+        {
+          "SpriteRenderer": {
+            "sprite": "Pasto Rojo.png",
+            "color": [ 1.0, 1.0, 1.0, 1.0 ],
+            "layer": -3,
+            "flip_x": false,
+            "flip_y": false,
+            "anchor": "Center"
+          }
+        },
+        {
+          "Transform": {
+            "location": [ 0.0, 0.0 ],
+            "rotation": [ 0.0, 0.0, 0.0 ],
+            "scale": [ 1.0, 1.0 ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "Pavimento",
+      "components": [
+        {
+          "SpriteRenderer": {
+            "sprite": "Pavimento.png",
+            "color": [ 1.0, 1.0, 1.0, 1.0 ],
+            "layer": -4,
+            "flip_x": false,
+            "flip_y": false,
+            "anchor": "Center"
+          }
+        },
+        {
+          "Transform": {
+            "location": [ 0.0, 0.0 ],
+            "rotation": [ 0.0, 0.0, 0.0 ],
+            "scale": [ 1.0, 1.0 ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "Carpet_1",
+      "components": [
+        {
+          "SpriteRenderer": {
+            "sprite": "Carpet.png",
+            "color": [ 1.0, 1.0, 1.0, 1.0 ],
+            "layer": -2,
+            "flip_x": false,
+            "flip_y": false,
+            "anchor": "Center"
+          }
+        },
+        {
+          "Transform": {
+            "location": [ -225.0, 75.0 ],
+            "rotation": [ 0.0, 0.0, 0.0 ],
+            "scale": [ 1.0, 1.0 ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "Carpet_2",
+      "components": [
+        {
+          "SpriteRenderer": {
+            "sprite": "Carpet.png",
+            "color": [ 1.0, 1.0, 1.0, 1.0 ],
+            "layer": -2,
+            "flip_x": false,
+            "flip_y": false,
+            "anchor": "Center"
+          }
+        },
+        {
+          "Transform": {
+            "location": [ 225.0, 75.0 ],
+            "rotation": [ 0.0, 0.0, 0.0 ],
+            "scale": [ 1.0, 1.0 ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "Carpet_3",
+      "components": [
+        {
+          "SpriteRenderer": {
+            "sprite": "Carpet.png",
+            "color": [ 1.0, 1.0, 1.0, 1.0 ],
+            "layer": -2,
+            "flip_x": false,
+            "flip_y": false,
+            "anchor": "Center"
+          }
+        },
+        {
+          "Transform": {
+            "location": [ -225.0, -75.0 ],
+            "rotation": [ 0.0, 0.0, 0.0 ],
+            "scale": [ 1.0, 1.0 ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "Carpet_4",
+      "components": [
+        {
+          "SpriteRenderer": {
+            "sprite": "Carpet.png",
+            "color": [ 1.0, 1.0, 1.0, 1.0 ],
+            "layer": -2,
+            "flip_x": false,
+            "flip_y": false,
+            "anchor": "Center"
+          }
+        },
+        {
+          "Transform": {
+            "location": [ 225.0, -75.0 ],
+            "rotation": [ 0.0, 0.0, 0.0 ],
+            "scale": [ 1.0, 1.0 ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "Vertical_Wall_1",
+      "components": [
+        {
+          "SpriteRenderer": {
+            "sprite": "Wall_SegmentVert.png",
+            "color": [ 1.0, 1.0, 1.0, 1.0 ],
+            "layer": -1,
+            "flip_x": false,
+            "flip_y": false,
+            "anchor": "BottomCenter"
+          }
+        },
+        {
+          "Transform": {
+            "location": [ -355.5, 164.0 ],
+            "rotation": [ 0.0, 0.0, 0.0 ],
+            "scale": [ 1.0, 1.0 ]
+          }
+        },
+        {
+          "AlphaCollider": {
+            "sprite": "Wall_SegmentVert.png",
+            "channel": 3,
+            "anchor": "BottomCenter"
+          }
+        }
+      ]
+    },
+    {
+      "name": "Vertical_Wall_2",
+      "components": [
+        {
+          "SpriteRenderer": {
+            "sprite": "Wall_SegmentVert.png",
+            "color": [ 1.0, 1.0, 1.0, 1.0 ],
+            "layer": -1,
+            "flip_x": false,
+            "flip_y": false,
+            "anchor": "BottomCenter"
+          }
+        },
+        {
+          "Transform": {
+            "location": [ -355.5, 117.0 ],
+            "rotation": [ 0.0, 0.0, 0.0 ],
+            "scale": [ 1.0, 1.0 ]
+          }
+        },
+        {
+          "AlphaCollider": {
+            "sprite": "Wall_SegmentVert.png",
+            "channel": 3,
+            "anchor": "BottomCenter"
+          }
+        }
+      ]
+    },
+    {
+      "name": "Vertical_Wall_3",
+      "components": [
+        {
+          "SpriteRenderer": {
+            "sprite": "Wall_SegmentVert.png",
+            "color": [ 1.0, 1.0, 1.0, 1.0 ],
+            "layer": -1,
+            "flip_x": false,
+            "flip_y": false,
+            "anchor": "BottomCenter"
+          }
+        },
+        {
+          "Transform": {
+            "location": [ -355.5, 70.0 ],
+            "rotation": [ 0.0, 0.0, 0.0 ],
+            "scale": [ 1.0, 1.0 ]
+          }
+        },
+        {
+          "AlphaCollider": {
+            "sprite": "Wall_SegmentVert.png",
+            "channel": 3,
+            "anchor": "BottomCenter"
+          }
+        }
+      ]
+    },
+    {
+      "name": "Vertical_Wall_4",
+      "components": [
+        {
+          "SpriteRenderer": {
+            "sprite": "Wall_SegmentVert.png",
+            "color": [ 1.0, 1.0, 1.0, 1.0 ],
+            "layer": -1,
+            "flip_x": false,
+            "flip_y": false,
+            "anchor": "BottomCenter"
+          }
+        },
+        {
+          "Transform": {
+            "location": [ -355.5, 23.0 ],
+            "rotation": [ 0.0, 0.0, 0.0 ],
+            "scale": [ 1.0, 1.0 ]
+          }
+        },
+        {
+          "AlphaCollider": {
+            "sprite": "Wall_SegmentVert.png",
+            "channel": 3,
+            "anchor": "BottomCenter"
+          }
+        }
+      ]
+    },
+    {
+      "name": "Vertical_Wall_5",
+      "components": [
+        {
+          "SpriteRenderer": {
+            "sprite": "Wall_SegmentVert.png",
+            "color": [ 1.0, 1.0, 1.0, 1.0 ],
+            "layer": -1,
+            "flip_x": false,
+            "flip_y": false,
+            "anchor": "BottomCenter"
+          }
+        },
+        {
+          "Transform": {
+            "location": [ -355.5, -24.0 ],
+            "rotation": [ 0.0, 0.0, 0.0 ],
+            "scale": [ 1.0, 1.0 ]
+          }
+        },
+        {
+          "AlphaCollider": {
+            "sprite": "Wall_SegmentVert.png",
+            "channel": 3,
+            "anchor": "BottomCenter"
+          }
+        }
+      ]
+    },
+    {
+      "name": "Vertical_Wall_6",
+      "components": [
+        {
+          "SpriteRenderer": {
+            "sprite": "Wall_SegmentVert.png",
+            "color": [ 1.0, 1.0, 1.0, 1.0 ],
+            "layer": -1,
+            "flip_x": false,
+            "flip_y": false,
+            "anchor": "BottomCenter"
+          }
+        },
+        {
+          "Transform": {
+            "location": [ -355.5, -71.0 ],
+            "rotation": [ 0.0, 0.0, 0.0 ],
+            "scale": [ 1.0, 1.0 ]
+          }
+        },
+        {
+          "AlphaCollider": {
+            "sprite": "Wall_SegmentVert.png",
+            "channel": 3,
+            "anchor": "BottomCenter"
+          }
+        }
+      ]
+    },
+    {
+      "name": "Vertical_Wall_7",
+      "components": [
+        {
+          "SpriteRenderer": {
+            "sprite": "Wall_SegmentVert.png",
+            "color": [ 1.0, 1.0, 1.0, 1.0 ],
+            "layer": -1,
+            "flip_x": false,
+            "flip_y": false,
+            "anchor": "BottomCenter"
+          }
+        },
+        {
+          "Transform": {
+            "location": [ -355.5, -118.0 ],
+            "rotation": [ 0.0, 0.0, 0.0 ],
+            "scale": [ 1.0, 1.0 ]
+          }
+        },
+        {
+          "AlphaCollider": {
+            "sprite": "Wall_SegmentVert.png",
+            "channel": 3,
+            "anchor": "BottomCenter"
+          }
+        }
+      ]
+    },
+    {
+      "name": "Vertical_Wall_8",
+      "components": [
+        {
+          "SpriteRenderer": {
+            "sprite": "Wall_SegmentVert.png",
+            "color": [ 1.0, 1.0, 1.0, 1.0 ],
+            "layer": -1,
+            "flip_x": false,
+            "flip_y": false,
+            "anchor": "BottomCenter"
+          }
+        },
+        {
+          "Transform": {
+            "location": [ -355.5, -165.0 ],
+            "rotation": [ 0.0, 0.0, 0.0 ],
+            "scale": [ 1.0, 1.0 ]
+          }
+        },
+        {
+          "AlphaCollider": {
+            "sprite": "Wall_SegmentVert.png",
+            "channel": 3,
+            "anchor": "BottomCenter"
+          }
+        }
+      ]
+    },
+    {
+      "name": "Vertical_Wall_9",
+      "components": [
+        {
+          "SpriteRenderer": {
+            "sprite": "Wall_SegmentVert.png",
+            "color": [ 1.0, 1.0, 1.0, 1.0 ],
+            "layer": -1,
+            "flip_x": false,
+            "flip_y": false,
+            "anchor": "BottomCenter"
+          }
+        },
+        {
+          "Transform": {
+            "location": [ 355.5, 164.0 ],
+            "rotation": [ 0.0, 0.0, 0.0 ],
+            "scale": [ 1.0, 1.0 ]
+          }
+        },
+        {
+          "AlphaCollider": {
+            "sprite": "Wall_SegmentVert.png",
+            "channel": 3,
+            "anchor": "BottomCenter"
+          }
+        }
+      ]
+    },
+    {
+      "name": "Vertical_Wall_10",
+      "components": [
+        {
+          "SpriteRenderer": {
+            "sprite": "Wall_SegmentVert.png",
+            "color": [ 1.0, 1.0, 1.0, 1.0 ],
+            "layer": -1,
+            "flip_x": false,
+            "flip_y": false,
+            "anchor": "BottomCenter"
+          }
+        },
+        {
+          "Transform": {
+            "location": [ 355.5, 117.0 ],
+            "rotation": [ 0.0, 0.0, 0.0 ],
+            "scale": [ 1.0, 1.0 ]
+          }
+        },
+        {
+          "AlphaCollider": {
+            "sprite": "Wall_SegmentVert.png",
+            "channel": 3,
+            "anchor": "BottomCenter"
+          }
+        }
+      ]
+    },
+    {
+      "name": "Vertical_Wall_11",
+      "components": [
+        {
+          "SpriteRenderer": {
+            "sprite": "Wall_SegmentVert.png",
+            "color": [ 1.0, 1.0, 1.0, 1.0 ],
+            "layer": -1,
+            "flip_x": false,
+            "flip_y": false,
+            "anchor": "BottomCenter"
+          }
+        },
+        {
+          "Transform": {
+            "location": [ 355.5, 70.0 ],
+            "rotation": [ 0.0, 0.0, 0.0 ],
+            "scale": [ 1.0, 1.0 ]
+          }
+        },
+        {
+          "AlphaCollider": {
+            "sprite": "Wall_SegmentVert.png",
+            "channel": 3,
+            "anchor": "BottomCenter"
+          }
+        }
+      ]
+    },
+    {
+      "name": "Vertical_Wall_12",
+      "components": [
+        {
+          "SpriteRenderer": {
+            "sprite": "Wall_SegmentVert.png",
+            "color": [ 1.0, 1.0, 1.0, 1.0 ],
+            "layer": -1,
+            "flip_x": false,
+            "flip_y": false,
+            "anchor": "BottomCenter"
+          }
+        },
+        {
+          "Transform": {
+            "location": [ 355.5, 23.0 ],
+            "rotation": [ 0.0, 0.0, 0.0 ],
+            "scale": [ 1.0, 1.0 ]
+          }
+        },
+        {
+          "AlphaCollider": {
+            "sprite": "Wall_SegmentVert.png",
+            "channel": 3,
+            "anchor": "BottomCenter"
+          }
+        }
+      ]
+    },
+    {
+      "name": "Vertical_Wall_13",
+      "components": [
+        {
+          "SpriteRenderer": {
+            "sprite": "Wall_SegmentVert.png",
+            "color": [ 1.0, 1.0, 1.0, 1.0 ],
+            "layer": -1,
+            "flip_x": false,
+            "flip_y": false,
+            "anchor": "BottomCenter"
+          }
+        },
+        {
+          "Transform": {
+            "location": [ 355.5, -24.0 ],
+            "rotation": [ 0.0, 0.0, 0.0 ],
+            "scale": [ 1.0, 1.0 ]
+          }
+        },
+        {
+          "AlphaCollider": {
+            "sprite": "Wall_SegmentVert.png",
+            "channel": 3,
+            "anchor": "BottomCenter"
+          }
+        }
+      ]
+    },
+    {
+      "name": "Vertical_Wall_14",
+      "components": [
+        {
+          "SpriteRenderer": {
+            "sprite": "Wall_SegmentVert.png",
+            "color": [ 1.0, 1.0, 1.0, 1.0 ],
+            "layer": -1,
+            "flip_x": false,
+            "flip_y": false,
+            "anchor": "BottomCenter"
+          }
+        },
+        {
+          "Transform": {
+            "location": [ 355.5, -71.0 ],
+            "rotation": [ 0.0, 0.0, 0.0 ],
+            "scale": [ 1.0, 1.0 ]
+          }
+        },
+        {
+          "AlphaCollider": {
+            "sprite": "Wall_SegmentVert.png",
+            "channel": 3,
+            "anchor": "BottomCenter"
+          }
+        }
+      ]
+    },
+    {
+      "name": "Vertical_Wall_15",
+      "components": [
+        {
+          "SpriteRenderer": {
+            "sprite": "Wall_SegmentVert.png",
+            "color": [ 1.0, 1.0, 1.0, 1.0 ],
+            "layer": -1,
+            "flip_x": false,
+            "flip_y": false,
+            "anchor": "BottomCenter"
+          }
+        },
+        {
+          "Transform": {
+            "location": [ 355.5, -118.0 ],
+            "rotation": [ 0.0, 0.0, 0.0 ],
+            "scale": [ 1.0, 1.0 ]
+          }
+        },
+        {
+          "AlphaCollider": {
+            "sprite": "Wall_SegmentVert.png",
+            "channel": 3,
+            "anchor": "BottomCenter"
+          }
+        }
+      ]
+    },
+    {
+      "name": "Vertical_Wall_16",
+      "components": [
+        {
+          "SpriteRenderer": {
+            "sprite": "Wall_SegmentVert.png",
+            "color": [ 1.0, 1.0, 1.0, 1.0 ],
+            "layer": -1,
+            "flip_x": false,
+            "flip_y": false,
+            "anchor": "BottomCenter"
+          }
+        },
+        {
+          "Transform": {
+            "location": [ 355.5, -165.0 ],
+            "rotation": [ 0.0, 0.0, 0.0 ],
+            "scale": [ 1.0, 1.0 ]
+          }
+        },
+        {
+          "AlphaCollider": {
+            "sprite": "Wall_SegmentVert.png",
+            "channel": 3,
+            "anchor": "BottomCenter"
+          }
+        }
+      ]
+    },
+    {
+      "name": "Wall_Turn_1",
+      "components": [
+        {
+          "SpriteRenderer": {
+            "sprite": "Wall_TurnVertTo45.png",
+            "color": [ 1.0, 1.0, 1.0, 1.0 ],
+            "layer": 0,
+            "flip_x": false,
+            "flip_y": false,
+            "anchor": "BottomCenter"
+          }
+        },
+        {
+          "Transform": {
+            "location": [ -352.0, -221.0 ],
+            "rotation": [ 0.0, 0.0, 0.0 ],
+            "scale": [ 1.0, 1.0 ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "Wall_Turn_2",
+      "components": [
+        {
+          "SpriteRenderer": {
+            "sprite": "Wall_TurnVertTo45.png",
+            "color": [ 1.0, 1.0, 1.0, 1.0 ],
+            "layer": 0,
+            "flip_x": true,
+            "flip_y": false,
+            "anchor": "BottomCenter"
+          }
+        },
+        {
+          "Transform": {
+            "location": [ 352.0, -221.0 ],
+            "rotation": [ 0.0, 0.0, 0.0 ],
+            "scale": [ 1.0, 1.0 ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "Wall_Diagonal_1",
+      "components": [
+        {
+          "SpriteRenderer": {
+            "sprite": "Wall_Segment45.png",
+            "color": [ 1.0, 1.0, 1.0, 1.0 ],
+            "layer": 0,
+            "flip_x": false,
+            "flip_y": false,
+            "anchor": "BottomCenter"
+          }
+        },
+        {
+          "Transform": {
+            "location": [ -328.0, -253.0 ],
+            "rotation": [ 0.0, 0.0, 0.0 ],
+            "scale": [ 1.0, 1.0 ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "Wall_Diagonal_2",
+      "components": [
+        {
+          "SpriteRenderer": {
+            "sprite": "Wall_Segment45.png",
+            "color": [ 1.0, 1.0, 1.0, 1.0 ],
+            "layer": 0,
+            "flip_x": false,
+            "flip_y": false,
+            "anchor": "BottomCenter"
+          }
+        },
+        {
+          "Transform": {
+            "location": [ -312.0, -269.0 ],
+            "rotation": [ 0.0, 0.0, 0.0 ],
+            "scale": [ 1.0, 1.0 ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "Wall_Diagonal_3",
+      "components": [
+        {
+          "SpriteRenderer": {
+            "sprite": "Wall_Segment45.png",
+            "color": [ 1.0, 1.0, 1.0, 1.0 ],
+            "layer": 0,
+            "flip_x": false,
+            "flip_y": false,
+            "anchor": "BottomCenter"
+          }
+        },
+        {
+          "Transform": {
+            "location": [ -280.0, -301.0 ],
+            "rotation": [ 0.0, 0.0, 0.0 ],
+            "scale": [ 1.0, 1.0 ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "Wall_Diagonal_4",
+      "components": [
+        {
+          "SpriteRenderer": {
+            "sprite": "Wall_Segment45.png",
+            "color": [ 1.0, 1.0, 1.0, 1.0 ],
+            "layer": 0,
+            "flip_x": false,
+            "flip_y": false,
+            "anchor": "BottomCenter"
+          }
+        },
+        {
+          "Transform": {
+            "location": [ -248.0, -333.0 ],
+            "rotation": [ 0.0, 0.0, 0.0 ],
+            "scale": [ 1.0, 1.0 ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "Wall_Diagonal_5",
+      "components": [
+        {
+          "SpriteRenderer": {
+            "sprite": "Wall_Segment45.png",
+            "color": [ 1.0, 1.0, 1.0, 1.0 ],
+            "layer": 0,
+            "flip_x": true,
+            "flip_y": false,
+            "anchor": "BottomCenter"
+          }
+        },
+        {
+          "Transform": {
+            "location": [ 328.0, -253.0 ],
+            "rotation": [ 0.0, 0.0, 0.0 ],
+            "scale": [ 1.0, 1.0 ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "Wall_Diagonal_6",
+      "components": [
+        {
+          "SpriteRenderer": {
+            "sprite": "Wall_Segment45.png",
+            "color": [ 1.0, 1.0, 1.0, 1.0 ],
+            "layer": 0,
+            "flip_x": true,
+            "flip_y": false,
+            "anchor": "BottomCenter"
+          }
+        },
+        {
+          "Transform": {
+            "location": [ 312.0, -269.0 ],
+            "rotation": [ 0.0, 0.0, 0.0 ],
+            "scale": [ 1.0, 1.0 ]
+          }
+        }
+      ]
+    },{
+      "name": "Wall_Diagonal_7",
+      "components": [
+        {
+          "SpriteRenderer": {
+            "sprite": "Wall_Segment45.png",
+            "color": [ 1.0, 1.0, 1.0, 1.0 ],
+            "layer": 0,
+            "flip_x": true,
+            "flip_y": false,
+            "anchor": "BottomCenter"
+          }
+        },
+        {
+          "Transform": {
+            "location": [ 280.0, -301.0 ],
+            "rotation": [ 0.0, 0.0, 0.0 ],
+            "scale": [ 1.0, 1.0 ]
+          }
+        }
+      ]
+    },{
+      "name": "Wall_Diagonal_8",
+      "components": [
+        {
+          "SpriteRenderer": {
+            "sprite": "Wall_Segment45.png",
+            "color": [ 1.0, 1.0, 1.0, 1.0 ],
+            "layer": 0,
+            "flip_x": true,
+            "flip_y": false,
+            "anchor": "BottomCenter"
+          }
+        },
+        {
+          "Transform": {
+            "location": [ 248.0, -333.0 ],
+            "rotation": [ 0.0, 0.0, 0.0 ],
+            "scale": [ 1.0, 1.0 ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "Wall_Horizontal_1",
+      "components": [
+        {
+          "SpriteRenderer": {
+            "sprite": "Wall_SegmentHorizontal.png",
+            "color": [ 1.0, 1.0, 1.0, 1.0 ],
+            "layer": 0,
+            "flip_x": false,
+            "flip_y": false,
+            "anchor": "BottomCenter"
+          }
+        },
+        {
+          "Transform": {
+            "location": [ -106.0, -336.0 ],
+            "rotation": [ 0.0, 0.0, 0.0 ],
+            "scale": [ 1.0, 1.0 ]
+          }
+        },
+        {
+          "BoxCollider": {
+            "center": [ 0.0, 0.0 ],
+            "size": [ 48.0, 20.0]
+          }
+        }
+      ]
+    },
+    {
+      "name": "Wall_Horizontal_2",
+      "components": [
+        {
+          "SpriteRenderer": {
+            "sprite": "Wall_SegmentHorizontal.png",
+            "color": [ 1.0, 1.0, 1.0, 1.0 ],
+            "layer": 0,
+            "flip_x": false,
+            "flip_y": false,
+            "anchor": "BottomCenter"
+          }
+        },
+        {
+          "Transform": {
+            "location": [ -154.0, -336.0 ],
+            "rotation": [ 0.0, 0.0, 0.0 ],
+            "scale": [ 1.0, 1.0 ]
+          }
+        },
+        {
+          "BoxCollider": {
+            "center": [ 0.0, 0.0 ],
+            "size": [ 48.0, 20.0]
+          }
+        }
+      ]
+    },
+    {
+      "name": "Wall_Horizontal_3",
+      "components": [
+        {
+          "SpriteRenderer": {
+            "sprite": "Wall_SegmentHorizontal.png",
+            "color": [ 1.0, 1.0, 1.0, 1.0 ],
+            "layer": 0,
+            "flip_x": false,
+            "flip_y": false,
+            "anchor": "BottomCenter"
+          }
+        },
+        {
+          "Transform": {
+            "location": [ -202.0, -336.0 ],
+            "rotation": [ 0.0, 0.0, 0.0 ],
+            "scale": [ 1.0, 1.0 ]
+          }
+        },
+        {
+          "BoxCollider": {
+            "center": [ 0.0, 0.0 ],
+            "size": [ 48.0, 20.0]
+          }
+        }
+      ]
+    },
+    {
+      "name": "Wall_Horizontal_4",
+      "components": [
+        {
+          "SpriteRenderer": {
+            "sprite": "Wall_SegmentHorizontal.png",
+            "color": [ 1.0, 1.0, 1.0, 1.0 ],
+            "layer": 0,
+            "flip_x": false,
+            "flip_y": false,
+            "anchor": "BottomCenter"
+          }
+        },
+        {
+          "Transform": {
+            "location": [ 106.0, -336.0 ],
+            "rotation": [ 0.0, 0.0, 0.0 ],
+            "scale": [ 1.0, 1.0 ]
+          }
+        },
+        {
+          "BoxCollider": {
+            "center": [ 0.0, 0.0 ],
+            "size": [ 48.0, 20.0]
+          }
+        }
+      ]
+    },
+    {
+      "name": "Wall_Horizontal_5",
+      "components": [
+        {
+          "SpriteRenderer": {
+            "sprite": "Wall_SegmentHorizontal.png",
+            "color": [ 1.0, 1.0, 1.0, 1.0 ],
+            "layer": 0,
+            "flip_x": false,
+            "flip_y": false,
+            "anchor": "BottomCenter"
+          }
+        },
+        {
+          "Transform": {
+            "location": [ 154.0, -336.0 ],
+            "rotation": [ 0.0, 0.0, 0.0 ],
+            "scale": [ 1.0, 1.0 ]
+          }
+        },
+        {
+          "BoxCollider": {
+            "center": [ 0.0, 0.0 ],
+            "size": [ 48.0, 20.0]
+          }
+        }
+      ]
+    },
+    {
+      "name": "Wall_Horizontal_6",
+      "components": [
+        {
+          "SpriteRenderer": {
+            "sprite": "Wall_SegmentHorizontal.png",
+            "color": [ 1.0, 1.0, 1.0, 1.0 ],
+            "layer": 0,
+            "flip_x": false,
+            "flip_y": false,
+            "anchor": "BottomCenter"
+          }
+        },
+        {
+          "Transform": {
+            "location": [ 202.0, -336.0 ],
+            "rotation": [ 0.0, 0.0, 0.0 ],
+            "scale": [ 1.0, 1.0 ]
+          }
+        },
+        {
+          "BoxCollider": {
+            "center": [ 0.0, 0.0 ],
+            "size": [ 48.0, 20.0]
+          }
+        }
+      ]
+    },
+    {
+      "name": "Wall_Turn_3",
+      "components": [
+        {
+          "SpriteRenderer": {
+            "sprite": "Wall_TurnTo45up.png",
+            "color": [ 1.0, 1.0, 1.0, 1.0 ],
+            "layer": 0,
+            "flip_x": false,
+            "flip_y": false,
+            "anchor": "BottomCenter"
+          }
+        },
+        {
+          "Transform": {
+            "location": [ -224.0, -336.0 ],
+            "rotation": [ 0.0, 0.0, 0.0 ],
+            "scale": [ 1.0, 1.0 ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "Wall_Turn_4",
+      "components": [
+        {
+          "SpriteRenderer": {
+            "sprite": "Wall_TurnTo45up.png",
+            "color": [ 1.0, 1.0, 1.0, 1.0 ],
+            "layer": 0,
+            "flip_x": true,
+            "flip_y": false,
+            "anchor": "BottomCenter"
+          }
+        },
+        {
+          "Transform": {
+            "location": [ 224.0, -336.0 ],
+            "rotation": [ 0.0, 0.0, 0.0 ],
+            "scale": [ 1.0, 1.0 ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "Wall_Door_Hole_1",
+      "components": [
+        {
+          "SpriteRenderer": {
+            "sprite": "Wall_SegmentDoorHole.png",
+            "color": [ 1.0, 1.0, 1.0, 1.0 ],
+            "layer": 0,
+            "flip_x": false,
+            "flip_y": false,
+            "anchor": "BottomCenter"
+          }
+        },
+        {
+          "Transform": {
+            "location": [ 0.0, -336.0 ],
+            "rotation": [ 0.0, 0.0, 0.0 ],
+            "scale": [ 1.0, 1.0 ]
+          }
+        }
+      ]
+    }
+    ,
+    {
+      "name": "Door_Open",
+      "components": [
+        {
+          "SpriteRenderer": {
+            "sprite": "Door_Open.png",
+            "color": [ 1.0, 1.0, 1.0, 1.0 ],
+            "layer": 0,
+            "flip_x": false,
+            "flip_y": false,
+            "anchor": "BottomCenter"
+          }
+        },
+        {
+          "Transform": {
+            "location": [ 0.0, -337.0 ],
+            "rotation": [ 0.0, 0.0, 0.0 ],
+            "scale": [ 1.0, 1.0 ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "Wall_Door_Hole_2",
+      "components": [
+        {
+          "SpriteRenderer": {
+            "sprite": "Wall_SegmentDoorHole.png",
+            "color": [ 1.0, 1.0, 1.0, 1.0 ],
+            "layer": 0,
+            "flip_x": false,
+            "flip_y": false,
+            "anchor": "BottomCenter"
+          }
+        },
+        {
+          "Transform": {
+            "location": [ 0.0, 288.0 ],
+            "rotation": [ 0.0, 0.0, 0.0 ],
+            "scale": [ 1.0, 1.0 ]
+          }
+        }
+      ]
+    }
+    ,
+    {
+      "name": "Door_Open",
+      "components": [
+        {
+          "SpriteRenderer": {
+            "sprite": "Door_Closed.png",
+            "color": [ 1.0, 1.0, 1.0, 1.0 ],
+            "layer": 0,
+            "flip_x": false,
+            "flip_y": false,
+            "anchor": "BottomCenter"
+          }
+        },
+        {
+          "Transform": {
+            "location": [ 0.0, 287.0 ],
+            "rotation": [ 0.0, 0.0, 0.0 ],
+            "scale": [ 1.0, 1.0 ]
+          }
+        },
+        {
+          "BoxCollider": {
+            "center": [ 0.0, 0.0 ],
+            "size": [ 150.0, 20.0]
+          }
+        }
+      ]
+    },
+    {
+      "name": "Wall_Horizontal_7",
+      "components": [
+        {
+          "SpriteRenderer": {
+            "sprite": "Wall_SegmentHorizontal.png",
+            "color": [ 1.0, 1.0, 1.0, 1.0 ],
+            "layer": 0,
+            "flip_x": false,
+            "flip_y": false,
+            "anchor": "BottomCenter"
+          }
+        },
+        {
+          "Transform": {
+            "location": [ -106.0, 288.0 ],
+            "rotation": [ 0.0, 0.0, 0.0 ],
+            "scale": [ 1.0, 1.0 ]
+          }
+        },
+        {
+          "BoxCollider": {
+            "center": [ 0.0, 0.0 ],
+            "size": [ 48.0, 20.0]
+          }
+        }
+      ]
+    },
+    {
+      "name": "Wall_Horizontal_8",
+      "components": [
+        {
+          "SpriteRenderer": {
+            "sprite": "Wall_SegmentHorizontal.png",
+            "color": [ 1.0, 1.0, 1.0, 1.0 ],
+            "layer": 0,
+            "flip_x": false,
+            "flip_y": false,
+            "anchor": "BottomCenter"
+          }
+        },
+        {
+          "Transform": {
+            "location": [ -154.0, 288.0 ],
+            "rotation": [ 0.0, 0.0, 0.0 ],
+            "scale": [ 1.0, 1.0 ]
+          }
+        },
+        {
+          "BoxCollider": {
+            "center": [ 0.0, 0.0 ],
+            "size": [ 48.0, 20.0]
+          }
+        }
+      ]
+    },
+    {
+      "name": "Wall_Horizontal_9",
+      "components": [
+        {
+          "SpriteRenderer": {
+            "sprite": "Wall_SegmentHorizontal.png",
+            "color": [ 1.0, 1.0, 1.0, 1.0 ],
+            "layer": 0,
+            "flip_x": false,
+            "flip_y": false,
+            "anchor": "BottomCenter"
+          }
+        },
+        {
+          "Transform": {
+            "location": [ -195.0, 288.0 ],
+            "rotation": [ 0.0, 0.0, 0.0 ],
+            "scale": [ 1.0, 1.0 ]
+          }
+        },
+        {
+          "BoxCollider": {
+            "center": [ 0.0, 0.0 ],
+            "size": [ 48.0, 20.0]
+          }
+        }
+      ]
+    },
+    {
+      "name": "Wall_Horizontal_10",
+      "components": [
+        {
+          "SpriteRenderer": {
+            "sprite": "Wall_SegmentHorizontal.png",
+            "color": [ 1.0, 1.0, 1.0, 1.0 ],
+            "layer": 0,
+            "flip_x": false,
+            "flip_y": false,
+            "anchor": "BottomCenter"
+          }
+        },
+        {
+          "Transform": {
+            "location": [ 106.0, 288.0 ],
+            "rotation": [ 0.0, 0.0, 0.0 ],
+            "scale": [ 1.0, 1.0 ]
+          }
+        },
+        {
+          "BoxCollider": {
+            "center": [ 0.0, 0.0 ],
+            "size": [ 48.0, 20.0]
+          }
+        }
+      ]
+    },
+    {
+      "name": "Wall_Horizontal_11",
+      "components": [
+        {
+          "SpriteRenderer": {
+            "sprite": "Wall_SegmentHorizontal.png",
+            "color": [ 1.0, 1.0, 1.0, 1.0 ],
+            "layer": 0,
+            "flip_x": false,
+            "flip_y": false,
+            "anchor": "BottomCenter"
+          }
+        },
+        {
+          "Transform": {
+            "location": [ 154.0, 288.0 ],
+            "rotation": [ 0.0, 0.0, 0.0 ],
+            "scale": [ 1.0, 1.0 ]
+          }
+        },
+        {
+          "BoxCollider": {
+            "center": [ 0.0, 0.0 ],
+            "size": [ 48.0, 20.0]
+          }
+        }
+      ]
+    },
+    {
+      "name": "Wall_Horizontal_12",
+      "components": [
+        {
+          "SpriteRenderer": {
+            "sprite": "Wall_SegmentHorizontal.png",
+            "color": [ 1.0, 1.0, 1.0, 1.0 ],
+            "layer": 0,
+            "flip_x": false,
+            "flip_y": false,
+            "anchor": "BottomCenter"
+          }
+        },
+        {
+          "Transform": {
+            "location": [ 195.0, 288.0 ],
+            "rotation": [ 0.0, 0.0, 0.0 ],
+            "scale": [ 1.0, 1.0 ]
+          }
+        },
+        {
+          "BoxCollider": {
+            "center": [ 0.0, 0.0 ],
+            "size": [ 48.0, 20.0]
+          }
+        }
+      ]
+    },
+    {
+      "name": "Wall_Turn_5",
+      "components": [
+        {
+          "SpriteRenderer": {
+            "sprite": "Wall_TurnTo45down.png",
+            "color": [ 1.0, 1.0, 1.0, 1.0 ],
+            "layer": 0,
+            "flip_x": true,
+            "flip_y": false,
+            "anchor": "BottomCenter"
+          }
+        },
+        {
+          "Transform": {
+            "location": [ -224.0, 274.0 ],
+            "rotation": [ 0.0, 0.0, 0.0 ],
+            "scale": [ 1.0, 1.0 ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "Wall_Turn_6",
+      "components": [
+        {
+          "SpriteRenderer": {
+            "sprite": "Wall_TurnTo45down.png",
+            "color": [ 1.0, 1.0, 1.0, 1.0 ],
+            "layer": 0,
+            "flip_x": false,
+            "flip_y": false,
+            "anchor": "BottomCenter"
+          }
+        },
+        {
+          "Transform": {
+            "location": [ 224.0, 274.0 ],
+            "rotation": [ 0.0, 0.0, 0.0 ],
+            "scale": [ 1.0, 1.0 ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "Wall_Diagonal_9",
+      "components": [
+        {
+          "SpriteRenderer": {
+            "sprite": "Wall_Segment45.png",
+            "color": [ 1.0, 1.0, 1.0, 1.0 ],
+            "layer": 0,
+            "flip_x": true,
+            "flip_y": false,
+            "anchor": "BottomCenter"
+          }
+        },
+        {
+          "Transform": {
+            "location": [ -248.0, 242.0 ],
+            "rotation": [ 0.0, 0.0, 0.0 ],
+            "scale": [ 1.0, 1.0 ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "Wall_Diagonal_10",
+      "components": [
+        {
+          "SpriteRenderer": {
+            "sprite": "Wall_Segment45.png",
+            "color": [ 1.0, 1.0, 1.0, 1.0 ],
+            "layer": 0,
+            "flip_x": true,
+            "flip_y": false,
+            "anchor": "BottomCenter"
+          }
+        },
+        {
+          "Transform": {
+            "location": [ -280.0, 210.0 ],
+            "rotation": [ 0.0, 0.0, 0.0 ],
+            "scale": [ 1.0, 1.0 ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "Wall_Diagonal_11",
+      "components": [
+        {
+          "SpriteRenderer": {
+            "sprite": "Wall_Segment45.png",
+            "color": [ 1.0, 1.0, 1.0, 1.0 ],
+            "layer": 0,
+            "flip_x": true,
+            "flip_y": false,
+            "anchor": "BottomCenter"
+          }
+        },
+        {
+          "Transform": {
+            "location": [ -312.0, 178.0 ],
+            "rotation": [ 0.0, 0.0, 0.0 ],
+            "scale": [ 1.0, 1.0 ]
+          }
+        }
+      ]
+    }
+    ,
+    {
+      "name": "Wall_Diagonal_12",
+      "components": [
+        {
+          "SpriteRenderer": {
+            "sprite": "Wall_Segment45.png",
+            "color": [ 1.0, 1.0, 1.0, 1.0 ],
+            "layer": 0,
+            "flip_x": true,
+            "flip_y": false,
+            "anchor": "BottomCenter"
+          }
+        },
+        {
+          "Transform": {
+            "location": [ -328.0, 162.0 ],
+            "rotation": [ 0.0, 0.0, 0.0 ],
+            "scale": [ 1.0, 1.0 ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "Wall_Diagonal_13",
+      "components": [
+        {
+          "SpriteRenderer": {
+            "sprite": "Wall_Segment45.png",
+            "color": [ 1.0, 1.0, 1.0, 1.0 ],
+            "layer": 0,
+            "flip_x": false,
+            "flip_y": false,
+            "anchor": "BottomCenter"
+          }
+        },
+        {
+          "Transform": {
+            "location": [ 248.0, 242.0 ],
+            "rotation": [ 0.0, 0.0, 0.0 ],
+            "scale": [ 1.0, 1.0 ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "Wall_Diagonal_14",
+      "components": [
+        {
+          "SpriteRenderer": {
+            "sprite": "Wall_Segment45.png",
+            "color": [ 1.0, 1.0, 1.0, 1.0 ],
+            "layer": 0,
+            "flip_x": false,
+            "flip_y": false,
+            "anchor": "BottomCenter"
+          }
+        },
+        {
+          "Transform": {
+            "location": [ 280.0, 210.0 ],
+            "rotation": [ 0.0, 0.0, 0.0 ],
+            "scale": [ 1.0, 1.0 ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "Wall_Diagonal_15",
+      "components": [
+        {
+          "SpriteRenderer": {
+            "sprite": "Wall_Segment45.png",
+            "color": [ 1.0, 1.0, 1.0, 1.0 ],
+            "layer": 0,
+            "flip_x": false,
+            "flip_y": false,
+            "anchor": "BottomCenter"
+          }
+        },
+        {
+          "Transform": {
+            "location": [ 312.0, 178.0 ],
+            "rotation": [ 0.0, 0.0, 0.0 ],
+            "scale": [ 1.0, 1.0 ]
+          }
+        }
+      ]
+    }
+    ,
+    {
+      "name": "Wall_Diagonal_16",
+      "components": [
+        {
+          "SpriteRenderer": {
+            "sprite": "Wall_Segment45.png",
+            "color": [ 1.0, 1.0, 1.0, 1.0 ],
+            "layer": 0,
+            "flip_x": false,
+            "flip_y": false,
+            "anchor": "BottomCenter"
+          }
+        },
+        {
+          "Transform": {
+            "location": [ 328.0, 162.0 ],
+            "rotation": [ 0.0, 0.0, 0.0 ],
+            "scale": [ 1.0, 1.0 ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "Wall_Turn_7",
+      "components": [
+        {
+          "SpriteRenderer": {
+            "sprite": "Wall_TurnTo45Vert.png",
+            "color": [ 1.0, 1.0, 1.0, 1.0 ],
+            "layer": 0,
+            "flip_x": true,
+            "flip_y": false,
+            "anchor": "BottomCenter"
+          }
+        },
+        {
+          "Transform": {
+            "location": [ -352.0, 151.0 ],
+            "rotation": [ 0.0, 0.0, 0.0 ],
+            "scale": [ 1.0, 1.0 ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "Wall_Turn_8",
+      "components": [
+        {
+          "SpriteRenderer": {
+            "sprite": "Wall_TurnTo45Vert.png",
+            "color": [ 1.0, 1.0, 1.0, 1.0 ],
+            "layer": 0,
+            "flip_x": false,
+            "flip_y": false,
+            "anchor": "BottomCenter"
+          }
+        },
+        {
+          "Transform": {
+            "location": [ 352.0, 151.0 ],
+            "rotation": [ 0.0, 0.0, 0.0 ],
+            "scale": [ 1.0, 1.0 ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "Round_Table_1",
+      "components": [
+        {
+          "SpriteRenderer": {
+            "sprite": "Round Table.png",
+            "color": [ 1.0, 1.0, 1.0, 1.0 ],
+            "layer": -1,
+            "flip_x": false,
+            "flip_y": false,
+            "anchor": "BottomCenter"
+          }
+        },
+        {
+          "Transform": {
+            "location": [ -225.0, 60.0 ],
+            "rotation": [ 0.0, 0.0, 0.0 ],
+            "scale": [ 1.0, 1.0 ]
+          }
+        },
+        {
+          "AlphaCollider": {
+            "sprite": "Round Table.png",
+            "channel": 3,
+            "anchor": "BottomCenter"
+          }
+        }
+      ]
+    },
+    {
+      "name": "Round_Table_2",
+      "components": [
+        {
+          "SpriteRenderer": {
+            "sprite": "Round Table.png",
+            "color": [ 1.0, 1.0, 1.0, 1.0 ],
+            "layer": -1,
+            "flip_x": false,
+            "flip_y": false,
+            "anchor": "BottomCenter"
+          }
+        },
+        {
+          "Transform": {
+            "location": [ 245.0, 69.0 ],
+            "rotation": [ 0.0, 0.0, 0.0 ],
+            "scale": [ 1.0, 1.0 ]
+          }
+        },
+        {
+          "AlphaCollider": {
+            "sprite": "Round Table.png",
+            "channel": 3,
+            "anchor": "BottomCenter"
+          }
+        }
+      ]
+    },
+    {
+      "name": "Round_Table_3",
+      "components": [
+        {
+          "SpriteRenderer": {
+            "sprite": "Round Table.png",
+            "color": [ 1.0, 1.0, 1.0, 1.0 ],
+            "layer": -1,
+            "flip_x": false,
+            "flip_y": false,
+            "anchor": "BottomCenter"
+          }
+        },
+        {
+          "Transform": {
+            "location": [ -235.0, -90.0 ],
+            "rotation": [ 0.0, 0.0, 0.0 ],
+            "scale": [ 1.0, 1.0 ]
+          }
+        },
+        {
+          "AlphaCollider": {
+            "sprite": "Round Table.png",
+            "channel": 3,
+            "anchor": "BottomCenter"
+          }
+        }
+      ]
+    },
+    {
+      "name": "Round_Table_4",
+      "components": [
+        {
+          "SpriteRenderer": {
+            "sprite": "Round Table.png",
+            "color": [ 1.0, 1.0, 1.0, 1.0 ],
+            "layer": -1,
+            "flip_x": false,
+            "flip_y": false,
+            "anchor": "BottomCenter"
+          }
+        },
+        {
+          "Transform": {
+            "location": [ 225.0, -90.0 ],
+            "rotation": [ 0.0, 0.0, 0.0 ],
+            "scale": [ 1.0, 1.0 ]
+          }
+        },
+        {
+          "AlphaCollider": {
+            "sprite": "Round Table.png",
+            "channel": 3,
+            "anchor": "BottomCenter"
+          }
+        }
+      ]
+    },
+    {
+      "name": "Pad_1",
+      "components": [
+        {
+          "SpriteRenderer": {
+            "sprite": "Pad.png",
+            "color": [ 1.0, 1.0, 1.0, 1.0 ],
+            "layer": -1,
+            "flip_x": false,
+            "flip_y": false,
+            "anchor": "BottomCenter"
+          }
+        },
+        {
+          "Transform": {
+            "location": [ 0.0, -150.0 ],
+            "rotation": [ 0.0, 0.0, 0.0 ],
+            "scale": [ 1.0, 1.0 ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "Light_Column_1",
+      "components": [
+        {
+          "SpriteRenderer": {
+            "sprite": "Light Column.png",
+            "color": [ 1.0, 1.0, 1.0, 1.0 ],
+            "layer": 0,
+            "flip_x": false,
+            "flip_y": false,
+            "anchor": "BottomCenter"
+          }
+        },
+        {
+          "Transform": {
+            "location": [ 0.0, -128.0 ],
+            "rotation": [ 0.0, 0.0, 0.0 ],
+            "scale": [ 1.0, 1.0 ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "Light_Column_Sparkles",
+      "components": [
+        {
+          "SpriteRenderer": {
+            "sprite": "Light Column Sparkles.png",
+            "color": [ 1.0, 1.0, 1.0, 1.0 ],
+            "layer": 0,
+            "flip_x": false,
+            "flip_y": false,
+            "anchor": "BottomCenter"
+          }
+        },
+        {
+          "Transform": {
+            "location": [ 0.0, -128.0 ],
+            "rotation": [ 0.0, 0.0, 0.0 ],
+            "scale": [ 1.0, 1.0 ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "Pad_Pillar_1",
+      "components": [
+        {
+          "SpriteRenderer": {
+            "sprite": "Pad Pillar.png",
+            "color": [ 1.0, 1.0, 1.0, 1.0 ],
+            "layer": 0,
+            "flip_x": false,
+            "flip_y": false,
+            "anchor": "BottomCenter"
+          }
+        },
+        {
+          "Transform": {
+            "location": [ -37.0, -115.0 ],
+            "rotation": [ 0.0, 0.0, 0.0 ],
+            "scale": [ 1.0, 1.0 ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "Pad_Pillar_2",
+      "components": [
+        {
+          "SpriteRenderer": {
+            "sprite": "Pad Pillar.png",
+            "color": [ 1.0, 1.0, 1.0, 1.0 ],
+            "layer": 0,
+            "flip_x": true,
+            "flip_y": false,
+            "anchor": "BottomCenter"
+          }
+        },
+        {
+          "Transform": {
+            "location": [ 37.0, -115.0 ],
+            "rotation": [ 0.0, 0.0, 0.0 ],
+            "scale": [ 1.0, 1.0 ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "Welcome_Sign",
+      "components": [
+        {
+          "SpriteRenderer": {
+            "sprite": "WelcomeSign.png",
+            "color": [ 1.0, 1.0, 1.0, 1.0 ],
+            "layer": 1,
+            "flip_x": false,
+            "flip_y": false,
+            "anchor": "BottomCenter"
+          }
+        },
+        {
+          "Transform": {
+            "location": [ 0.0, -67.0 ],
+            "rotation": [ 0.0, 0.0, 0.0 ],
+            "scale": [ 1.0, 1.0 ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "Chair_1",
+      "components": [
+        {
+          "SpriteRenderer": {
+            "sprite": "Chair_01.png",
+            "color": [ 1.0, 1.0, 1.0, 1.0 ],
+            "layer": 0,
+            "flip_x": false,
+            "flip_y": false,
+            "anchor": "BottomCenter"
+          }
+        },
+        {
+          "Transform": {
+            "location": [ -181.0, 62.0 ],
+            "rotation": [ 0.0, 0.0, 0.0 ],
+            "scale": [ 1.0, 1.0 ]
+          }
+        },
+        {
+          "BoxCollider": {
+            "center": [ 0.0, 0.0 ],
+            "size": [ 20.0, 20.0]
+          }
+        }
+      ]
+    },
+    {
+      "name": "Chair_2",
+      "components": [
+        {
+          "SpriteRenderer": {
+            "sprite": "Chair_01.png",
+            "color": [ 1.0, 1.0, 1.0, 1.0 ],
+            "layer": 0,
+            "flip_x": false,
+            "flip_y": false,
+            "anchor": "BottomCenter"
+          }
+        },
+        {
+          "Transform": {
+            "location": [ -192.0, -85.0 ],
+            "rotation": [ 0.0, 0.0, 0.0 ],
+            "scale": [ 1.0, 1.0 ]
+          }
+        },
+        {
+          "BoxCollider": {
+            "center": [ 0.0, 0.0 ],
+            "size": [ 20.0, 20.0]
+          }
+        }
+      ]
+    },
+    {
+      "name": "Chair_3",
+      "components": [
+        {
+          "SpriteRenderer": {
+            "sprite": "Chair_01.png",
+            "color": [ 1.0, 1.0, 1.0, 1.0 ],
+            "layer": 0,
+            "flip_x": false,
+            "flip_y": false,
+            "anchor": "BottomCenter"
+          }
+        },
+        {
+          "Transform": {
+            "location": [ 260.0, -87.0 ],
+            "rotation": [ 0.0, 0.0, 0.0 ],
+            "scale": [ 1.0, 1.0 ]
+          }
+        },
+        {
+          "BoxCollider": {
+            "center": [ 0.0, 0.0 ],
+            "size": [ 20.0, 20.0]
+          }
+        }
+      ]
+    },
+    {
+      "name": "Chair_4",
+      "components": [
+        {
+          "SpriteRenderer": {
+            "sprite": "Chair_01.png",
+            "color": [ 1.0, 1.0, 1.0, 1.0 ],
+            "layer": 0,
+            "flip_x": true,
+            "flip_y": false,
+            "anchor": "BottomCenter"
+          }
+        },
+        {
+          "Transform": {
+            "location": [ -266.0, 62.0 ],
+            "rotation": [ 0.0, 0.0, 0.0 ],
+            "scale": [ 1.0, 1.0 ]
+          }
+        },
+        {
+          "BoxCollider": {
+            "center": [ 0.0, 0.0 ],
+            "size": [ 20.0, 20.0]
+          }
+        }
+      ]
+    },
+    {
+      "name": "Chair_5",
+      "components": [
+        {
+          "SpriteRenderer": {
+            "sprite": "Chair_01.png",
+            "color": [ 1.0, 1.0, 1.0, 1.0 ],
+            "layer": 0,
+            "flip_x": true,
+            "flip_y": false,
+            "anchor": "BottomCenter"
+          }
+        },
+        {
+          "Transform": {
+            "location": [ -272.0, -69.0 ],
+            "rotation": [ 0.0, 0.0, 0.0 ],
+            "scale": [ 1.0, 1.0 ]
+          }
+        },
+        {
+          "BoxCollider": {
+            "center": [ 0.0, 0.0 ],
+            "size": [ 20.0, 20.0]
+          }
+        }
+      ]
+    },
+    {
+      "name": "Chair_6",
+      "components": [
+        {
+          "SpriteRenderer": {
+            "sprite": "Chair_01.png",
+            "color": [ 1.0, 1.0, 1.0, 1.0 ],
+            "layer": 0,
+            "flip_x": true,
+            "flip_y": false,
+            "anchor": "BottomCenter"
+          }
+        },
+        {
+          "Transform": {
+            "location": [ 203.0, 77.0 ],
+            "rotation": [ 0.0, 0.0, 0.0 ],
+            "scale": [ 1.0, 1.0 ]
+          }
+        },
+        {
+          "BoxCollider": {
+            "center": [ 0.0, 0.0 ],
+            "size": [ 20.0, 20.0]
+          }
+        }
+      ]
+    },
+    {
+      "name": "Centro_De_Mesa_1",
+      "components": [
+        {
+          "SpriteRenderer": {
+            "sprite": "CentroDeMesa.png",
+            "color": [ 1.0, 1.0, 1.0, 1.0 ],
+            "layer": 0,
+            "flip_x": false,
+            "flip_y": false,
+            "anchor": "BottomCenter"
+          }
+        },
+        {
+          "Transform": {
+            "location": [ -225.0, 81.0 ],
+            "rotation": [ 0.0, 0.0, 0.0 ],
+            "scale": [ 1.0, 1.0 ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "Centro_De_Mesa_2",
+      "components": [
+        {
+          "SpriteRenderer": {
+            "sprite": "CentroDeMesa.png",
+            "color": [ 1.0, 1.0, 1.0, 1.0 ],
+            "layer": 0,
+            "flip_x": false,
+            "flip_y": false,
+            "anchor": "BottomCenter"
+          }
+        },
+        {
+          "Transform": {
+            "location": [ 225.0, -69.0 ],
+            "rotation": [ 0.0, 0.0, 0.0 ],
+            "scale": [ 1.0, 1.0 ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "Florero",
+      "components": [
+        {
+          "SpriteRenderer": {
+            "sprite": "Florerito.png",
+            "color": [ 1.0, 1.0, 1.0, 1.0 ],
+            "layer": 0,
+            "flip_x": false,
+            "flip_y": false,
+            "anchor": "BottomCenter"
+          }
+        },
+        {
+          "Transform": {
+            "location": [ 253.0, 98.0 ],
+            "rotation": [ 0.0, 0.0, 0.0 ],
+            "scale": [ 1.0, 1.0 ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "Maceta_1",
+      "components": [
+        {
+          "SpriteRenderer": {
+            "sprite": "Maceta.png",
+            "color": [ 1.0, 1.0, 1.0, 1.0 ],
+            "layer": 0,
+            "flip_x": false,
+            "flip_y": false,
+            "anchor": "BottomCenter"
+          }
+        },
+        {
+          "Transform": {
+            "location": [ -235.0, -69.0 ],
+            "rotation": [ 0.0, 0.0, 0.0 ],
+            "scale": [ 1.0, 1.0 ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "Tea_Cup_1",
+      "components": [
+        {
+          "SpriteRenderer": {
+            "sprite": "Tea Cup.png",
+            "color": [ 1.0, 1.0, 1.0, 1.0 ],
+            "layer": 0,
+            "flip_x": true,
+            "flip_y": false,
+            "anchor": "BottomCenter"
+          }
+        },
+        {
+          "Transform": {
+            "location": [ -250.0, -60.0 ],
+            "rotation": [ 0.0, 0.0, 0.0 ],
+            "scale": [ 1.0, 1.0 ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "Tea_Cup_2",
+      "components": [
+        {
+          "SpriteRenderer": {
+            "sprite": "Tea Cup.png",
+            "color": [ 1.0, 1.0, 1.0, 1.0 ],
+            "layer": 0,
+            "flip_x": false,
+            "flip_y": false,
+            "anchor": "BottomCenter"
+          }
+        },
+        {
+          "Transform": {
+            "location": [ -220.0, -64.0 ],
+            "rotation": [ 0.0, 0.0, 0.0 ],
+            "scale": [ 1.0, 1.0 ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "Tea_Cup_3",
+      "components": [
+        {
+          "SpriteRenderer": {
+            "sprite": "Tea Cup.png",
+            "color": [ 1.0, 1.0, 1.0, 1.0 ],
+            "layer": 0,
+            "flip_x": true,
+            "flip_y": false,
+            "anchor": "BottomCenter"
+          }
+        },
+        {
+          "Transform": {
+            "location": [ 230.0, 99.0 ],
+            "rotation": [ 0.0, 0.0, 0.0 ],
+            "scale": [ 1.0, 1.0 ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "Chopp_1",
+      "components": [
+        {
+          "SpriteRenderer": {
+            "sprite": "Chopp.png",
+            "color": [ 1.0, 1.0, 1.0, 1.0 ],
+            "layer": 0,
+            "flip_x": true,
+            "flip_y": false,
+            "anchor": "BottomCenter"
+          }
+        },
+        {
+          "Transform": {
+            "location": [ -207.0, 88.0 ],
+            "rotation": [ 0.0, 0.0, 0.0 ],
+            "scale": [ 1.0, 1.0 ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "Glass_1",
+      "components": [
+        {
+          "SpriteRenderer": {
+            "sprite": "Glass.png",
+            "color": [ 1.0, 1.0, 1.0, 1.0 ],
+            "layer": 0,
+            "flip_x": false,
+            "flip_y": false,
+            "anchor": "BottomCenter"
+          }
+        },
+        {
+          "Transform": {
+            "location": [ -13.0, 131.0 ],
+            "rotation": [ 0.0, 0.0, 0.0 ],
+            "scale": [ 1.0, 1.0 ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "Glass_2",
+      "components": [
+        {
+          "SpriteRenderer": {
+            "sprite": "Glass.png",
+            "color": [ 1.0, 1.0, 1.0, 1.0 ],
+            "layer": 0,
+            "flip_x": false,
+            "flip_y": false,
+            "anchor": "BottomCenter"
+          }
+        },
+        {
+          "Transform": {
+            "location": [ -8.0, 128.0 ],
+            "rotation": [ 0.0, 0.0, 0.0 ],
+            "scale": [ 1.0, 1.0 ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "Glass_3",
+      "components": [
+        {
+          "SpriteRenderer": {
+            "sprite": "Glass.png",
+            "color": [ 1.0, 1.0, 1.0, 1.0 ],
+            "layer": 0,
+            "flip_x": false,
+            "flip_y": false,
+            "anchor": "BottomCenter"
+          }
+        },
+        {
+          "Transform": {
+            "location": [ -2.0, 126.0 ],
+            "rotation": [ 0.0, 0.0, 0.0 ],
+            "scale": [ 1.0, 1.0 ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "Bottle_1",
+      "components": [
+        {
+          "SpriteRenderer": {
+            "sprite": "Bottle_01.png",
+            "color": [ 1.0, 1.0, 1.0, 1.0 ],
+            "layer": 0,
+            "flip_x": false,
+            "flip_y": false,
+            "anchor": "BottomCenter"
+          }
+        },
+        {
+          "Transform": {
+            "location": [ 8.0, 133.0 ],
+            "rotation": [ 0.0, 0.0, 0.0 ],
+            "scale": [ 1.0, 1.0 ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "Bottle_2",
+      "components": [
+        {
+          "SpriteRenderer": {
+            "sprite": "Bottle_01.png",
+            "color": [ 1.0, 1.0, 1.0, 1.0 ],
+            "layer": 0,
+            "flip_x": false,
+            "flip_y": false,
+            "anchor": "BottomCenter"
+          }
+        },
+        {
+          "Transform": {
+            "location": [ 6.0, 127.0 ],
+            "rotation": [ 0.0, 0.0, 0.0 ],
+            "scale": [ 1.0, 1.0 ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "Chopp_2",
+      "components": [
+        {
+          "SpriteRenderer": {
+            "sprite": "Chopp.png",
+            "color": [ 1.0, 1.0, 1.0, 1.0 ],
+            "layer": 0,
+            "flip_x": false,
+            "flip_y": false,
+            "anchor": "BottomCenter"
+          }
+        },
+        {
+          "Transform": {
+            "location": [ 60.0, 96.0 ],
+            "rotation": [ 0.0, 0.0, 0.0 ],
+            "scale": [ 1.0, 1.0 ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "Chopp_3",
+      "components": [
+        {
+          "SpriteRenderer": {
+            "sprite": "Chopp.png",
+            "color": [ 1.0, 1.0, 1.0, 1.0 ],
+            "layer": 0,
+            "flip_x": true,
+            "flip_y": false,
+            "anchor": "BottomCenter"
+          }
+        },
+        {
+          "Transform": {
+            "location": [ 50.0, 83.0 ],
+            "rotation": [ 0.0, 0.0, 0.0 ],
+            "scale": [ 1.0, 1.0 ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "Chopp_4",
+      "components": [
+        {
+          "SpriteRenderer": {
+            "sprite": "Chopp.png",
+            "color": [ 1.0, 1.0, 1.0, 1.0 ],
+            "layer": 0,
+            "flip_x": false,
+            "flip_y": false,
+            "anchor": "BottomCenter"
+          }
+        },
+        {
+          "Transform": {
+            "location": [ 30.0, 76.0 ],
+            "rotation": [ 0.0, 0.0, 0.0 ],
+            "scale": [ 1.0, 1.0 ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "Maceta_2",
+      "components": [
+        {
+          "SpriteRenderer": {
+            "sprite": "Maceta.png",
+            "color": [ 1.0, 1.0, 1.0, 1.0 ],
+            "layer": 0,
+            "flip_x": false,
+            "flip_y": false,
+            "anchor": "BottomCenter"
+          }
+        },
+        {
+          "Transform": {
+            "location": [ -54.0, 84.0 ],
+            "rotation": [ 0.0, 0.0, 0.0 ],
+            "scale": [ 1.0, 1.0 ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "Stool_1",
+      "components": [
+        {
+          "SpriteRenderer": {
+            "sprite": "BarStool.png",
+            "color": [ 1.0, 1.0, 1.0, 1.0 ],
+            "layer": 0,
+            "flip_x": false,
+            "flip_y": false,
+            "anchor": "BottomCenter"
+          }
+        },
+        {
+          "Transform": {
+            "location": [ -88.0, 84.0 ],
+            "rotation": [ 0.0, 0.0, 0.0 ],
+            "scale": [ 1.0, 1.0 ]
+          }
+        },
+        {
+          "BoxCollider": {
+            "center": [ 0.0, 0.0 ],
+            "size": [ 15.0, 15.0]
+          }
+        }
+      ]
+    },
+    {
+      "name": "Stool_2",
+      "components": [
+        {
+          "SpriteRenderer": {
+            "sprite": "BarStool.png",
+            "color": [ 1.0, 1.0, 1.0, 1.0 ],
+            "layer": 0,
+            "flip_x": false,
+            "flip_y": false,
+            "anchor": "BottomCenter"
+          }
+        },
+        {
+          "Transform": {
+            "location": [ -73.0, 118.0 ],
+            "rotation": [ 0.0, 0.0, 0.0 ],
+            "scale": [ 1.0, 1.0 ]
+          }
+        },
+        {
+          "BoxCollider": {
+            "center": [ 0.0, 0.0 ],
+            "size": [ 15.0, 15.0]
+          }
+        }
+      ]
+    },
+    {
+      "name": "Stool_3",
+      "components": [
+        {
+          "SpriteRenderer": {
+            "sprite": "BarStool.png",
+            "color": [ 1.0, 1.0, 1.0, 1.0 ],
+            "layer": 0,
+            "flip_x": false,
+            "flip_y": false,
+            "anchor": "BottomCenter"
+          }
+        },
+        {
+          "Transform": {
+            "location": [ -37.0, 140.0 ],
+            "rotation": [ 0.0, 0.0, 0.0 ],
+            "scale": [ 1.0, 1.0 ]
+          }
+        },
+        {
+          "BoxCollider": {
+            "center": [ 0.0, 0.0 ],
+            "size": [ 15.0, 15.0]
+          }
+        }
+      ]
+    },
+    {
+      "name": "Stool_4",
+      "components": [
+        {
+          "SpriteRenderer": {
+            "sprite": "BarStool.png",
+            "color": [ 1.0, 1.0, 1.0, 1.0 ],
+            "layer": 0,
+            "flip_x": false,
+            "flip_y": false,
+            "anchor": "BottomCenter"
+          }
+        },
+        {
+          "Transform": {
+            "location": [ -66.0, 52.0 ],
+            "rotation": [ 0.0, 0.0, 0.0 ],
+            "scale": [ 1.0, 1.0 ]
+          }
+        },
+        {
+          "BoxCollider": {
+            "center": [ 0.0, 0.0 ],
+            "size": [ 15.0, 15.0]
+          }
+        }
+      ]
+    },
+    {
+      "name": "Stool_5",
+      "components": [
+        {
+          "SpriteRenderer": {
+            "sprite": "BarStool.png",
+            "color": [ 1.0, 1.0, 1.0, 1.0 ],
+            "layer": 0,
+            "flip_x": false,
+            "flip_y": false,
+            "anchor": "BottomCenter"
+          }
+        },
+        {
+          "Transform": {
+            "location": [ -32.0, 39.0 ],
+            "rotation": [ 0.0, 0.0, 0.0 ],
+            "scale": [ 1.0, 1.0 ]
+          }
+        },
+        {
+          "BoxCollider": {
+            "center": [ 0.0, 0.0 ],
+            "size": [ 15.0, 15.0]
+          }
+        }
+      ]
+    },
+    {
+      "name": "Stool_6",
+      "components": [
+        {
+          "SpriteRenderer": {
+            "sprite": "BarStool.png",
+            "color": [ 1.0, 1.0, 1.0, 1.0 ],
+            "layer": 0,
+            "flip_x": false,
+            "flip_y": false,
+            "anchor": "BottomCenter"
+          }
+        },
+        {
+          "Transform": {
+            "location": [ 88.0, 84.0 ],
+            "rotation": [ 0.0, 0.0, 0.0 ],
+            "scale": [ 1.0, 1.0 ]
+          }
+        },
+        {
+          "BoxCollider": {
+            "center": [ 0.0, 0.0 ],
+            "size": [ 15.0, 15.0]
+          }
+        }
+      ]
+    },
+    {
+      "name": "Stool_7",
+      "components": [
+        {
+          "SpriteRenderer": {
+            "sprite": "BarStool.png",
+            "color": [ 1.0, 1.0, 1.0, 1.0 ],
+            "layer": 0,
+            "flip_x": false,
+            "flip_y": false,
+            "anchor": "BottomCenter"
+          }
+        },
+        {
+          "Transform": {
+            "location": [ 73.0, 118.0 ],
+            "rotation": [ 0.0, 0.0, 0.0 ],
+            "scale": [ 1.0, 1.0 ]
+          }
+        },
+        {
+          "BoxCollider": {
+            "center": [ 0.0, 0.0 ],
+            "size": [ 15.0, 15.0]
+          }
+        }
+      ]
+    },
+    {
+      "name": "Stool_8",
+      "components": [
+        {
+          "SpriteRenderer": {
+            "sprite": "BarStool.png",
+            "color": [ 1.0, 1.0, 1.0, 1.0 ],
+            "layer": 0,
+            "flip_x": false,
+            "flip_y": false,
+            "anchor": "BottomCenter"
+          }
+        },
+        {
+          "Transform": {
+            "location": [ 37.0, 140.0 ],
+            "rotation": [ 0.0, 0.0, 0.0 ],
+            "scale": [ 1.0, 1.0 ]
+          }
+        },
+        {
+          "BoxCollider": {
+            "center": [ 0.0, 0.0 ],
+            "size": [ 15.0, 15.0]
+          }
+        }
+      ]
+    },
+    {
+      "name": "Stool_9",
+      "components": [
+        {
+          "SpriteRenderer": {
+            "sprite": "BarStool.png",
+            "color": [ 1.0, 1.0, 1.0, 1.0 ],
+            "layer": 0,
+            "flip_x": false,
+            "flip_y": false,
+            "anchor": "BottomCenter"
+          }
+        },
+        {
+          "Transform": {
+            "location": [ 66.0, 52.0 ],
+            "rotation": [ 0.0, 0.0, 0.0 ],
+            "scale": [ 1.0, 1.0 ]
+          }
+        },
+        {
+          "BoxCollider": {
+            "center": [ 0.0, 0.0 ],
+            "size": [ 15.0, 15.0]
+          }
+        }
+      ]
+    },
+    {
+      "name": "Stool_10",
+      "components": [
+        {
+          "SpriteRenderer": {
+            "sprite": "BarStool.png",
+            "color": [ 1.0, 1.0, 1.0, 1.0 ],
+            "layer": 0,
+            "flip_x": false,
+            "flip_y": false,
+            "anchor": "BottomCenter"
+          }
+        },
+        {
+          "Transform": {
+            "location": [ 32.0, 39.0 ],
+            "rotation": [ 0.0, 0.0, 0.0 ],
+            "scale": [ 1.0, 1.0 ]
+          }
+        },
+        {
+          "BoxCollider": {
+            "center": [ 0.0, 0.0 ],
+            "size": [ 15.0, 15.0]
+          }
+        }
+      ]
+    },
+    {
+      "name": "Pad_2",
+      "components": [
+        {
+          "SpriteRenderer": {
+            "sprite": "Pad.png",
+            "color": [ 1.0, 1.0, 1.0, 1.0 ],
+            "layer": -1,
+            "flip_x": false,
+            "flip_y": false,
+            "anchor": "BottomCenter"
+          }
+        },
+        {
+          "Transform": {
+            "location": [ -150.0, -268.0 ],
+            "rotation": [ 0.0, 0.0, 0.0 ],
+            "scale": [ 1.0, 1.0 ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "Light_Column_2",
+      "components": [
+        {
+          "SpriteRenderer": {
+            "sprite": "Light Column.png",
+            "color": [ 1.0, 1.0, 1.0, 1.0 ],
+            "layer": 0,
+            "flip_x": false,
+            "flip_y": false,
+            "anchor": "BottomCenter"
+          }
+        },
+        {
+          "Transform": {
+            "location": [ -150.0, -246.0 ],
+            "rotation": [ 0.0, 0.0, 0.0 ],
+            "scale": [ 1.0, 1.0 ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "Pad_3",
+      "components": [
+        {
+          "SpriteRenderer": {
+            "sprite": "Pad.png",
+            "color": [ 1.0, 1.0, 1.0, 1.0 ],
+            "layer": -1,
+            "flip_x": false,
+            "flip_y": false,
+            "anchor": "BottomCenter"
+          }
+        },
+        {
+          "Transform": {
+            "location": [ 150.0, -268.0 ],
+            "rotation": [ 0.0, 0.0, 0.0 ],
+            "scale": [ 1.0, 1.0 ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "Light_Column_3",
+      "components": [
+        {
+          "SpriteRenderer": {
+            "sprite": "Light Column.png",
+            "color": [ 1.0, 1.0, 1.0, 1.0 ],
+            "layer": 0,
+            "flip_x": false,
+            "flip_y": false,
+            "anchor": "BottomCenter"
+          }
+        },
+        {
+          "Transform": {
+            "location": [ 150.0, -246.0 ],
+            "rotation": [ 0.0, 0.0, 0.0 ],
+            "scale": [ 1.0, 1.0 ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "Crystal_Lamp_1",
+      "components": [
+        {
+          "SpriteRenderer": {
+            "sprite": "Lampara Cristal.png",
+            "color": [ 1.0, 1.0, 1.0, 1.0 ],
+            "layer": 0,
+            "flip_x": false,
+            "flip_y": false,
+            "anchor": "BottomCenter"
+          }
+        },
+        {
+          "Transform": {
+            "location": [ -75.0, -130.0 ],
+            "rotation": [ 0.0, 0.0, 0.0 ],
+            "scale": [ 1.0, 1.0 ]
+          }
+        },
+        {
+          "BoxCollider": {
+            "center": [ 0.0, 0.0 ],
+            "size": [ 15.0, 15.0]
+          }
+        }
+      ]
+    },
+    {
+      "name": "Crystal_Lamp_2",
+      "components": [
+        {
+          "SpriteRenderer": {
+            "sprite": "Lampara Cristal.png",
+            "color": [ 1.0, 1.0, 1.0, 1.0 ],
+            "layer": 0,
+            "flip_x": false,
+            "flip_y": false,
+            "anchor": "BottomCenter"
+          }
+        },
+        {
+          "Transform": {
+            "location": [ 75.0, -130.0 ],
+            "rotation": [ 0.0, 0.0, 0.0 ],
+            "scale": [ 1.0, 1.0 ]
+          }
+        },
+        {
+          "BoxCollider": {
+            "center": [ 0.0, 0.0 ],
+            "size": [ 15.0, 15.0]
+          }
+        }
+      ]
+    },
+    {
+      "name": "Crystal_Lamp_3",
+      "components": [
+        {
+          "SpriteRenderer": {
+            "sprite": "Lampara Cristal.png",
+            "color": [ 1.0, 1.0, 1.0, 1.0 ],
+            "layer": 0,
+            "flip_x": false,
+            "flip_y": false,
+            "anchor": "BottomCenter"
+          }
+        },
+        {
+          "Transform": {
+            "location": [ -210.0, -246.0 ],
+            "rotation": [ 0.0, 0.0, 0.0 ],
+            "scale": [ 1.0, 1.0 ]
+          }
+        },
+        {
+          "BoxCollider": {
+            "center": [ 0.0, 0.0 ],
+            "size": [ 15.0, 15.0]
+          }
+        }
+      ]
+    },
+    {
+      "name": "Crystal_Lamp_4",
+      "components": [
+        {
+          "SpriteRenderer": {
+            "sprite": "Lampara Cristal.png",
+            "color": [ 1.0, 1.0, 1.0, 1.0 ],
+            "layer": 0,
+            "flip_x": false,
+            "flip_y": false,
+            "anchor": "BottomCenter"
+          }
+        },
+        {
+          "Transform": {
+            "location": [ -89.0, -246.0 ],
+            "rotation": [ 0.0, 0.0, 0.0 ],
+            "scale": [ 1.0, 1.0 ]
+          }
+        },
+        {
+          "BoxCollider": {
+            "center": [ 0.0, 0.0 ],
+            "size": [ 15.0, 15.0]
+          }
+        }
+      ]
+    },
+    {
+      "name": "Crystal_Lamp_5",
+      "components": [
+        {
+          "SpriteRenderer": {
+            "sprite": "Lampara Cristal.png",
+            "color": [ 1.0, 1.0, 1.0, 1.0 ],
+            "layer": 0,
+            "flip_x": false,
+            "flip_y": false,
+            "anchor": "BottomCenter"
+          }
+        },
+        {
+          "Transform": {
+            "location": [ 89.0, -246.0 ],
+            "rotation": [ 0.0, 0.0, 0.0 ],
+            "scale": [ 1.0, 1.0 ]
+          }
+        },
+        {
+          "BoxCollider": {
+            "center": [ 0.0, 0.0 ],
+            "size": [ 15.0, 15.0]
+          }
+        }
+      ]
+    },
+    {
+      "name": "Crystal_Lamp_6",
+      "components": [
+        {
+          "SpriteRenderer": {
+            "sprite": "Lampara Cristal.png",
+            "color": [ 1.0, 1.0, 1.0, 1.0 ],
+            "layer": 0,
+            "flip_x": false,
+            "flip_y": false,
+            "anchor": "BottomCenter"
+          }
+        },
+        {
+          "Transform": {
+            "location": [ 210.0, -246.0 ],
+            "rotation": [ 0.0, 0.0, 0.0 ],
+            "scale": [ 1.0, 1.0 ]
+          }
+        },
+        {
+          "BoxCollider": {
+            "center": [ 0.0, 0.0 ],
+            "size": [ 15.0, 15.0]
+          }
+        }
+      ]
+    },
+    {
+      "name": "Arrow_1",
+      "components": [
+        {
+          "SpriteRenderer": {
+            "sprite": "Arrow.png",
+            "color": [ 1.0, 1.0, 1.0, 1.0 ],
+            "layer": 0,
+            "flip_x": false,
+            "flip_y": false,
+            "anchor": "BottomCenter"
+          }
+        },
+        {
+          "Transform": {
+            "location": [ -150.0, -230.0 ],
+            "rotation": [ 0.0, 0.0, 0.0 ],
+            "scale": [ 1.0, 1.0 ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "Arrow_2",
+      "components": [
+        {
+          "SpriteRenderer": {
+            "sprite": "Arrow.png",
+            "color": [ 1.0, 1.0, 1.0, 1.0 ],
+            "layer": 0,
+            "flip_x": false,
+            "flip_y": false,
+            "anchor": "BottomCenter"
+          }
+        },
+        {
+          "Transform": {
+            "location": [ 150.0, -230.0 ],
+            "rotation": [ 0.0, 0.0, 0.0 ],
+            "scale": [ 1.0, 1.0 ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "Maceton_1",
+      "components": [
+        {
+          "SpriteRenderer": {
+            "sprite": "Maceton.png",
+            "color": [ 1.0, 1.0, 1.0, 1.0 ],
+            "layer": 0,
+            "flip_x": false,
+            "flip_y": false,
+            "anchor": "BottomCenter"
+          }
+        },
+        {
+          "Transform": {
+            "location": [ -335.0, -153.0 ],
+            "rotation": [ 0.0, 0.0, 0.0 ],
+            "scale": [ 1.0, 1.0 ]
+          }
+        },
+        {
+          "BoxCollider": {
+            "center": [ 0.0, 0.0 ],
+            "size": [ 20.0, 20.0]
+          }
+        }
+      ]
+    },
+    {
+      "name": "Maceton_2",
+      "components": [
+        {
+          "SpriteRenderer": {
+            "sprite": "Maceton.png",
+            "color": [ 1.0, 1.0, 1.0, 1.0 ],
+            "layer": 0,
+            "flip_x": true,
+            "flip_y": false,
+            "anchor": "BottomCenter"
+          }
+        },
+        {
+          "Transform": {
+            "location": [ 335.0, -153.0 ],
+            "rotation": [ 0.0, 0.0, 0.0 ],
+            "scale": [ 1.0, 1.0 ]
+          }
+        },
+        {
+          "BoxCollider": {
+            "center": [ 0.0, 0.0 ],
+            "size": [ 20.0, 20.0]
+          }
+        }
+      ]
+    },
+    {
+      "name": "Maceton_3",
+      "components": [
+        {
+          "SpriteRenderer": {
+            "sprite": "Maceton.png",
+            "color": [ 1.0, 1.0, 1.0, 1.0 ],
+            "layer": 0,
+            "flip_x": false,
+            "flip_y": false,
+            "anchor": "BottomCenter"
+          }
+        },
+        {
+          "Transform": {
+            "location": [ -335.0, 140.0 ],
+            "rotation": [ 0.0, 0.0, 0.0 ],
+            "scale": [ 1.0, 1.0 ]
+          }
+        },
+        {
+          "BoxCollider": {
+            "center": [ 0.0, 0.0 ],
+            "size": [ 20.0, 20.0]
+          }
+        }
+      ]
+    },
+    {
+      "name": "Maceton_4",
+      "components": [
+        {
+          "SpriteRenderer": {
+            "sprite": "Maceton.png",
+            "color": [ 1.0, 1.0, 1.0, 1.0 ],
+            "layer": 0,
+            "flip_x": true,
+            "flip_y": false,
+            "anchor": "BottomCenter"
+          }
+        },
+        {
+          "Transform": {
+            "location": [ 335.0, 140.0 ],
+            "rotation": [ 0.0, 0.0, 0.0 ],
+            "scale": [ 1.0, 1.0 ]
+          }
+        },
+        {
+          "BoxCollider": {
+            "center": [ 0.0, 0.0 ],
+            "size": [ 20.0, 20.0]
+          }
+        }
+      ]
+    },
+    {
+      "name": "Maceton_5",
+      "components": [
+        {
+          "SpriteRenderer": {
+            "sprite": "Maceton.png",
+            "color": [ 1.0, 1.0, 1.0, 1.0 ],
+            "layer": 0,
+            "flip_x": false,
+            "flip_y": false,
+            "anchor": "BottomCenter"
+          }
+        },
+        {
+          "Transform": {
+            "location": [ -95.0, 268.0 ],
+            "rotation": [ 0.0, 0.0, 0.0 ],
+            "scale": [ 1.0, 1.0 ]
+          }
+        },
+        {
+          "BoxCollider": {
+            "center": [ 0.0, 0.0 ],
+            "size": [ 20.0, 20.0]
+          }
+        }
+      ]
+    },
+    {
+      "name": "Maceton_6",
+      "components": [
+        {
+          "SpriteRenderer": {
+            "sprite": "Maceton.png",
+            "color": [ 1.0, 1.0, 1.0, 1.0 ],
+            "layer": 0,
+            "flip_x": true,
+            "flip_y": false,
+            "anchor": "BottomCenter"
+          }
+        },
+        {
+          "Transform": {
+            "location": [ 95.0, 268.0 ],
+            "rotation": [ 0.0, 0.0, 0.0 ],
+            "scale": [ 1.0, 1.0 ]
+          }
+        },
+        {
+          "BoxCollider": {
+            "center": [ 0.0, 0.0 ],
+            "size": [ 20.0, 20.0]
+          }
+        }
+      ]
+    },
+    {
+      "name": "Painting_1",
+      "components": [
+        {
+          "SpriteRenderer": {
+            "sprite": "Painting_01.png",
+            "color": [ 1.0, 1.0, 1.0, 1.0 ],
+            "layer": 0,
+            "flip_x": false,
+            "flip_y": false,
+            "anchor": {"Custom": [ 0.0, -37.0]}
+          }
+        },
+        {
+          "Transform": {
+            "location": [ -142.0, 283.0 ],
+            "rotation": [ 0.0, 0.0, 0.0 ],
+            "scale": [ 1.0, 1.0 ]
+          }
+        }   
+      ]
+    },
+    {
+      "name": "Painting_2",
+      "components": [
+        {
+          "SpriteRenderer": {
+            "sprite": "Painting_01.png",
+            "color": [ 1.0, 1.0, 1.0, 1.0 ],
+            "layer": 0,
+            "flip_x": false,
+            "flip_y": false,
+            "anchor": {"Custom": [ 0.0, -37.0]}
+          }
+        },
+        {
+          "Transform": {
+            "location": [ 142.0, 283.0 ],
+            "rotation": [ 0.0, 0.0, 0.0 ],
+            "scale": [ 1.0, 1.0 ]
+          }
+        }   
       ]
     }
   ]
