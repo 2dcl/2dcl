@@ -89,7 +89,7 @@
         },
         {
           "Transform": {
-            "location": [ 0.0, 0.0 ],
+            "location": [ 0.0, -216.0 ],
             "rotation": [ 0.0, 0.0, 0.0 ],
             "scale": [ 1.0, 1.0 ]
           }
@@ -111,7 +111,7 @@
         },
         {
           "Transform": {
-            "location": [ 0.0, 0.0 ],
+            "location": [ 0.0, -216.0 ],
             "rotation": [ 0.0, 0.0, 0.0 ],
             "scale": [ 1.0, 1.0 ]
           }
@@ -3232,6 +3232,1374 @@
             "scale": [ 1.0, 1.0 ]
           }
         }   
+      ]
+    },
+    {
+      "name": "Tree_1",
+      "components": [
+        {
+          "SpriteRenderer": {
+            "sprite": "Arbol 1.png",
+            "color": [ 1.0, 1.0, 1.0, 1.0 ],
+            "layer": 0,
+            "flip_x": false,
+            "flip_y": false,
+            "anchor": "BottomCenter"
+          }
+        },
+        {
+          "Transform": {
+            "location": [ -914.0, 95.0 ],
+            "rotation": [ 0.0, 0.0, 0.0 ],
+            "scale": [ 1.0, 1.0 ]
+          }
+        },
+        {
+          "BoxCollider": {
+            "center": [ 0.0, 0.0 ],
+            "size": [ 15.0, 15.0]
+          }
+        }
+      ]
+    },
+    {
+      "name": "Tree_2",
+      "components": [
+        {
+          "SpriteRenderer": {
+            "sprite": "Arbol 1.png",
+            "color": [ 1.0, 1.0, 1.0, 1.0 ],
+            "layer": 0,
+            "flip_x": false,
+            "flip_y": false,
+            "anchor": "BottomCenter"
+          }
+        },
+        {
+          "Transform": {
+            "location": [ -720.0, -542.0 ],
+            "rotation": [ 0.0, 0.0, 0.0 ],
+            "scale": [ 1.0, 1.0 ]
+          }
+        },
+        {
+          "BoxCollider": {
+            "center": [ 0.0, 0.0 ],
+            "size": [ 15.0, 15.0]
+          }
+        }
+      ]
+    },
+    {
+      "name": "Tree_3",
+      "components": [
+        {
+          "SpriteRenderer": {
+            "sprite": "Arbol 1.png",
+            "color": [ 1.0, 1.0, 1.0, 1.0 ],
+            "layer": 0,
+            "flip_x": true,
+            "flip_y": false,
+            "anchor": "BottomCenter"
+          }
+        },
+        {
+          "Transform": {
+            "location": [ -860.0, -843.0 ],
+            "rotation": [ 0.0, 0.0, 0.0 ],
+            "scale": [ 1.0, 1.0 ]
+          }
+        },
+        {
+          "BoxCollider": {
+            "center": [ 0.0, 0.0 ],
+            "size": [ 15.0, 15.0]
+          }
+        }
+      ]
+    },
+    {
+      "name": "Tree_4",
+      "components": [
+        {
+          "SpriteRenderer": {
+            "sprite": "Arbol 2.png",
+            "color": [ 1.0, 1.0, 1.0, 1.0 ],
+            "layer": 0,
+            "flip_x": false,
+            "flip_y": false,
+            "anchor": "BottomCenter"
+          }
+        },
+        {
+          "Transform": {
+            "location": [ -671.0, -100.0 ],
+            "rotation": [ 0.0, 0.0, 0.0 ],
+            "scale": [ 1.0, 1.0 ]
+          }
+        },
+        {
+          "BoxCollider": {
+            "center": [ 0.0, 0.0 ],
+            "size": [ 15.0, 15.0]
+          }
+        }
+      ]
+    },
+    {
+      "name": "Tree_5",
+      "components": [
+        {
+          "SpriteRenderer": {
+            "sprite": "Arbol 2.png",
+            "color": [ 1.0, 1.0, 1.0, 1.0 ],
+            "layer": 0,
+            "flip_x": false,
+            "flip_y": false,
+            "anchor": "BottomCenter"
+          }
+        },
+        {
+          "Transform": {
+            "location": [ -900.0, -600.0 ],
+            "rotation": [ 0.0, 0.0, 0.0 ],
+            "scale": [ 1.0, 1.0 ]
+          }
+        },
+        {
+          "BoxCollider": {
+            "center": [ 0.0, 0.0 ],
+            "size": [ 15.0, 15.0]
+          }
+        }
+      ]
+    },
+    {
+      "name": "Tree_6",
+      "components": [
+        {
+          "SpriteRenderer": {
+            "sprite": "Arbol 2.png",
+            "color": [ 1.0, 1.0, 1.0, 1.0 ],
+            "layer": 0,
+            "flip_x": false,
+            "flip_y": false,
+            "anchor": "BottomCenter"
+          }
+        },
+        {
+          "Transform": {
+            "location": [ -370.0, -890.0 ],
+            "rotation": [ 0.0, 0.0, 0.0 ],
+            "scale": [ 1.0, 1.0 ]
+          }
+        },
+        {
+          "BoxCollider": {
+            "center": [ 0.0, 0.0 ],
+            "size": [ 15.0, 15.0]
+          }
+        }
+      ]
+    },
+    {
+      "name": "Tree_7",
+      "components": [
+        {
+          "SpriteRenderer": {
+            "sprite": "Arbol 2.png",
+            "color": [ 1.0, 1.0, 1.0, 1.0 ],
+            "layer": 0,
+            "flip_x": false,
+            "flip_y": false,
+            "anchor": "BottomCenter"
+          }
+        },
+        {
+          "Transform": {
+            "location": [ 945.0, 65.0 ],
+            "rotation": [ 0.0, 0.0, 0.0 ],
+            "scale": [ 1.0, 1.0 ]
+          }
+        },
+        {
+          "BoxCollider": {
+            "center": [ 0.0, 0.0 ],
+            "size": [ 15.0, 15.0]
+          }
+        }
+      ]
+    },
+    {
+      "name": "Tree_8",
+      "components": [
+        {
+          "SpriteRenderer": {
+            "sprite": "Arbol 2.png",
+            "color": [ 1.0, 1.0, 1.0, 1.0 ],
+            "layer": 0,
+            "flip_x": false,
+            "flip_y": false,
+            "anchor": "BottomCenter"
+          }
+        },
+        {
+          "Transform": {
+            "location": [ 850.0, -866.0 ],
+            "rotation": [ 0.0, 0.0, 0.0 ],
+            "scale": [ 1.0, 1.0 ]
+          }
+        },
+        {
+          "BoxCollider": {
+            "center": [ 0.0, 0.0 ],
+            "size": [ 15.0, 15.0]
+          }
+        }
+      ]
+    },
+    {
+      "name": "Tree_9",
+      "components": [
+        {
+          "SpriteRenderer": {
+            "sprite": "Arbol 2.png",
+            "color": [ 1.0, 1.0, 1.0, 1.0 ],
+            "layer": 0,
+            "flip_x": true,
+            "flip_y": false,
+            "anchor": "BottomCenter"
+          }
+        },
+        {
+          "Transform": {
+            "location": [ 532.0, -634.0 ],
+            "rotation": [ 0.0, 0.0, 0.0 ],
+            "scale": [ 1.0, 1.0 ]
+          }
+        },
+        {
+          "BoxCollider": {
+            "center": [ 0.0, 0.0 ],
+            "size": [ 15.0, 15.0]
+          }
+        }
+      ]
+    },
+    {
+      "name": "Tree_10",
+      "components": [
+        {
+          "SpriteRenderer": {
+            "sprite": "Arbol 1.png",
+            "color": [ 1.0, 1.0, 1.0, 1.0 ],
+            "layer": 0,
+            "flip_x": true,
+            "flip_y": false,
+            "anchor": "BottomCenter"
+          }
+        },
+        {
+          "Transform": {
+            "location": [ -517.0, -634.0 ],
+            "rotation": [ 0.0, 0.0, 0.0 ],
+            "scale": [ 1.0, 1.0 ]
+          }
+        },
+        {
+          "BoxCollider": {
+            "center": [ 0.0, 0.0 ],
+            "size": [ 15.0, 15.0]
+          }
+        }
+      ]
+    },
+    {
+      "name": "Tree_11",
+      "components": [
+        {
+          "SpriteRenderer": {
+            "sprite": "Arbol 1.png",
+            "color": [ 1.0, 1.0, 1.0, 1.0 ],
+            "layer": 0,
+            "flip_x": true,
+            "flip_y": false,
+            "anchor": "BottomCenter"
+          }
+        },
+        {
+          "Transform": {
+            "location": [ -709.0, 463.0 ],
+            "rotation": [ 0.0, 0.0, 0.0 ],
+            "scale": [ 1.0, 1.0 ]
+          }
+        },
+        {
+          "BoxCollider": {
+            "center": [ 0.0, 0.0 ],
+            "size": [ 15.0, 15.0]
+          }
+        }
+      ]
+    },
+    {
+      "name": "Tree_12",
+      "components": [
+        {
+          "SpriteRenderer": {
+            "sprite": "Arbol 1.png",
+            "color": [ 1.0, 1.0, 1.0, 1.0 ],
+            "layer": 0,
+            "flip_x": true,
+            "flip_y": false,
+            "anchor": "BottomCenter"
+          }
+        },
+        {
+          "Transform": {
+            "location": [ 715.0, -150.0 ],
+            "rotation": [ 0.0, 0.0, 0.0 ],
+            "scale": [ 1.0, 1.0 ]
+          }
+        },
+        {
+          "BoxCollider": {
+            "center": [ 0.0, 0.0 ],
+            "size": [ 15.0, 15.0]
+          }
+        }
+      ]
+    },
+    {
+      "name": "Tree_13",
+      "components": [
+        {
+          "SpriteRenderer": {
+            "sprite": "Arbol 1.png",
+            "color": [ 1.0, 1.0, 1.0, 1.0 ],
+            "layer": 0,
+            "flip_x": true,
+            "flip_y": false,
+            "anchor": "BottomCenter"
+          }
+        },
+        {
+          "Transform": {
+            "location": [ -591.0, -985.0 ],
+            "rotation": [ 0.0, 0.0, 0.0 ],
+            "scale": [ 1.0, 1.0 ]
+          }
+        },
+        {
+          "BoxCollider": {
+            "center": [ 0.0, 0.0 ],
+            "size": [ 15.0, 15.0]
+          }
+        }
+      ]
+    },
+    {
+      "name": "Tree_14",
+      "components": [
+        {
+          "SpriteRenderer": {
+            "sprite": "Arbol 1.png",
+            "color": [ 1.0, 1.0, 1.0, 1.0 ],
+            "layer": 0,
+            "flip_x": true,
+            "flip_y": false,
+            "anchor": "BottomCenter"
+          }
+        },
+        {
+          "Transform": {
+            "location": [ 275.0, -777.0 ],
+            "rotation": [ 0.0, 0.0, 0.0 ],
+            "scale": [ 1.0, 1.0 ]
+          }
+        },
+        {
+          "BoxCollider": {
+            "center": [ 0.0, 0.0 ],
+            "size": [ 15.0, 15.0]
+          }
+        }
+      ]
+    },
+    {
+      "name": "Tree_15",
+      "components": [
+        {
+          "SpriteRenderer": {
+            "sprite": "Arbol 2.png",
+            "color": [ 1.0, 1.0, 1.0, 1.0 ],
+            "layer": 0,
+            "flip_x": false,
+            "flip_y": false,
+            "anchor": "BottomCenter"
+          }
+        },
+        {
+          "Transform": {
+            "location": [ 509.0, -900.0 ],
+            "rotation": [ 0.0, 0.0, 0.0 ],
+            "scale": [ 1.0, 1.0 ]
+          }
+        },
+        {
+          "BoxCollider": {
+            "center": [ 0.0, 0.0 ],
+            "size": [ 15.0, 15.0]
+          }
+        }
+      ]
+    },
+    {
+      "name": "Tree_16",
+      "components": [
+        {
+          "SpriteRenderer": {
+            "sprite": "Arbol 2.png",
+            "color": [ 1.0, 1.0, 1.0, 1.0 ],
+            "layer": 0,
+            "flip_x": false,
+            "flip_y": false,
+            "anchor": "BottomCenter"
+          }
+        },
+        {
+          "Transform": {
+            "location": [ -632.0, -755.0 ],
+            "rotation": [ 0.0, 0.0, 0.0 ],
+            "scale": [ 1.0, 1.0 ]
+          }
+        },
+        {
+          "BoxCollider": {
+            "center": [ 0.0, 0.0 ],
+            "size": [ 15.0, 15.0]
+          }
+        }
+      ]
+    },
+    {
+      "name": "Tree_17",
+      "components": [
+        {
+          "SpriteRenderer": {
+            "sprite": "Arbol 2.png",
+            "color": [ 1.0, 1.0, 1.0, 1.0 ],
+            "layer": 0,
+            "flip_x": true,
+            "flip_y": false,
+            "anchor": "BottomCenter"
+          }
+        },
+        {
+          "Transform": {
+            "location": [ 756.0, -576.0 ],
+            "rotation": [ 0.0, 0.0, 0.0 ],
+            "scale": [ 1.0, 1.0 ]
+          }
+        },
+        {
+          "BoxCollider": {
+            "center": [ 0.0, 0.0 ],
+            "size": [ 15.0, 15.0]
+          }
+        }
+      ]
+    },
+    {
+      "name": "Tree_18",
+      "components": [
+        {
+          "SpriteRenderer": {
+            "sprite": "Arbol 2.png",
+            "color": [ 1.0, 1.0, 1.0, 1.0 ],
+            "layer": 0,
+            "flip_x": true,
+            "flip_y": false,
+            "anchor": "BottomCenter"
+          }
+        },
+        {
+          "Transform": {
+            "location": [ -280.0, -746.0 ],
+            "rotation": [ 0.0, 0.0, 0.0 ],
+            "scale": [ 1.0, 1.0 ]
+          }
+        },
+        {
+          "BoxCollider": {
+            "center": [ 0.0, 0.0 ],
+            "size": [ 15.0, 15.0]
+          }
+        }
+      ]
+    },
+    {
+      "name": "Tree_19",
+      "components": [
+        {
+          "SpriteRenderer": {
+            "sprite": "Arbol 2.png",
+            "color": [ 1.0, 1.0, 1.0, 1.0 ],
+            "layer": 0,
+            "flip_x": true,
+            "flip_y": false,
+            "anchor": "BottomCenter"
+          }
+        },
+        {
+          "Transform": {
+            "location": [ -935.0, -150.0 ],
+            "rotation": [ 0.0, 0.0, 0.0 ],
+            "scale": [ 1.0, 1.0 ]
+          }
+        },
+        {
+          "BoxCollider": {
+            "center": [ 0.0, 0.0 ],
+            "size": [ 15.0, 15.0]
+          }
+        }
+      ]
+    },
+    {
+      "name": "Cantero_Horizontal_1",
+      "components": [
+        {
+          "SpriteRenderer": {
+            "sprite": "Cantero_Side_H.png",
+            "color": [ 1.0, 1.0, 1.0, 1.0 ],
+            "layer": -1,
+            "flip_x": false,
+            "flip_y": false,
+            "anchor": "BottomCenter"
+          }
+        },
+        {
+          "Transform": {
+            "location": [ -432.0, -529.0 ],
+            "rotation": [ 0.0, 0.0, 0.0 ],
+            "scale": [ 1.0, 1.0 ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "Cantero_Horizontal_2",
+      "components": [
+        {
+          "SpriteRenderer": {
+            "sprite": "Cantero_Side_H.png",
+            "color": [ 1.0, 1.0, 1.0, 1.0 ],
+            "layer": -1,
+            "flip_x": false,
+            "flip_y": false,
+            "anchor": "BottomCenter"
+          }
+        },
+        {
+          "Transform": {
+            "location": [ -408.0, -529.0 ],
+            "rotation": [ 0.0, 0.0, 0.0 ],
+            "scale": [ 1.0, 1.0 ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "Cantero_Horizontal_3",
+      "components": [
+        {
+          "SpriteRenderer": {
+            "sprite": "Cantero_Side_H.png",
+            "color": [ 1.0, 1.0, 1.0, 1.0 ],
+            "layer": -1,
+            "flip_x": false,
+            "flip_y": false,
+            "anchor": "BottomCenter"
+          }
+        },
+        {
+          "Transform": {
+            "location": [ -384.0, -529.0 ],
+            "rotation": [ 0.0, 0.0, 0.0 ],
+            "scale": [ 1.0, 1.0 ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "Cantero_Horizontal_4",
+      "components": [
+        {
+          "SpriteRenderer": {
+            "sprite": "Cantero_Side_H.png",
+            "color": [ 1.0, 1.0, 1.0, 1.0 ],
+            "layer": -1,
+            "flip_x": false,
+            "flip_y": false,
+            "anchor": "BottomCenter"
+          }
+        },
+        {
+          "Transform": {
+            "location": [ -360.0, -529.0 ],
+            "rotation": [ 0.0, 0.0, 0.0 ],
+            "scale": [ 1.0, 1.0 ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "Cantero_Horizontal_5",
+      "components": [
+        {
+          "SpriteRenderer": {
+            "sprite": "Cantero_Side_H.png",
+            "color": [ 1.0, 1.0, 1.0, 1.0 ],
+            "layer": -1,
+            "flip_x": false,
+            "flip_y": false,
+            "anchor": "BottomCenter"
+          }
+        },
+        {
+          "Transform": {
+            "location": [ -336.0, -529.0 ],
+            "rotation": [ 0.0, 0.0, 0.0 ],
+            "scale": [ 1.0, 1.0 ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "Cantero_Horizontal_6",
+      "components": [
+        {
+          "SpriteRenderer": {
+            "sprite": "Cantero_Side_H.png",
+            "color": [ 1.0, 1.0, 1.0, 1.0 ],
+            "layer": -1,
+            "flip_x": false,
+            "flip_y": false,
+            "anchor": "BottomCenter"
+          }
+        },
+        {
+          "Transform": {
+            "location": [ -312.0, -529.0 ],
+            "rotation": [ 0.0, 0.0, 0.0 ],
+            "scale": [ 1.0, 1.0 ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "Cantero_Horizontal_7",
+      "components": [
+        {
+          "SpriteRenderer": {
+            "sprite": "Cantero_Side_H.png",
+            "color": [ 1.0, 1.0, 1.0, 1.0 ],
+            "layer": -1,
+            "flip_x": false,
+            "flip_y": false,
+            "anchor": "BottomCenter"
+          }
+        },
+        {
+          "Transform": {
+            "location": [ -288.0, -529.0 ],
+            "rotation": [ 0.0, 0.0, 0.0 ],
+            "scale": [ 1.0, 1.0 ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "Cantero_Horizontal_8",
+      "components": [
+        {
+          "SpriteRenderer": {
+            "sprite": "Cantero_Side_H.png",
+            "color": [ 1.0, 1.0, 1.0, 1.0 ],
+            "layer": -1,
+            "flip_x": false,
+            "flip_y": false,
+            "anchor": "BottomCenter"
+          }
+        },
+        {
+          "Transform": {
+            "location": [ -264.0, -529.0 ],
+            "rotation": [ 0.0, 0.0, 0.0 ],
+            "scale": [ 1.0, 1.0 ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "Cantero_Horizontal_9",
+      "components": [
+        {
+          "SpriteRenderer": {
+            "sprite": "Cantero_Side_H.png",
+            "color": [ 1.0, 1.0, 1.0, 1.0 ],
+            "layer": -1,
+            "flip_x": false,
+            "flip_y": false,
+            "anchor": "BottomCenter"
+          }
+        },
+        {
+          "Transform": {
+            "location": [ -240.0, -529.0 ],
+            "rotation": [ 0.0, 0.0, 0.0 ],
+            "scale": [ 1.0, 1.0 ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "Cantero_Horizontal_10",
+      "components": [
+        {
+          "SpriteRenderer": {
+            "sprite": "Cantero_Side_H.png",
+            "color": [ 1.0, 1.0, 1.0, 1.0 ],
+            "layer": -1,
+            "flip_x": false,
+            "flip_y": false,
+            "anchor": "BottomCenter"
+          }
+        },
+        {
+          "Transform": {
+            "location": [ -216.0, -529.0 ],
+            "rotation": [ 0.0, 0.0, 0.0 ],
+            "scale": [ 1.0, 1.0 ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "Cantero_Horizontal_11",
+      "components": [
+        {
+          "SpriteRenderer": {
+            "sprite": "Cantero_Side_H.png",
+            "color": [ 1.0, 1.0, 1.0, 1.0 ],
+            "layer": -1,
+            "flip_x": false,
+            "flip_y": false,
+            "anchor": "BottomCenter"
+          }
+        },
+        {
+          "Transform": {
+            "location": [ -192.0, -529.0 ],
+            "rotation": [ 0.0, 0.0, 0.0 ],
+            "scale": [ 1.0, 1.0 ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "Cantero_Horizontal_12",
+      "components": [
+        {
+          "SpriteRenderer": {
+            "sprite": "Cantero_Side_H.png",
+            "color": [ 1.0, 1.0, 1.0, 1.0 ],
+            "layer": -1,
+            "flip_x": false,
+            "flip_y": false,
+            "anchor": "BottomCenter"
+          }
+        },
+        {
+          "Transform": {
+            "location": [ -168.0, -529.0 ],
+            "rotation": [ 0.0, 0.0, 0.0 ],
+            "scale": [ 1.0, 1.0 ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "Cantero_Horizontal_13",
+      "components": [
+        {
+          "SpriteRenderer": {
+            "sprite": "Cantero_Side_H.png",
+            "color": [ 1.0, 1.0, 1.0, 1.0 ],
+            "layer": -1,
+            "flip_x": false,
+            "flip_y": false,
+            "anchor": "BottomCenter"
+          }
+        },
+        {
+          "Transform": {
+            "location": [ -144.0, -529.0 ],
+            "rotation": [ 0.0, 0.0, 0.0 ],
+            "scale": [ 1.0, 1.0 ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "Cantero_Horizontal_14",
+      "components": [
+        {
+          "SpriteRenderer": {
+            "sprite": "Cantero_Side_H.png",
+            "color": [ 1.0, 1.0, 1.0, 1.0 ],
+            "layer": -1,
+            "flip_x": false,
+            "flip_y": false,
+            "anchor": "BottomCenter"
+          }
+        },
+        {
+          "Transform": {
+            "location": [ -120.0, -529.0 ],
+            "rotation": [ 0.0, 0.0, 0.0 ],
+            "scale": [ 1.0, 1.0 ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "Cantero_Horizontal_15",
+      "components": [
+        {
+          "SpriteRenderer": {
+            "sprite": "Cantero_Side_H.png",
+            "color": [ 1.0, 1.0, 1.0, 1.0 ],
+            "layer": -1,
+            "flip_x": false,
+            "flip_y": false,
+            "anchor": "BottomCenter"
+          }
+        },
+        {
+          "Transform": {
+            "location": [ -96.0, -529.0 ],
+            "rotation": [ 0.0, 0.0, 0.0 ],
+            "scale": [ 1.0, 1.0 ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "Cantero_Horizontal_16",
+      "components": [
+        {
+          "SpriteRenderer": {
+            "sprite": "Cantero_Side_H.png",
+            "color": [ 1.0, 1.0, 1.0, 1.0 ],
+            "layer": -1,
+            "flip_x": false,
+            "flip_y": false,
+            "anchor": "BottomCenter"
+          }
+        },
+        {
+          "Transform": {
+            "location": [ -72.0, -529.0 ],
+            "rotation": [ 0.0, 0.0, 0.0 ],
+            "scale": [ 1.0, 1.0 ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "Cantero_Horizontal_17",
+      "components": [
+        {
+          "SpriteRenderer": {
+            "sprite": "Cantero_Side_H.png",
+            "color": [ 1.0, 1.0, 1.0, 1.0 ],
+            "layer": -1,
+            "flip_x": false,
+            "flip_y": false,
+            "anchor": "BottomCenter"
+          }
+        },
+        {
+          "Transform": {
+            "location": [ -48.0, -529.0 ],
+            "rotation": [ 0.0, 0.0, 0.0 ],
+            "scale": [ 1.0, 1.0 ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "Cantero_Horizontal_18",
+      "components": [
+        {
+          "SpriteRenderer": {
+            "sprite": "Cantero_Side_H.png",
+            "color": [ 1.0, 1.0, 1.0, 1.0 ],
+            "layer": -1,
+            "flip_x": false,
+            "flip_y": false,
+            "anchor": "BottomCenter"
+          }
+        },
+        {
+          "Transform": {
+            "location": [ -24.0, -529.0 ],
+            "rotation": [ 0.0, 0.0, 0.0 ],
+            "scale": [ 1.0, 1.0 ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "Cantero_Horizontal_19",
+      "components": [
+        {
+          "SpriteRenderer": {
+            "sprite": "Cantero_Side_H.png",
+            "color": [ 1.0, 1.0, 1.0, 1.0 ],
+            "layer": -1,
+            "flip_x": false,
+            "flip_y": false,
+            "anchor": "BottomCenter"
+          }
+        },
+        {
+          "Transform": {
+            "location": [ 0.0, -529.0 ],
+            "rotation": [ 0.0, 0.0, 0.0 ],
+            "scale": [ 1.0, 1.0 ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "Cantero_Horizontal_20",
+      "components": [
+        {
+          "SpriteRenderer": {
+            "sprite": "Cantero_Side_H.png",
+            "color": [ 1.0, 1.0, 1.0, 1.0 ],
+            "layer": -1,
+            "flip_x": false,
+            "flip_y": false,
+            "anchor": "BottomCenter"
+          }
+        },
+        {
+          "Transform": {
+            "location": [ 432.0, -529.0 ],
+            "rotation": [ 0.0, 0.0, 0.0 ],
+            "scale": [ 1.0, 1.0 ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "Cantero_Horizontal_21",
+      "components": [
+        {
+          "SpriteRenderer": {
+            "sprite": "Cantero_Side_H.png",
+            "color": [ 1.0, 1.0, 1.0, 1.0 ],
+            "layer": -1,
+            "flip_x": false,
+            "flip_y": false,
+            "anchor": "BottomCenter"
+          }
+        },
+        {
+          "Transform": {
+            "location": [ 408.0, -529.0 ],
+            "rotation": [ 0.0, 0.0, 0.0 ],
+            "scale": [ 1.0, 1.0 ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "Cantero_Horizontal_22",
+      "components": [
+        {
+          "SpriteRenderer": {
+            "sprite": "Cantero_Side_H.png",
+            "color": [ 1.0, 1.0, 1.0, 1.0 ],
+            "layer": -1,
+            "flip_x": false,
+            "flip_y": false,
+            "anchor": "BottomCenter"
+          }
+        },
+        {
+          "Transform": {
+            "location": [ 384.0, -529.0 ],
+            "rotation": [ 0.0, 0.0, 0.0 ],
+            "scale": [ 1.0, 1.0 ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "Cantero_Horizontal_23",
+      "components": [
+        {
+          "SpriteRenderer": {
+            "sprite": "Cantero_Side_H.png",
+            "color": [ 1.0, 1.0, 1.0, 1.0 ],
+            "layer": -1,
+            "flip_x": false,
+            "flip_y": false,
+            "anchor": "BottomCenter"
+          }
+        },
+        {
+          "Transform": {
+            "location": [ 360.0, -529.0 ],
+            "rotation": [ 0.0, 0.0, 0.0 ],
+            "scale": [ 1.0, 1.0 ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "Cantero_Horizontal_24",
+      "components": [
+        {
+          "SpriteRenderer": {
+            "sprite": "Cantero_Side_H.png",
+            "color": [ 1.0, 1.0, 1.0, 1.0 ],
+            "layer": -1,
+            "flip_x": false,
+            "flip_y": false,
+            "anchor": "BottomCenter"
+          }
+        },
+        {
+          "Transform": {
+            "location": [ 336.0, -529.0 ],
+            "rotation": [ 0.0, 0.0, 0.0 ],
+            "scale": [ 1.0, 1.0 ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "Cantero_Horizontal_25",
+      "components": [
+        {
+          "SpriteRenderer": {
+            "sprite": "Cantero_Side_H.png",
+            "color": [ 1.0, 1.0, 1.0, 1.0 ],
+            "layer": -1,
+            "flip_x": false,
+            "flip_y": false,
+            "anchor": "BottomCenter"
+          }
+        },
+        {
+          "Transform": {
+            "location": [ 312.0, -529.0 ],
+            "rotation": [ 0.0, 0.0, 0.0 ],
+            "scale": [ 1.0, 1.0 ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "Cantero_Horizontal_26",
+      "components": [
+        {
+          "SpriteRenderer": {
+            "sprite": "Cantero_Side_H.png",
+            "color": [ 1.0, 1.0, 1.0, 1.0 ],
+            "layer": -1,
+            "flip_x": false,
+            "flip_y": false,
+            "anchor": "BottomCenter"
+          }
+        },
+        {
+          "Transform": {
+            "location": [ 288.0, -529.0 ],
+            "rotation": [ 0.0, 0.0, 0.0 ],
+            "scale": [ 1.0, 1.0 ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "Cantero_Horizontal_27",
+      "components": [
+        {
+          "SpriteRenderer": {
+            "sprite": "Cantero_Side_H.png",
+            "color": [ 1.0, 1.0, 1.0, 1.0 ],
+            "layer": -1,
+            "flip_x": false,
+            "flip_y": false,
+            "anchor": "BottomCenter"
+          }
+        },
+        {
+          "Transform": {
+            "location": [ 264.0, -529.0 ],
+            "rotation": [ 0.0, 0.0, 0.0 ],
+            "scale": [ 1.0, 1.0 ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "Cantero_Horizontal_28",
+      "components": [
+        {
+          "SpriteRenderer": {
+            "sprite": "Cantero_Side_H.png",
+            "color": [ 1.0, 1.0, 1.0, 1.0 ],
+            "layer": -1,
+            "flip_x": false,
+            "flip_y": false,
+            "anchor": "BottomCenter"
+          }
+        },
+        {
+          "Transform": {
+            "location": [ 240.0, -529.0 ],
+            "rotation": [ 0.0, 0.0, 0.0 ],
+            "scale": [ 1.0, 1.0 ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "Cantero_Horizontal_29",
+      "components": [
+        {
+          "SpriteRenderer": {
+            "sprite": "Cantero_Side_H.png",
+            "color": [ 1.0, 1.0, 1.0, 1.0 ],
+            "layer": -1,
+            "flip_x": false,
+            "flip_y": false,
+            "anchor": "BottomCenter"
+          }
+        },
+        {
+          "Transform": {
+            "location": [ 216.0, -529.0 ],
+            "rotation": [ 0.0, 0.0, 0.0 ],
+            "scale": [ 1.0, 1.0 ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "Cantero_Horizontal_30",
+      "components": [
+        {
+          "SpriteRenderer": {
+            "sprite": "Cantero_Side_H.png",
+            "color": [ 1.0, 1.0, 1.0, 1.0 ],
+            "layer": -1,
+            "flip_x": false,
+            "flip_y": false,
+            "anchor": "BottomCenter"
+          }
+        },
+        {
+          "Transform": {
+            "location": [ 192.0, -529.0 ],
+            "rotation": [ 0.0, 0.0, 0.0 ],
+            "scale": [ 1.0, 1.0 ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "Cantero_Horizontal_31",
+      "components": [
+        {
+          "SpriteRenderer": {
+            "sprite": "Cantero_Side_H.png",
+            "color": [ 1.0, 1.0, 1.0, 1.0 ],
+            "layer": -1,
+            "flip_x": false,
+            "flip_y": false,
+            "anchor": "BottomCenter"
+          }
+        },
+        {
+          "Transform": {
+            "location": [ 168.0, -529.0 ],
+            "rotation": [ 0.0, 0.0, 0.0 ],
+            "scale": [ 1.0, 1.0 ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "Cantero_Horizontal_32",
+      "components": [
+        {
+          "SpriteRenderer": {
+            "sprite": "Cantero_Side_H.png",
+            "color": [ 1.0, 1.0, 1.0, 1.0 ],
+            "layer": -1,
+            "flip_x": false,
+            "flip_y": false,
+            "anchor": "BottomCenter"
+          }
+        },
+        {
+          "Transform": {
+            "location": [ 144.0, -529.0 ],
+            "rotation": [ 0.0, 0.0, 0.0 ],
+            "scale": [ 1.0, 1.0 ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "Cantero_Horizontal_33",
+      "components": [
+        {
+          "SpriteRenderer": {
+            "sprite": "Cantero_Side_H.png",
+            "color": [ 1.0, 1.0, 1.0, 1.0 ],
+            "layer": -1,
+            "flip_x": false,
+            "flip_y": false,
+            "anchor": "BottomCenter"
+          }
+        },
+        {
+          "Transform": {
+            "location": [ 120.0, -529.0 ],
+            "rotation": [ 0.0, 0.0, 0.0 ],
+            "scale": [ 1.0, 1.0 ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "Cantero_Horizontal_34",
+      "components": [
+        {
+          "SpriteRenderer": {
+            "sprite": "Cantero_Side_H.png",
+            "color": [ 1.0, 1.0, 1.0, 1.0 ],
+            "layer": -1,
+            "flip_x": false,
+            "flip_y": false,
+            "anchor": "BottomCenter"
+          }
+        },
+        {
+          "Transform": {
+            "location": [ 96.0, -529.0 ],
+            "rotation": [ 0.0, 0.0, 0.0 ],
+            "scale": [ 1.0, 1.0 ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "Cantero_Horizontal_35",
+      "components": [
+        {
+          "SpriteRenderer": {
+            "sprite": "Cantero_Side_H.png",
+            "color": [ 1.0, 1.0, 1.0, 1.0 ],
+            "layer": -1,
+            "flip_x": false,
+            "flip_y": false,
+            "anchor": "BottomCenter"
+          }
+        },
+        {
+          "Transform": {
+            "location": [ 72.0, -529.0 ],
+            "rotation": [ 0.0, 0.0, 0.0 ],
+            "scale": [ 1.0, 1.0 ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "Cantero_Horizontal_36",
+      "components": [
+        {
+          "SpriteRenderer": {
+            "sprite": "Cantero_Side_H.png",
+            "color": [ 1.0, 1.0, 1.0, 1.0 ],
+            "layer": -1,
+            "flip_x": false,
+            "flip_y": false,
+            "anchor": "BottomCenter"
+          }
+        },
+        {
+          "Transform": {
+            "location": [ 48.0, -529.0 ],
+            "rotation": [ 0.0, 0.0, 0.0 ],
+            "scale": [ 1.0, 1.0 ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "Cantero_Horizontal_37",
+      "components": [
+        {
+          "SpriteRenderer": {
+            "sprite": "Cantero_Side_H.png",
+            "color": [ 1.0, 1.0, 1.0, 1.0 ],
+            "layer": -1,
+            "flip_x": false,
+            "flip_y": false,
+            "anchor": "BottomCenter"
+          }
+        },
+        {
+          "Transform": {
+            "location": [ 24.0, -529.0 ],
+            "rotation": [ 0.0, 0.0, 0.0 ],
+            "scale": [ 1.0, 1.0 ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "Cantero_Horizontal_37",
+      "components": [
+        {
+          "SpriteRenderer": {
+            "sprite": "Cantero_Side_H.png",
+            "color": [ 1.0, 1.0, 1.0, 1.0 ],
+            "layer": -1,
+            "flip_x": false,
+            "flip_y": false,
+            "anchor": "BottomCenter"
+          }
+        },
+        {
+          "Transform": {
+            "location": [ 24.0, -529.0 ],
+            "rotation": [ 0.0, 0.0, 0.0 ],
+            "scale": [ 1.0, 1.0 ]
+          }
+        }
       ]
     }
   ]
