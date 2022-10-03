@@ -12,7 +12,7 @@ use super::scene_deserializer::EntityAnchor;
 pub fn psd_read()
 {
 
-    let psd_bytes = include_bytes!("../../assets/scene.psd");
+    let psd_bytes = include_bytes!("../../assets/scene/scene.psd");
 
     let psd;
 

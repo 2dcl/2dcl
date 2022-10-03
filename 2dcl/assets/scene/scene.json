@@ -4601,6 +4601,250 @@
           }
         }
       ]
+    },
+    {
+      "name": "Wall_Lamp_1",
+      "components": [
+        {
+          "SpriteRenderer": {
+            "sprite": "Wall Lamp.png",
+            "color": [ 1.0, 1.0, 1.0, 1.0 ],
+            "layer": 0,
+            "flip_x": false,
+            "flip_y": false,
+            "anchor": {"Custom": [ 0.0, -50.0]}
+          }
+        },
+        {
+          "Transform": {
+            "location": [ -95.0, 286.0 ],
+            "rotation": [ 0.0, 0.0, 0.0 ],
+            "scale": [ 1.0, 1.0 ]
+          }
+        }   
+      ]
+    },
+    {
+      "name": "Wall_Lamp_2",
+      "components": [
+        {
+          "SpriteRenderer": {
+            "sprite": "Wall Lamp.png",
+            "color": [ 1.0, 1.0, 1.0, 1.0 ],
+            "layer": 0,
+            "flip_x": false,
+            "flip_y": false,
+            "anchor": {"Custom": [ 0.0, -50.0]}
+          }
+        },
+        {
+          "Transform": {
+            "location": [ 95.0, 286.0 ],
+            "rotation": [ 0.0, 0.0, 0.0 ],
+            "scale": [ 1.0, 1.0 ]
+          }
+        }   
+      ]
+    },
+    {
+      "name": "Wall_Lamp_3",
+      "components": [
+        {
+          "SpriteRenderer": {
+            "sprite": "Wall Lamp.png",
+            "color": [ 1.0, 1.0, 1.0, 1.0 ],
+            "layer": 0,
+            "flip_x": false,
+            "flip_y": false,
+            "anchor": {"Custom": [ 0.0, -50.0]}
+          }
+        },
+        {
+          "Transform": {
+            "location": [ 95.0, -337.0 ],
+            "rotation": [ 0.0, 0.0, 0.0 ],
+            "scale": [ 1.0, 1.0 ]
+          }
+        }   
+      ]
+    },
+    {
+      "name": "Wall_Lamp_4",
+      "components": [
+        {
+          "SpriteRenderer": {
+            "sprite": "Wall Lamp.png",
+            "color": [ 1.0, 1.0, 1.0, 1.0 ],
+            "layer": 0,
+            "flip_x": false,
+            "flip_y": false,
+            "anchor": {"Custom": [ 0.0, -50.0]}
+          }
+        },
+        {
+          "Transform": {
+            "location": [ -95.0, -337.0 ],
+            "rotation": [ 0.0, 0.0, 0.0 ],
+            "scale": [ 1.0, 1.0 ]
+          }
+        }   
+      ]
+    },
+    {
+      "name": "Crystal_Lamp_7",
+      "components": [
+        {
+          "SpriteRenderer": {
+            "sprite": "Lampara Cristal.png",
+            "color": [ 1.0, 1.0, 1.0, 1.0 ],
+            "layer": 0,
+            "flip_x": false,
+            "flip_y": false,
+            "anchor": "BottomCenter"
+          }
+        },
+        {
+          "Transform": {
+            "location": [ -95.0, -370.0 ],
+            "rotation": [ 0.0, 0.0, 0.0 ],
+            "scale": [ 1.0, 1.0 ]
+          }
+        },
+        {
+          "BoxCollider": {
+            "center": [ 0.0, 0.0 ],
+            "size": [ 15.0, 15.0]
+          }
+        }
+      ]
+    },
+    {
+      "name": "Crystal_Lamp_8",
+      "components": [
+        {
+          "SpriteRenderer": {
+            "sprite": "Lampara Cristal.png",
+            "color": [ 1.0, 1.0, 1.0, 1.0 ],
+            "layer": 0,
+            "flip_x": false,
+            "flip_y": false,
+            "anchor": "BottomCenter"
+          }
+        },
+        {
+          "Transform": {
+            "location": [ 95.0, -370.0 ],
+            "rotation": [ 0.0, 0.0, 0.0 ],
+            "scale": [ 1.0, 1.0 ]
+          }
+        },
+        {
+          "BoxCollider": {
+            "center": [ 0.0, 0.0 ],
+            "size": [ 15.0, 15.0]
+          }
+        }
+      ]
+    },
+    {
+      "name": "Park_Bench_Horizontal_1",
+      "components": [
+        {
+          "SpriteRenderer": {
+            "sprite": "Park Bench H.png",
+            "color": [ 1.0, 1.0, 1.0, 1.0 ],
+            "layer": 0,
+            "flip_x": false,
+            "flip_y": false,
+            "anchor": "BottomCenter"
+          }
+        },
+        {
+          "Transform": {
+            "location": [ 165.0, -350.0 ],
+            "rotation": [ 0.0, 0.0, 0.0 ],
+            "scale": [ 1.0, 1.0 ]
+          }
+        },
+        {
+          "BoxCollider": {
+            "center": [ 0.0, 0.0 ],
+            "size": [ 60.0, 15.0]
+          }
+        }
+      ]
+    },
+    {
+      "name": "Park_Bench_Horizontal_2",
+      "components": [
+        {
+          "SpriteRenderer": {
+            "sprite": "Park Bench H.png",
+            "color": [ 1.0, 1.0, 1.0, 1.0 ],
+            "layer": 0,
+            "flip_x": false,
+            "flip_y": false,
+            "anchor": "BottomCenter"
+          }
+        },
+        {
+          "Transform": {
+            "location": [ -165.0, -350.0 ],
+            "rotation": [ 0.0, 0.0, 0.0 ],
+            "scale": [ 1.0, 1.0 ]
+          }
+        },
+        {
+          "BoxCollider": {
+            "center": [ 0.0, 0.0 ],
+            "size": [ 60.0, 15.0]
+          }
+        }
+      ]
+    },
+    {
+      "name": "Cantero_Vertical_1",
+      "components": [
+        {
+          "SpriteRenderer": {
+            "sprite": "Cantero_Side_V.png",
+            "color": [ 1.0, 1.0, 1.0, 1.0 ],
+            "layer": -1,
+            "flip_x": false,
+            "flip_y": false,
+            "anchor": "BottomCenter"
+          }
+        },
+        {
+          "Transform": {
+            "location": [ -621.0, 0.0 ],
+            "rotation": [ 0.0, 0.0, 0.0 ],
+            "scale": [ 1.0, 1.0 ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "Cantero_Vertical_2",
+      "components": [
+        {
+          "SpriteRenderer": {
+            "sprite": "Cantero_Side_V.png",
+            "color": [ 1.0, 1.0, 1.0, 1.0 ],
+            "layer": -1,
+            "flip_x": false,
+            "flip_y": false,
+            "anchor": "BottomCenter"
+          }
+        },
+        {
+          "Transform": {
+            "location": [ -621.0, 0.0 ],
+            "rotation": [ 0.0, 0.0, 0.0 ],
+            "scale": [ 1.0, 1.0 ]
+          }
+        }
+      ]
     }
   ]
 }

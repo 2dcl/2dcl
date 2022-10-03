@@ -133,7 +133,7 @@ pub fn update_animations
 
 pub fn change_animator_state
 (
-    mut animator: Mut<Animator>,
+    mut animator: &mut Animator,
     new_state: String
 )
 {

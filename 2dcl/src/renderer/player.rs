@@ -35,8 +35,7 @@ fn spawn_player(
     mut texture_atlases: ResMut<Assets<TextureAtlas>>,
 )
 {   
-    let texture_atlases_mut_ref = &mut texture_atlases;
-    let animator = get_animator( "./2dcl/assets/player.json", &assets, texture_atlases_mut_ref).unwrap();
+    let animator = get_animator( "./2dcl/assets/player.json", &assets,  &mut texture_atlases).unwrap();
     let mut sprite = TextureAtlasSprite::new(0);
     sprite.anchor = Anchor::BottomCenter;
 
@@ -141,8 +140,7 @@ fn player_movement
     {
         texture_atlas.flip_x = true;
     }
-
-    change_animator_state(animator,animation_state.to_string()); 
+    change_animator_state(animator.as_mut(),animation_state.to_string()); 
 
 }
 

@@ -8,6 +8,7 @@ use std::path::Path;
 use serde_json::Result;
 use bevy_inspector_egui::Inspectable;
 use super::collision::*;
+use super::animations::*;
 use image::io::Reader as ImageReader;
 use image::{DynamicImage, ImageFormat};
 use bevy::render::texture::ImageSampler;
@@ -32,8 +33,21 @@ pub enum EntityComponent{
     SpriteRenderer(SpriteRenderer),
     CircleCollider(CircleCollider),
     BoxCollider(BoxCollider),
-    AlphaCollider(AlphaCollider)
+    AlphaCollider(AlphaCollider),
+    AsepriteAnimation(AsepriteAnimation),
 }
+
+#[derive(Deserialize, Serialize, Debug)]
+pub struct AsepriteAnimation {
+    pub json_path: String,
+    pub starting_state: String,
+    pub color: Vec4,
+    pub layer: i32,
+    pub flip_x: bool,
+    pub flip_y: bool,
+    pub anchor: EntityAnchor
+}
+
 
 #[derive(Deserialize, Serialize, Debug)]
 pub struct EntityTransform {
@@ -126,10 +140,11 @@ where
 fn load_scene(
     mut commands: Commands,
     asset_server: Res<AssetServer>,
-    mut collision_map: ResMut<CollisionMap>
+    mut collision_map: ResMut<CollisionMap>,
+    mut texture_atlases: ResMut<Assets<TextureAtlas>>,
 
 ) {
-    if let Ok(file) = File::open("./2dcl/assets/scene.json")
+    if let Ok(file) = File::open("./2dcl/assets/scene/scene.json")
     {
         let reader = BufReader::new(file);
         let scene: Result<Scene> = serde_json::from_reader(reader);
@@ -170,7 +185,7 @@ fn load_scene(
                     
                     if let EntityComponent::SpriteRenderer(sprite_renderer) = component
                     {
-                        if let Ok(mut reader) = ImageReader::open("./2dcl/assets/".to_owned()+&sprite_renderer.sprite)
+                        if let Ok(mut reader) = ImageReader::open("./2dcl/assets/scene/".to_owned()+&sprite_renderer.sprite)
                         {
                             reader.set_format(ImageFormat::Png);
                             if let Ok(dynamic_image) = reader.decode()
@@ -183,7 +198,7 @@ fn load_scene(
                                     let columns = pixels.len()/rows;
 
 
-                                    let texture: Handle<Image> = asset_server.load(&sprite_renderer.sprite);
+                                    let texture: Handle<Image> = asset_server.load(&("./scene/".to_owned() + &sprite_renderer.sprite));
 
                                     transform.translation = Vec3{
                                         x:transform.translation.x,
@@ -221,11 +236,33 @@ fn load_scene(
                     {
                         commands.entity(spawned_entity).insert(collider.clone());
                     }
+
+                    if let EntityComponent::AsepriteAnimation(aseprite_animation) = component
+                    {
+                       let mut animator =  get_animator("./2dcl/assets/scene/".to_owned() + &aseprite_animation.json_path, &asset_server,&mut texture_atlases).unwrap();
+                       let sprite = TextureAtlasSprite
+                       {
+                        color: Color::Rgba { 
+                            red: aseprite_animation.color.x, 
+                            green: aseprite_animation.color.y, 
+                            blue: aseprite_animation.color.z, 
+                            alpha:  aseprite_animation.color.w},
+                            anchor: entity_anchor_to_anchor(Vec2{x:1 as f32, y:1 as f32},aseprite_animation.anchor.clone()),
+                            flip_x: aseprite_animation.flip_x,
+                            flip_y: aseprite_animation.flip_y,
+                        ..default()
+                        };
+                        change_animator_state(animator.borrow_mut(),aseprite_animation.starting_state.clone()); 
+                        commands.entity(spawned_entity).insert(sprite);
+                        commands.entity(spawned_entity).insert(animator.atlas.clone());
+                        commands.entity(spawned_entity).insert(animator);
+                    }
+                    
                     
                     
                     if let EntityComponent::AlphaCollider(collider) = component
                     {
-                        if let Ok(mut reader) = ImageReader::open("./2dcl/assets/".to_owned()+&collider.sprite)
+                        if let Ok(mut reader) = ImageReader::open("./2dcl/assets/scene/".to_owned()+&collider.sprite)
                         {        
                             reader.set_format(ImageFormat::Png);
                             if let Ok(dynamic_image) = reader.decode()
