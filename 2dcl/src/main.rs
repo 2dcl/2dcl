@@ -4,8 +4,7 @@ use dcl_common::Result;
 mod renderer;
 //mod ws;
 
-#[tokio::main]
-async fn main() -> Result<()> {
+fn main() -> Result<()> {
 //    ws::start().await?;
 
     // spawn kernel process

@@ -6,9 +6,9 @@ use bevy_inspector_egui::WorldInspectorPlugin;
 use super::player::Player;
 
 use super::collision::CollisionMap;
-use super::scene_deserializer::CircleCollider;
-use super::scene_deserializer::BoxCollider;
-use super::scene_deserializer::AlphaCollider;
+use super::scene_loader::CircleCollider;
+use super::scene_loader::BoxCollider;
+use super::scene_loader::AlphaCollider;
 
 pub struct DebugPlugin;
 

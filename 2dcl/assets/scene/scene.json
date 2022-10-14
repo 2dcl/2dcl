@@ -1,5 +1,9 @@
 {
-  "name": "2DCL_psdSceneTest",
+  "name": "main_plaza",
+  "parcels": [
+      "1,1",
+      "0,0"
+  ]
   "entities": [
     {
       "name": "Barra_centro",

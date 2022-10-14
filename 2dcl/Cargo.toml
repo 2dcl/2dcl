@@ -26,3 +26,5 @@ image= "0.24.3"
 bevy-inspector-egui = "0.12"
 aseprite = "0.1.3"
 psd = "0.3.4"
+catalyst = {path = "../catalyst"}
+walkdir = "2"

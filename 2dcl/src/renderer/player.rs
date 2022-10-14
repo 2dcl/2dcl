@@ -1,6 +1,6 @@
 use bevy::{prelude::*, sprite::{collide_aabb::collide, Anchor}};
 use bevy_inspector_egui::Inspectable;
-use super::{scene_deserializer::BoxCollider, collision::*, animations::*};
+use super::{scene_loader::BoxCollider, collision::*, animations::*};
 
 pub struct PlayerPlugin;
 
@@ -35,7 +35,8 @@ fn spawn_player(
     mut texture_atlases: ResMut<Assets<TextureAtlas>>,
 )
 {   
-    let animator = get_animator( "./2dcl/assets/player.json", &assets,  &mut texture_atlases).unwrap();
+  
+    let animator = get_animator( "./assets/player.json", &assets,  &mut texture_atlases).unwrap();
     let mut sprite = TextureAtlasSprite::new(0);
     sprite.anchor = Anchor::BottomCenter;
 

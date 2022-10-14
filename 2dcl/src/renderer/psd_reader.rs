@@ -1,12 +1,11 @@
-use bevy::prelude::Vec2;
 use bevy::prelude::Vec4;
 use psd::*;
 use image::*;
-use crate::renderer::scene_deserializer;
-use crate::renderer::scene_deserializer::EntityComponent;
-use crate::renderer::scene_deserializer::SpriteRenderer;
-use super::scene_deserializer::Entitiy;
-use super::scene_deserializer::EntityAnchor;
+use crate::renderer::scene_loader;
+use crate::renderer::scene_loader::EntityComponent;
+use crate::renderer::scene_loader::SpriteRenderer;
+use super::scene_loader::SceneEntity;
+use super::scene_loader::EntityAnchor;
 
 
 pub fn psd_read()
@@ -24,7 +23,7 @@ pub fn psd_read()
     
     let layers = psd.layers();
 
-    let mut entities : Vec<Entitiy> = Vec::new();
+    let mut entities : Vec<SceneEntity> = Vec::new();
 
     let mut layer_z = layers.len() as i32;
 
@@ -63,14 +62,14 @@ pub fn psd_read()
                 }
             };
             components.push(sprite_renderer);
-            entities.push(Entitiy{name: layer.name().to_owned(),components});
+            entities.push(SceneEntity{name: layer.name().to_owned(),components});
             layer_z-=1;
         }
     }
 
 
 
-    let scene: scene_deserializer::Scene = scene_deserializer::Scene{name:"2DCL_psdSceneTest".to_owned(),entities : entities};
-    scene_deserializer::save_scene(scene, "./assets/scene.json");
+    //let scene: scene_loader::Scene = scene_loader::Scene{name:"2DCL_psdSceneTest".to_owned(),entities : entities,size_x:1,size_y:1};
+    //scene_loader::save_scene(scene, "./assets/scene.json");
 
 }
