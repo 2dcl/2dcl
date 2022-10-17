@@ -19,8 +19,10 @@ use walkdir::WalkDir;
 pub struct SceneLoaderPlugin;
 
 
-pub const RENDERING_DISTANCE_IN_PARCELS: i16 = 1;
-pub const PARCEL_SIZE: f32 = 200.0;
+pub const MIN_RENDERING_DISTANCE_IN_PARCELS: i16 = 3;
+pub const MAX_RENDERING_DISTANCE_IN_PARCELS: i16 = 4;
+pub const PARCEL_SIZE_X: f32 = 350.0;
+pub const PARCEL_SIZE_Y: f32 = 350.0;
 
 #[derive(Debug)]
 pub struct Scene {
@@ -137,7 +139,7 @@ impl Plugin for SceneLoaderPlugin
 
 pub fn check_scenes_to_download(
     mut player_query: Query<(&mut Player, &mut GlobalTransform)>,  
-    mut scene_query: Query<(&mut SceneComponent, &mut GlobalTransform, Without<Player>)>,  
+    mut scene_query: Query<(Entity,&mut SceneComponent, Without<Player>)>,  
     mut commands: Commands,
     asset_server: Res<AssetServer>,
     mut collision_map: ResMut<CollisionMap>,
@@ -148,34 +150,123 @@ pub fn check_scenes_to_download(
     for(player,mut player_transform) in player_query.iter()
     {
 
-        let mut is_current_scene_loaded = false;
         let player_parcel = world_location_to_parcel(player_transform.translation());
+        let mut parcels_to_render = get_all_parcels_around(&player_parcel,MIN_RENDERING_DISTANCE_IN_PARCELS);
+        
+        let mut parcels_to_keep = get_all_parcels_around(&player_parcel,MAX_RENDERING_DISTANCE_IN_PARCELS);
+       
 
-        for(scene, scene_transform, _player) in scene_query.iter()
+        for(entity, scene, _player) in scene_query.iter()
         {
-            
-            if  scene.parcels.contains(&player_parcel)
+            let mut despawn_scene = true;
+            for parcel in &parcels_to_keep
             {
-                is_current_scene_loaded = true;
+                if  scene.parcels.contains(&parcel)
+                {   
+                    //println!("Scene {:?} contains parcel to keep {:?}",scene.name.clone(),parcel);
+                    despawn_scene = false;
+                    break;
+                } 
+            }
+
+          
+            if despawn_scene
+            {  
+                println!("despawning scene");
+                commands.entity(entity).despawn();
+                continue;
+            }
+
+            for i in (0..parcels_to_render.len()).rev()
+            {
+                if  scene.parcels.contains(&parcels_to_render[i])
+                {
+                    parcels_to_render.remove(i);
+                } 
+            }
+            
+            if parcels_to_render.is_empty()
+            {
                 break;
-            } 
+            }
         }
 
-        if !is_current_scene_loaded
+        while !parcels_to_render.is_empty()
         {
-            spawn_scene(commands, asset_server, collision_map, texture_atlases, get_scene(player_parcel));
+            let scene = get_scene(Parcel(parcels_to_render[0].0,parcels_to_render[0].1));
+            
+            for scene_parcel in &scene.parcels
+            {
+                for i in (0..parcels_to_render.len()).rev()
+                {
+                    if  parcels_to_render[i] == *scene_parcel
+                    {
+                        parcels_to_render.remove(i);
+                    }
+                }
+            }
+
+            spawn_scene(&mut commands,&asset_server, &mut collision_map, &mut texture_atlases, scene);
+            
+      
+          
         }
         break;
     }
-    //TODO: if close parcels are not downloaded, download them and render them.
-    //TODO: if close parcels are not being rendered, render them.
-    //TODO: am I rendering parcels too far away
+
 }
 
 
+fn get_scene_center_location(scene: &Scene) -> Vec3
+{
+ 
+    let mut min: Vec2 = Vec2{x:f32::MAX,y:f32::MAX};
+    let mut max: Vec2 = Vec2{x:f32::MIN,y:f32::MIN};
+ 
+    for parcel in &scene.parcels
+    {
+        if (parcel.0 as f32 * PARCEL_SIZE_X) < min.x
+        {
+            min.x = parcel.0 as f32 * PARCEL_SIZE_X;
+        }
+
+        if (parcel.1 as f32 * PARCEL_SIZE_Y) < min.y
+        {
+            min.y = parcel.1 as f32 * PARCEL_SIZE_Y;
+        }
+     
+        if (parcel.0 as f32 * PARCEL_SIZE_X) > max.x
+        {
+            max.x = parcel.0 as f32 * PARCEL_SIZE_X;
+        }
+
+        if (parcel.1 as f32 * PARCEL_SIZE_Y) > max.y
+        {
+            max.y = parcel.1 as f32 * PARCEL_SIZE_Y;
+        }
+    }
+
+    Vec3{x:(min.x+max.x)/2f32,y:(min.y+max.y)/2f32,z:(min.y+max.y)/-2f32}
+
+}
+
+fn get_all_parcels_around(parcel: &Parcel, distance: i16) -> Vec<Parcel>
+{
+    let mut parcels: Vec<Parcel> = Vec::default();
+
+    for x in 0..distance
+    {
+        for y in 0..distance
+        {
+            parcels.push(Parcel(parcel.0+x, parcel.1+y));
+        }
+    }
+
+    parcels
+}
 pub fn world_location_to_parcel(location: Vec3) -> Parcel
 {
-    return Parcel((location.x/PARCEL_SIZE).round() as i16,(location.y/PARCEL_SIZE).round() as i16);
+    return Parcel((location.x/PARCEL_SIZE_X).round() as i16,(location.y/PARCEL_SIZE_Y).round() as i16);
 }
 
 #[tokio::main]
@@ -309,21 +400,22 @@ pub fn load_scene(
 } */
 
 fn spawn_scene(    
-    mut commands: Commands,
-    asset_server: Res<AssetServer>,
-    mut collision_map: ResMut<CollisionMap>,
-    mut texture_atlases: ResMut<Assets<TextureAtlas>>,
+    mut commands: &mut Commands,
+    asset_server: &Res<AssetServer>,
+    collision_map: &mut ResMut<CollisionMap>,
+    mut texture_atlases: &mut ResMut<Assets<TextureAtlas>>,
     scene: Scene,
 )
 {
 
-    let location: Vec3 = Vec3::ZERO;
+    let scene_location: Vec3 = get_scene_center_location(&scene);
+
     let scene_entity = commands.spawn()
     .insert(Name::new(scene.name.clone()))
     .insert(Visibility{is_visible: true})
     .insert(GlobalTransform::default())
     .insert(ComputedVisibility::default())
-    .insert(Transform::from_translation(location))
+    .insert(Transform::from_translation(scene_location))
     .insert(SceneComponent{name:scene.name.clone(),parcels:scene.parcels})
     .id();
 
@@ -354,7 +446,7 @@ for entity in  scene.entities.iter()
         .insert(ComputedVisibility::default())
         .insert(transform)
         .id();
-
+    println!("spawning entity: {:?}",entity.name.clone());
     commands.entity(scene_entity).add_child(spawned_entity);
     //Inserting components
     for component in entity.components.iter()
@@ -364,7 +456,6 @@ for entity in  scene.entities.iter()
         {
             if let Ok(mut reader) = ImageReader::open(scene.path.clone() + "/" + &sprite_renderer.sprite)
             {
-                println!("Ok sprite path");
                 reader.set_format(ImageFormat::Png);
                 if let Ok(dynamic_image) = reader.decode()
                 {
@@ -454,8 +545,10 @@ for entity in  scene.entities.iter()
 
                         let fixed_translation = get_fixed_translation_by_anchor(
                             Vec2{x:columns as f32, y: rows as f32},
-                            transform.translation,
-                            collider.anchor.clone()
+                            Vec3 { x: transform.translation.x + scene_location.x, 
+                                y: transform.translation.y + scene_location.y, 
+                                z: transform.translation.z + scene_location.z },
+                            collider.anchor.clone(),
                         );
                         let mut index =0;
                         let strating_world_location =

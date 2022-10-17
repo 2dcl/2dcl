@@ -75,7 +75,7 @@ fn player_movement
 (
     mut player_query: Query<(&mut Player, &mut Transform, &mut Animator, &mut TextureAtlasSprite)>,
    // mut player_renderer_query:  Query<(&mut Animator, &mut TextureAtlasSprite, Without<Player>)>,
-    box_collision_query: Query<(&Transform, &BoxCollider, Without<Player>)>,
+    box_collision_query: Query<(&GlobalTransform, &BoxCollider, Without<Player>)>,
     keyboard: Res<Input<KeyCode>>,
     collision_map: Res<CollisionMap>,
     time: Res<Time>
@@ -148,7 +148,7 @@ fn player_movement
 fn collision_check(
     target_player_pos: Vec3,
     target_player_collider: Vec2,
-    box_collision_query: &Query<(&Transform, &BoxCollider, Without<Player>)>,
+    box_collision_query: &Query<(&GlobalTransform, &BoxCollider, Without<Player>)>,
     collision_map: CollisionMap
 ) -> bool
 {
@@ -158,7 +158,7 @@ fn collision_check(
         let collision = collide(
             Vec3{x:target_player_pos.x,y:target_player_pos.y+target_player_collider.y/2.0,z:0.0},
             target_player_collider,
-            wall.translation + collider.center.extend(0.0),
+            wall.translation() + collider.center.extend(0.0),
             collider.size
         );
 
