@@ -5,7 +5,7 @@ mod collision;
 //mod render_to_texture;
 mod animations;
 mod player_sprite_maker;
-mod scene_loader;
+pub mod scene_loader;
 mod psd_reader;
 
 use player::PlayerPlugin;
@@ -34,7 +34,7 @@ pub fn start() {
         .add_plugin(CollisionPlugin)
         .run();
        
-    }
+}
 
 
 

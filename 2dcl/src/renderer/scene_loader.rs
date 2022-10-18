@@ -1,5 +1,7 @@
 use std::fs;
 use bevy::prelude::*;
+use bevy::tasks::AsyncComputeTaskPool;
+use bevy::tasks::Task;
 use catalyst::{ContentClient, Server};
 use dcl_common::{Parcel, Result};
 use bevy::sprite::Anchor;
@@ -15,6 +17,7 @@ use image::io::Reader as ImageReader;
 use image::{DynamicImage, ImageFormat};
 use super::player::Player;
 use walkdir::WalkDir;
+use futures_lite::future;
 
 pub struct SceneLoaderPlugin;
 
@@ -23,6 +26,13 @@ pub const MIN_RENDERING_DISTANCE_IN_PARCELS: i16 = 3;
 pub const MAX_RENDERING_DISTANCE_IN_PARCELS: i16 = 4;
 pub const PARCEL_SIZE_X: f32 = 350.0;
 pub const PARCEL_SIZE_Y: f32 = 350.0;
+
+#[derive(Component)]
+struct TextureLoading(Task<Handle<Image>>);
+#[derive(Component)]
+struct SpriteLoading(Task<Sprite>);
+#[derive(Component)]
+struct AlphaColliderLoading(Task<Vec<Vec2>>);
 
 #[derive(Debug)]
 pub struct Scene {
@@ -76,7 +86,7 @@ pub struct EntityTransform {
 }
 
 
-#[derive(Deserialize, Serialize, Debug)]
+#[derive(Deserialize, Serialize, Debug, Clone)]
 pub struct SpriteRenderer {
     pub sprite: String,
     pub color: Vec4,
@@ -133,16 +143,16 @@ impl Plugin for SceneLoaderPlugin
     fn build(&self, app: &mut App) {
     app
     .add_system(check_scenes_to_download)
+    .add_system(handle_tasks)
     ;
     }
 }
 
 pub fn check_scenes_to_download(
-    mut player_query: Query<(&mut Player, &mut GlobalTransform)>,  
-    mut scene_query: Query<(Entity, &mut SceneComponent, Without<Player>)>,  
+    player_query: Query<(&mut Player, &mut GlobalTransform)>,  
+    scene_query: Query<(Entity, &mut SceneComponent, Without<Player>)>,  
     mut commands: Commands,
     asset_server: Res<AssetServer>,
-    mut collision_map: ResMut<CollisionMap>,
     mut texture_atlases: ResMut<Assets<TextureAtlas>>,
 )
 {
@@ -207,11 +217,9 @@ pub fn check_scenes_to_download(
                     }
                 }
             }
-
-            spawn_scene(&mut commands,&asset_server, &mut collision_map, &mut texture_atlases, scene);
-            
-      
-          
+         
+            spawn_scene(&mut commands,&asset_server, &mut texture_atlases, scene);
+               
         }
         break;
     }
@@ -320,6 +328,7 @@ where
     
 } */
 
+
 fn get_scene(parcel: Parcel) -> Scene
 {
     for entry in WalkDir::new("./2dcl/assets/scenes") {
@@ -400,15 +409,46 @@ pub fn load_scene(
         }
     }
 } */
+fn handle_tasks(
+    mut commands: Commands,
+    mut collision_map: ResMut<CollisionMap>,
+    mut tasks_texture_loading: Query<(Entity, &mut TextureLoading)>,
+    mut tasks_sprite_loading: Query<(Entity, &mut SpriteLoading)>,
+    mut tasks_alpha_collider_loading: Query<(Entity, &mut AlphaColliderLoading)>,
+) 
+{ 
+    for (entity, mut task) in &mut tasks_texture_loading {
+        if let Some(image) = future::block_on(future::poll_once(&mut task.0)) {
 
+            commands.entity(entity).insert(image);
+            commands.entity(entity).remove::<TextureLoading>();
+        }
+    }
+
+    for (entity, mut task) in &mut tasks_sprite_loading {
+        if let Some(sprite) = future::block_on(future::poll_once(&mut task.0)) {
+    
+            commands.entity(entity).insert(sprite);
+            commands.entity(entity).remove::<SpriteLoading>();
+        }
+    }
+
+    for (entity, mut task) in &mut tasks_alpha_collider_loading {
+        if let Some(collision) = future::block_on(future::poll_once(&mut task.0)) {
+            let mut collision = collision.clone();
+            collision_map.collision_locations.append(&mut collision);
+            commands.entity(entity).remove::<AlphaColliderLoading>();
+        }
+    }
+}
 fn spawn_scene(    
     mut commands: &mut Commands,
     asset_server: &Res<AssetServer>,
-    collision_map: &mut ResMut<CollisionMap>,
     mut texture_atlases: &mut ResMut<Assets<TextureAtlas>>,
     scene: Scene,
 )
 {
+   
 
     let scene_location: Vec3 = get_scene_center_location(&scene);
 
@@ -452,51 +492,60 @@ for entity in  scene.entities.iter()
     commands.entity(scene_entity).add_child(spawned_entity);
     //Inserting components
     for component in entity.components.iter()
-    {
-        
+    { 
         if let EntityComponent::SpriteRenderer(sprite_renderer) = component
-        {
-            println!("{:?}",scene.path.clone());
-            if let Ok(mut reader) = ImageReader::open(scene.path.clone() + "/" + &sprite_renderer.sprite)
-            {
-                reader.set_format(ImageFormat::Png);
-                if let Ok(dynamic_image) = reader.decode()
+        { 
+             
+            transform.translation = Vec3{
+                x:transform.translation.x,
+                y:transform.translation.y,
+                z:transform.translation.z + sprite_renderer.layer as f32 * 500.0
+            };
+
+            commands.entity(spawned_entity).insert(transform);
+
+            let thread_pool = AsyncComputeTaskPool::get();
+            let server = (*asset_server).clone();
+            let image_path = "../../".to_string() + &scene.path.clone()  + "/" + &sprite_renderer.sprite;
+            let task_texture_load = thread_pool.spawn(async move {
+                let texture: Handle<Image> = server.load(&(image_path));
+                texture
+            }); 
+              commands.entity(spawned_entity).insert(TextureLoading(task_texture_load));
+            
+            let sprite_path = scene.path.clone() + "/" + &sprite_renderer.sprite;
+           
+            let renderer  = (*sprite_renderer).clone();
+            let task_sprite_load = thread_pool.spawn(async move {
+                if let Ok(mut reader) = ImageReader::open(sprite_path)
                 {
-                    if let DynamicImage::ImageRgba8(image) = dynamic_image
+                    reader.set_format(ImageFormat::Png);
+                    if let Ok(dynamic_image) = reader.decode()
                     {
-                       
-                        let mut pixels = image.pixels().into_iter();
-                        let rows = image.rows().len();
-                        let columns = pixels.len()/rows;
-
-
-                        let texture: Handle<Image> = asset_server.load(&("../../".to_string() + &scene.path.clone()  + "/" + &sprite_renderer.sprite));
-
-                        transform.translation = Vec3{
-                            x:transform.translation.x,
-                            y:transform.translation.y,
-                            z:transform.translation.z + sprite_renderer.layer as f32 * 500.0
-                        };
-                        let sprite = Sprite{
+                        if let DynamicImage::ImageRgba8(image) = dynamic_image
+                        {
+                            let mut pixels = image.pixels().into_iter();
+                            let rows = image.rows().len();
+                            let columns = pixels.len()/rows;
+                            let sprite = Sprite{
                                 color: Color::Rgba { 
-                                    red: sprite_renderer.color.x, 
-                                    green: sprite_renderer.color.y, 
-                                    blue: sprite_renderer.color.z, 
-                                    alpha:  sprite_renderer.color.w},
-                                    anchor: entity_anchor_to_anchor(Vec2{x:columns as f32, y:rows as f32},sprite_renderer.anchor.clone()),
-                                    flip_x: sprite_renderer.flip_x,
-                                    flip_y: sprite_renderer.flip_y,
+                                    red: renderer.color.x, 
+                                    green: renderer.color.y, 
+                                    blue: renderer.color.z, 
+                                    alpha:  renderer.color.w},
+                                    anchor: entity_anchor_to_anchor(Vec2{x:columns as f32, y:rows as f32},renderer.anchor.clone()),
+                                    flip_x: renderer.flip_x,
+                                    flip_y: renderer.flip_y,
                                 ..default()
                             };
-
-                            
-                        commands.entity(spawned_entity).insert(texture);
-                        commands.entity(spawned_entity).insert(transform);
-                        commands.entity(spawned_entity).insert(sprite);
-
-                    }
+                            return sprite;
+                        }
+                    } 
                 }
-            }
+                Sprite::default()
+            }); 
+            commands.entity(spawned_entity).insert(SpriteLoading(task_sprite_load));
+
         }
 
         if let EntityComponent::BoxCollider(collider) = component
@@ -509,9 +558,11 @@ for entity in  scene.entities.iter()
             commands.entity(spawned_entity).insert(collider.clone());
         }
 
+        //TODO: Test performance, might do async
         if let EntityComponent::AsepriteAnimation(aseprite_animation) = component
         {
            let mut animator =  get_animator(scene.path.clone()+ "/" + &aseprite_animation.json_path, &asset_server,&mut texture_atlases).unwrap();
+           
            let sprite = TextureAtlasSprite
            {
             color: Color::Rgba { 
@@ -534,45 +585,57 @@ for entity in  scene.entities.iter()
         
         if let EntityComponent::AlphaCollider(collider) = component
         {
-            if let Ok(mut reader) = ImageReader::open(scene.path.clone() + "/" + &collider.sprite)
-            {        
-                reader.set_format(ImageFormat::Png);
-                if let Ok(dynamic_image) = reader.decode()
-                {
-                    if let DynamicImage::ImageRgba8(image) = dynamic_image
-                    {
-                        let mut pixels = image.pixels().into_iter();
                         
-                        let rows = image.rows().len();
-                        let columns = pixels.len()/rows;
+            let sprite_path = scene.path.clone() + "/" + &collider.sprite;
+           
+            let alpha_collider  = (*collider).clone();
+            let thread_pool = AsyncComputeTaskPool::get();
+            let fixed_transform = transform.clone();
+            let scene_translation = scene_location.clone();
+            let task_collision_map = thread_pool.spawn(async move {
 
-                        let fixed_translation = get_fixed_translation_by_anchor(
-                            Vec2{x:columns as f32, y: rows as f32},
-                            Vec3 { x: transform.translation.x + scene_location.x, 
-                                y: transform.translation.y + scene_location.y, 
-                                z: transform.translation.z + scene_location.z },
-                            collider.anchor.clone(),
-                        );
-                        let mut index =0;
-                        let strating_world_location =
+                let mut collision_map:Vec<Vec2> = Vec::default();
+
+                if let Ok(mut reader) = ImageReader::open(sprite_path)
+                {
+                    reader.set_format(ImageFormat::Png);
+                    if let Ok(dynamic_image) = reader.decode()
+                    {
+                        if let DynamicImage::ImageRgba8(image) = dynamic_image
+                        {
+                            let mut pixels = image.pixels().into_iter(); 
+                            let rows = image.rows().len();
+                            let columns = pixels.len()/rows;
+
+                            let fixed_translation = get_fixed_translation_by_anchor(
+                                Vec2{x:columns as f32, y: rows as f32},
+                                Vec3 { x: fixed_transform.translation.x + scene_translation.x, 
+                                    y: fixed_transform.translation.y + scene_translation.y, 
+                                    z: fixed_transform.translation.z + scene_translation.z },
+                                    alpha_collider.anchor.clone(),
+                            );
+                             let mut index =0;
+                            let strating_world_location =
                         
-                        fixed_translation.truncate() - (Vec2::new((columns as f32)/2.0 , (rows as f32)/2.0)* collision_map.tile_size);
-                         
-                        while pixels.len() >0
-                        {   
-                            if pixels.next().unwrap()[collider.channel as usize] > 0 
-                            {
-                                let world_location = strating_world_location + (Vec2::new((index%columns) as f32,(index/columns) as f32)*collision_map.tile_size);
-                                collision_map.collision_locations.push(world_location);
-                            }                             
-                            index +=1;
+                            fixed_translation.truncate() - (Vec2::new((columns as f32)/2.0 , (rows as f32)/2.0)* super::collision::TILE_SIZE);
+                            while pixels.len() >0
+                            {   
+                                if pixels.next().unwrap()[alpha_collider.channel as usize] > 0 
+                                {
+                                    let world_location = strating_world_location + (Vec2::new((index%columns) as f32,(index/columns) as f32)*super::collision::TILE_SIZE);
+                                    collision_map.push(world_location);
+                                }                             
+                                index +=1;
+                            }
                         }
                     }
                 }
-            }
+                collision_map
+            });
+            commands.entity(spawned_entity).insert(AlphaColliderLoading(task_collision_map));
         }
     }
-}
+} 
 }
 
 
