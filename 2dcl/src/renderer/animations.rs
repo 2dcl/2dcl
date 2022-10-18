@@ -186,7 +186,13 @@ where
         Err(e) => {return Err(e.to_string());}
     } 
 
-    let texture = assets.load(&spritesheet.meta.image.unwrap_or_default());
+    let mut image_path = PathBuf::new();
+    image_path.push("../..");
+    image_path.push(path);
+    image_path.pop();
+    image_path.push(&spritesheet.meta.image.unwrap_or_default());
+ 
+    let texture = assets.load(image_path);
     let mut animations: Vec<Animation> = Vec::default();
     let mut frame_durations: Vec<f32> = Vec::default();
   

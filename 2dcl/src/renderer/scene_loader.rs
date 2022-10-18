@@ -139,7 +139,7 @@ impl Plugin for SceneLoaderPlugin
 
 pub fn check_scenes_to_download(
     mut player_query: Query<(&mut Player, &mut GlobalTransform)>,  
-    mut scene_query: Query<(Entity,&mut SceneComponent, Without<Player>)>,  
+    mut scene_query: Query<(Entity, &mut SceneComponent, Without<Player>)>,  
     mut commands: Commands,
     asset_server: Res<AssetServer>,
     mut collision_map: ResMut<CollisionMap>,
@@ -157,13 +157,14 @@ pub fn check_scenes_to_download(
        
 
         for(entity, scene, _player) in scene_query.iter()
-        {
+        {       
+
             let mut despawn_scene = true;
+
             for parcel in &parcels_to_keep
             {
                 if  scene.parcels.contains(&parcel)
                 {   
-                    //println!("Scene {:?} contains parcel to keep {:?}",scene.name.clone(),parcel);
                     despawn_scene = false;
                     break;
                 } 
@@ -176,6 +177,7 @@ pub fn check_scenes_to_download(
                 commands.entity(entity).despawn();
                 continue;
             }
+
 
             for i in (0..parcels_to_render.len()).rev()
             {
@@ -320,7 +322,7 @@ where
 
 fn get_scene(parcel: Parcel) -> Scene
 {
-    for entry in WalkDir::new("./assets/scenes") {
+    for entry in WalkDir::new("./2dcl/assets/scenes") {
         let dir_entry =  entry.unwrap();
         if dir_entry.clone().file_name() == "scene.json"
         {
@@ -454,6 +456,7 @@ for entity in  scene.entities.iter()
         
         if let EntityComponent::SpriteRenderer(sprite_renderer) = component
         {
+            println!("{:?}",scene.path.clone());
             if let Ok(mut reader) = ImageReader::open(scene.path.clone() + "/" + &sprite_renderer.sprite)
             {
                 reader.set_format(ImageFormat::Png);
@@ -467,7 +470,7 @@ for entity in  scene.entities.iter()
                         let columns = pixels.len()/rows;
 
 
-                        let texture: Handle<Image> = asset_server.load(&("../".to_string() + &scene.path.clone()  + "/" + &sprite_renderer.sprite));
+                        let texture: Handle<Image> = asset_server.load(&("../../".to_string() + &scene.path.clone()  + "/" + &sprite_renderer.sprite));
 
                         transform.translation = Vec3{
                             x:transform.translation.x,

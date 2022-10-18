@@ -36,7 +36,7 @@ fn spawn_player(
 )
 {   
   
-    let animator = get_animator( "./assets/player.json", &assets,  &mut texture_atlases).unwrap();
+    let animator = get_animator( "./2dcl/assets/player.json", &assets,  &mut texture_atlases).unwrap();
     let mut sprite = TextureAtlasSprite::new(0);
     sprite.anchor = Anchor::BottomCenter;
 
