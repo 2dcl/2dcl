@@ -36,6 +36,12 @@ struct SpriteLoading(Task<Sprite>);
 #[derive(Component)]
 struct AlphaColliderLoading(Task<Vec<Vec2>>);
 
+#[derive(Component)]
+pub struct DownloadingScene {
+    pub task: Task<()>,
+    pub parcels: Vec<Parcel>,
+}
+
 #[derive(Debug, Deserialize, Serialize, Default, Clone)]
 pub struct Scene {
    pub name: String,
@@ -145,9 +151,11 @@ impl Plugin for SceneLoaderPlugin
 pub fn check_scenes_to_download(
     player_query: Query<(&mut Player, &mut GlobalTransform)>,  
     scene_query: Query<(Entity, &mut SceneComponent, Without<Player>)>,  
+    downloading_scenes_query: Query<&DownloadingScene>,  
     mut commands: Commands,
     asset_server: Res<AssetServer>,
     mut texture_atlases: ResMut<Assets<TextureAtlas>>,
+    
 )
 {
 
@@ -190,32 +198,68 @@ pub fn check_scenes_to_download(
                     parcels_to_render.remove(i);
                 } 
             }
-            
-            if parcels_to_render.is_empty()
-            {
-                break;
-            }
         }
-
-        while !parcels_to_render.is_empty()
+        
+        let mut itr = parcels_to_render.len() as i16 -1;
+        let mut parcels_to_download: Vec<Parcel> = Vec::default();
+        while itr >0
         {
-            let scene = get_scene(Parcel(parcels_to_render[0].0,parcels_to_render[0].1));
-            
-            for scene_parcel in &scene.parcels
+            let scene = get_scene(Parcel(parcels_to_render[itr as usize].0,parcels_to_render[itr as usize].1));
+            if scene.is_ok()
             {
-                for i in (0..parcels_to_render.len()).rev()
+                let scene = scene.unwrap();
+                
+                for scene_parcel in &scene.parcels
                 {
-                    if  parcels_to_render[i] == *scene_parcel
+                    for i in (0..parcels_to_render.len()).rev()
                     {
-                        parcels_to_render.remove(i);
+                        if  parcels_to_render[i] == *scene_parcel
+                        {
+                            parcels_to_render.remove(i);
+                        }
                     }
                 }
+    
+                spawn_scene(&mut commands,&asset_server, &mut texture_atlases, scene);   
             }
+            else
+            {
+                let mut is_downloading = false;
+                for downloading_scene in downloading_scenes_query.iter()
+                {
+                    if downloading_scene.parcels.contains(&parcels_to_render[itr as usize])
+                    {
+                        is_downloading = true;
+                        break;
+                    }
 
-            spawn_scene(&mut commands,&asset_server, &mut texture_atlases, scene);   
+                }
+                if !is_downloading
+                {
+                    parcels_to_download.push(parcels_to_render[itr as usize].clone());
+                }
+
+                parcels_to_render.remove(itr as usize);
+               
+            }
+            itr = parcels_to_render.len() as i16 -1;
         }
-        break;
-    }
+
+        if parcels_to_download.is_empty()
+        {    
+            return;
+        }
+        
+        let thread_pool = AsyncComputeTaskPool::get();
+    
+        let parcels_to_download_clone = parcels_to_download.clone();
+        let task_download_parcels = thread_pool.spawn(async move {
+
+            download_parcels(parcels_to_download_clone);
+        }); 
+        commands.spawn().insert(DownloadingScene{task:task_download_parcels,parcels: parcels_to_download});
+
+    } 
 
 }
 
@@ -279,6 +323,41 @@ pub fn parcel_to_world_location(parcel: Parcel) -> Vec3
 }
 
 #[tokio::main]
+pub async fn download_parcels(parcels: Vec<Parcel>) -> dcl_common::Result<()> {
+    let server = Server::production();
+
+    let scene_files = ContentClient::scene_files_for_parcels(&server, &parcels).await?;
+
+    for scene_file in scene_files {
+        
+     
+        let path_str = "./2dcl/assets/scenes/".to_string() + &scene_file.id.to_string();
+        let scene_path = Path::new(&path_str);
+        if !scene_path.exists()
+        {
+        
+            fs::create_dir_all(format!("./2dcl/assets/scenes/{}", scene_file.id))?;
+
+            for downloadable in scene_file.content {
+                let filename = format!(
+                    "./2dcl/assets/scenes/{}/{}",
+                    scene_file.id,
+                    downloadable.filename.to_str().unwrap()
+                );
+                println!("Downloading {}", filename);
+
+                // We're downloading this synchronously, in a production client you want to
+                // store all of these and use `futures::join_all` (https://docs.rs/futures/latest/futures/future/fn.join_all.html)
+                // or something of the sorts.
+                ContentClient::download(&server, downloadable.cid, filename).await?;
+            }
+        }
+    }
+    println!("finished downloading");
+    Ok(())
+}
+
+#[tokio::main]
 pub async fn download_parcel(parcel: Parcel) -> dcl_common::Result<()> {
     let server = Server::production();
 
@@ -336,7 +415,7 @@ where
 } */
 
 
-fn get_scene(parcel: Parcel) -> Scene
+fn get_scene(parcel: Parcel) -> Result<Scene, String>
 {
     for entry in WalkDir::new("./2dcl/assets/scenes") {
         let dir_entry =  entry.unwrap();
@@ -355,13 +434,14 @@ fn get_scene(parcel: Parcel) -> Scene
                     {   println!("contains parcel");
                         let path = dir_entry.clone().path().parent().unwrap().to_str().unwrap().to_string();
                         scene.path = Some(path);
-                        return scene;
+                        return Ok(scene);
                     }
                 }
             }   
         }
     }
-
+    Err("Parcel not downloaded".to_string())
+/*
     download_parcel(Parcel(parcel.0,parcel.1));
 
     //TODO: we could get the path instead of searching for it again
@@ -393,7 +473,7 @@ fn get_scene(parcel: Parcel) -> Scene
 
     //TODO error handling
     return Scene{name:"".to_string(),entities:Vec::default(),parcels:vec![parcel], path: Some("".to_string())};
-  
+   */
 
 }
 /*
@@ -421,6 +501,7 @@ fn handle_tasks(
     mut tasks_texture_loading: Query<(Entity, &mut TextureLoading)>,
     mut tasks_sprite_loading: Query<(Entity, &mut SpriteLoading)>,
     mut tasks_alpha_collider_loading: Query<(Entity, &mut AlphaColliderLoading)>,
+    mut tasks_downloading_scenes: Query<(Entity, &mut DownloadingScene)>
 ) 
 { 
     for (entity, mut task) in &mut tasks_texture_loading {
@@ -444,6 +525,12 @@ fn handle_tasks(
             let mut collision = collision.clone();
             collision_map.collision_locations.append(&mut collision);
             commands.entity(entity).remove::<AlphaColliderLoading>();
+        }
+    }
+
+    for (entity, mut downloading_scene) in &mut tasks_downloading_scenes {
+        if let Some(finished) = future::block_on(future::poll_once(&mut downloading_scene.task)) {
+            commands.entity(entity).remove::<DownloadingScene>();
         }
     }
 }
