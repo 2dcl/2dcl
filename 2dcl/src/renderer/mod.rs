@@ -1,6 +1,7 @@
 use bevy::{prelude::*, render::{render_resource::FilterMode, texture::ImageSettings}};
 mod player;
 mod debug;
+mod console;
 mod collision;
 //mod render_to_texture;
 mod animations;
@@ -15,6 +16,7 @@ use collision::CollisionPlugin;
 use scene_loader::SceneLoaderPlugin;
 use bevy::render::render_resource::SamplerDescriptor;
 use dcl_common::{Parcel};
+use console::MyConsolePlugin;
 
 
 pub fn start() {
@@ -32,6 +34,7 @@ pub fn start() {
         //.add_plugin(RenderToTexturePlugin)
         .add_plugin(DebugPlugin)
         .add_plugin(CollisionPlugin)
+        .add_plugin(MyConsolePlugin)
         .run();
        
 }

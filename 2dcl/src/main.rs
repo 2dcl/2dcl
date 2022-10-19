@@ -16,9 +16,11 @@ struct Cli {
 
 #[derive(clap::Subcommand)]
 enum Action {
+
    build
-   {
+   {  
     json_path: std::path::PathBuf,
+    #[clap(default_value="./build")]
     build_path: std::path::PathBuf,
    },
    run,

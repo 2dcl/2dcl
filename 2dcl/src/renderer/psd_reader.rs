@@ -11,7 +11,7 @@ use super::scene_loader::EntityAnchor;
 pub fn psd_read()
 {
 
-    let psd_bytes = include_bytes!("../../assets/scene/scene.psd");
+   /*let psd_bytes = include_bytes!("../../assets/scene/scene.psd");
 
     let psd;
 
@@ -71,5 +71,5 @@ pub fn psd_read()
 
     //let scene: scene_loader::Scene = scene_loader::Scene{name:"2DCL_psdSceneTest".to_owned(),entities : entities,size_x:1,size_y:1};
     //scene_loader::save_scene(scene, "./assets/scene.json");
-
+ */ 
 }

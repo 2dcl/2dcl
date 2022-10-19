@@ -1,9 +1,10 @@
 use std::fs;
+use std::str::FromStr;
 use bevy::prelude::*;
 use bevy::tasks::AsyncComputeTaskPool;
 use bevy::tasks::Task;
 use catalyst::{ContentClient, Server};
-use dcl_common::{Parcel, Result};
+use dcl_common::{Parcel};
 use bevy::sprite::Anchor;
 use serde::{Deserialize, Serialize};
 use std::borrow::BorrowMut;
@@ -18,6 +19,7 @@ use image::{DynamicImage, ImageFormat};
 use super::player::Player;
 use walkdir::WalkDir;
 use futures_lite::future;
+use rmp_serde::*;
 
 pub struct SceneLoaderPlugin;
 
@@ -34,29 +36,22 @@ struct SpriteLoading(Task<Sprite>);
 #[derive(Component)]
 struct AlphaColliderLoading(Task<Vec<Vec2>>);
 
-#[derive(Debug)]
+#[derive(Debug, Deserialize, Serialize, Default, Clone)]
 pub struct Scene {
    pub name: String,
    pub entities: Vec<SceneEntity>,
    pub parcels: Vec<Parcel>,
-   pub path: String,
+   pub path: Option<String>,
 }
 
-#[derive(Deserialize, Serialize, Debug)]
-pub struct JsonScene {
-   pub name: String,
-   pub entities: Vec<SceneEntity>,
-   pub parcels: Vec<Parcel>,
-}
-
-#[derive(Deserialize, Serialize, Debug)]
+#[derive(Deserialize, Serialize, Debug, Clone)]
 pub struct SceneEntity {
     pub name: String,
     pub components: Vec<EntityComponent>,
 }
 
 
-#[derive(Deserialize, Serialize, Debug)]
+#[derive(Deserialize, Serialize, Debug, Clone)]
 pub enum EntityComponent{
     Transform(EntityTransform),
     SpriteRenderer(SpriteRenderer),
@@ -66,7 +61,7 @@ pub enum EntityComponent{
     AsepriteAnimation(AsepriteAnimation),
 }
 
-#[derive(Deserialize, Serialize, Debug)]
+#[derive(Deserialize, Serialize, Debug, Clone)]
 pub struct AsepriteAnimation {
     pub json_path: String,
     pub starting_state: String,
@@ -77,8 +72,7 @@ pub struct AsepriteAnimation {
     pub anchor: EntityAnchor
 }
 
-
-#[derive(Deserialize, Serialize, Debug)]
+#[derive(Deserialize, Serialize, Debug, Clone)]
 pub struct EntityTransform {
     pub location: Vec2,
     pub rotation: Vec3,
@@ -217,9 +211,8 @@ pub fn check_scenes_to_download(
                     }
                 }
             }
-         
-            spawn_scene(&mut commands,&asset_server, &mut texture_atlases, scene);
-               
+
+            spawn_scene(&mut commands,&asset_server, &mut texture_atlases, scene);   
         }
         break;
     }
@@ -279,27 +272,41 @@ pub fn world_location_to_parcel(location: Vec3) -> Parcel
     return Parcel((location.x/PARCEL_SIZE_X).round() as i16,(location.y/PARCEL_SIZE_Y).round() as i16);
 }
 
+
+pub fn parcel_to_world_location(parcel: Parcel) -> Vec3
+{
+    return Vec3::new(parcel.0 as  f32 * PARCEL_SIZE_X,parcel.1 as  f32 * PARCEL_SIZE_Y,parcel.1 as  f32 * PARCEL_SIZE_Y * -1f32);
+}
+
 #[tokio::main]
-pub async fn download_parcel(parcel: Parcel) -> Result<()> {
+pub async fn download_parcel(parcel: Parcel) -> dcl_common::Result<()> {
     let server = Server::production();
 
     let scene_files = ContentClient::scene_files_for_parcels(&server, &vec![parcel]).await?;
 
     for scene_file in scene_files {
-        fs::create_dir_all(format!("./2dcl/assets/scenes/{}", scene_file.id))?;
+        
+     
+        let path_str = "./2dcl/assets/scenes/".to_string() + &scene_file.id.to_string();
+        let scene_path = Path::new(&path_str);
+        if !scene_path.exists()
+        {
+        
+            fs::create_dir_all(format!("./2dcl/assets/scenes/{}", scene_file.id))?;
 
-        for downloadable in scene_file.content {
-            let filename = format!(
-                "./2dcl/assets/scenes/{}/{}",
-                scene_file.id,
-                downloadable.filename.to_str().unwrap()
-            );
-            println!("Downloading {}", filename);
+            for downloadable in scene_file.content {
+                let filename = format!(
+                    "./2dcl/assets/scenes/{}/{}",
+                    scene_file.id,
+                    downloadable.filename.to_str().unwrap()
+                );
+                println!("Downloading {}", filename);
 
-            // We're downloading this synchronously, in a production client you want to
-            // store all of these and use `futures::join_all` (https://docs.rs/futures/latest/futures/future/fn.join_all.html)
-            // or something of the sorts.
-            ContentClient::download(&server, downloadable.cid, filename).await?;
+                // We're downloading this synchronously, in a production client you want to
+                // store all of these and use `futures::join_all` (https://docs.rs/futures/latest/futures/future/fn.join_all.html)
+                // or something of the sorts.
+                ContentClient::download(&server, downloadable.cid, filename).await?;
+            }
         }
     }
     println!("finished downloading");
@@ -333,60 +340,59 @@ fn get_scene(parcel: Parcel) -> Scene
 {
     for entry in WalkDir::new("./2dcl/assets/scenes") {
         let dir_entry =  entry.unwrap();
-        if dir_entry.clone().file_name() == "scene.json"
+        if dir_entry.clone().file_name() == "scene.2dcl"
         {
             if let Ok(file) = File::open( dir_entry.clone().path())
             {
                 let reader = BufReader::new(file);
-                let scene: serde_json::Result<JsonScene> = serde_json::from_reader(reader);
-                
+                let mut de = Deserializer::new(reader);
+                let scene: Result<Scene,rmp_serde::decode::Error> = Deserialize::deserialize(&mut de);
                 if scene.is_ok()
                 {
                     let mut scene = scene.unwrap();
+                    //use crate::rmps::decode::{self, Error};
                     if scene.parcels.contains(&parcel)
-                    {   
+                    {   println!("contains parcel");
                         let path = dir_entry.clone().path().parent().unwrap().to_str().unwrap().to_string();
-                        return Scene{name:scene.name,
-                            entities:scene.entities,
-                            parcels:scene.parcels,
-                            path:path};
+                        scene.path = Some(path);
+                        return scene;
                     }
                 }
             }   
         }
     }
-    
 
     download_parcel(Parcel(parcel.0,parcel.1));
 
     //TODO: we could get the path instead of searching for it again
-    for entry in WalkDir::new("./assets/scenes") {
+    for entry in WalkDir::new("./2dcl/assets/scenes") {
         let dir_entry =  entry.unwrap();
-        if dir_entry.clone().file_name() == "scene.json"
+        if dir_entry.clone().file_name() == "scene.2dcl"
         {
             if let Ok(file) = File::open( dir_entry.clone().path())
             {
                 let reader = BufReader::new(file);
-                let scene: serde_json::Result<JsonScene> = serde_json::from_reader(reader);
+                let mut de = Deserializer::new(reader);
+                let scene: Result<Scene,rmp_serde::decode::Error> = Deserialize::deserialize(&mut de);
                 
                 if scene.is_ok()
                 {
                     let mut scene = scene.unwrap();
+                    //use crate::rmps::decode::{self, Error};
                     if scene.parcels.contains(&parcel)
-                    {   
+                    {   println!("contains parcel");
                         let path = dir_entry.clone().path().parent().unwrap().to_str().unwrap().to_string();
-                        return Scene{name:scene.name,
-                            entities:scene.entities,
-                            parcels:scene.parcels,
-                            path:path};
+                        scene.path = Some(path);
+                        return scene;
                     }
                 }
+                
             }   
         }
     }
 
     //TODO error handling
-    return Scene{name:"".to_string(),entities:Vec::default(),parcels:Vec::default(), path: "".to_string()};
+    return Scene{name:"".to_string(),entities:Vec::default(),parcels:vec![parcel], path: Some("".to_string())};
   
 
 }
@@ -506,14 +512,14 @@ for entity in  scene.entities.iter()
 
             let thread_pool = AsyncComputeTaskPool::get();
             let server = (*asset_server).clone();
-            let image_path = "../../".to_string() + &scene.path.clone()  + "/" + &sprite_renderer.sprite;
+            let image_path = "../../".to_string() + &scene.path.clone().unwrap()  + "/" + &sprite_renderer.sprite;
             let task_texture_load = thread_pool.spawn(async move {
                 let texture: Handle<Image> = server.load(&(image_path));
                 texture
             }); 
               commands.entity(spawned_entity).insert(TextureLoading(task_texture_load));
             
-            let sprite_path = scene.path.clone() + "/" + &sprite_renderer.sprite;
+            let sprite_path = scene.path.clone().unwrap() + "/" + &sprite_renderer.sprite;
            
             let renderer  = (*sprite_renderer).clone();
             let task_sprite_load = thread_pool.spawn(async move {
@@ -561,7 +567,7 @@ for entity in  scene.entities.iter()
         //TODO: Test performance, might do async
         if let EntityComponent::AsepriteAnimation(aseprite_animation) = component
         {
-           let mut animator =  get_animator(scene.path.clone()+ "/" + &aseprite_animation.json_path, &asset_server,&mut texture_atlases).unwrap();
+           let mut animator =  get_animator(scene.path.clone().unwrap()+ "/" + &aseprite_animation.json_path, &asset_server,&mut texture_atlases).unwrap();
            
            let sprite = TextureAtlasSprite
            {
@@ -586,7 +592,7 @@ for entity in  scene.entities.iter()
         if let EntityComponent::AlphaCollider(collider) = component
         {
                         
-            let sprite_path = scene.path.clone() + "/" + &collider.sprite;
+            let sprite_path = scene.path.clone().unwrap() + "/" + &collider.sprite;
            
             let alpha_collider  = (*collider).clone();
             let thread_pool = AsyncComputeTaskPool::get();
