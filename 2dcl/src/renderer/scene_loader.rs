@@ -161,13 +161,15 @@ pub fn check_scenes_to_download(
 
     for(player,mut player_transform) in player_query.iter()
     {
+      
 
         let player_parcel = world_location_to_parcel(player_transform.translation());
+      
         let mut parcels_to_render = get_all_parcels_around(&player_parcel,MIN_RENDERING_DISTANCE_IN_PARCELS);
         
         let mut parcels_to_keep = get_all_parcels_around(&player_parcel,MAX_RENDERING_DISTANCE_IN_PARCELS);
        
-
+     
         for(entity, scene, _player) in scene_query.iter()
         {       
 
@@ -185,7 +187,6 @@ pub fn check_scenes_to_download(
           
             if despawn_scene
             {  
-                println!("despawning scene");
                 commands.entity(entity).despawn();
                 continue;
             }
@@ -194,16 +195,16 @@ pub fn check_scenes_to_download(
             for i in (0..parcels_to_render.len()).rev()
             {
                 if  scene.parcels.contains(&parcels_to_render[i])
-                {
+                { 
                     parcels_to_render.remove(i);
                 } 
             }
         }
-        
+ 
         let mut itr = parcels_to_render.len() as i16 -1;
         let mut parcels_to_download: Vec<Parcel> = Vec::default();
-        while itr >0
-        {
+        while itr >=0
+        {            
             let scene = get_scene(Parcel(parcels_to_render[itr as usize].0,parcels_to_render[itr as usize].1));
             if scene.is_ok()
             {
@@ -228,7 +229,7 @@ pub fn check_scenes_to_download(
                 for downloading_scene in downloading_scenes_query.iter()
                 {
                     if downloading_scene.parcels.contains(&parcels_to_render[itr as usize])
-                    {
+                    {      
                         is_downloading = true;
                         break;
                     }
@@ -249,10 +250,13 @@ pub fn check_scenes_to_download(
         {    
             return;
         }
+
+       
         
         let thread_pool = AsyncComputeTaskPool::get();
     
         let parcels_to_download_clone = parcels_to_download.clone();
+                      
         let task_download_parcels = thread_pool.spawn(async move {
 
             download_parcels(parcels_to_download_clone);

@@ -23,8 +23,8 @@ impl Plugin for MyConsolePlugin{
 #[console_command(name = "tp")]
 struct TeleportCommand {
 
-    parcel_x: i16,
-    parcel_y: i16,
+    parcel_x: String,
+    parcel_y: String,
 }
 
 fn teleport_command(mut tp: ConsoleCommand<TeleportCommand>,
@@ -33,8 +33,22 @@ fn teleport_command(mut tp: ConsoleCommand<TeleportCommand>,
     let (player, mut transform) = player_query.single_mut();
     if let Some(TeleportCommand { parcel_x, parcel_y }) = tp.take() {
     
-        transform.translation = scene_loader::parcel_to_world_location(Parcel(parcel_x,parcel_y));
-        reply!(tp, "teleporting to parcel {},{}",parcel_x,parcel_y);
+        if let Ok(parcel_x) = parcel_x.parse::<i16>()
+        {
+            if let Ok(parcel_y) = parcel_y.parse::<i16>()
+            {
+                transform.translation = scene_loader::parcel_to_world_location(Parcel(parcel_x,parcel_y));
+                reply!(tp, "teleporting to parcel {},{}",parcel_x,parcel_y);
+            }
+            else
+            {
+                reply!(tp, "{} is not a valid value",parcel_y);
+            }
+        }
+        else
+        {
+            reply!(tp, "{} is not a valid value",parcel_x);
+        } 
 
     }
 }
