@@ -3,4 +3,6 @@ resolver = "2"
 members = [
   "dcl-common",
   "catalyst",
+  "2dcl",
+  "compiler",
 ]

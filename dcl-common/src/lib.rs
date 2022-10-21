@@ -1,7 +1,10 @@
 use serde::Deserialize;
 
 mod parcel;
+mod scene;
 pub use parcel::Parcel;
+pub use scene::Scene;
+pub use scene::Component;
 
 pub type Result<T> = std::result::Result<T, Box<dyn std::error::Error>>;
 
