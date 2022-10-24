@@ -1,3 +1,4 @@
+use std::io::Write;
 use std::path::Path;
 use std::{fs::File, io::BufReader};
 use dcl_common::{Scene,Component};
@@ -64,8 +65,7 @@ where T: AsRef<Path>,
             }
 
             let mut file = File::create(build_path).unwrap();
-            
-            println!("Writig file");    
+            file.write_all(&buf); 
             
         }
         else 
@@ -101,7 +101,7 @@ mod tests {
     use rmp_serde::*;
 
     #[test]
-    fn build_scene()
+    fn test_build_scene()
     {
         
         let json_file_path = "./fixtures/scene/scene.json";
@@ -111,25 +111,20 @@ mod tests {
         let build_path = TempDir::new("build-test").unwrap();
 
         build(Path::new(json_file_path), build_path.path());
-       
-        
+    
    
         let mut dcl_file_path = build_path.path().to_path_buf();
         dcl_file_path.push("scene.2dcl");
         
-        let file = File::open(dcl_file_path);
-
-       assert!(file.is_ok());
-
-     /*
-        TODO: fix deserializing
         let json_scene: serde_json::Result<Scene> = serde_json::from_reader(reader);
-        let reader = BufReader::new(file);
+
+        let file = File::open(dcl_file_path);
+        let reader = BufReader::new(file.unwrap());
         let mut de = Deserializer::new(reader);
         let dcl_scene: Result<Scene,rmp_serde::decode::Error> = Deserialize::deserialize(&mut de);
      
-        assert_eq!(json_scene.unwrap().name,dcl_scene.unwrap().name);*/
+        assert_eq!(json_scene.unwrap().name,dcl_scene.unwrap().name);
     }
-
+    
 }
     
