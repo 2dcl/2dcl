@@ -14,6 +14,7 @@ use std::path::Path;
 use bevy_inspector_egui::Inspectable;
 use super::collision::*;
 use super::animations::*;
+use super::dcl_scene;
 use image::io::Reader as ImageReader;
 use image::{DynamicImage, ImageFormat};
 use super::player::Player;
@@ -196,7 +197,7 @@ pub fn check_scenes_to_download(
             {
                 if  scene.parcels.contains(&parcels_to_render[i])
                 { 
-                    parcels_to_render.remove(i);
+                     parcels_to_render.remove(i);
                 } 
             }
         }
@@ -220,7 +221,6 @@ pub fn check_scenes_to_download(
                         }
                     }
                 }
-    
                 spawn_scene(&mut commands,&asset_server, &mut texture_atlases, scene);   
             }
             else
@@ -229,7 +229,7 @@ pub fn check_scenes_to_download(
                 for downloading_scene in downloading_scenes_query.iter()
                 {
                     if downloading_scene.parcels.contains(&parcels_to_render[itr as usize])
-                    {      
+                    {          
                         is_downloading = true;
                         break;
                     }
@@ -256,10 +256,11 @@ pub fn check_scenes_to_download(
         let thread_pool = AsyncComputeTaskPool::get();
     
         let parcels_to_download_clone = parcels_to_download.clone();
-                      
+        
         let task_download_parcels = thread_pool.spawn(async move {
 
             download_parcels(parcels_to_download_clone);
+
         }); 
         commands.spawn().insert(DownloadingScene{task:task_download_parcels,parcels: parcels_to_download});
 
@@ -331,14 +332,18 @@ pub async fn download_parcels(parcels: Vec<Parcel>) -> dcl_common::Result<()> {
     let server = Server::production();
 
     let scene_files = ContentClient::scene_files_for_parcels(&server, &parcels).await?;
+   
+    if scene_files.len() == 0
+    {
+        println!("empty scene");
+    }
 
-    for scene_file in scene_files {
-        
-     
+    for scene_file in scene_files 
+    {
         let path_str = "./2dcl/assets/scenes/".to_string() + &scene_file.id.to_string();
         let scene_path = Path::new(&path_str);
         if !scene_path.exists()
-        {
+        {   
         
             fs::create_dir_all(format!("./2dcl/assets/scenes/{}", scene_file.id))?;
 
@@ -356,8 +361,38 @@ pub async fn download_parcels(parcels: Vec<Parcel>) -> dcl_common::Result<()> {
                 ContentClient::download(&server, downloadable.cid, filename).await?;
             }
         }
+        
+        let scene_file_str = path_str.clone() + "/scene.2dcl";
+        let scene_file = Path::new(&scene_file_str);
+        if !scene_file.exists()
+        {
+           
+            let scene_file_str = path_str + "/scene.json";
+            let scene_file = Path::new(&scene_file_str);
+
+            if let Ok(file) = File::open(scene_file)
+            {
+                let reader = BufReader::new(file);
+                let scene: serde_json::Result<dcl_scene::DCLScene> = serde_json::from_reader(reader);
+                
+                if scene.is_ok()
+                {
+                    let scene = scene.unwrap();
+                    if scene.display.title.to_lowercase().contains("road") || scene.display.title.to_lowercase().contains("tram line")
+                    {
+                        println!("this is a road");
+                    }
+                    else
+                    {
+                        println!("not a road");
+                    }
+                }
+            }
+        }
     }
-    println!("finished downloading");
+
+
+    
     Ok(())
 }
 

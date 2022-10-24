@@ -11,7 +11,7 @@ use clap::Parser;
 #[derive(Parser)]
 struct Cli {
     #[command(subcommand)]
-    action: Action,
+    action: Option<Action>,
 }
 
 #[derive(clap::Subcommand)]
@@ -22,8 +22,7 @@ enum Action {
     json_path: std::path::PathBuf,
     #[clap(default_value="./build")]
     build_path: std::path::PathBuf,
-   },
-   run,
+   }
 }
 
 
@@ -32,15 +31,18 @@ fn main() -> Result<()> {
   let args = Cli::parse();
 
   match args.action {
-    Action::build {    json_path,
-      build_path, } => {
+    Some(Action::build {    json_path,
+      build_path, }) => {
         compiler::run(json_path, build_path);
       }
     ,
-    Action::run  => {
+    None =>
+    {
       renderer::start();
     }
   }
+      
+ 
 //    ws::start().await?;
 
     // spawn kernel process

@@ -1,4 +1,6 @@
 use bevy::{prelude::*, render::{render_resource::FilterMode, texture::ImageSettings}};
+
+mod dcl_scene;
 mod player;
 mod debug;
 mod console;
