@@ -5,7 +5,7 @@ use dcl_common::Parcel;
 use serde::Deserialize;
 use std::path::PathBuf;
 
-#[derive(Debug, Deserialize, Eq, PartialEq)]
+#[derive(Debug, Deserialize, Eq, PartialEq, Clone)]
 pub struct SceneFile {
     pub id: EntityId,
     pub version: String,
@@ -16,7 +16,7 @@ pub struct SceneFile {
     pub content: Vec<ContentFile>,
 }
 
-#[derive(Debug, Deserialize, Eq, PartialEq)]
+#[derive(Debug, Deserialize, Eq, PartialEq, Clone)]
 pub struct ContentFile {
     #[serde(rename(deserialize = "file"))]
     pub filename: PathBuf,

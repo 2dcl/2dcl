@@ -5,7 +5,7 @@ use dcl_common::{Parcel};
 pub struct DCLScene {
 
    pub display: Display,
-   pub contact: Contact,
+   pub contact: Option<Contact>,
    pub owner: String,
    pub scene: Scene,
    pub communications: Option<Communications>,
@@ -21,13 +21,13 @@ pub struct Display {
    pub title: String,
    pub description: Option<String>,
    pub navmapThumbnail: Option<String>,
-   pub favicon: String,
+   pub favicon: Option<String>,
 }
 
 #[derive(Debug, Deserialize, Serialize, Default, Clone)]
 pub struct Contact {
-   pub name: String,
-   pub email: String,
+   pub name: Option<String>,
+   pub email: Option<String>,
 }
 
 #[derive(Debug, Deserialize, Serialize, Clone)]

@@ -10,6 +10,7 @@ use super::scene_loader::CircleCollider;
 use super::scene_loader::BoxCollider;
 use super::scene_loader::AlphaCollider;
 
+
 pub struct DebugPlugin;
 
 impl Plugin for DebugPlugin{

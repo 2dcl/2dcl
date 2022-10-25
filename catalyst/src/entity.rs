@@ -94,7 +94,7 @@ impl Entity {
 
 /// All available entity types
 ///
-#[derive(Debug, Deserialize, Serialize, Eq, PartialEq)]
+#[derive(Debug, Deserialize, Serialize, Eq, PartialEq, Clone)]
 pub enum EntityType {
     #[serde(rename = "profile")]
     Profile,
@@ -124,7 +124,7 @@ impl fmt::Display for EntityType {
 /// let message = format!("entity missing: {}", entityId);
 /// assert_eq!(message, "entity missing: a-missing-entity");
 /// ```
-#[derive(Debug, PartialEq, Eq, Deserialize, Serialize)]
+#[derive(Debug, PartialEq, Eq, Deserialize, Serialize, Clone)]
 pub struct EntityId(HashId);
 
 impl EntityId {
