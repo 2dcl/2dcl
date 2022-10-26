@@ -22,18 +22,6 @@ pub enum Component{
     CircleCollider(CircleCollider),
     BoxCollider(BoxCollider),
     AlphaCollider(AlphaCollider),
-    AsepriteAnimation(AsepriteAnimation),
-}
-
-#[derive(Deserialize, Serialize, Debug, Clone)]
-pub struct AsepriteAnimation {
-    pub json_path: String,
-    pub starting_state: String,
-    pub color: [f32; 4],
-    pub layer: i32,
-    pub flip_x: bool,
-    pub flip_y: bool,
-    pub anchor: Anchor
 }
 
 #[derive(Deserialize, Serialize, Debug, Clone)]

@@ -49,13 +49,6 @@ where T: AsRef<Path>,
                         copy_asset(json_path.as_ref(), build_path.as_path(), &alpha_collider.sprite);
                     }
 
-                    if let Component::AsepriteAnimation(animation) = component
-                    {   
-                        copy_asset(json_path.as_ref(), build_path.as_path(), &animation.json_path);
-                        
-                        //TODO read the aseprite file and copy referenced files.
-                    }
-
                     if let Component::SpriteRenderer(sprite_renderer) = component
                     {   
                         copy_asset(json_path.as_ref(), build_path.as_path(), &sprite_renderer.sprite);
@@ -98,12 +91,10 @@ mod tests {
     use super::*;
     use tempdir::TempDir;
     use serde::Deserialize;
-    use rmp_serde::*;
 
     #[test]
     fn test_build_scene()
     {
-        
         let json_file_path = "./fixtures/scene/scene.json";
         let file = File::open(json_file_path).unwrap();
         let reader = BufReader::new(file);
@@ -124,6 +115,36 @@ mod tests {
         let dcl_scene: Result<Scene,rmp_serde::decode::Error> = Deserialize::deserialize(&mut de);
      
         assert_eq!(json_scene.unwrap().name,dcl_scene.unwrap().name);
+    }
+
+    
+    #[test]
+    fn test_file_completion()
+    {
+        
+        let json_file_path = "./fixtures/scene/scene.json";
+        let file = File::open(json_file_path).unwrap();
+        let reader = BufReader::new(file);
+      
+        let build_path = TempDir::new("build-test").unwrap();
+
+
+        build(Path::new(json_file_path), build_path.path());
+    
+        let mut initial_file_count = 0;
+        for path in fs::read_dir("./fixtures/scene").unwrap()
+        {
+            initial_file_count+=1;
+        }
+       
+        let mut final_file_count = 0;
+        for path in fs::read_dir(&build_path).unwrap()
+        {
+            final_file_count+=1;
+        }
+       
+
+        assert_eq!(initial_file_count,final_file_count);
     }
     
 }
