@@ -30,8 +30,8 @@ use rmp_serde::*;
 pub struct SceneLoaderPlugin;
 
 
-pub const MIN_RENDERING_DISTANCE_IN_PARCELS: i16 = 4;
-pub const MAX_RENDERING_DISTANCE_IN_PARCELS: i16 = 5;
+pub const MIN_RENDERING_DISTANCE_IN_PARCELS: i16 = 3;
+pub const MAX_RENDERING_DISTANCE_IN_PARCELS: i16 = 6;
 pub const PARCEL_SIZE_X: f32 = 350.0;
 pub const PARCEL_SIZE_Y: f32 = 350.0;
 
@@ -175,7 +175,6 @@ pub fn check_scenes_to_download(
         
         let mut parcels_to_keep = get_all_parcels_around(&player_parcel,MAX_RENDERING_DISTANCE_IN_PARCELS);
        
-     
         for(entity, scene, _player) in scene_query.iter()
         {       
 
@@ -202,7 +201,7 @@ pub fn check_scenes_to_download(
             {
                 if  scene.parcels.contains(&parcels_to_render[i])
                 { 
-                     parcels_to_render.remove(i);
+                    parcels_to_render.remove(i);
                 } 
             }
         }
@@ -315,14 +314,30 @@ fn get_scene_center_location(scene: &Scene) -> Vec3
 
 fn get_all_parcels_around(parcel: &Parcel, distance: i16) -> Vec<Parcel>
 {
-    let mut parcels: Vec<Parcel> = Vec::default();
+
+    let mut parcels: Vec<Parcel> =Vec::new();
 
     for x in 0..distance
     {
         for y in 0..distance
         {
+     
             parcels.push(Parcel(parcel.0+x, parcel.1+y));
-            parcels.push(Parcel(parcel.0-x, parcel.1-y));
+
+            if x!=0
+            {
+                parcels.push(Parcel(parcel.0-x, parcel.1+y));
+            }
+
+            if y!=0
+            {
+                parcels.push(Parcel(parcel.0+x, parcel.1-y));
+            }
+                
+            if (x!=0) && (y!=0)
+            {
+                parcels.push(Parcel(parcel.0-x, parcel.1-y));
+            }
         }
     }
 
@@ -549,23 +564,32 @@ where
 
 fn get_scene(parcel: Parcel) -> Result<Scene, String>
 {
-    for entry in WalkDir::new("./2dcl/assets/scenes") {
-        let dir_entry =  entry.unwrap();
-        if dir_entry.clone().file_name() == "scene.2dcl"
+
+    //TODO: put parcels on folder name when downloading or cache something to improve performance.
+    let paths = fs::read_dir("./2dcl/assets/scenes").unwrap();
+
+    for path in paths
+    {    
+        if path.is_ok()
         {
-            let scene = read_parcel_file(dir_entry.clone().path());
-            if scene.is_some()
+            let mut path = path.unwrap().path();
+            path.push("scene.2dcl");
+
+            if let Ok(file) = File::open(&path)
             {
-                let mut scene = scene.unwrap();
-                //use crate::rmps::decode::{self, Error};
-                if scene.parcels.contains(&parcel)
-                {   println!("contains parcel");
-                    let path = dir_entry.clone().path().parent().unwrap().to_str().unwrap().to_string();
-                    scene.path = Some(path);
-                    return Ok(scene);
+                let scene = read_parcel_file(&path);
+                if scene.is_some()
+                {
+                    let mut scene = scene.unwrap();
+                    if scene.parcels.contains(&parcel)
+                    {   
+                        let path = path.parent().unwrap();
+                        scene.path = Some(path.to_str().unwrap().to_string());
+                        return Ok(scene);
+                    }
                 }
             }
-        }
+        }  
     }
     Err("Parcel not downloaded".to_string())
 /*
@@ -715,6 +739,7 @@ fn spawn_default_scene(
         let mut scene = scene.unwrap();
         scene.parcels = vec![parcel.clone()];
         scene.path = Some("./2dcl/assets/scenes/templates/empty_parcel".to_string());
+        println!("spawning empty scene for parcel {:?}",parcel);
         let scene_entity = spawn_scene(commands,asset_server,texture_atlases,scene);
     }
 }
@@ -726,10 +751,7 @@ fn spawn_scene(
     scene: Scene,
 ) -> Entity
 {
-   
-
     let scene_location: Vec3 = get_scene_center_location(&scene);
-
     let scene_entity = commands.spawn()
     .insert(Name::new(scene.name.clone()))
     .insert(Visibility{is_visible: true})
@@ -766,7 +788,7 @@ fn spawn_scene(
             .insert(ComputedVisibility::default())
             .insert(transform)
             .id();
-        println!("spawning entity: {:?}",entity.name.clone());
+       
         commands.entity(scene_entity).add_child(spawned_entity);
         //Inserting components
         for component in entity.components.iter()
