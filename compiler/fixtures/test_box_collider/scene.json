@@ -1,0 +1,17 @@
+{
+  "name": "main_plaza",
+  "parcels": ["0,0"],
+  "entities": [
+    {
+      "name": "test",
+      "components": [
+        {
+          "BoxCollider": {
+            "center": [ 0, 0 ],
+            "size": [ 1, 1 ]
+          }
+        }
+      ]
+    }
+  ]
+}

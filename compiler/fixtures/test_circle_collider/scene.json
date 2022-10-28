@@ -1,0 +1,17 @@
+{
+  "name": "main_plaza",
+  "parcels": ["0,0"],
+  "entities": [
+    {
+      "name": "test",
+      "components": [
+        {
+          "CircleCollider": {
+            "center": [0,0],
+            "radius": 1
+          }
+        }
+      ]
+    }
+  ]
+}

@@ -10,7 +10,7 @@ struct Cli {
 #[derive(clap::Subcommand)]
 enum Action {
 
-   build
+   Build
    {  
     json_path: std::path::PathBuf,
     #[clap(default_value="./build")]
@@ -21,10 +21,11 @@ enum Action {
 
 
 fn main() {
+
   let args = Cli::parse();
 
   match args.action {
-    Action::build {    json_path,
+    Action::Build {    json_path,
       build_path, } => {
         build(json_path, build_path);
       }

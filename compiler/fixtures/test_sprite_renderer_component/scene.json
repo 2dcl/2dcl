@@ -1,0 +1,21 @@
+{
+  "name": "main_plaza",
+  "parcels": ["0,0"],
+  "entities": [
+    {
+      "name": "test",
+      "components": [
+        {
+          "SpriteRenderer": {
+            "sprite": "a_pixel.png",
+            "color": [ 1.0, 1.0, 1.0, 1.0 ],
+            "layer": 0,
+            "flip_x": false,
+            "flip_y": false,
+            "anchor": "Center"
+          }
+        }
+      ]
+    }
+  ]
+}

@@ -6,7 +6,6 @@ pub struct Scene {
    pub name: String,
    pub entities: Vec<Entity>,
    pub parcels: Vec<Parcel>,
-   pub path: Option<String>,
 }
 
 #[derive(Deserialize, Serialize, Debug, Clone)]
@@ -60,7 +59,7 @@ pub enum Anchor{
 #[derive(Deserialize, Serialize, Debug, Clone)]
 pub struct CircleCollider {
     pub center: [i16; 2],
-    pub raius: i32,
+    pub radius: i32,
 }
 
 #[derive(Deserialize, Serialize, Debug, Clone)]
