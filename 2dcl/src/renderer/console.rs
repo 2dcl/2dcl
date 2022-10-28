@@ -20,7 +20,7 @@ impl Plugin for MyConsolePlugin{
 
 /// Teleports the player to a specific parcel
 #[derive(ConsoleCommand)]
-#[console_command(name = "tp")]
+#[console_command(name = "jump")]
 struct TeleportCommand {
 
     parcel_x: String,

@@ -32,8 +32,8 @@ pub struct SceneLoaderPlugin;
 
 pub const MIN_RENDERING_DISTANCE_IN_PARCELS: i16 = 3;
 pub const MAX_RENDERING_DISTANCE_IN_PARCELS: i16 = 6;
-pub const PARCEL_SIZE_X: f32 = 350.0;
-pub const PARCEL_SIZE_Y: f32 = 350.0;
+pub const PARCEL_SIZE_X: f32 = 2000.0;
+pub const PARCEL_SIZE_Y: f32 = 2000.0;
 
 #[derive(Component)]
 struct TextureLoading(Task<Handle<Image>>);
