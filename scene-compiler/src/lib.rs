@@ -2,7 +2,7 @@ use std::io::Write;
 use std::error;
 use std::path::Path;
 use std::{fs::File, io::BufReader};
-use dcl_common::{Scene,Component};
+use dcl2d_ecs_v1::{Scene,Component};
 use serde::Serialize;
 use rmp_serde::*;
 use std::fs::{self, read_dir};

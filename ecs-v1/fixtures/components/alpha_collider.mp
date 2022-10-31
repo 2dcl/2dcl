@@ -1,0 +1,1 @@
+“«a_pixel.png¡R¬BottomCenter
