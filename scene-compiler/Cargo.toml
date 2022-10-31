@@ -1,8 +1,15 @@
 [package]
-name = "compiler"
+name = "scene-compiler"
 version = "0.0.0"
 edition = "2021"
 resolver = "2"
+
+[[bin]]
+name = "2dcl-scene-compiler"
+path = "src/main.rs"
+
+[lib]
+path = "src/lib.rs"
 
 [dependencies]
 serde = { version = "1.0", features = ["derive"] }
@@ -10,3 +17,4 @@ serde_json = "1.0"
 dcl-common = { path = "../dcl-common" }
 rmp-serde = "1.1.1"
 tempdir = "0.3"
+clap = { version = "4.0.17", features = ["derive"] }
