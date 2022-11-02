@@ -1,5 +1,5 @@
 use std::io::Write;
-use std::error;
+use std::{error, default};
 use std::path::Path;
 use std::{fs::File, io::BufReader};
 use dcl2d_ecs_v1::{Scene,Component};
@@ -24,15 +24,28 @@ impl error::Error for Error {}
 
 impl fmt::Display for Error {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-        write!(f, "invalid first item to double")
+        match self
+        {
+            Error::BuildPathNotEmpty => write!(f, "Error: The build path is not empty."),
+            Error::NoParcels => write!(f, "Error: The property 'parcels' is empty."),
+            Error::CopyFileError(e) => write!(f, "Error copying file:\n -{:?}",e),
+            Error::WriteFileError(e) => write!(f, "Error writing file:\n -{:?}",e),
+            Error::ReadFileError(e) => write!(f, "Error reading file:\n -{:?}",e),
+            Error::DeserializeError(e) => write!(f, "Error deserializing json file:\n -{:?}",e),
+
+        }
+        
     }
-}
+}  
 
 pub fn build<T>(json_path: T, build_path: T) -> Result<Scene,Error>
 where T: AsRef<Path>,
-{
+{    
+    println!("Starting build...");
     
     let mut build_path = build_path.as_ref().to_path_buf();
+
+    println!("Checking build path...");
 
     if build_path.is_file()
     {
@@ -83,12 +96,14 @@ where T: AsRef<Path>,
         build_path.push("scene.2dcl");
     }
 
+    println!("Opening json file...");
     let file = File::open(json_path.as_ref().clone());
     if file.is_ok()
     {   
         let file = file.unwrap();
         let reader = BufReader::new(file);
         let scene: serde_json::Result<Scene> = serde_json::from_reader(reader);
+        println!("Reading json file...");
         if scene.is_ok()
         {
             let scene = scene.unwrap();
@@ -100,6 +115,8 @@ where T: AsRef<Path>,
 
             let mut buf: Vec<u8> = Vec::new();
             scene.serialize(&mut Serializer::new(&mut buf)).unwrap();
+
+            println!("Serializing scene...");
 
             for entity in scene.entities.iter()
             {
@@ -129,10 +146,12 @@ where T: AsRef<Path>,
             let mut file = File::create(build_path).unwrap();
             let file_write = file.write_all(&buf);
 
+            println!("Writing 2dcl file...");
             if file_write.is_err()
             {
                return Err(Error::WriteFileError(file_write.unwrap_err()));
             }
+            println!("Compilation complete.");
             return Ok(scene);
         }
         else 
@@ -149,6 +168,7 @@ where T: AsRef<Path>,
 fn copy_asset<P>(json_path: P, build_path: P, asset: &str) -> Result<u64,Error>
 where P: AsRef<Path>,
 {
+    println!("Moving {}, to {}",asset,build_path.as_ref().to_str().unwrap());
     let mut previous_path = json_path.as_ref().to_path_buf();
     previous_path.pop();
     previous_path.push(asset);
@@ -167,73 +187,34 @@ where P: AsRef<Path>,
 
 #[cfg(test)]
 mod tests {
-    use std::io::Read;
-
+    
     use super::*;
     use tempdir::TempDir;
 
-    fn test_scene(path: &str)
+    #[test]
+    fn test_no_parcel_error()
     {
-        let json_file_path = &(path.to_string() + "/scene.json");
+
+        let json_file_path = &("./fixtures/no_parcel/scene.json");
         let build_path = TempDir::new("build-test").unwrap();
 
-        build(Path::new(json_file_path), build_path.path()).unwrap();
-    
-        let mut dcl_file_path = build_path.path().to_path_buf();
-        dcl_file_path.push("scene.2dcl");
-        
+        let result = build(Path::new(json_file_path), build_path.path()).unwrap_err();
 
-        let mut generated_2dcl = File::open(&dcl_file_path).unwrap();
-        let mut fixture_2dcl = File::open(path.to_string() + "/scene.2dcl").unwrap();
-       
-        let buf1 : &mut [u8] = &mut [0; 1024];
-        let buf2 : &mut [u8] = &mut [0; 1024];
-        generated_2dcl.read(buf1).unwrap();
-        fixture_2dcl.read( buf2).unwrap();
-
-        assert_eq!(buf1,buf2);
-    }
-    #[test]
-    fn test_scene_name()
-    {
-        test_scene("./fixtures/test_scene_name");
-    }
-
-    
-    #[test]
-    fn test_scene_entities()
-    {
-        test_scene("./fixtures/test_scene_entities");
-    }
-    
-    #[test]
-    fn test_transform_component()
-    {
-        test_scene("./fixtures/test_transform_component");
+        assert_eq!(result.to_string(),Error::NoParcels.to_string());
+      
     }
 
     #[test]
-    fn test_sprite_renderer_component()
+    fn test_build_path_not_empty_error()
     {
-        test_scene("./fixtures/test_sprite_renderer_component");
+
+        let json_file_path = "./fixtures/build_path_not_empty/scene.json";
+        let build_path = "./fixtures/build_path_not_empty";
+
+        let result = build(json_file_path, build_path).unwrap_err();
+
+        assert_eq!(result.to_string(),Error::BuildPathNotEmpty.to_string());
     }
 
-    #[test]
-    fn test_circle_collider()
-    {
-        test_scene("./fixtures/test_circle_collider");
-    }
-
-    #[test]
-    fn test_box_collider()
-    {
-        test_scene("./fixtures/test_box_collider");
-    }
-
-    #[test]
-    fn test_alpha_collider()
-    {
-        test_scene("./fixtures/test_alpha_collider");
-    }
 }
     

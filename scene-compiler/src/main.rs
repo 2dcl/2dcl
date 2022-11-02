@@ -13,7 +13,11 @@ fn main() {
 
   match args {
     Args { json_path, build_path } => {
-        build(json_path, build_path);
+       let result = build(json_path, build_path);
+       if result.is_err()
+       {
+        println!("{}",result.unwrap_err());
+       }
       }
   }
 }
