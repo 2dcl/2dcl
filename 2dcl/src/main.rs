@@ -22,6 +22,11 @@ enum Action {
     json_path: std::path::PathBuf,
     #[clap(default_value="./build")]
     build_path: std::path::PathBuf,
+   },
+   preview
+   {
+    #[clap(default_value="./scene.2dcl")]
+    path: std::path::PathBuf
    }
 }
 
@@ -34,6 +39,10 @@ fn main() -> Result<()> {
     Some(Action::build {    json_path,
       build_path, }) => {
         compiler::run(json_path, build_path);
+      }
+    ,
+    Some(Action::preview { path}) => {
+        renderer::preview_scene(path);
       }
     ,
     None =>

@@ -10,6 +10,7 @@ mod animations;
 mod player_sprite_maker;
 pub mod scene_loader;
 mod psd_reader;
+mod preview;
 
 use player::PlayerPlugin;
 use animations::AnimationsPlugin;
@@ -17,8 +18,11 @@ use debug::DebugPlugin;
 use collision::CollisionPlugin;
 use scene_loader::SceneLoaderPlugin;
 use bevy::render::render_resource::SamplerDescriptor;
-use dcl_common::{Parcel};
 use console::MyConsolePlugin;
+use preview::PreviewPlugin;
+
+use self::preview::PreviewPath;
+
 
 
 pub fn start() {
@@ -36,9 +40,28 @@ pub fn start() {
         //.add_plugin(RenderToTexturePlugin)
         .add_plugin(DebugPlugin)
         .add_plugin(CollisionPlugin)
-        .add_plugin(MyConsolePlugin)
+        //.add_plugin(MyConsolePlugin)
         .run();
        
+}
+
+pub fn preview_scene(path: std::path::PathBuf)
+{
+    player_sprite_maker::make_player_spritesheet("./2dcl/assets/wearables/".to_owned(), "./2dcl/assets/player.json".to_owned()); 
+    App::new()
+        .insert_resource(Msaa { samples: 1 })
+        .insert_resource(ImageSettings{default_sampler: SamplerDescriptor { 
+            mag_filter: FilterMode::Nearest,
+           ..default()}})
+        .insert_resource(PreviewPath{path})
+        .add_plugins(DefaultPlugins)
+        .add_plugin(AnimationsPlugin)
+        .add_plugin(PlayerPlugin)
+        .add_plugin(CollisionPlugin)
+        .add_plugin(DebugPlugin)
+        //.add_plugin(MyConsolePlugin)
+        .add_plugin(PreviewPlugin)
+        .run();
 }
 
 

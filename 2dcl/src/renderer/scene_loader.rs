@@ -16,6 +16,7 @@ use std::io::BufReader;
 use std::path::Path;
 use bevy_inspector_egui::Inspectable;
 use crate::compiler;
+use std::path::PathBuf;
 
 use super::collision::*;
 use super::animations::*;
@@ -36,11 +37,11 @@ pub const PARCEL_SIZE_X: f32 = 2000.0;
 pub const PARCEL_SIZE_Y: f32 = 2000.0;
 
 #[derive(Component)]
-struct TextureLoading(Task<Handle<Image>>);
+pub struct TextureLoading(pub Task<Handle<Image>>);
 #[derive(Component)]
-struct SpriteLoading(Task<Sprite>);
+pub struct SpriteLoading(pub Task<Sprite>);
 #[derive(Component)]
-struct AlphaColliderLoading(Task<Vec<Vec2>>);
+pub struct AlphaColliderLoading(pub Task<Vec<Vec2>>);
 
 
 #[derive(Component)]
@@ -54,7 +55,7 @@ pub struct Scene {
    pub name: String,
    pub entities: Vec<SceneEntity>,
    pub parcels: Vec<Parcel>,
-   pub path: Option<String>,
+   pub path: Option<PathBuf>,
 }
 
 #[derive(Deserialize, Serialize, Debug, Clone)]
@@ -446,7 +447,7 @@ pub async fn download_parcels(parcels: Vec<Parcel>) -> dcl_common::Result<()> {
 
 fn make_empty_scene_for_parcel (parcel: &Parcel)
 {
-    let scene = read_parcel_file("./2dcl/assets/scenes/templates/empty_parcel/scene.2dcl");
+    let scene = read_scene_file("./2dcl/assets/scenes/templates/empty_parcel/scene.2dcl");
 
     if scene.is_some()
     {
@@ -466,7 +467,7 @@ fn make_empty_scene_for_parcel (parcel: &Parcel)
 
 fn make_road_scene_for_parcel (parcel: &Parcel)
 {
-    let scene = read_parcel_file("./2dcl/assets/scenes/templates/road/scene.2dcl");
+    let scene = read_scene_file("./2dcl/assets/scenes/templates/road/scene.2dcl");
 
     if scene.is_some()
     {
@@ -484,7 +485,7 @@ fn make_road_scene_for_parcel (parcel: &Parcel)
     }
 }
 
-fn read_parcel_file <P>(file_path :P) -> Option<Scene>
+pub fn read_scene_file <P>(file_path :P) -> Option<Scene>
 where P: AsRef<Path>
 {
     if let Ok(file) = File::open(file_path)
@@ -577,14 +578,14 @@ fn get_scene(parcel: Parcel) -> Result<Scene, String>
 
             if let Ok(file) = File::open(&path)
             {
-                let scene = read_parcel_file(&path);
+                let scene = read_scene_file(&path);
                 if scene.is_some()
                 {
                     let mut scene = scene.unwrap();
                     if scene.parcels.contains(&parcel)
                     {   
                         let path = path.parent().unwrap();
-                        scene.path = Some(path.to_str().unwrap().to_string());
+                        scene.path = Some(path.to_path_buf());
                         return Ok(scene);
                     }
                 }
@@ -627,25 +628,8 @@ fn get_scene(parcel: Parcel) -> Result<Scene, String>
    */
 
 }
-/*
-pub fn load_scene(
-    mut commands: Commands,
-    asset_server: Res<AssetServer>,
-    mut collision_map: ResMut<CollisionMap>,
-    mut texture_atlases: ResMut<Assets<TextureAtlas>>,
-    scene_name: &str,
-) {
-    if let Ok(file) = File::open("./2dcl/assets/scenes/".to_string() + scene_name + "/scene.json")
-    {
-        let reader = BufReader::new(file);
-        let scene: serde_json::Result<JsonScene> = serde_json::from_reader(reader);
-        if scene.is_ok()
-        {
-            let scene = scene.unwrap();
-            spawn_scene(commands,asset_server,collision_map,texture_atlases,Scene { name: scene.name, entities: scene.entities, parcels: scene.parcels, path: () });
-        }
-    }
-} */
+
+
 fn handle_tasks(
     mut commands: Commands,
     mut collision_map: ResMut<CollisionMap>,
@@ -732,19 +716,19 @@ fn spawn_default_scene(
     parcel: &Parcel,
 )
 {
-    let scene = read_parcel_file("./2dcl/assets/scenes/templates/empty_parcel/scene.2dcl");
+    let scene = read_scene_file("./2dcl/assets/scenes/templates/empty_parcel/scene.2dcl");
 
     if scene.is_some()
     {
         let mut scene = scene.unwrap();
         scene.parcels = vec![parcel.clone()];
-        scene.path = Some("./2dcl/assets/scenes/templates/empty_parcel".to_string());
+        scene.path = Some(PathBuf::from_str("./2dcl/assets/scenes/templates/empty_parcel").unwrap());
         println!("spawning empty scene for parcel {:?}",parcel);
         let scene_entity = spawn_scene(commands,asset_server,texture_atlases,scene);
     }
 }
 
-fn spawn_scene(    
+pub fn spawn_scene(    
     mut commands: &mut Commands,
     asset_server: &Res<AssetServer>,
     mut texture_atlases: &mut ResMut<Assets<TextureAtlas>>,
@@ -806,15 +790,20 @@ fn spawn_scene(
 
                 let thread_pool = AsyncComputeTaskPool::get();
                 let server = (*asset_server).clone();
-                let image_path = "../../".to_string() + &scene.path.clone().unwrap()  + "/" + &sprite_renderer.sprite;
+                let mut image_path = PathBuf::from_str("../../").unwrap();
+                image_path.push(&scene.path.clone().unwrap());
+                image_path.push(&sprite_renderer.sprite);
+                
                 let task_texture_load = thread_pool.spawn(async move {
-                    let texture: Handle<Image> = server.load(&(image_path));
+                    let texture: Handle<Image> = server.load(image_path);
                     texture
                 }); 
                 commands.entity(spawned_entity).insert(TextureLoading(task_texture_load));
                 
-                let sprite_path = scene.path.clone().unwrap() + "/" + &sprite_renderer.sprite;
-            
+                let mut sprite_path = scene.path.clone().unwrap();
+                sprite_path.push(&sprite_renderer.sprite);
+
+              
                 let renderer  = (*sprite_renderer).clone();
                 let task_sprite_load = thread_pool.spawn(async move {
                     if let Ok(mut reader) = ImageReader::open(sprite_path)
@@ -861,10 +850,13 @@ fn spawn_scene(
             //TODO: Test performance, might do async
             if let EntityComponent::AsepriteAnimation(aseprite_animation) = component
             {
-            let mut animator =  get_animator(scene.path.clone().unwrap()+ "/" + &aseprite_animation.json_path, &asset_server,&mut texture_atlases).unwrap();
-            
-            let sprite = TextureAtlasSprite
-            {
+                let mut  animator_path = scene.path.clone().unwrap();
+                animator_path.push(&aseprite_animation.json_path);
+
+                let mut animator =  get_animator(&animator_path, &asset_server,&mut texture_atlases).unwrap();
+                
+                let sprite = TextureAtlasSprite
+                {
                 color: Color::Rgba { 
                     red: aseprite_animation.color.x, 
                     green: aseprite_animation.color.y, 
@@ -885,9 +877,10 @@ fn spawn_scene(
             
             if let EntityComponent::AlphaCollider(collider) = component
             {
-                            
-                let sprite_path = scene.path.clone().unwrap() + "/" + &collider.sprite;
-            
+                          
+                let mut  sprite_path = scene.path.clone().unwrap();
+                sprite_path.push(&collider.sprite);
+
                 let alpha_collider  = (*collider).clone();
                 let thread_pool = AsyncComputeTaskPool::get();
                 let fixed_transform = transform.clone();
