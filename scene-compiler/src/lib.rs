@@ -1,5 +1,5 @@
 use std::io::Write;
-use std::{error, default};
+use std::error;
 use std::path::Path;
 use std::{fs::File, io::BufReader};
 use dcl2d_ecs_v1::{Scene,Component};
@@ -38,6 +38,7 @@ impl fmt::Display for Error {
     }
 }  
 
+
 pub fn build<T>(json_path: T, build_path: T) -> Result<Scene,Error>
 where T: AsRef<Path>,
 {    
@@ -47,6 +48,7 @@ where T: AsRef<Path>,
 
     println!("Checking build path...");
 
+    
     if build_path.is_file()
     {
         if !build_path.exists() 
@@ -54,7 +56,7 @@ where T: AsRef<Path>,
             let result = fs::create_dir(build_path.parent().unwrap());
             if result.is_err()
             {
-                return Err(Error::ReadFileError(result.unwrap_err()));
+                return Err(Error::WriteFileError(result.unwrap_err()));
             }
         }
         else
