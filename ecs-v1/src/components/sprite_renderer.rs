@@ -1,5 +1,5 @@
 use serde::{Serialize, Deserialize};
-use crate::Anchor;
+use crate::{Anchor,Component};
 
 #[derive(Deserialize, Serialize, Debug, Clone)]
 pub struct SpriteRenderer {
@@ -11,6 +11,10 @@ pub struct SpriteRenderer {
     pub anchor: Anchor
 }
 
+#[typetag::serde]
+impl Component for SpriteRenderer 
+{
+}
 
 #[cfg(test)]
 mod test {

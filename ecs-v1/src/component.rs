@@ -1,11 +1,6 @@
-use serde::{Serialize, Deserialize};
-use crate::components::*;
+use std::fmt::Debug;
 
-#[derive(Deserialize, Serialize, Debug, Clone)]
-pub enum Component{
-    Transform(Transform),
-    SpriteRenderer(SpriteRenderer),
-    CircleCollider(CircleCollider),
-    BoxCollider(BoxCollider),
-    AlphaCollider(AlphaCollider),
-}
+
+#[typetag::serde(tag = "type")]
+
+pub trait Component: Debug {}

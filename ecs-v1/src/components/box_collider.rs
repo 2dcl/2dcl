@@ -1,9 +1,16 @@
 use serde::{Serialize, Deserialize};
 
+use crate::Component;
+
 #[derive(Deserialize, Serialize, Debug, Clone)]
 pub struct BoxCollider {
     pub center: [i16; 2],
     pub size: [i16; 2],
+}
+
+#[typetag::serde]
+impl Component for BoxCollider 
+{
 }
 
 #[cfg(test)]

@@ -9,3 +9,4 @@ serde = { version = "1.0", features = ["derive"] }
 serde_json = "1.0"
 rmp-serde = "1.1.1"
 dcl-common = { path = "../dcl-common" }
+typetag = "0.2"

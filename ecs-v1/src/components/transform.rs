@@ -1,4 +1,5 @@
 use serde::{Serialize, Deserialize};
+use crate::Component;
 
 #[derive(Deserialize, Serialize, Debug, Clone)]
 pub struct Transform {
@@ -7,7 +8,10 @@ pub struct Transform {
     pub scale: [f32; 2],
 }
 
-
+#[typetag::serde]
+impl Component for Transform 
+{
+}
 
 #[cfg(test)]
 mod test {

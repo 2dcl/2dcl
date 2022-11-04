@@ -1,12 +1,17 @@
 use serde::{Serialize, Deserialize};
-use crate::Anchor;
+use crate::{Anchor, Component};
 use crate::color::Channel;
 
-#[derive(Deserialize, Serialize, Debug, Clone)]
+#[derive(Deserialize, Serialize, Debug)]
 pub struct AlphaCollider {
     pub sprite: String,
     pub channel: Channel,
     pub anchor: Anchor
+}
+
+#[typetag::serde]
+impl Component for AlphaCollider 
+{
 }
 
 

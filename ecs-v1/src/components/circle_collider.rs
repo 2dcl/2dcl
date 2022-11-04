@@ -1,9 +1,15 @@
 use serde::{Serialize, Deserialize};
+use crate::Component;
 
 #[derive(Deserialize, Serialize, Debug, Clone)]
 pub struct CircleCollider {
     pub center: [i16; 2],
     pub radius: i32,
+}
+
+#[typetag::serde]
+impl Component for CircleCollider 
+{
 }
 
 #[cfg(test)]

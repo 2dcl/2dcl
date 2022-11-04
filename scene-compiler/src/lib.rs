@@ -2,6 +2,7 @@ use std::io::Write;
 use std::error;
 use std::path::Path;
 use std::{fs::File, io::BufReader};
+use dcl2d_ecs_v1::components::AlphaCollider;
 use dcl2d_ecs_v1::{Scene,Component};
 use serde::Serialize;
 use rmp_serde::*;
@@ -99,7 +100,15 @@ where T: AsRef<Path>,
     }
 
     println!("Opening json file...");
-    let file = File::open(json_path.as_ref().clone());
+
+
+    let mut json_path = json_path.as_ref().to_path_buf();
+    if !json_path.is_file()
+    {
+        json_path.push("scene.json");
+    }
+    
+    let file = File::open(json_path.clone());
     if file.is_ok()
     {   
         let file = file.unwrap();
@@ -120,12 +129,15 @@ where T: AsRef<Path>,
 
             println!("Serializing scene...");
 
-            for entity in scene.entities.iter()
+            //Copy all files?   
+            
+            
+            /*for entity in scene.entities.iter()
             {
                 for component in entity.components.iter()
                 {
-
-                    if let Component::AlphaCollider(alpha_collider) = component
+                    
+                   if let Component::AlphaCollider(alpha_collider) = component
                     {   
                         let result = copy_asset(json_path.as_ref(), build_path.as_path(), &alpha_collider.sprite);
                         if result.is_err()
@@ -141,9 +153,9 @@ where T: AsRef<Path>,
                         {
                             return Err(result.unwrap_err());
                         }
-                    }
+                    }  
                 }
-            }
+            }*/
 
             let mut file = File::create(build_path).unwrap();
             let file_write = file.write_all(&buf);

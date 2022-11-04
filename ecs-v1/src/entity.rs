@@ -1,12 +1,12 @@
 use serde::{Serialize, Deserialize};
 use crate::Component;
 
-#[derive(Deserialize, Serialize, Debug, Clone)]
+#[derive(Serialize, Deserialize, Debug)]
 pub struct Entity {
     #[serde(skip)]
     pub id: usize,
     pub name: String,
-    pub components: Vec<Component>,
+    pub components: Vec<Box<dyn Component>>,
 }
 
 #[cfg(test)]
