@@ -1,3 +1,7 @@
+use std::fs::copy;
+use std::path::Path;
+use std::io::Error;
+
 use serde::{Serialize, Deserialize};
 use crate::{Anchor,Component};
 
@@ -14,6 +18,19 @@ pub struct SpriteRenderer {
 #[typetag::serde]
 impl Component for SpriteRenderer 
 {
+    fn compile(&self, json_path:&Path, build_path: &Path)  -> Result<(),Error> {
+        
+        println!("Moving {}, to {}",&self.sprite,&build_path.display());
+
+        let mut json_path = json_path.to_path_buf();
+        json_path.push(&self.sprite);
+    
+        let mut build_path = build_path.to_path_buf();
+        build_path.push(&self.sprite);
+        copy(json_path, build_path)?;
+        Ok(())
+ 
+    }
 }
 
 #[cfg(test)]

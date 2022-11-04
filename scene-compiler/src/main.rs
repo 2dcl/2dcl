@@ -1,5 +1,5 @@
 use clap::Parser;
-use scene_compiler::build;
+use scene_compiler::compile;
 
 #[derive(Parser,Debug)]
 struct Args {
@@ -13,7 +13,7 @@ fn main() {
 
   match args {
     Args { json_path, build_path } => {
-       let result = build(json_path, build_path);
+       let result = compile(json_path, build_path);
        if result.is_err()
        {
         println!("{}",result.unwrap_err());
