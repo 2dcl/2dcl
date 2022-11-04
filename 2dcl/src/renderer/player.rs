@@ -35,8 +35,10 @@ fn spawn_player(
     mut texture_atlases: ResMut<Assets<TextureAtlas>>,
 )
 {   
-  
-    let animator = get_animator( "./2dcl/assets/player.json", &assets,  &mut texture_atlases).unwrap();
+    let mut player_json_path = std::env::current_exe().unwrap().parent().unwrap().to_path_buf();
+    player_json_path.push("assets/player.json");
+
+    let animator = get_animator(player_json_path, &assets,  &mut texture_atlases).unwrap();
     let mut sprite = TextureAtlasSprite::new(0);
     sprite.anchor = Anchor::BottomCenter;
 

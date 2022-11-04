@@ -1,3 +1,4 @@
+use std::time::SystemTime;
 use std::fs;
 use std::fs::create_dir;
 use std::io::Write;
@@ -5,26 +6,25 @@ use std::str::FromStr;
 use bevy::prelude::*;
 use bevy::tasks::AsyncComputeTaskPool;
 use bevy::tasks::Task;
+
 use catalyst::entity_files::ContentFile;
 use catalyst::{ContentClient, Server};
 use dcl_common::{Parcel};
 use bevy::sprite::Anchor;
 use serde::{Deserialize, Serialize};
-use std::borrow::BorrowMut;
+
 use std::fs::File;
 use std::io::BufReader;
 use std::path::Path;
 use bevy_inspector_egui::Inspectable;
-use crate::compiler;
 use std::path::PathBuf;
 
 use super::collision::*;
-use super::animations::*;
+
 use super::dcl_scene;
 use image::io::Reader as ImageReader;
 use image::{DynamicImage, ImageFormat};
 use super::player::Player;
-use walkdir::WalkDir;
 use futures_lite::future;
 use rmp_serde::*;
 
@@ -33,8 +33,8 @@ pub struct SceneLoaderPlugin;
 
 pub const MIN_RENDERING_DISTANCE_IN_PARCELS: i16 = 3;
 pub const MAX_RENDERING_DISTANCE_IN_PARCELS: i16 = 6;
-pub const PARCEL_SIZE_X: f32 = 2000.0;
-pub const PARCEL_SIZE_Y: f32 = 2000.0;
+pub const PARCEL_SIZE_X: f32 = 300.0;
+pub const PARCEL_SIZE_Y: f32 = 300.0;
 
 #[derive(Component)]
 pub struct TextureLoading(pub Task<Handle<Image>>);
@@ -50,99 +50,25 @@ pub struct DownloadingScene {
     pub parcels: Vec<Parcel>,
 }
 
-#[derive(Debug, Deserialize, Serialize, Default, Clone)]
-pub struct Scene {
-   pub name: String,
-   pub entities: Vec<SceneEntity>,
-   pub parcels: Vec<Parcel>,
-   pub path: Option<PathBuf>,
-}
 
-#[derive(Deserialize, Serialize, Debug, Clone)]
-pub struct SceneEntity {
-    pub name: String,
-    pub components: Vec<EntityComponent>,
-}
-
-
-#[derive(Deserialize, Serialize, Debug, Clone)]
-pub enum EntityComponent{
-    Transform(EntityTransform),
-    SpriteRenderer(SpriteRenderer),
-    CircleCollider(CircleCollider),
-    BoxCollider(BoxCollider),
-    AlphaCollider(AlphaCollider),
-    AsepriteAnimation(AsepriteAnimation),
-}
-
-#[derive(Deserialize, Serialize, Debug, Clone)]
-pub struct AsepriteAnimation {
-    pub json_path: String,
-    pub starting_state: String,
-    pub color: Vec4,
-    pub layer: i32,
-    pub flip_x: bool,
-    pub flip_y: bool,
-    pub anchor: EntityAnchor
-}
-
-#[derive(Deserialize, Serialize, Debug, Clone)]
-pub struct EntityTransform {
-    pub location: Vec2,
-    pub rotation: Vec3,
-    pub scale: Vec2,
-}
-
-
-#[derive(Deserialize, Serialize, Debug, Clone)]
-pub struct SpriteRenderer {
-    pub sprite: String,
-    pub color: Vec4,
-    pub layer: i32,
-    pub flip_x: bool,
-    pub flip_y: bool,
-    pub anchor: EntityAnchor
-}
-
-#[derive(Deserialize, Serialize, Debug, Clone, Inspectable)]
-pub enum EntityAnchor{
-    Center,
-    BottomLeft,
-    BottomCenter,
-    BottomRight,
-    CenterLeft,
-    CenterRight,
-    TopLeft,
-    TopCenter,
-    TopRight,
-    Custom(Vec2),
-}
-
-
-#[derive(Deserialize, Serialize, Debug, Component, Clone, Inspectable)]
+#[derive(Debug, Component, Clone, Inspectable)]
 pub struct CircleCollider {
     pub center: Vec2,
     pub raius: i32,
 }
 
-#[derive(Deserialize, Serialize, Debug, Component, Clone, Inspectable)]
+#[derive(Debug, Component, Clone, Inspectable)]
 pub struct BoxCollider {
     pub center: Vec2,
     pub size: Vec2,
-}
-
-#[derive(Deserialize, Serialize, Debug, Clone, Inspectable)]
-pub struct AlphaCollider {
-    pub sprite: String,
-    pub channel: i32,
-    pub anchor: EntityAnchor
 }
 
 #[derive(Debug, Component)]
 pub struct SceneComponent
 {
     pub name: String,
-    pub parcels: Vec<Parcel>
+    pub parcels: Vec<Parcel>,
+    pub timestamp: SystemTime
 }
 
 impl Plugin for SceneLoaderPlugin
@@ -193,7 +119,7 @@ pub fn check_scenes_to_download(
           
             if despawn_scene
             {  
-                commands.entity(entity).despawn();
+                commands.entity(entity).despawn_recursive();
                 continue;
             }
 
@@ -226,7 +152,7 @@ pub fn check_scenes_to_download(
                         }
                     }
                 }
-                spawn_scene(&mut commands,&asset_server, &mut texture_atlases, scene);   
+                // spawn_scene(&mut commands,&asset_server, &mut texture_atlases, scene);   
             }
             else
             {
@@ -280,7 +206,7 @@ pub fn check_scenes_to_download(
 }
 
 
-fn get_scene_center_location(scene: &Scene) -> Vec3
+fn get_scene_center_location(scene: &dcl2d_ecs_v1::Scene) -> Vec3
 {
  
     let mut min: Vec2 = Vec2{x:f32::MAX,y:f32::MAX};
@@ -485,14 +411,11 @@ fn make_road_scene_for_parcel (parcel: &Parcel)
     }
 }
 
-pub fn read_scene_file <P>(file_path :P) -> Option<Scene>
-where P: AsRef<Path>
+
+pub fn read_scene(content: &[u8]) -> Option<dcl2d_ecs_v1::Scene>
 {
-    if let Ok(file) = File::open(file_path)
-    {
-        let reader = BufReader::new(file);
-        let mut de = Deserializer::new(reader);
-        let scene: Result<Scene,rmp_serde::decode::Error> = Deserialize::deserialize(&mut de);
+        let mut de = Deserializer::new(content);
+        let scene: Result<dcl2d_ecs_v1::Scene,rmp_serde::decode::Error> = Deserialize::deserialize(&mut de);
         if scene.is_ok()
         {
             return Some(scene.unwrap());
@@ -501,6 +424,16 @@ where P: AsRef<Path>
         {
             return None;
         }
+
+}
+
+pub fn read_scene_file <P>(file_path :P) -> Option<dcl2d_ecs_v1::Scene>
+where P: AsRef<Path>
+{
+    if let Ok(file) = File::open(file_path)
+    {
+        let reader = BufReader::new(file);
+        // read_scene(reader);
     }
     
     None
@@ -563,7 +496,7 @@ where
 } */
 
 
-fn get_scene(parcel: Parcel) -> Result<Scene, String>
+fn get_scene(parcel: Parcel) -> Result<dcl2d_ecs_v1::Scene, String>
 {
 
     //TODO: put parcels on folder name when downloading or cache something to improve performance.
@@ -585,7 +518,7 @@ fn get_scene(parcel: Parcel) -> Result<Scene, String>
                     if scene.parcels.contains(&parcel)
                     {   
                         let path = path.parent().unwrap();
-                        scene.path = Some(path.to_path_buf());
+                        // scene.path = Some(path.to_path_buf());
                         return Ok(scene);
                     }
                 }
@@ -668,7 +601,7 @@ fn handle_tasks(
         if let Some(finished) = future::block_on(future::poll_once(&mut downloading_scene.task)) 
         {
 
-            commands.entity(entity).despawn();
+            commands.entity(entity).despawn_recursive();
         }
     }
 
@@ -689,14 +622,14 @@ fn handle_tasks(
                             if scene_1.name == "empty_parcel"
                             {
                                 println!("Despawning empty_parcel {:?}", parcel_1);
-                                commands.entity(entity_1).despawn();
+                                commands.entity(entity_1).despawn_recursive();
                                 break 'outer
                             }
 
                             if scene_2.name == "empty_parcel"
                             {
                                 println!("Despawning empty_parcel {:?}", parcel_2);
-                                commands.entity(entity_2).despawn();
+                                commands.entity(entity_2).despawn_recursive();
                                 break;
                             }
                         }
@@ -722,9 +655,9 @@ fn spawn_default_scene(
     {
         let mut scene = scene.unwrap();
         scene.parcels = vec![parcel.clone()];
-        scene.path = Some(PathBuf::from_str("./2dcl/assets/scenes/templates/empty_parcel").unwrap());
+        // scene.path = Some(PathBuf::from_str("./2dcl/assets/scenes/templates/empty_parcel").unwrap());
         println!("spawning empty scene for parcel {:?}",parcel);
-        let scene_entity = spawn_scene(commands,asset_server,texture_atlases,scene);
+        // let scene_entity = spawn_scene(commands,asset_server,texture_atlases,scene);
     }
 }
 
@@ -732,7 +665,8 @@ pub fn spawn_scene(
     mut commands: &mut Commands,
     asset_server: &Res<AssetServer>,
     mut texture_atlases: &mut ResMut<Assets<TextureAtlas>>,
-    scene: Scene,
+    scene: dcl2d_ecs_v1::Scene,
+    timestamp: SystemTime
 ) -> Entity
 {
     let scene_location: Vec3 = get_scene_center_location(&scene);
@@ -742,7 +676,7 @@ pub fn spawn_scene(
     .insert(GlobalTransform::default())
     .insert(ComputedVisibility::default())
     .insert(Transform::from_translation(scene_location))
-    .insert(SceneComponent{name:scene.name.clone(),parcels:scene.parcels})
+    .insert(SceneComponent{name:scene.name.clone(),parcels:scene.parcels, timestamp})
     .id();
 
     for entity in  scene.entities.iter()
@@ -751,17 +685,19 @@ pub fn spawn_scene(
 
         for component in entity.components.iter()
         {
-            if let EntityComponent::Transform(entity_transform) = component
-            {       
-                transform.translation = transform.translation + entity_transform.location.extend(entity_transform.location.y * -1.0);
+            if let Some(source_transform) = component.as_any().downcast_ref::<dcl2d_ecs_v1::components::Transform>() {
+                let location = Vec2::new(source_transform.location[0], source_transform.location[1]);
+                let scale = Vec2::new(source_transform.scale[0], source_transform.scale[1]);
+
+                transform.translation = transform.translation + location.extend(location.y * -1.0);
                 transform.rotation = Quat::from_euler(
                     EulerRot::XYZ,
-                    entity_transform.rotation.x.to_radians(),
-                    entity_transform.rotation.y.to_radians(),
-                    entity_transform.rotation.z.to_radians());
+                    source_transform.rotation[0].to_radians(),
+                    source_transform.rotation[1].to_radians(),
+                    source_transform.rotation[2].to_radians());
 
-                transform.scale = entity_transform.scale.extend(1.0);
-            }  
+                transform.scale = scale.extend(1.0);
+            };
         }
         
         //Spawning Entity
@@ -774,12 +710,11 @@ pub fn spawn_scene(
             .id();
        
         commands.entity(scene_entity).add_child(spawned_entity);
-        //Inserting components
+        
+        // Inserting components
         for component in entity.components.iter()
         { 
-            if let EntityComponent::SpriteRenderer(sprite_renderer) = component
-            { 
-                
+            if let Some(sprite_renderer) = component.as_any().downcast_ref::<dcl2d_ecs_v1::components::SpriteRenderer>() {
                 transform.translation = Vec3{
                     x:transform.translation.x,
                     y:transform.translation.y,
@@ -790,8 +725,8 @@ pub fn spawn_scene(
 
                 let thread_pool = AsyncComputeTaskPool::get();
                 let server = (*asset_server).clone();
-                let mut image_path = PathBuf::from_str("../../").unwrap();
-                image_path.push(&scene.path.clone().unwrap());
+                let mut image_path = PathBuf::from_str("./").unwrap();
+                // image_path.push(&scene.path.clone().unwrap());
                 image_path.push(&sprite_renderer.sprite);
                 
                 let task_texture_load = thread_pool.spawn(async move {
@@ -800,8 +735,7 @@ pub fn spawn_scene(
                 }); 
                 commands.entity(spawned_entity).insert(TextureLoading(task_texture_load));
                 
-                let mut sprite_path = scene.path.clone().unwrap();
-                sprite_path.push(&sprite_renderer.sprite);
+                let sprite_path = sprite_renderer.sprite.clone();
 
               
                 let renderer  = (*sprite_renderer).clone();
@@ -813,15 +747,15 @@ pub fn spawn_scene(
                         {
                             if let DynamicImage::ImageRgba8(image) = dynamic_image
                             {
-                                let mut pixels = image.pixels().into_iter();
+                                let pixels = image.pixels().into_iter();
                                 let rows = image.rows().len();
                                 let columns = pixels.len()/rows;
                                 let sprite = Sprite{
                                     color: Color::Rgba { 
-                                        red: renderer.color.x, 
-                                        green: renderer.color.y, 
-                                        blue: renderer.color.z, 
-                                        alpha:  renderer.color.w},
+                                        red: renderer.color[0], 
+                                        green: renderer.color[1], 
+                                        blue: renderer.color[2], 
+                                        alpha:  renderer.color[3]},
                                         anchor: entity_anchor_to_anchor(Vec2{x:columns as f32, y:rows as f32},renderer.anchor.clone()),
                                         flip_x: renderer.flip_x,
                                         flip_y: renderer.flip_y,
@@ -837,134 +771,134 @@ pub fn spawn_scene(
 
             }
 
-            if let EntityComponent::BoxCollider(collider) = component
-            {      
-                commands.entity(spawned_entity).insert(collider.clone());
-            }
+        //     if let EntityComponent::BoxCollider(collider) = component
+        //     {      
+        //         commands.entity(spawned_entity).insert(collider.clone());
+        //     }
 
-            if let EntityComponent::CircleCollider(collider) = component
-            {
-                commands.entity(spawned_entity).insert(collider.clone());
-            }
+        //     if let EntityComponent::CircleCollider(collider) = component
+        //     {
+        //         commands.entity(spawned_entity).insert(collider.clone());
+        //     }
 
-            //TODO: Test performance, might do async
-            if let EntityComponent::AsepriteAnimation(aseprite_animation) = component
-            {
-                let mut  animator_path = scene.path.clone().unwrap();
-                animator_path.push(&aseprite_animation.json_path);
+        //     //TODO: Test performance, might do async
+        //     if let EntityComponent::AsepriteAnimation(aseprite_animation) = component
+        //     {
+        //         let mut  animator_path = scene.path.clone().unwrap();
+        //         animator_path.push(&aseprite_animation.json_path);
 
-                let mut animator =  get_animator(&animator_path, &asset_server,&mut texture_atlases).unwrap();
+        //         let mut animator =  get_animator(&animator_path, &asset_server,&mut texture_atlases).unwrap();
                 
-                let sprite = TextureAtlasSprite
-                {
-                color: Color::Rgba { 
-                    red: aseprite_animation.color.x, 
-                    green: aseprite_animation.color.y, 
-                    blue: aseprite_animation.color.z, 
-                    alpha:  aseprite_animation.color.w},
-                    anchor: entity_anchor_to_anchor(Vec2{x:1 as f32, y:1 as f32},aseprite_animation.anchor.clone()),
-                    flip_x: aseprite_animation.flip_x,
-                    flip_y: aseprite_animation.flip_y,
-                ..default()
-                };
-                change_animator_state(animator.borrow_mut(),aseprite_animation.starting_state.clone()); 
-                commands.entity(spawned_entity).insert(sprite);
-                commands.entity(spawned_entity).insert(animator.atlas.clone());
-                commands.entity(spawned_entity).insert(animator);
-            }
+        //         let sprite = TextureAtlasSprite
+        //         {
+        //         color: Color::Rgba { 
+        //             red: aseprite_animation.color.x, 
+        //             green: aseprite_animation.color.y, 
+        //             blue: aseprite_animation.color.z, 
+        //             alpha:  aseprite_animation.color.w},
+        //             anchor: entity_anchor_to_anchor(Vec2{x:1 as f32, y:1 as f32},aseprite_animation.anchor.clone()),
+        //             flip_x: aseprite_animation.flip_x,
+        //             flip_y: aseprite_animation.flip_y,
+        //         ..default()
+        //         };
+        //         change_animator_state(animator.borrow_mut(),aseprite_animation.starting_state.clone()); 
+        //         commands.entity(spawned_entity).insert(sprite);
+        //         commands.entity(spawned_entity).insert(animator.atlas.clone());
+        //         commands.entity(spawned_entity).insert(animator);
+        //     }
             
             
             
-            if let EntityComponent::AlphaCollider(collider) = component
-            {
+        //     if let EntityComponent::AlphaCollider(collider) = component
+        //     {
                           
-                let mut  sprite_path = scene.path.clone().unwrap();
-                sprite_path.push(&collider.sprite);
+        //         let mut  sprite_path = scene.path.clone().unwrap();
+        //         sprite_path.push(&collider.sprite);
 
-                let alpha_collider  = (*collider).clone();
-                let thread_pool = AsyncComputeTaskPool::get();
-                let fixed_transform = transform.clone();
-                let scene_translation = scene_location.clone();
-                let task_collision_map = thread_pool.spawn(async move {
+        //         let alpha_collider  = (*collider).clone();
+        //         let thread_pool = AsyncComputeTaskPool::get();
+        //         let fixed_transform = transform.clone();
+        //         let scene_translation = scene_location.clone();
+        //         let task_collision_map = thread_pool.spawn(async move {
 
-                    let mut collision_map:Vec<Vec2> = Vec::default();
+        //             let mut collision_map:Vec<Vec2> = Vec::default();
 
-                    if let Ok(mut reader) = ImageReader::open(sprite_path)
-                    {
-                        reader.set_format(ImageFormat::Png);
-                        if let Ok(dynamic_image) = reader.decode()
-                        {
-                            if let DynamicImage::ImageRgba8(image) = dynamic_image
-                            {
-                                let mut pixels = image.pixels().into_iter(); 
-                                let rows = image.rows().len();
-                                let columns = pixels.len()/rows;
+        //             if let Ok(mut reader) = ImageReader::open(sprite_path)
+        //             {
+        //                 reader.set_format(ImageFormat::Png);
+        //                 if let Ok(dynamic_image) = reader.decode()
+        //                 {
+        //                     if let DynamicImage::ImageRgba8(image) = dynamic_image
+        //                     {
+        //                         let mut pixels = image.pixels().into_iter(); 
+        //                         let rows = image.rows().len();
+        //                         let columns = pixels.len()/rows;
 
-                                let fixed_translation = get_fixed_translation_by_anchor(
-                                    Vec2{x:columns as f32, y: rows as f32},
-                                    Vec3 { x: fixed_transform.translation.x + scene_translation.x, 
-                                        y: fixed_transform.translation.y + scene_translation.y, 
-                                        z: fixed_transform.translation.z + scene_translation.z },
-                                        alpha_collider.anchor.clone(),
-                                );
-                                let mut index =0;
-                                let strating_world_location =
+        //                         let fixed_translation = get_fixed_translation_by_anchor(
+        //                             Vec2{x:columns as f32, y: rows as f32},
+        //                             Vec3 { x: fixed_transform.translation.x + scene_translation.x, 
+        //                                 y: fixed_transform.translation.y + scene_translation.y, 
+        //                                 z: fixed_transform.translation.z + scene_translation.z },
+        //                                 alpha_collider.anchor.clone(),
+        //                         );
+        //                         let mut index =0;
+        //                         let strating_world_location =
                             
-                                fixed_translation.truncate() - (Vec2::new((columns as f32)/2.0 , (rows as f32)/2.0)* super::collision::TILE_SIZE);
-                                while pixels.len() >0
-                                {   
-                                    if pixels.next().unwrap()[alpha_collider.channel as usize] > 0 
-                                    {
-                                        let world_location = strating_world_location + (Vec2::new((index%columns) as f32,(index/columns) as f32)*super::collision::TILE_SIZE);
-                                        collision_map.push(world_location);
-                                    }                             
-                                    index +=1;
-                                }
-                            }
-                        }
-                    }
-                    collision_map
-                });
-                commands.entity(spawned_entity).insert(AlphaColliderLoading(task_collision_map));
-            }
+        //                         fixed_translation.truncate() - (Vec2::new((columns as f32)/2.0 , (rows as f32)/2.0)* super::collision::TILE_SIZE);
+        //                         while pixels.len() >0
+        //                         {   
+        //                             if pixels.next().unwrap()[alpha_collider.channel as usize] > 0 
+        //                             {
+        //                                 let world_location = strating_world_location + (Vec2::new((index%columns) as f32,(index/columns) as f32)*super::collision::TILE_SIZE);
+        //                                 collision_map.push(world_location);
+        //                             }                             
+        //                             index +=1;
+        //                         }
+        //                     }
+        //                 }
+        //             }
+        //             collision_map
+        //         });
+        //         commands.entity(spawned_entity).insert(AlphaColliderLoading(task_collision_map));
+        //     }
         }
     } 
     scene_entity
 }
 
 
-fn entity_anchor_to_anchor(size: Vec2, anchor: EntityAnchor) -> Anchor
+fn entity_anchor_to_anchor(size: Vec2, anchor: dcl2d_ecs_v1::Anchor) -> Anchor
 {
     match anchor
     {
-        EntityAnchor::BottomCenter => return Anchor::BottomCenter,
-        EntityAnchor::BottomLeft => return Anchor::BottomLeft,
-        EntityAnchor::BottomRight => return Anchor::BottomRight,
-        EntityAnchor::Center => return Anchor::Center,
-        EntityAnchor::CenterLeft => return Anchor::CenterLeft,
-        EntityAnchor::CenterRight => return Anchor::CenterRight,
-        EntityAnchor::Custom(vec) => return Anchor::Custom(vec/size),
-        EntityAnchor::TopCenter => return Anchor::TopCenter,
-        EntityAnchor::TopLeft => return Anchor::TopLeft,
-        EntityAnchor::TopRight => return Anchor::TopRight
+        dcl2d_ecs_v1::Anchor::BottomCenter => return Anchor::BottomCenter,
+        dcl2d_ecs_v1::Anchor::BottomLeft => return Anchor::BottomLeft,
+        dcl2d_ecs_v1::Anchor::BottomRight => return Anchor::BottomRight,
+        dcl2d_ecs_v1::Anchor::Center => return Anchor::Center,
+        dcl2d_ecs_v1::Anchor::CenterLeft => return Anchor::CenterLeft,
+        dcl2d_ecs_v1::Anchor::CenterRight => return Anchor::CenterRight,
+        // dcl2d_ecs_v1::Anchor::Custom(vec) => return Anchor::Custom(Vec2::new(vec.0, vec.1)/size),
+        dcl2d_ecs_v1::Anchor::TopCenter => return Anchor::TopCenter,
+        dcl2d_ecs_v1::Anchor::TopLeft => return Anchor::TopLeft,
+        dcl2d_ecs_v1::Anchor::TopRight => return Anchor::TopRight
     }
 }
 
 
-fn  get_fixed_translation_by_anchor(size: Vec2, translation: Vec3, anchor: EntityAnchor) -> Vec3
+fn  get_fixed_translation_by_anchor(size: Vec2, translation: Vec3, anchor: dcl2d_ecs_v1::Anchor) -> Vec3
 {
 
     match anchor
     {
-        EntityAnchor::BottomCenter => return Vec3{x:translation.x, y:translation.y +size.y/2.0, z:translation.z},
-        EntityAnchor::BottomLeft => return  Vec3{x:translation.x + size.x/2.0, y:translation.y +size.y/2.0, z:translation.z},
-        EntityAnchor::BottomRight => return Vec3{x:translation.x - size.x/2.0, y:translation.y +size.y/2.0, z:translation.z},
-        EntityAnchor::Center => return translation,
-        EntityAnchor::CenterLeft => return Vec3{x:translation.x + size.x/2.0, y:translation.y, z:translation.z},
-        EntityAnchor::CenterRight => return Vec3{x:translation.x - size.x/2.0, y:translation.y, z:translation.z},
-        EntityAnchor::Custom(vec) => return Vec3{x:translation.x - vec.x, y:translation.y - vec.y, z:translation.z},
-        EntityAnchor::TopCenter => return Vec3{x:translation.x, y:translation.y - size.y/2.0, z:translation.z},
-        EntityAnchor::TopLeft => return Vec3{x:translation.x + size.x/2.0, y:translation.y -size.y/2.0, z:translation.z},
-        EntityAnchor::TopRight => return  Vec3{x:translation.x - size.x/2.0, y:translation.y -size.y/2.0, z:translation.z},
+        dcl2d_ecs_v1::Anchor::BottomCenter => return Vec3{x:translation.x, y:translation.y +size.y/2.0, z:translation.z},
+        dcl2d_ecs_v1::Anchor::BottomLeft => return  Vec3{x:translation.x + size.x/2.0, y:translation.y +size.y/2.0, z:translation.z},
+        dcl2d_ecs_v1::Anchor::BottomRight => return Vec3{x:translation.x - size.x/2.0, y:translation.y +size.y/2.0, z:translation.z},
+        dcl2d_ecs_v1::Anchor::Center => return translation,
+        dcl2d_ecs_v1::Anchor::CenterLeft => return Vec3{x:translation.x + size.x/2.0, y:translation.y, z:translation.z},
+        dcl2d_ecs_v1::Anchor::CenterRight => return Vec3{x:translation.x - size.x/2.0, y:translation.y, z:translation.z},
+        // dcl2d_ecs_v1::Anchor::Custom(vec) => return Vec3{x:translation.x - vec.0, y:translation.y - vec.1, z:translation.z},
+        dcl2d_ecs_v1::Anchor::TopCenter => return Vec3{x:translation.x, y:translation.y - size.y/2.0, z:translation.z},
+        dcl2d_ecs_v1::Anchor::TopLeft => return Vec3{x:translation.x + size.x/2.0, y:translation.y -size.y/2.0, z:translation.z},
+        dcl2d_ecs_v1::Anchor::TopRight => return  Vec3{x:translation.x - size.x/2.0, y:translation.y -size.y/2.0, z:translation.z},
     }
 }

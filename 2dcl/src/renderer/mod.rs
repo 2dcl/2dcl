@@ -1,4 +1,7 @@
-use bevy::{prelude::*, render::{render_resource::FilterMode, texture::ImageSettings}};
+use std::str::FromStr;
+use std::path::PathBuf;
+
+use bevy::{prelude::*, render::{render_resource::{AsBindGroupShaderType, FilterMode}, texture::ImageSettings}};
 
 mod dcl_scene;
 mod player;
@@ -9,7 +12,7 @@ mod collision;
 mod animations;
 mod player_sprite_maker;
 pub mod scene_loader;
-mod psd_reader;
+// mod psd_reader;
 mod preview;
 
 use player::PlayerPlugin;
@@ -18,7 +21,6 @@ use debug::DebugPlugin;
 use collision::CollisionPlugin;
 use scene_loader::SceneLoaderPlugin;
 use bevy::render::render_resource::SamplerDescriptor;
-use console::MyConsolePlugin;
 use preview::PreviewPlugin;
 
 use self::preview::PreviewPath;
@@ -45,15 +47,20 @@ pub fn start() {
        
 }
 
-pub fn preview_scene(path: std::path::PathBuf)
+pub fn preview_scene(base_dir: std::path::PathBuf)
 {
-    player_sprite_maker::make_player_spritesheet("./2dcl/assets/wearables/".to_owned(), "./2dcl/assets/player.json".to_owned()); 
+    // player_sprite_maker::make_player_spritesheet("./2dcl/assets/wearables/".to_owned(), "./2dcl/assets/player.json".to_owned()); 
+    std::env::set_current_dir(&base_dir).unwrap();
+
+    let absolute_base_dir = std::fs::canonicalize(PathBuf::from_str(".").unwrap()).unwrap();
+    std::env::set_var("CARGO_MANIFEST_DIR", absolute_base_dir);
+
     App::new()
         .insert_resource(Msaa { samples: 1 })
         .insert_resource(ImageSettings{default_sampler: SamplerDescriptor { 
             mag_filter: FilterMode::Nearest,
            ..default()}})
-        .insert_resource(PreviewPath{path})
+        // .insert_resource(PreviewPath{path})
         .add_plugins(DefaultPlugins)
         .add_plugin(AnimationsPlugin)
         .add_plugin(PlayerPlugin)
@@ -61,6 +68,8 @@ pub fn preview_scene(path: std::path::PathBuf)
         .add_plugin(DebugPlugin)
         //.add_plugin(MyConsolePlugin)
         .add_plugin(PreviewPlugin)
+        .add_asset::<preview::SceneAsset>()
+        .init_asset_loader::<preview::SceneAssetLoader>()
         .run();
 }
 

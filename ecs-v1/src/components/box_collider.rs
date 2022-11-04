@@ -1,3 +1,4 @@
+use core::any::Any;
 use serde::{Serialize, Deserialize};
 
 use crate::Component;
@@ -11,6 +12,9 @@ pub struct BoxCollider {
 #[typetag::serde]
 impl Component for BoxCollider 
 {
+    fn as_any(&self) -> &dyn Any {
+        self
+    }
 }
 
 #[cfg(test)]

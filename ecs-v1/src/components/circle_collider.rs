@@ -1,3 +1,4 @@
+use core::any::Any;
 use serde::{Serialize, Deserialize};
 use crate::Component;
 
@@ -10,6 +11,9 @@ pub struct CircleCollider {
 #[typetag::serde]
 impl Component for CircleCollider 
 {
+    fn as_any(&self) -> &dyn Any {
+        self
+    }
 }
 
 #[cfg(test)]

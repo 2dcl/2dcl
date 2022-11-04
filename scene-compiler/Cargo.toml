@@ -19,3 +19,4 @@ dcl2d-ecs-v1 = { path = "../ecs-v1" }
 rmp-serde = "1.1.1"
 tempdir = "0.3"
 clap = { version = "4.0.17", features = ["derive"] }
+fs_extra = "1.2.0"

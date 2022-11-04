@@ -4,8 +4,6 @@ use dcl_common::Parcel;
 
 use super::player::Player;
 use super::scene_loader;
-use clap::Parser;
-use clap::*;
 
 pub struct MyConsolePlugin;
 

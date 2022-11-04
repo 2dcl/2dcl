@@ -9,15 +9,18 @@ use rmp_serde::*;
 use std::fs;
 use dcl_common::Result;
 use crate::error::SceneCompileError;
-
-
+use fs_extra::dir::CopyOptions;
 
 pub fn compile<T,U>(source_path: T, destination_path: U)  -> Result<()>
 where T: AsRef<Path>, U: AsRef<Path>
 {    
     println!("Starting build...");
     
+    let mut assets_source_path = source_path.as_ref().to_path_buf();
+    assets_source_path.push("assets");
     let mut source_path = source_path.as_ref().to_path_buf();
+
+    let mut assets_destination_path = destination_path.as_ref().to_path_buf();
     let mut destination_path = destination_path.as_ref().to_path_buf();
 
     println!("Checking build path...");
@@ -71,21 +74,28 @@ where T: AsRef<Path>, U: AsRef<Path>
     println!("Writing 2dcl file...");
     destination_path.push("scene.2dcl");
     let mut file = File::create(&destination_path)?;
+    
     file.write_all(&buf)?;
 
+    let mut options = CopyOptions::new();
+    options.overwrite = true;
 
-    for entity in scene.entities.iter()
-    {
-        for component in entity.components.iter()
-        {
-            if let (Some(source_path), Some(destination_path)) = (source_path.parent(), destination_path.parent())
-            {
-                component.compile(source_path, destination_path)?;
+    println!("Copying: {} -> {}", assets_source_path.display(), assets_destination_path.display());
+    fs_extra::dir::copy(assets_source_path, assets_destination_path, &options)?;
+
+
+    // for entity in scene.entities.iter()
+    // {
+    //     for component in entity.components.iter()
+    //     {
+    //         if let (Some(source_path), Some(destination_path)) = (source_path.parent(), destination_path.parent())
+    //         {
+    //             component.compile(source_path, destination_path)?;
         
-            }
+    //         }
            
-        }
-    }
+    //     }
+    // }
 
   
     println!("Compilation complete.");

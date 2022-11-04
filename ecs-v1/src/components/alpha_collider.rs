@@ -1,4 +1,4 @@
-use std::fs::copy;
+use core::any::Any;
 use std::path::Path;
 use std::io::Error;
 
@@ -16,18 +16,19 @@ pub struct AlphaCollider {
 #[typetag::serde]
 impl Component for AlphaCollider 
 {
-    fn compile(&self, json_path:&Path, build_path: &Path) -> Result<(),Error> {
-        
-       
-
-        let mut json_path = json_path.to_path_buf();
-        json_path.push(&self.sprite);
+    fn compile(&self, _json_path:&Path, _build_path: &Path) -> Result<(),Error> {
+        // let mut json_path = json_path.to_path_buf();
+        // json_path.push(&self.sprite);
     
-        let mut build_path = build_path.to_path_buf();
-        build_path.push(&self.sprite);
-        println!("Moving {}, to {}",&json_path.display(),&build_path.display());
-        copy(json_path, build_path)?;
+        // let mut build_path = build_path.to_path_buf();
+        // build_path.push(&self.sprite);
+        // println!("Moving {}, to {}",&json_path.display(),&build_path.display());
+        // copy(json_path, build_path)?;
         Ok(())
+    }
+    
+    fn as_any(&self) -> &dyn Any {
+        self
     }
 }
 

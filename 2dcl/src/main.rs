@@ -2,7 +2,8 @@ use dcl_common::Result;
 //use tokio::process::Command;
 
 mod renderer;
-mod compiler;
+mod previewer;
+
 //mod ws;
 
 use clap::Parser;
@@ -16,17 +17,12 @@ struct Cli {
 
 #[derive(clap::Subcommand)]
 enum Action {
-
-   build
-   {  
-    json_path: std::path::PathBuf,
-    #[clap(default_value="./build")]
-    build_path: std::path::PathBuf,
-   },
-   preview
+   Preview
    {
-    #[clap(default_value="./scene.2dcl")]
-    path: std::path::PathBuf
+    #[clap(default_value="./")]
+    source_path: std::path::PathBuf,
+    #[clap(default_value="./build/")]
+    destination_path: std::path::PathBuf
    }
 }
 
@@ -36,13 +32,8 @@ fn main() -> Result<()> {
   let args = Cli::parse();
 
   match args.action {
-    Some(Action::build {    json_path,
-      build_path, }) => {
-        compiler::run(json_path, build_path);
-      }
-    ,
-    Some(Action::preview { path}) => {
-        renderer::preview_scene(path);
+    Some(Action::Preview {source_path, destination_path}) => {
+        previewer::preview(source_path, destination_path);
       }
     ,
     None =>
