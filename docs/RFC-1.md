@@ -33,7 +33,7 @@ Parcels use the same serialization used for the 3d explorer: a string of comma s
 
 A single scene can include multilpe levels, each level contains a `name`, `dimensions` (the size in pixels for the level), and `entities` (an array of entities available in that level, see Entities below), and `player_layer` that determines in which z-order layer the player should be rendered in this level.
 
-The first level in the scene is the one that gets rendered when walking around decentraland, and its dimensions get automatically set by the parcels available, so anything outside the boundaries of the parcels will be ignored.
+The first level in the scene is the one that gets rendered when walking around decentraland, and its dimensions get automatically set by the parcels (each parcel is 500x500) available, so anything outside the boundaries of the parcels will be ignored.
 
 ```json
 {
@@ -121,6 +121,20 @@ It has a `center` (`x` and `y` are pixel coordinates) and a `size` (with `width`
   "location": [ 0.0, 0.0 ],
   "rotation": [ 90.0, 90.0, 90.0 ], // optional, defaults to (0,0,0)
   "scale": [ 1.0, 1.0 ] // optional, defaults to (1,1)
+}
+```
+
+### LevelChange
+
+When a player interacts with an entity with a `LevelChange` component, they get teleported to that level.
+
+The attributes are `level` (the name of the level), and `spawn_point` (the `x`,`y` coordinate where the player should appear in the level).
+
+```json
+{
+  "type": "LevelChange",
+  "level": "MyLevel",
+  "spawn_point" : { "x": 0, "y": 0}
 }
 ```
 
