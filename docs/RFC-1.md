@@ -28,7 +28,6 @@ Parcels use the same serialization used for the 3d explorer: a string of comma s
 }
 ```
 
-
 ## Levels
 
 A single scene can include multilpe levels, each level contains a `name`, `dimensions` (the size in pixels for the level), and `entities` (an array of entities available in that level, see Entities below), and `player_layer` that determines in which z-order layer the player should be rendered in this level.
@@ -67,7 +66,7 @@ Each entity is defined by an object with two attributes: `name` (name of the ent
 
 ## Components
 
-Each component you attach to an entity gives some features to it. For now we're just supporting a small set of components: `BoxCollider`, `SpriteRenderer`, `SpriteSheetRenderer` and `Transform`.
+Each component you attach to an entity gives some features to it. For now we're just supporting a small set of components: `BoxCollider`, `SpriteRenderer`, and `Transform`.
 
 We're open to discussing with the community which components we all would like to see in the future. If we add additional components, we'll update this document to include them.
 
@@ -94,12 +93,6 @@ The attributes available are:
   "blend_mode" : "Multiply" // optional, defaults to "AlphaBlend"
 }
 ```
-
-
-### SpriteSheetRenderer
-
-TODO: ???
-
 
 ### BoxCollider
 In order to avoid the player to walk on top of things we can use colliders. A `BoxCollider` is a bounding box with a `center` and `size`.
