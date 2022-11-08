@@ -111,9 +111,9 @@ It has a `center` (`x` and `y` are pixel coordinates) and a `size` (with `width`
 ```json
 {
   "type": "Transform",
-  "location": [ 0.0, 0.0 ],
-  "rotation": [ 90.0, 90.0, 90.0 ], // optional, defaults to (0,0,0)
-  "scale": [ 1.0, 1.0 ] // optional, defaults to (1,1)
+  "location": { "x" : 0, "y": 0 },
+  "rotation": { "x" : 90.0, "y": 90.0, "z" : 90.0 }, // optional, defaults to (0,0,0)
+  "scale": { "x" : 1.0, "y": 1.0 } // optional, defaults to (1,1)
 }
 ```
 
@@ -127,7 +127,7 @@ The attributes are `level` (the name of the level), and `spawn_point` (the `x`,`
 {
   "type": "LevelChange",
   "level": "MyLevel",
-  "spawn_point" : { "x": 0, "y": 0}
+  "spawn_point" : { "x": 0, "y": 0 }
 }
 ```
 
