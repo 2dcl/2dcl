@@ -24,7 +24,7 @@ where
 
         if let Access(Close(_)) = kind {
           for path in paths {
-            if path.ends_with("scene.json") {
+            if path.ends_with("scene.json") || path.extension().unwrap().to_string_lossy() == "png"  {
               scene_compiler::compile("../", ".").unwrap();
             }
           }          

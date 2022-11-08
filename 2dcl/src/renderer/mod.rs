@@ -23,7 +23,7 @@ use scene_loader::SceneLoaderPlugin;
 use bevy::render::render_resource::SamplerDescriptor;
 use preview::PreviewPlugin;
 
-use self::preview::PreviewPath;
+
 
 
 

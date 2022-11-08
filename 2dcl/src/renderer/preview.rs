@@ -2,7 +2,7 @@
 use crate::renderer::scene_loader::SceneComponent;
 use std::{path::PathBuf};
 
-use bevy::{prelude::*, time::TimeSender};
+use bevy::prelude::*;
 
 
 use dcl_common::Parcel;
@@ -20,7 +20,7 @@ use bevy::{
     utils::BoxedFuture,
 };
 use serde::Deserialize;
-use std::time::{Duration, SystemTime};
+use std::time::SystemTime;
 
 #[derive(Debug, Deserialize, TypeUuid)]
 #[uuid = "1b06c21a-5ecd-11ed-9b6a-0242ac120002"]
@@ -53,11 +53,6 @@ impl AssetLoader for SceneAssetLoader {
     }
 }
 
-pub struct PreviewPath
-{
-    pub path: PathBuf
-}
-
 pub struct PreviewPlugin;
 
 pub struct SceneHandler(Handle<SceneAsset>);
@@ -74,8 +69,6 @@ impl Plugin for PreviewPlugin{
 
 fn setup(mut commands:  Commands,
     asset_server: Res<AssetServer>,
-    scene_assets: Res<Assets<SceneAsset>>,
-    mut texture_atlases: ResMut<Assets<TextureAtlas>>,
 )
 {
     asset_server.watch_for_changes().unwrap();
@@ -173,7 +166,7 @@ fn handle_tasks(
 
     for (entity, mut task) in &mut tasks_sprite_loading {
         if let Some(sprite) = future::block_on(future::poll_once(&mut task.0)) {
-    
+            
             commands.entity(entity).insert(sprite);
             commands.entity(entity).remove::<SpriteLoading>();
         }

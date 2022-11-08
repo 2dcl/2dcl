@@ -54,7 +54,7 @@ pub struct DownloadingScene {
 #[derive(Debug, Component, Clone, Inspectable)]
 pub struct CircleCollider {
     pub center: Vec2,
-    pub raius: i32,
+    pub radius: i32,
 }
 
 #[derive(Debug, Component, Clone, Inspectable)]
@@ -678,7 +678,7 @@ pub fn spawn_scene(
     .insert(Transform::from_translation(scene_location))
     .insert(SceneComponent{name:scene.name.clone(),parcels:scene.parcels, timestamp})
     .id();
-
+    
     for entity in  scene.entities.iter()
     {
         let mut transform = Transform::identity();
@@ -734,12 +734,14 @@ pub fn spawn_scene(
                     texture
                 }); 
                 commands.entity(spawned_entity).insert(TextureLoading(task_texture_load));
-                
-                let sprite_path = sprite_renderer.sprite.clone();
-
+  
               
                 let renderer  = (*sprite_renderer).clone();
+                let mut sprite_path = std::fs::canonicalize(PathBuf::from_str(".").unwrap()).unwrap();
+                sprite_path.push("assets");
+                sprite_path.push(&sprite_renderer.sprite);
                 let task_sprite_load = thread_pool.spawn(async move {
+
                     if let Ok(mut reader) = ImageReader::open(sprite_path)
                     {
                         reader.set_format(ImageFormat::Png);
@@ -763,7 +765,7 @@ pub fn spawn_scene(
                                 };
                                 return sprite;
                             }
-                        } 
+                        }
                     }
                     Sprite::default()
                 }); 
@@ -771,15 +773,17 @@ pub fn spawn_scene(
 
             }
 
-        //     if let EntityComponent::BoxCollider(collider) = component
-        //     {      
-        //         commands.entity(spawned_entity).insert(collider.clone());
-        //     }
+            if let Some(collider) = component.as_any().downcast_ref::<dcl2d_ecs_v1::components::BoxCollider>() {
 
-        //     if let EntityComponent::CircleCollider(collider) = component
-        //     {
-        //         commands.entity(spawned_entity).insert(collider.clone());
-        //     }
+                let box_collider= BoxCollider{center:Vec2::new(collider.center[0] as f32,collider.center[1] as f32),size:Vec2::new(collider.size[0]as f32,collider.size[1] as f32)};
+                commands.entity(spawned_entity).insert(box_collider);
+            }
+
+             if let Some(collider) = component.as_any().downcast_ref::<dcl2d_ecs_v1::components::CircleCollider>() {
+                      
+                let box_collider= CircleCollider{center:Vec2::new(collider.center[0] as f32,collider.center[1] as f32),radius:collider.radius};
+                commands.entity(spawned_entity).insert(box_collider);
+            }
 
         //     //TODO: Test performance, might do async
         //     if let EntityComponent::AsepriteAnimation(aseprite_animation) = component
