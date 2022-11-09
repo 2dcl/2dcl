@@ -66,7 +66,7 @@ Each entity is defined by an object with two attributes: `name` (name of the ent
 
 ## Components
 
-Each component you attach to an entity gives some features to it. For now we're just supporting a small set of components: `BoxCollider`, `SpriteRenderer`, and `Transform`.
+Each component you attach to an entity gives some features to it. For now we're just supporting a small set of components.
 
 We're open to discussing with the community which components we all would like to see in the future. If we add additional components, we'll update this document to include them.
 
@@ -104,6 +104,17 @@ It has a `center` (`x` and `y` are pixel coordinates) and a `size` (with `width`
   "type": "BoxCollider",
   "center": { "x" : 1, "y" : 0 }, // optional, defaults to 0,0
   "size": { "width" : 1, "height" : 2 } // optional, defaults to 1,1
+}
+```
+
+### CircleCollider
+Another type of collider is the CircleCollider, it has a `center` and a `radius` (in pixels) to define the boundaries where it collides.
+
+```json
+{
+  "type": "CircleCollider",
+  "center": { "x" : 1, "y" : 0 }, // optional, defaults to 0,0
+  "radius": 2 // optional, defaults to 1
 }
 ```
 

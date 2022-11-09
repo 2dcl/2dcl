@@ -102,27 +102,3 @@ where T: AsRef<Path>, U: AsRef<Path>
     Ok(())
 
 }
-
-
-
-#[cfg(test)]
-mod tests {
-    
-    use super::*;
-    use tempdir::TempDir;
-
-    #[test]
-    fn test_no_parcel_error()
-    {
-        todo!("Fix This Test")
-        // let json_file_path = &("./fixtures/no_parcel/scene.json");
-        // let build_path = TempDir::new("build-test").unwrap();
-
-        // let result = compile(json_file_path, build_path.path()).unwrap_err();
-
-        // assert_eq!(result.to_string(),SceneCompileError::NoParcels.to_string());
-      
-    }
-
-}
-   
