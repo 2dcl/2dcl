@@ -1,3 +1,5 @@
+use crate::Vec2;
+use crate::Size;
 use core::any::Any;
 use serde::{Serialize, Deserialize};
 
@@ -5,8 +7,8 @@ use crate::Component;
 
 #[derive(Deserialize, Serialize, Debug, Clone)]
 pub struct BoxCollider {
-    pub center: [i16; 2],
-    pub size: [i16; 2],
+    pub center: Vec2<i32>,
+    pub size: Size,
 }
 
 #[typetag::serde]
@@ -24,12 +26,6 @@ mod test {
 
     #[test]
     fn can_be_serialized_from_json() {
-        let json = include_str!("../../fixtures/components/box_collider.json");
-        let result = json_to_mp::<&str, BoxCollider>(json).expect("json to mp failed");
-        let expected = load_mp_fixture("fixtures/components/box_collider.mp").unwrap();
-      
-        assert_eq!(result, expected);
-
-
+      can_go_from_json_to_mp::<BoxCollider, _>("components/box_collider");
     }
 }

@@ -51,7 +51,7 @@ pub struct DownloadingScene {
 #[derive(Debug, Component, Clone, Inspectable)]
 pub struct CircleCollider {
     pub center: Vec2,
-    pub radius: i32,
+    pub radius: u32,
 }
 
 #[derive(Debug, Component, Clone, Inspectable)]
@@ -90,14 +90,14 @@ pub fn check_scenes_to_download(
 )
 {
 
-    for(player,mut player_transform) in player_query.iter()
+    for(_player,player_transform) in player_query.iter()
     {
 
         let player_parcel = world_location_to_parcel(player_transform.translation());
       
         let mut parcels_to_render = get_all_parcels_around(&player_parcel, MIN_RENDERING_DISTANCE_IN_PARCELS);
         
-        let mut parcels_to_keep = get_all_parcels_around(&player_parcel, MAX_RENDERING_DISTANCE_IN_PARCELS);
+        let parcels_to_keep = get_all_parcels_around(&player_parcel, MAX_RENDERING_DISTANCE_IN_PARCELS);
        
         for(entity, scene, _player) in scene_query.iter()
         {       
@@ -683,15 +683,15 @@ pub fn spawn_scene(
         for component in entity.components.iter()
         {
             if let Some(source_transform) = component.as_any().downcast_ref::<dcl2d_ecs_v1::components::Transform>() {
-                let location = Vec2::new(source_transform.location[0], source_transform.location[1]);
-                let scale = Vec2::new(source_transform.scale[0], source_transform.scale[1]);
+                let location = Vec2::new(source_transform.location.x as f32, source_transform.location.y as f32);
+                let scale = Vec2::new(source_transform.scale.x, source_transform.scale.y);
 
                 transform.translation = transform.translation + location.extend(location.y * -1.0);
                 transform.rotation = Quat::from_euler(
                     EulerRot::XYZ,
-                    source_transform.rotation[0].to_radians(),
-                    source_transform.rotation[1].to_radians(),
-                    source_transform.rotation[2].to_radians());
+                    source_transform.rotation.x.to_radians(),
+                    source_transform.rotation.y.to_radians(),
+                    source_transform.rotation.z.to_radians());
 
                 transform.scale = scale.extend(1.0);
             };
@@ -751,13 +751,14 @@ pub fn spawn_scene(
                                 let columns = pixels.len()/rows;
                                 let sprite = Sprite{
                                     color: Color::Rgba { 
-                                        red: renderer.color[0], 
-                                        green: renderer.color[1], 
-                                        blue: renderer.color[2], 
-                                        alpha:  renderer.color[3]},
-                                        anchor: entity_anchor_to_anchor(Vec2{x:columns as f32, y:rows as f32},renderer.anchor.clone()),
-                                        flip_x: renderer.flip_x,
-                                        flip_y: renderer.flip_y,
+                                        red: renderer.color.r, 
+                                        green: renderer.color.g, 
+                                        blue: renderer.color.b, 
+                                        alpha:  renderer.color.a
+                                    },
+                                    anchor: entity_anchor_to_anchor(Vec2{x:columns as f32, y:rows as f32},renderer.anchor.clone()),
+                                    flip_x: renderer.flip.x,
+                                    flip_y: renderer.flip.y,
                                     ..default()
                                 };
                                 return sprite;
@@ -772,14 +773,13 @@ pub fn spawn_scene(
 
             if let Some(collider) = component.as_any().downcast_ref::<dcl2d_ecs_v1::components::BoxCollider>() {
 
-                let box_collider= BoxCollider{center:Vec2::new(collider.center[0] as f32,collider.center[1] as f32),size:Vec2::new(collider.size[0]as f32,collider.size[1] as f32)};
+                let box_collider= BoxCollider{center:Vec2::new(collider.center.x as f32, collider.center.y as f32),size:Vec2::new(collider.size.width as f32, collider.size.height as f32)};
                 commands.entity(spawned_entity).insert(box_collider);
             }
 
-             if let Some(collider) = component.as_any().downcast_ref::<dcl2d_ecs_v1::components::CircleCollider>() {
-                      
-                let box_collider= CircleCollider{center:Vec2::new(collider.center[0] as f32,collider.center[1] as f32),radius:collider.radius};
-                commands.entity(spawned_entity).insert(box_collider);
+             if let Some(collider) = component.as_any().downcast_ref::<dcl2d_ecs_v1::components::CircleCollider>() {                      
+                let circle_collider = CircleCollider{center:Vec2::new(collider.center.x as f32,collider.center.y as f32),radius:collider.radius};
+                commands.entity(spawned_entity).insert(circle_collider);
             }
 
         //     //TODO: Test performance, might do async
@@ -881,7 +881,8 @@ fn entity_anchor_to_anchor(size: Vec2, anchor: dcl2d_ecs_v1::Anchor) -> Anchor
         // dcl2d_ecs_v1::Anchor::Custom(vec) => return Anchor::Custom(Vec2::new(vec.0, vec.1)/size),
         dcl2d_ecs_v1::Anchor::TopCenter => return Anchor::TopCenter,
         dcl2d_ecs_v1::Anchor::TopLeft => return Anchor::TopLeft,
-        dcl2d_ecs_v1::Anchor::TopRight => return Anchor::TopRight
+        dcl2d_ecs_v1::Anchor::TopRight => return Anchor::TopRight,
+        dcl2d_ecs_v1::Anchor::Custom(_) => todo!()
     }
 }
 
@@ -901,5 +902,6 @@ fn  get_fixed_translation_by_anchor(size: Vec2, translation: Vec3, anchor: dcl2d
         dcl2d_ecs_v1::Anchor::TopCenter => return Vec3{x:translation.x, y:translation.y - size.y/2.0, z:translation.z},
         dcl2d_ecs_v1::Anchor::TopLeft => return Vec3{x:translation.x + size.x/2.0, y:translation.y -size.y/2.0, z:translation.z},
         dcl2d_ecs_v1::Anchor::TopRight => return  Vec3{x:translation.x - size.x/2.0, y:translation.y -size.y/2.0, z:translation.z},
+        dcl2d_ecs_v1::Anchor::Custom(_) => todo!(),
     }
 }

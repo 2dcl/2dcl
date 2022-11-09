@@ -17,14 +17,42 @@ where
   Ok(result)
 }
 
-pub fn load_mp_fixture<U>(path: U) -> Result<Vec<u8>> 
+pub fn load_json_fixture<U>(fixture: U) -> Result<String> 
 where
   U: AsRef<str>,
 {
-  let mut f = File::open(path.as_ref()).expect("no file found");
-  let metadata = fs::metadata(path.as_ref()).expect("unable to read metadata");
+  let path = format!("fixtures/{}.json", fixture.as_ref());
+  let mut f = File::open(&path).expect("no file found");
+  let metadata = fs::metadata(&path).expect("unable to read metadata");
+  let mut buffer = vec![0; metadata.len() as usize];
+  f.read(&mut buffer).expect("buffer overflow");
+
+  Ok(String::from_utf8(buffer).unwrap())
+
+}
+
+pub fn load_mp_fixture<U>(fixture: U) -> Result<Vec<u8>> 
+where
+  U: AsRef<str>,
+{
+  let path = format!("fixtures/{}.mp", fixture.as_ref());
+  let mut f = File::open(&path).expect("no file found");
+  let metadata = fs::metadata(&path).expect("unable to read metadata");
   let mut buffer = vec![0; metadata.len() as usize];
   f.read(&mut buffer).expect("buffer overflow");
 
   Ok(buffer)
+}
+
+pub fn can_go_from_json_to_mp<T, U> (fixture: U)
+  where T: for<'a> Deserialize<'a> + Serialize,
+        U: AsRef<str>,
+{
+  let fixture = fixture.as_ref();
+
+  let json = load_json_fixture(fixture).unwrap();
+  let result = json_to_mp::<&str, T>(&json).expect("json to mp failed");
+  let expected = load_mp_fixture(fixture).unwrap();
+
+  assert_eq!(result, expected);
 }

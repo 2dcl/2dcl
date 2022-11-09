@@ -16,10 +16,6 @@ mod test {
 
     #[test]
     fn can_be_serialized_from_json() {
-        let json = include_str!("../fixtures/entity.json");
-        let result = json_to_mp::<&str, Entity>(json).expect("json to mp failed");
-        let expected = load_mp_fixture("fixtures/entity.mp").unwrap();
-        
-        assert_eq!(result, expected);
+      can_go_from_json_to_mp::<Entity, _>("entity");
     }
 }

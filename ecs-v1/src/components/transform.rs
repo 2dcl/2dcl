@@ -1,12 +1,13 @@
 use core::any::Any;
 use serde::{Serialize, Deserialize};
-use crate::Component;
+
+use crate::{Component, Vec2, Vec3};
 
 #[derive(Deserialize, Serialize, Debug, Clone)]
 pub struct Transform {
-    pub location: [f32; 2],
-    pub rotation: [f32; 3],
-    pub scale: [f32; 2],
+    pub location: Vec2<i32>,
+    pub rotation: Vec3<f32>,
+    pub scale: Vec2<f32>,
 }
 
 #[typetag::serde]
@@ -24,10 +25,6 @@ mod test {
 
     #[test]
     fn can_be_serialized_from_json() {
-        let json = include_str!("../../fixtures/components/transform.json");
-        let result = json_to_mp::<&str, Transform>(json).expect("json to mp failed");
-        let expected = load_mp_fixture("fixtures/components/transform.mp").unwrap();
-        
-        assert_eq!(result, expected);
+      can_go_from_json_to_mp::<Transform, _>("components/transform");
     }
 }

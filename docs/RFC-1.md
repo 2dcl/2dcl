@@ -113,7 +113,7 @@ It has a `center` (`x` and `y` are pixel coordinates) and a `size` (with `width`
   "type": "Transform",
   "location": { "x" : 0, "y": 0 },
   "rotation": { "x" : 90.0, "y": 90.0, "z" : 90.0 }, // optional, defaults to (0,0,0)
-  "scale": { "x" : 1.0, "y": 1.0 } // optional, defaults to (1,1)
+  "scale": { "x" : 1.0, "y": 1.0 } // optional, defaults to (1.0,1.0)
 }
 ```
 
@@ -143,7 +143,7 @@ For rotation and z-ordering purposes, we can set the anchor of a sprite. Valid v
  - `TopLeft`,
  - `TopCenter`,
  - `TopRight`,
- - `{ "x": 0, "y: 0}` for custom anchor, `x` and `y` are pixels using the center of the asset as the origin coordinate.
+ - `{ "Custom" : { "x": 0, "y: 0} }` for custom anchor, `x` and `y` are pixels using the center of the asset as the origin coordinate.
 
 ### BlendModes
 
@@ -153,7 +153,7 @@ The options are:
  - `Add`: additive, the existing pixel is added to the new one.
  - `AlphaBlend`: the pixels are added using the alpha channel to reduce the opacity.
  - `Multiply`: bot pixels are multiplied.
- - `{ "color": { "src": "One", "dst": "One" }, "alpha": { "src": "One", "dst": "One" } }`: This is a custom blend state for advanced users. You can use this to set custom blend factors.
+ - `{ "Custom" : { "color": { "src": "One", "dst": "One" }, "alpha": { "src": "One", "dst": "One" } } }`: This is a custom blend state for advanced users. You can use this to set custom blend factors.
 
  Options for custom blend factors:
   - Zero,
