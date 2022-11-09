@@ -1,0 +1,4 @@
+pub const MIN_RENDERING_DISTANCE_IN_PARCELS: i16 = 3;
+pub const MAX_RENDERING_DISTANCE_IN_PARCELS: i16 = 6;
+pub const PARCEL_SIZE_X: f32 = 500.0;
+pub const PARCEL_SIZE_Y: f32 = 500.0;

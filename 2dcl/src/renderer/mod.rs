@@ -14,6 +14,7 @@ mod player_sprite_maker;
 pub mod scene_loader;
 // mod psd_reader;
 mod preview;
+pub mod config;
 
 use player::PlayerPlugin;
 use animations::AnimationsPlugin;

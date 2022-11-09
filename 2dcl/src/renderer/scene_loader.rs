@@ -28,13 +28,10 @@ use super::player::Player;
 use futures_lite::future;
 use rmp_serde::*;
 
+use crate::renderer::config::*;
+
 pub struct SceneLoaderPlugin;
 
-
-pub const MIN_RENDERING_DISTANCE_IN_PARCELS: i16 = 3;
-pub const MAX_RENDERING_DISTANCE_IN_PARCELS: i16 = 6;
-pub const PARCEL_SIZE_X: f32 = 300.0;
-pub const PARCEL_SIZE_Y: f32 = 300.0;
 
 #[derive(Component)]
 pub struct TextureLoading(pub Task<Handle<Image>>);
@@ -98,9 +95,9 @@ pub fn check_scenes_to_download(
 
         let player_parcel = world_location_to_parcel(player_transform.translation());
       
-        let mut parcels_to_render = get_all_parcels_around(&player_parcel,MIN_RENDERING_DISTANCE_IN_PARCELS);
+        let mut parcels_to_render = get_all_parcels_around(&player_parcel, MIN_RENDERING_DISTANCE_IN_PARCELS);
         
-        let mut parcels_to_keep = get_all_parcels_around(&player_parcel,MAX_RENDERING_DISTANCE_IN_PARCELS);
+        let mut parcels_to_keep = get_all_parcels_around(&player_parcel, MAX_RENDERING_DISTANCE_IN_PARCELS);
        
         for(entity, scene, _player) in scene_query.iter()
         {       
