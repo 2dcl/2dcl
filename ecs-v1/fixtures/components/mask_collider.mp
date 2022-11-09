@@ -1,1 +1,1 @@
-“«a_pixel.png¡R¬BottomCenter
+”«a_pixel.png§Trigger¡R¬BottomCenter

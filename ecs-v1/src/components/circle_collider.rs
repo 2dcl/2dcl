@@ -1,3 +1,4 @@
+use crate::collision_type::CollisionType;
 use crate::Vec2;
 use core::any::Any;
 use serde::{Serialize, Deserialize};
@@ -5,6 +6,9 @@ use crate::Component;
 
 #[derive(Deserialize, Serialize, Debug, Clone, PartialEq)]
 pub struct CircleCollider {
+    #[serde(default)]
+    pub collision_type: CollisionType,
+    #[serde(default)]
     pub center: Vec2<i32>,
     #[serde(default = "default_radius")]
     pub radius: u32,
@@ -36,6 +40,7 @@ mod test {
         let json = load_json_fixture("components/circle_collider_optional").unwrap();
         let result : CircleCollider = serde_json::from_str(&json).unwrap();
         assert_eq!(result, CircleCollider {
+            collision_type: CollisionType::Solid,
             center: Vec2 { x: 0, y: 0 },
             radius: 1
         })

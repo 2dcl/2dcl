@@ -6,6 +6,7 @@ mod scene;
 mod vec;
 
 pub mod blend_mode;
+pub mod collision_type;
 pub mod color;
 pub mod components;
 pub mod test_utils;

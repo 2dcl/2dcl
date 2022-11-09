@@ -110,9 +110,12 @@ In order to avoid the player to walk on top of things we can use colliders. A `B
 
 It has a `center` (`x` and `y` are pixel coordinates) and a `size` (with `width` and `height` in pixels).
 
+You can make this collider `Solid` (prevent the player from moving across it), or `Trigger` (player can walk across it) by setting the `collision_type`.
+
 ```json
 {
   "type": "BoxCollider",
+  "collision_type" : "Trigger", // optional, defaults to Solid
   "center": { "x" : 1, "y" : 0 }, // optional, defaults to 0,0
   "size": { "width" : 1, "height" : 2 } // optional, defaults to 1,1
 }
@@ -121,9 +124,12 @@ It has a `center` (`x` and `y` are pixel coordinates) and a `size` (with `width`
 ### CircleCollider
 The `CircleCollider`, has a `center` and a `radius` (in pixels) to define the boundaries where it collides.
 
+You can make this collider `Solid` (prevent the player from moving across it), or `Trigger` (player can walk across it) by setting the `collision_type`.
+
 ```json
 {
   "type": "CircleCollider",
+  "collision_type" : "Trigger", // optional, defaults to Solid
   "center": { "x" : 1, "y" : 0 }, // optional, defaults to 0,0
   "radius": 2 // optional, defaults to 1
 }
@@ -133,9 +139,12 @@ The `CircleCollider`, has a `center` and a `radius` (in pixels) to define the bo
 The `MaskCollider` is used to create a pixel perfect collision using one channel of an image. You can usually just use the `alpha` channel of a sprite for this.
 You can set the `sprite` to be used, which color `channel`, and the `anchor`. Characters will not collide with pixels set to 0, but will collide to pixels set to anything else.
 
+You can make this collider `Solid` (prevent the player from moving across it), or `Trigger` (player can walk across it) by setting the `collision_type`.
+
 ```json
 {
   "type": "MaskCollider",
+  "collision_type" : "Trigger", // optional, defaults to Solid
   "sprite": "a_pixel.png",
   "channel": "R", // Optional, defaults to 'A' (for the alpha channel)
   "anchor": "Center" // Optional, defaults to "BottomCenter"

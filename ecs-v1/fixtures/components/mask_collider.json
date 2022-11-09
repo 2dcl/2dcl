@@ -1,5 +1,6 @@
 {
   "type": "MaskCollider",
+  "collision_type" : "Trigger",
   "sprite": "a_pixel.png",
   "channel": "R",
   "anchor": "BottomCenter"

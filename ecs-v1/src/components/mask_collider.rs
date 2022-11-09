@@ -1,3 +1,4 @@
+use crate::collision_type::CollisionType;
 use core::any::Any;
 use std::path::Path;
 use std::io::Error;
@@ -9,6 +10,8 @@ use crate::color::Channel;
 #[derive(Deserialize, Serialize, Debug, PartialEq)]
 pub struct MaskCollider {
     pub sprite: String,
+    #[serde(default)]
+    pub collision_type: CollisionType,
     #[serde(default)]
     pub channel: Channel,
     #[serde(default)]
@@ -50,6 +53,7 @@ mod test {
         let json = load_json_fixture("components/mask_collider_optional").unwrap();
         let result : MaskCollider = serde_json::from_str(&json).unwrap();
         assert_eq!(result, MaskCollider {
+            collision_type: CollisionType::Solid,
             sprite: "a_pixel.png".to_string(),
             channel: Channel::A,
             anchor: Anchor::Center
