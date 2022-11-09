@@ -1,8 +1,9 @@
 use crate::Vec2;
 use serde::{Serialize, Deserialize};
 
-#[derive(Deserialize, Serialize, Debug, Clone)]
+#[derive(Deserialize, Serialize, Debug, Clone, PartialEq, Default)]
 pub enum Anchor{
+    #[default]
     Center,
     BottomLeft,
     BottomCenter,

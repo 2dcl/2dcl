@@ -3,12 +3,16 @@ use core::any::Any;
 use serde::{Serialize, Deserialize};
 use crate::{Anchor, Component, color::RGBA};
 
-#[derive(Deserialize, Serialize, Debug, Clone)]
+#[derive(Deserialize, Serialize, Debug, Clone, PartialEq)]
 pub struct SpriteRenderer {
     pub sprite: String,
+    #[serde(default)]
     pub color: RGBA,
+    #[serde(default)]
     pub layer: i32,
+    #[serde(default)]
     pub flip: Vec2<bool>,
+    #[serde(default)]
     pub anchor: Anchor
 }
 
@@ -45,5 +49,18 @@ mod test {
     #[test]
     fn can_be_serialized_from_json() {
       can_go_from_json_to_mp::<SpriteRenderer, _>("components/sprite_renderer");
+    }
+
+    #[test]
+    fn supports_optional_values_with_defaults() {
+        let json = load_json_fixture("components/sprite_renderer_optional").unwrap();
+        let result : SpriteRenderer = serde_json::from_str(&json).unwrap();
+        assert_eq!(result, SpriteRenderer {
+            sprite: "a_pixel.png".to_string(),
+            color: RGBA { r: 1.0, g: 1.0, b: 1.0, a: 1.0 },
+            layer: 0,
+            flip: Vec2 { x: false, y: false },
+            anchor: Anchor::Center
+        })
     }
 }
