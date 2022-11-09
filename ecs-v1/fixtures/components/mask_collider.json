@@ -1,4 +1,5 @@
 {
+  "type": "MaskCollider",
   "sprite": "a_pixel.png",
   "channel": "R",
   "anchor": "BottomCenter"

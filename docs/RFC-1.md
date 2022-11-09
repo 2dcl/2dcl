@@ -70,6 +70,17 @@ Each component you attach to an entity gives some features to it. For now we're 
 
 We're open to discussing with the community which components we all would like to see in the future. If we add additional components, we'll update this document to include them.
 
+### Transform
+The `Transform` component lets you set the `location` (in pixels), `rotation` (in degrees) and `scale` (as a multiplicative factor) of your entity.
+
+```json
+{
+  "type": "Transform",
+  "location": { "x" : 0, "y": 0 },
+  "rotation": { "x" : 90.0, "y": 90.0, "z" : 90.0 }, // optional, defaults to (0,0,0)
+  "scale": { "x" : 1.0, "y": 1.0 } // optional, defaults to (1.0,1.0)
+}
+```
 
 ### SpriteRenderer
 
@@ -108,7 +119,7 @@ It has a `center` (`x` and `y` are pixel coordinates) and a `size` (with `width`
 ```
 
 ### CircleCollider
-Another type of collider is the CircleCollider, it has a `center` and a `radius` (in pixels) to define the boundaries where it collides.
+The `CircleCollider`, has a `center` and a `radius` (in pixels) to define the boundaries where it collides.
 
 ```json
 {
@@ -118,15 +129,19 @@ Another type of collider is the CircleCollider, it has a `center` and a `radius`
 }
 ```
 
-### Transform
+### MaskCollider
+The `MaskCollider` is used to create a pixel perfect collision using one channel of an image. You can usually just use the `alpha` channel of a sprite for this.
+You can set the `sprite` to be used, which color `channel`, and the `anchor`. Characters will not collide with pixels set to 0, but will collide to pixels set to anything else.
+
 ```json
 {
-  "type": "Transform",
-  "location": { "x" : 0, "y": 0 },
-  "rotation": { "x" : 90.0, "y": 90.0, "z" : 90.0 }, // optional, defaults to (0,0,0)
-  "scale": { "x" : 1.0, "y": 1.0 } // optional, defaults to (1.0,1.0)
+  "type": "MaskCollider",
+  "sprite": "a_pixel.png",
+  "channel": "R", // Optional, defaults to 'A' (for the alpha channel)
+  "anchor": "Center" // Optional, defaults to "BottomCenter"
 }
 ```
+
 
 ### LevelChange
 
