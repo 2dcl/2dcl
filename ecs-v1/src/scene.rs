@@ -13,8 +13,7 @@ pub struct Scene {
 
 #[cfg(test)]
 mod test {
-    use std::{fs::File, io::Write};
-
+  
     use crate::test_utils::*;
     use super::*;
 

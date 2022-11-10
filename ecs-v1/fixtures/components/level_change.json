@@ -1,0 +1,5 @@
+{
+  "type": "LevelChange",
+  "level" : "Level_1",
+  "spawn_point": { "x" : 0, "y" : 0 }
+}
