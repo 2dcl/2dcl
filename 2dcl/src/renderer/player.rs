@@ -1,5 +1,6 @@
 use bevy::{prelude::*, sprite::{collide_aabb::collide, Anchor}};
 use bevy_inspector_egui::Inspectable;
+use dcl2d_ecs_v1::collision_type::CollisionType;
 use super::{scene_loader::BoxCollider, collision::*, animations::*};
 
 pub struct PlayerPlugin;
@@ -151,12 +152,15 @@ fn collision_check(
     target_player_pos: Vec3,
     target_player_collider: Vec2,
     box_collision_query: &Query<(&GlobalTransform, &BoxCollider, Without<Player>)>,
+    //box_collision_query: &Query<(&GlobalTransform, &BoxCollider)>,
     collision_map: CollisionMap
 ) -> bool
 {
     //box colliders
     for (wall,collider, _player) in box_collision_query.iter()
     {
+      
+      
         let collision = collide(
             Vec3{x:target_player_pos.x,y:target_player_pos.y+target_player_collider.y/2.0,z:0.0},
             target_player_collider,
@@ -165,9 +169,17 @@ fn collision_check(
         );
 
         if collision.is_some()
-        {
-            return false;
+        { if collider.collision_type == CollisionType::Solid
+            {
+              
+              return false;
+            }
+            else
+            {
+            
+            }
         }
+      
     }
     
     for collision_location in collision_map.collision_locations

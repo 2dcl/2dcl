@@ -9,7 +9,8 @@ pub struct Level {
    #[serde(skip)]
    pub id: usize,
    pub name: String,
-   pub dimensions: Option<Vec2<u16>>,
+   #[serde(default)]
+   pub dimensions: Vec2<u16>,
    #[serde(default)]
    pub player_layer: i16,
    pub entities: Vec<Entity>,

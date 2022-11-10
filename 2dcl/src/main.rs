@@ -23,6 +23,13 @@ enum Action {
     source_path: std::path::PathBuf,
     #[clap(default_value="./build/")]
     destination_path: std::path::PathBuf
+   },
+   Build
+   {
+    #[clap(default_value="./")]
+    source_path: std::path::PathBuf,
+    #[clap(default_value="./build/")]
+    destination_path: std::path::PathBuf
    }
 }
 
@@ -36,6 +43,9 @@ fn main() -> Result<()> {
         previewer::preview(source_path, destination_path);
       }
     ,
+    Some(Action::Build {source_path, destination_path}) => {
+      scene_compiler::compile(source_path, destination_path);
+    }
     None =>
     {
       renderer::start();

@@ -22,7 +22,7 @@ impl Plugin for DebugPlugin{
             app.add_plugin(WorldInspectorPlugin::new())
             .register_inspectable::<CollisionMap>()
             // .register_inspectable::<CircleCollider>()
-            .register_inspectable::<BoxCollider>()
+           // .register_inspectable::<BoxCollider>()
             // .register_inspectable::<AlphaCollider>()
             .register_inspectable::<Player>();
         }

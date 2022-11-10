@@ -9,6 +9,7 @@ use bevy::tasks::Task;
 
 use catalyst::entity_files::ContentFile;
 use catalyst::{ContentClient, Server};
+use dcl2d_ecs_v1::collision_type::CollisionType;
 use dcl_common::{Parcel};
 use bevy::sprite::Anchor;
 use serde::{Deserialize, Serialize};
@@ -54,10 +55,17 @@ pub struct CircleCollider {
     pub radius: u32,
 }
 
-#[derive(Debug, Component, Clone, Inspectable)]
+#[derive(Debug, Component, Clone)]
 pub struct BoxCollider {
     pub center: Vec2,
     pub size: Vec2,
+    pub collision_type: CollisionType,
+}
+
+#[derive(Debug, Component, Clone)]
+pub struct LevelChange {
+  pub level: LevelComponent,
+  pub spawn_point: Vec2,
 }
 
 #[derive(Debug, Component)]
@@ -68,12 +76,13 @@ pub struct SceneComponent
     pub timestamp: SystemTime
 }
 
-#[derive(Debug, Component)]
+#[derive(Debug, Component, Clone)]
 pub struct LevelComponent
 {
     pub name: String,
     pub timestamp: SystemTime
 }
+
 
 
 impl Plugin for SceneLoaderPlugin
@@ -811,7 +820,11 @@ T: AsRef<Path>
 
             if let Some(collider) = component.as_any().downcast_ref::<dcl2d_ecs_v1::components::BoxCollider>() {
 
-                let box_collider= BoxCollider{center:Vec2::new(collider.center.x as f32, collider.center.y as f32),size:Vec2::new(collider.size.width as f32, collider.size.height as f32)};
+                let box_collider= BoxCollider{
+                  center:Vec2::new(collider.center.x as f32, collider.center.y as f32),
+                  size:Vec2::new(collider.size.width as f32, collider.size.height as f32),
+                  collision_type: collider.collision_type.clone()
+                };
                 commands.entity(spawned_entity).insert(box_collider);
             }
 
@@ -1055,7 +1068,11 @@ pub fn spawn_scene(
 
             if let Some(collider) = component.as_any().downcast_ref::<dcl2d_ecs_v1::components::BoxCollider>() {
 
-                let box_collider= BoxCollider{center:Vec2::new(collider.center.x as f32, collider.center.y as f32),size:Vec2::new(collider.size.width as f32, collider.size.height as f32)};
+                let box_collider= BoxCollider{
+                  center:Vec2::new(collider.center.x as f32, collider.center.y as f32),
+                  size:Vec2::new(collider.size.width as f32, collider.size.height as f32),
+                  collision_type: collider.collision_type.clone()
+                };
                 commands.entity(spawned_entity).insert(box_collider);
             }
 
