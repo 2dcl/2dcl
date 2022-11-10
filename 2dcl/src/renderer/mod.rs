@@ -23,6 +23,7 @@ use collision::CollisionPlugin;
 use scene_loader::SceneLoaderPlugin;
 use bevy::render::render_resource::SamplerDescriptor;
 use preview::PreviewPlugin;
+use console::MyConsolePlugin;
 
 
 
@@ -41,9 +42,9 @@ pub fn start() {
         .add_plugin(SceneLoaderPlugin)
         .add_plugin(PlayerPlugin)
         //.add_plugin(RenderToTexturePlugin)
-        .add_plugin(DebugPlugin)
+        //.add_plugin(DebugPlugin)
         .add_plugin(CollisionPlugin)
-        //.add_plugin(MyConsolePlugin)
+        .add_plugin(MyConsolePlugin)
         .run();
        
 }
