@@ -36,10 +36,14 @@ fn spawn_player(
     mut texture_atlases: ResMut<Assets<TextureAtlas>>,
 )
 {   
-    let mut player_json_path = std::env::current_exe().unwrap().parent().unwrap().to_path_buf();
-    player_json_path.push("assets/player.json");
 
-    let animator = get_animator(player_json_path, &assets,  &mut texture_atlases).unwrap();
+  let mut current_path = std::env::current_exe().unwrap();
+  current_path.pop();
+  current_path.push("assets");
+  current_path.push("player.json");
+
+    let animator = get_animator(current_path, &assets,  &mut texture_atlases).unwrap();
+   
     let mut sprite = TextureAtlasSprite::new(0);
     sprite.anchor = Anchor::BottomCenter;
 
@@ -176,7 +180,7 @@ fn collision_check(
             }
             else
             {
-            
+              
             }
         }
       
@@ -201,6 +205,5 @@ fn collision_check(
     }
 
     return true;
-
+    
 }
-

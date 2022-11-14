@@ -1,102 +1,78 @@
 use std::str::FromStr;
 use std::path::PathBuf;
-
-use bevy::{prelude::*, render::{render_resource::{AsBindGroupShaderType, FilterMode}, texture::ImageSettings}, sprite::{Material2dPlugin, MaterialMesh2dBundle}};
+use bevy::{prelude::*, render::{render_resource::FilterMode, texture::ImageSettings}};
+use bevy::render::render_resource::SamplerDescriptor;
 
 mod dcl_scene;
-mod player;
-mod debug;
-mod console;
 mod custom_material;
-mod collision;
-//mod render_to_texture;
-mod animations;
 mod player_sprite_maker;
-pub mod scene_loader;
-// mod psd_reader;
-mod preview;
 pub mod config;
 
+mod player;
 use player::PlayerPlugin;
+
+mod animations;
 use animations::AnimationsPlugin;
-use debug::DebugPlugin;
+
+mod collision;
 use collision::CollisionPlugin;
+
+pub mod scene_loader;
 use scene_loader::SceneLoaderPlugin;
-use bevy::render::render_resource::SamplerDescriptor;
+
+mod preview;
 use preview::PreviewPlugin;
-use console::MyConsolePlugin;
-use custom_material::CustomMaterial;
 
+//mod debug;
+//use debug::DebugPlugin;
 
-
+//mod console;
+//use console::MyConsolePlugin;
 
 pub fn start() {
 
-    player_sprite_maker::make_player_spritesheet("./2dcl/assets/wearables/".to_owned(), "./2dcl/assets/player.json".to_owned()); 
-    App::new()
-        .insert_resource(Msaa { samples: 1 })
-        .insert_resource(ImageSettings{default_sampler: SamplerDescriptor { 
-            mag_filter: FilterMode::Nearest,
-           ..default()}})
-        .add_plugins(DefaultPlugins)
-        .add_plugin(AnimationsPlugin)
-        .add_plugin(SceneLoaderPlugin)
-        .add_plugin(PlayerPlugin)
-        //.add_plugin(RenderToTexturePlugin)
-        //.add_plugin(DebugPlugin)
-       // .add_plugin(Material2dPlugin::<CustomMaterial>::default())
-       // .add_startup_system(setup)
-        .add_plugin(CollisionPlugin)
-        .add_plugin(MyConsolePlugin)
-        .run();
-       
+  let current_path = std::env::current_exe().unwrap();
+  let current_path = current_path.parent().unwrap();
+  std::env::set_current_dir(current_path).unwrap();
+
+  player_sprite_maker::make_player_spritesheet("./assets/wearables/".to_owned(), "./2dcl/assets/player.json".to_owned()); 
+  let mut app = App::new();
+  setup(&mut app);
+
+  app.add_plugin(SceneLoaderPlugin)
+      .run();
+      
 }
 
 pub fn preview_scene(base_dir: std::path::PathBuf)
 {
-    // player_sprite_maker::make_player_spritesheet("./2dcl/assets/wearables/".to_owned(), "./2dcl/assets/player.json".to_owned()); 
+   
     std::env::set_current_dir(&base_dir).unwrap();
-
     let absolute_base_dir = std::fs::canonicalize(PathBuf::from_str(".").unwrap()).unwrap();
     std::env::set_var("CARGO_MANIFEST_DIR", absolute_base_dir);
 
-    App::new()
-        .insert_resource(Msaa { samples: 1 })
-        .insert_resource(ImageSettings{default_sampler: SamplerDescriptor { 
-            mag_filter: FilterMode::Nearest,
-           ..default()}})
-        // .insert_resource(PreviewPath{path})
-        .add_plugins(DefaultPlugins)
-        .add_plugin(AnimationsPlugin)
-        .add_plugin(PlayerPlugin)
-        .add_plugin(CollisionPlugin)
-        .add_plugin(DebugPlugin)
-        //.add_plugin(MyConsolePlugin)
+    let mut app = App::new();
+    setup(&mut app);
+
+    app
         .add_plugin(PreviewPlugin)
         .add_asset::<preview::SceneAsset>()
         .init_asset_loader::<preview::SceneAssetLoader>()
         .run();
 }
 
-fn setup(mut commands: Commands,
-mut mesh_assets: ResMut<Assets<Mesh>>,
-mut my_material_assets: ResMut<Assets<CustomMaterial>>,
-asset_server: Res<AssetServer>,
-)
+
+pub fn setup(app: &mut bevy::app::App )
 {
-
-  let quad = shape::Quad::new(Vec2::new(100.0, 100.0));
-  commands.spawn_bundle(MaterialMesh2dBundle{
-    mesh: mesh_assets.add(Mesh::from(quad)).into(),
-    material: my_material_assets.add(CustomMaterial{
-      color: Color::WHITE,
-      source_image: None,
-    }),
-    transform: Transform::default(),
-    ..default()
-  });
-}
-
-
-
-
+    app
+    .insert_resource(Msaa { samples: 1 })
+    .insert_resource(ImageSettings{default_sampler: SamplerDescriptor { 
+        mag_filter: FilterMode::Nearest,
+      ..default()}})
+    //.add_plugin(DebugPlugin)
+    //.add_plugin(MyConsolePlugin)
+    .add_plugins(DefaultPlugins)
+    .add_plugin(AnimationsPlugin)
+    .add_plugin(PlayerPlugin)
+    .add_plugin(CollisionPlugin);
+} 

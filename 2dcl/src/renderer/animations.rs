@@ -42,7 +42,6 @@ impl Plugin for  AnimationsPlugin
 
     fn build(&self, app: &mut App) {
     app
-       // .add_startup_system_to_stage(StartupStage::PreStartup, load_texture_atlas)
         .add_system(update_animations)
         ;
     }
@@ -122,7 +121,6 @@ pub fn update_animations
 
             }
 
-
             sprite.index = new_index;
 
             let new_duration = Duration::from_secs_f32(animator.frame_durations[sprite.index]);
@@ -175,7 +173,8 @@ where
     match  File::open(&path)
     {
         Ok(v) => {file = v;}
-        Err(e) => {return Err(e.to_string());}
+        Err(e) => {
+          return Err(e.to_string());}
     } 
 
     let spritesheet: aseprite::SpritesheetData;
@@ -186,13 +185,13 @@ where
         Err(e) => {return Err(e.to_string());}
     } 
 
-    let mut image_path = PathBuf::new();
-    image_path.push("../..");
-    image_path.push(path);
+
+    let mut image_path = PathBuf::from(path.as_ref());
     image_path.pop();
     image_path.push(&spritesheet.meta.image.unwrap_or_default());
- 
+
     let texture = assets.load(image_path);
+
     let mut animations: Vec<Animation> = Vec::default();
     let mut frame_durations: Vec<f32> = Vec::default();
   

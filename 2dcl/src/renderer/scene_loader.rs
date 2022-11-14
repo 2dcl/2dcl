@@ -90,13 +90,15 @@ impl Plugin for SceneLoaderPlugin
 
     fn build(&self, app: &mut App) {
     app
-    .add_system(check_scenes_to_download)
+    .add_system(scene_handler)
     .add_system(handle_tasks)
     ;
     }
 }
 
-pub fn check_scenes_to_download(
+
+
+pub fn scene_handler(
     player_query: Query<(&mut Player, &mut GlobalTransform)>,  
     scene_query: Query<(Entity, &mut SceneComponent, Without<Player>)>,  
     downloading_scenes_query: Query<&DownloadingScene>,  
@@ -106,123 +108,129 @@ pub fn check_scenes_to_download(
     
 )
 {
+  //Find the player
+  let player_query = player_query.get_single();
 
-    for(_player,player_transform) in player_query.iter()
+  if player_query.is_err()
+  {
+    return;
+  }
+
+  let player_parcel = world_location_to_parcel(player_query.unwrap().1.translation());
+  let mut parcels_to_spawn = get_all_parcels_around(&player_parcel, MIN_RENDERING_DISTANCE_IN_PARCELS);
+  let parcels_to_keep = get_all_parcels_around(&player_parcel, MAX_RENDERING_DISTANCE_IN_PARCELS);
+  
+
+  //Check every scene already spawned
+  for(entity, scene, _player) in scene_query.iter()
+  {       
+
+    //Despawning scenes far away
+    let mut despawn_scene = true;
+
+    for parcel in &parcels_to_keep
+    {
+        if  scene.parcels.contains(&parcel)
+        {   
+            despawn_scene = false;
+            break;
+        } 
+    }
+    
+    if despawn_scene
+    {  
+        commands.entity(entity).despawn_recursive();
+        continue;
+    }
+
+    //We don't need to spawn parcels already spawned 
+    for i in (0..parcels_to_spawn.len()).rev()
+    {
+        if  scene.parcels.contains(&parcels_to_spawn[i])
+        { 
+          parcels_to_spawn.remove(i);
+        } 
+    }
+  }
+
+  //Spawning scenes
+  let mut itr = parcels_to_spawn.len() as i16 -1;
+  let mut parcels_to_download: Vec<Parcel> = Vec::default();
+  while itr >=0
+  {            
+    
+    //Check if it's already downloaded
+    let result = get_scene(Parcel(parcels_to_spawn[itr as usize].0,parcels_to_spawn[itr as usize].1));
+    let scene = result.0;
+    let path = result.1;
+    if scene.is_ok()
+    {
+      let scene = scene.unwrap();
+      
+      for scene_parcel in &scene.parcels
+      {
+          for i in (0..parcels_to_spawn.len()).rev()
+          {
+              if  parcels_to_spawn[i] == *scene_parcel
+              {
+                parcels_to_spawn.remove(i);
+              }
+          }
+      }
+
+      //If it's already downloaded, we spawn the scene.
+      spawn_scene2(&mut commands,&asset_server, &mut texture_atlases, scene,path,SystemTime::now());   
+      continue;
+    }
+    else
     {
 
-        let player_parcel = world_location_to_parcel(player_transform.translation());
-      
-        let mut parcels_to_render = get_all_parcels_around(&player_parcel, MIN_RENDERING_DISTANCE_IN_PARCELS);
+      //If the scene is already being downloaded we do nothing.
+      let mut is_downloading = false;
+      for downloading_scene in downloading_scenes_query.iter()
+      {
+          if downloading_scene.parcels.contains(&parcels_to_spawn[itr as usize])
+          {          
+              is_downloading = true;
+              break;
+          }
+
+      }
+      if !is_downloading
+      {
+        //We add the scene to download.
+        parcels_to_download.push(parcels_to_spawn[itr as usize].clone());
+      }
+      parcels_to_spawn.remove(itr as usize);
         
-        let parcels_to_keep = get_all_parcels_around(&player_parcel, MAX_RENDERING_DISTANCE_IN_PARCELS);
-       
-        for(entity, scene, _player) in scene_query.iter()
-        {       
+    }
+    itr = parcels_to_spawn.len() as i16 -1;
+  }
 
-            let mut despawn_scene = true;
+  if parcels_to_download.is_empty()
+  {    
+      return;
+  }
 
-            for parcel in &parcels_to_keep
-            {
-                if  scene.parcels.contains(&parcel)
-                {   
-                    despawn_scene = false;
-                    break;
-                } 
-            }
-
-          
-            if despawn_scene
-            {  
-                commands.entity(entity).despawn_recursive();
-                continue;
-            }
-
-
-            for i in (0..parcels_to_render.len()).rev()
-            {
-                if  scene.parcels.contains(&parcels_to_render[i])
-                { 
-                    parcels_to_render.remove(i);
-                } 
-            }
-        }
- 
-        let mut itr = parcels_to_render.len() as i16 -1;
-        let mut parcels_to_download: Vec<Parcel> = Vec::default();
-        while itr >=0
-        {            
-            let result = get_scene(Parcel(parcels_to_render[itr as usize].0,parcels_to_render[itr as usize].1));
-            
-            if result.0.is_ok()
-            {
-                println!("spawning: {:?}",result.1);
-                let scene = result.0.unwrap();
-                
-                for scene_parcel in &scene.parcels
-                {
-                    for i in (0..parcels_to_render.len()).rev()
-                    {
-                        if  parcels_to_render[i] == *scene_parcel
-                        {
-                            parcels_to_render.remove(i);
-                        }
-                    }
-                }
-
-                spawn_scene2(&mut commands,&asset_server, &mut texture_atlases, scene,result.1,SystemTime::now());   
-     
-                 
-            }
-            else
-            {
-                let mut is_downloading = false;
-                for downloading_scene in downloading_scenes_query.iter()
-                {
-                    if downloading_scene.parcels.contains(&parcels_to_render[itr as usize])
-                    {          
-                        is_downloading = true;
-                        break;
-                    }
-
-                }
-                if !is_downloading
-                {
-                    parcels_to_download.push(parcels_to_render[itr as usize].clone());
-                }
-
-                parcels_to_render.remove(itr as usize);
-               
-            }
-            itr = parcels_to_render.len() as i16 -1;
-        }
-
-        if parcels_to_download.is_empty()
-        {    
-            return;
-        }
-
-       
         
-        let thread_pool = AsyncComputeTaskPool::get();
-    
-        let parcels_to_download_clone = parcels_to_download.clone();
-        
-        
-        let task_download_parcels = thread_pool.spawn(async move {
+  //We download the scenes needed
+  let thread_pool = AsyncComputeTaskPool::get();
+  let parcels_to_download_clone = parcels_to_download.clone();
+  let task_download_parcels = thread_pool.spawn(async move {
 
-            download_parcels(parcels_to_download_clone);
+      download_parcels(parcels_to_download_clone);
 
-        }); 
+  }); 
 
-        for parcel_to_download in &parcels_to_download
-        {
-            spawn_default_scene(&mut commands, &asset_server, &mut texture_atlases, parcel_to_download);
-        } 
+  for parcel_to_download in &parcels_to_download
+  {
+      spawn_default_scene(&mut commands, &asset_server, &mut texture_atlases, parcel_to_download);
+  } 
 
-        commands.spawn().insert(DownloadingScene{task:task_download_parcels,parcels: parcels_to_download});
+  commands.spawn().insert(DownloadingScene{task:task_download_parcels,parcels: parcels_to_download});
 
-    } 
-}
+} 
+
 
 
 fn get_scene_center_location(scene: &dcl2d_ecs_v1::Scene) -> Vec3
@@ -309,7 +317,7 @@ pub async fn download_parcels(parcels: Vec<Parcel>) -> dcl_common::Result<()> {
 
     for scene_file in scene_files 
     {
-        let path_str = "./2dcl/assets/scenes/".to_string() + &scene_file.id.to_string();
+        let path_str = "./assets/scenes/".to_string() + &scene_file.id.to_string();
         let scene_path = Path::new(&path_str);
         if !scene_path.exists()
         {   
@@ -333,7 +341,7 @@ pub async fn download_parcels(parcels: Vec<Parcel>) -> dcl_common::Result<()> {
             {
                 let file_json = file_json.unwrap();
                 let filename = format!(
-                    "./2dcl/assets/scenes/{}/{}",
+                    "./assets/scenes/{}/{}",
                     scene_file.id,
                     file_json.filename.to_str().unwrap()
                 );
@@ -363,10 +371,10 @@ pub async fn download_parcels(parcels: Vec<Parcel>) -> dcl_common::Result<()> {
             if file_2dcl_exists
             {
 
-                fs::create_dir_all(format!("./2dcl/assets/scenes/{}", scene_file.id))?;
+                fs::create_dir_all(format!("./assets/scenes/{}", scene_file.id))?;
                 for downloadable in scene_file.content {
                     let filename = format!(
-                        "./2dcl/assets/scenes/{}/{}",
+                        "./assets/scenes/{}/{}",
                         scene_file.id,
                         downloadable.filename.to_str().unwrap()
                     );
@@ -388,7 +396,7 @@ pub async fn download_parcels(parcels: Vec<Parcel>) -> dcl_common::Result<()> {
 
 fn make_empty_scene_for_parcel (parcel: &Parcel)
 {
-    let scene = read_scene_file("./2dcl/assets/scenes/templates/empty_parcel/scene.2dcl");
+    let scene = read_scene_file("./assets/scenes/templates/empty_parcel/scene.2dcl");
 
     if scene.is_some()
     {
@@ -397,12 +405,12 @@ fn make_empty_scene_for_parcel (parcel: &Parcel)
       
         let mut buf: Vec<u8> = Vec::new();
         scene.serialize(&mut Serializer::new(&mut buf)).unwrap();   
-        let save_path =  "./2dcl/assets/scenes/empty_parcel_".to_string() + &parcel.0.to_string() + "_" + &parcel.1.to_string();
+        let save_path =  "./assets/scenes/empty_parcel_".to_string() + &parcel.0.to_string() + "_" + &parcel.1.to_string();
         create_dir(&save_path);
         let mut file = File::create(save_path.clone() + "/scene.2dcl").unwrap();
         file.write_all(&buf); 
 
-        fs::copy("./2dcl/assets/scenes/templates/empty_parcel/background.png", save_path + "/background.png");
+        fs::copy("./assets/scenes/templates/empty_parcel/background.png", save_path + "/background.png");
     }
 }
 
@@ -415,7 +423,7 @@ fn make_road_scene_for_parcel (parcel: &Parcel)
     let entity = spawn_scene2(commands, asset_server, texture_atlases, scene,"./scenes/templates/empty_parcel",SystemTime::now());
   
      */
-    let scene = read_scene_file("./2dcl/assets/scenes/templates/road/scene.2dcl");
+    let scene = read_scene_file("./assets/scenes/templates/road/scene.2dcl");
 
     if scene.is_some()
     {
@@ -424,7 +432,7 @@ fn make_road_scene_for_parcel (parcel: &Parcel)
       
         let mut buf: Vec<u8> = Vec::new();
         scene.serialize(&mut Serializer::new(&mut buf)).unwrap();   
-        let save_path =  "./2dcl/assets/scenes/road_".to_string() + &parcel.0.to_string() + "_" + &parcel.1.to_string();
+        let save_path =  "./assets/scenes/road_".to_string() + &parcel.0.to_string() + "_" + &parcel.1.to_string();
         create_dir(&save_path);
         let mut file = File::create(save_path.clone() + "/scene.2dcl").unwrap();
         file.write_all(&buf); 
@@ -433,7 +441,7 @@ fn make_road_scene_for_parcel (parcel: &Parcel)
         let save_path = save_path + "/assets";
         create_dir(&save_path);
         
-        fs::copy("./2dcl/assets/scenes/templates/road/assets/background.png", save_path + "/background.png");
+        fs::copy("./assets/scenes/templates/road/assets/background.png", save_path + "/background.png");
     }
 }
 
@@ -468,6 +476,7 @@ where P: AsRef<Path>
         }
         else
         {
+            println!("scene is not ok");
             return None;
         }
     }
@@ -487,16 +496,16 @@ pub async fn download_parcel(parcel: Parcel) -> dcl_common::Result<()> {
     for scene_file in scene_files {
         
      
-        let path_str = "./2dcl/assets/scenes/".to_string() + &scene_file.id.to_string();
+        let path_str = "./assets/scenes/".to_string() + &scene_file.id.to_string();
         let scene_path = Path::new(&path_str);
         if !scene_path.exists()
         {
         
-            fs::create_dir_all(format!("./2dcl/assets/scenes/{}", scene_file.id))?;
+            fs::create_dir_all(format!("./assets/scenes/{}", scene_file.id))?;
 
             for downloadable in scene_file.content {
                 let filename = format!(
-                    "./2dcl/assets/scenes/{}/{}",
+                    "./assets/scenes/{}/{}",
                     scene_file.id,
                     downloadable.filename.to_str().unwrap()
                 );
@@ -539,8 +548,8 @@ where
 fn get_scene(parcel: Parcel) -> (Result<dcl2d_ecs_v1::Scene, String>, PathBuf)
 {
 
-    //TODO: put parcels on folder name when downloading or cache something to improve performance.
-    let paths = fs::read_dir("./2dcl/assets/scenes").unwrap();
+    //TODO: map paths to scenes to improve performance.
+    let paths = fs::read_dir("./assets/scenes").unwrap();
 
     for path in paths
     {    
@@ -684,8 +693,7 @@ fn spawn_default_scene(
 )
 {
 
-  println!("spawning default scene for: {:?}",parcel);
-  let mut scene = read_scene_file("./2dcl/assets/scenes/templates/empty_parcel/scene.2dcl").unwrap();
+  let mut scene = read_scene_file("./assets/scenes/templates/empty_parcel/scene.2dcl").unwrap();
   scene.parcels = vec![parcel.clone()];
   let entity = spawn_scene2(commands, asset_server, texture_atlases, scene,"./scenes/templates/empty_parcel",SystemTime::now());
 }
@@ -774,7 +782,6 @@ T: AsRef<Path>
               
                 let renderer  = (*sprite_renderer).clone();
                 let mut sprite_path = std::fs::canonicalize(PathBuf::from_str(".").unwrap()).unwrap();
-                sprite_path.push("2dcl");
                 sprite_path.push("assets");
                 sprite_path.push(path.as_ref().clone());
                 sprite_path.push("assets");
@@ -932,8 +939,6 @@ where T: AsRef<Path>
   
 
   let scene_location: Vec3 = get_scene_center_location(&scene);
-
-  println!("scene: {:?}",scene_location);
   let scene_entity = commands.spawn()
   .insert(Visibility{is_visible: true})
   .insert(GlobalTransform::default())
