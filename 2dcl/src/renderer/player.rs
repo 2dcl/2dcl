@@ -1,7 +1,7 @@
 use bevy::{prelude::*, sprite::{collide_aabb::collide, Anchor}};
 use bevy_inspector_egui::Inspectable;
 use dcl2d_ecs_v1::collision_type::CollisionType;
-use super::{scene_loader::BoxCollider, collision::*, animations::*};
+use super::{scene_loader::BoxCollider, collision::{*, self}, animations::*};
 
 pub struct PlayerPlugin;
 
@@ -82,7 +82,7 @@ fn player_movement
 (
     mut player_query: Query<(&mut Player, &mut Transform, &mut Animator, &mut TextureAtlasSprite)>,
    // mut player_renderer_query:  Query<(&mut Animator, &mut TextureAtlasSprite, Without<Player>)>,
-    box_collision_query: Query<(&GlobalTransform, &BoxCollider, Without<Player>)>,
+    box_collision_query: Query<(&GlobalTransform, &BoxCollider)>,
     keyboard: Res<Input<KeyCode>>,
     collision_map: Res<CollisionMap>,
     time: Res<Time>
@@ -127,16 +127,21 @@ fn player_movement
 
         let target = transform.translation + Vec3::new(x_delta,0.0,0.0);
 
-        if collision_check(target, player.collider,&box_collision_query, collision_map.clone())
+        let collision_result = collision_check(target, player.collider,&box_collision_query, collision_map.clone());
+        
+        if !collision_result.hit
         {
-            transform.translation = target;
+          transform.translation = target;
         }
+ 
 
         let target = transform.translation + Vec3::new(0.0,y_delta,y_delta * -1.0);
 
-        if collision_check(target, player.collider,&box_collision_query, collision_map.clone())
+        let collision_result = collision_check(target, player.collider,&box_collision_query, collision_map.clone());
+        
+        if !collision_result.hit
         {
-            transform.translation = target;
+          transform.translation = target;
         }
     }
 
@@ -150,60 +155,4 @@ fn player_movement
     }
     change_animator_state(animator.as_mut(),animation_state.to_string()); 
 
-}
-
-fn collision_check(
-    target_player_pos: Vec3,
-    target_player_collider: Vec2,
-    box_collision_query: &Query<(&GlobalTransform, &BoxCollider, Without<Player>)>,
-    //box_collision_query: &Query<(&GlobalTransform, &BoxCollider)>,
-    collision_map: CollisionMap
-) -> bool
-{
-    //box colliders
-    for (wall,collider, _player) in box_collision_query.iter()
-    {
-      
-      
-        let collision = collide(
-            Vec3{x:target_player_pos.x,y:target_player_pos.y+target_player_collider.y/2.0,z:0.0},
-            target_player_collider,
-            wall.translation() + collider.center.extend(0.0),
-            collider.size
-        );
-
-        if collision.is_some()
-        { if collider.collision_type == CollisionType::Solid
-            {
-              
-              return false;
-            }
-            else
-            {
-              
-            }
-        }
-      
-    }
-    
-    for collision_location in collision_map.collision_locations
-    {
-       
-        //Alpha colliders
-        let collision = collide(
-            Vec3{x:target_player_pos.x,y:target_player_pos.y+target_player_collider.y/2.0,z:0.0},
-            target_player_collider,
-            collision_location.extend(0.0), //wall.translation + collider.center.extend(0.0),
-            Vec2::splat(collision_map.tile_size)
-        );
-
-        if collision.is_some()
-        {
-            return false;
-        }
-
-    }
-
-    return true;
-    
 }

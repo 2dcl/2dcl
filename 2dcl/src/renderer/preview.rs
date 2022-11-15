@@ -118,7 +118,7 @@ fn scene_reload(
                     commands.entity(entity).despawn_recursive();
                     let timestamp = scene.timestamp;
                     let scene = scene_loader::read_scene(&scene.bytes).unwrap();
-                    scene_loader::spawn_scene(&mut commands, &asset_server, &mut texture_atlases, scene, timestamp);
+                    scene_loader::spawn_scene(&mut commands, &asset_server, &mut texture_atlases, scene, "../",timestamp);
                 }
 
             }
@@ -126,7 +126,7 @@ fn scene_reload(
             {
                 let timestamp = scene.timestamp;
                 let scene = scene_loader::read_scene(&scene.bytes).unwrap();
-                scene_loader::spawn_scene(&mut commands, &asset_server, &mut texture_atlases, scene, timestamp);
+                scene_loader::spawn_scene(&mut commands, &asset_server, &mut texture_atlases, scene, "../",timestamp);
             }
         }
         None => {},
