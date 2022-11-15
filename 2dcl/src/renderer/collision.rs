@@ -1,11 +1,10 @@
 use bevy::prelude::*; 
 use bevy_inspector_egui::Inspectable;
-use bevy::{prelude::*, sprite::{collide_aabb::collide, Anchor}};
-use dcl2d_ecs_v1::{collision_type::CollisionType, components::Trigger};
+use bevy::sprite::collide_aabb::collide;
+use dcl2d_ecs_v1::collision_type::CollisionType;
 
-use serde::{Deserialize, Serialize};
-use rmp_serde::*;
-use super::scene_loader::{BoxCollider, LevelChangeComponent};
+
+use super::scene_loader::BoxCollider;
 
 pub const TILE_SIZE: f32 = 1.0;
 
@@ -87,49 +86,3 @@ pub fn box_collision_check(
 
   return CollisionResult{hit:false,collision_type:CollisionType::Solid};   
 }
-
-pub fn box_collision_query_check(
-  position: Vec3,
-  size: Vec2,
-  box_collision_query: &Query<(&GlobalTransform, &BoxCollider)>
-) -> CollisionResult
-{
-  for (wall,collider) in box_collision_query.iter()
-  {
-    
-    
-      let collision = collide(
-          Vec3{x:position.x,y:position.y+size.y/2.0,z:0.0},
-          size,
-          wall.translation() + collider.center.extend(0.0),
-          collider.size
-      );
-
-      if collision.is_some()
-      { 
-        return CollisionResult{hit:true,collision_type:collider.collision_type.clone()};
-      }  
-  }
-
-  return CollisionResult{hit:false,collision_type:CollisionType::Solid};
-}
-
-
-
-pub fn collision_check(
-  position: Vec3,
-  size: Vec2,
-  box_collision_query: &Query<(&GlobalTransform, &BoxCollider)>,
-  collision_map: CollisionMap
-) ->CollisionResult
-{
-
-  let result = box_collision_query_check(position,size,box_collision_query);
-  if result.hit
-  {
-    return result;
-  }
-  
-  map_collision_check(position,size,collision_map)
-}
-

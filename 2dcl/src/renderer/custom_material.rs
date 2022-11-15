@@ -1,7 +1,7 @@
 use bevy::{
   prelude::*,
   reflect::TypeUuid,
-  render::{render_resource::{AsBindGroup, ShaderRef, RenderPipelineDescriptor, SpecializedMeshPipelineError, BlendState, BlendComponent, BlendFactor, BlendOperation}, mesh::MeshVertexBufferLayout}, sprite::{Material2d, Material2dKey},
+  render::{render_resource::{AsBindGroup, RenderPipelineDescriptor, SpecializedMeshPipelineError, BlendState, BlendComponent, BlendFactor, BlendOperation}, mesh::MeshVertexBufferLayout}, sprite::{Material2d, Material2dKey},
 };
 
 // This is the struct that will be passed to your shader
@@ -15,7 +15,6 @@ pub struct CustomMaterial {
   pub source_image: Option<Handle<Image>>,
     
 }
-
 
 
 impl Material2d for CustomMaterial {

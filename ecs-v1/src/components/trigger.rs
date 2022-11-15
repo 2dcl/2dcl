@@ -1,6 +1,6 @@
 
 use std::io::Error;
-use crate::{Component, Vec2};
+use crate::Component;
 
 #[typetag::serde(tag = "type")]
 pub trait Trigger: Component {

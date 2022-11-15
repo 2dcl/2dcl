@@ -2,7 +2,7 @@ use serde::{Deserialize, Serialize};
 use dcl_common::{Parcel};
 
 #[derive(Debug, Deserialize, Serialize, Clone)]
-pub struct DCLScene {
+pub struct DCL3dScene {
 
    pub display: Display,
    pub contact: Option<Contact>,

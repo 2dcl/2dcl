@@ -1,8 +1,7 @@
-use bevy::{prelude::*, sprite::{collide_aabb::collide, Anchor}};
-use bevy_inspector_egui::Inspectable;
+use bevy::{prelude::*, sprite::Anchor};
 use dcl2d_ecs_v1::{collision_type::CollisionType};
 use dcl_common::Parcel;
-use super::{scene_loader::{BoxCollider, LevelChangeComponent}, collision::{*, self}, animations::*};
+use super::{scene_loader::{BoxCollider, LevelChangeComponent}, collision::*, animations::*};
 
 pub struct PlayerPlugin;
 

@@ -3,7 +3,7 @@ use std::path::PathBuf;
 use bevy::{prelude::*, render::{render_resource::FilterMode, texture::ImageSettings}};
 use bevy::render::render_resource::SamplerDescriptor;
 
-mod dcl_scene;
+mod dcl_3d_scene;
 mod custom_material;
 mod player_sprite_maker;
 pub mod config;

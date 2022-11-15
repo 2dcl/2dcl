@@ -1,5 +1,4 @@
 use serde::{Serialize, Deserialize};
-use dcl_common::Parcel;
 use crate::{Entity, Vec2};
 
 

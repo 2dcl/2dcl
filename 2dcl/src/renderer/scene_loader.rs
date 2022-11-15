@@ -3,7 +3,6 @@ use std::fs;
 use std::fs::create_dir;
 use std::io::Write;
 use std::str::FromStr;
-use bevy::log::Level;
 use bevy::prelude::*;
 use bevy::tasks::AsyncComputeTaskPool;
 use bevy::tasks::Task;
@@ -11,7 +10,6 @@ use bevy::tasks::Task;
 use catalyst::entity_files::ContentFile;
 use catalyst::{ContentClient, Server};
 use dcl2d_ecs_v1::collision_type::CollisionType;
-use dcl2d_ecs_v1::components::Trigger;
 use dcl_common::{Parcel};
 use bevy::sprite::Anchor;
 use serde::{Deserialize, Serialize};
@@ -22,11 +20,7 @@ use std::path::Path;
 use bevy_inspector_egui::Inspectable;
 use std::path::PathBuf;
 
-use super::collision::*;
-
-use super::dcl_scene;
-use image::io::Reader as ImageReader;
-use image::{DynamicImage, ImageFormat};
+use super::dcl_3d_scene;
 use super::player::PlayerComponent;
 use futures_lite::future;
 use rmp_serde::*;
@@ -34,14 +28,6 @@ use rmp_serde::*;
 use crate::renderer::config::*;
 
 pub struct SceneLoaderPlugin;
-
-
-#[derive(Component)]
-pub struct TextureLoading(pub Task<Handle<Image>>);
-#[derive(Component)]
-pub struct SpriteLoading(pub Task<Sprite>);
-#[derive(Component)]
-pub struct AlphaColliderLoading(pub Task<Vec<Vec2>>);
 
 
 #[derive(Component)]
@@ -110,12 +96,11 @@ pub fn scene_handler(
     downloading_scenes_query: Query<&DownloadingScene>,  
     mut commands: Commands,
     asset_server: Res<AssetServer>,
-    mut texture_atlases: ResMut<Assets<TextureAtlas>>,
     
 )
 {
   //Find the player
-  let mut player_query = player_query.get_single_mut();
+  let player_query = player_query.get_single_mut();
 
   if player_query.is_err()
   {
@@ -159,7 +144,7 @@ pub fn scene_handler(
             //Spawn correct level
             let mut de = Deserializer::from_read_ref(&scene.scene_data);
             let scene_data: dcl2d_ecs_v1::Scene = Deserialize::deserialize(&mut de).unwrap();
-            let level_entity = spawn_level(&mut commands,&asset_server,&mut texture_atlases,&scene_data,current_level,&scene.path,SystemTime::now());
+            let level_entity = spawn_level(&mut commands,&asset_server,&scene_data,current_level,&scene.path,SystemTime::now());
             commands.entity(scene_entity).add_child(level_entity);
           }
           break;
@@ -238,7 +223,7 @@ pub fn scene_handler(
       }
 
       //If it's already downloaded, we spawn the scene.
-      spawn_scene(&mut commands,&asset_server, &mut texture_atlases, scene,path,SystemTime::now());   
+      spawn_scene(&mut commands,&asset_server, scene,path,SystemTime::now());   
       continue;
     }
     else
@@ -280,13 +265,13 @@ pub fn scene_handler(
   let parcels_to_download_clone = parcels_to_download.clone();
   let task_download_parcels = thread_pool.spawn(async move {
 
-      download_parcels(parcels_to_download_clone);
+    download_parcels(parcels_to_download_clone);
 
   }); 
 
   for parcel_to_download in &parcels_to_download
   {
-      spawn_default_scene(&mut commands, &asset_server, &mut texture_atlases, parcel_to_download);
+      spawn_default_scene(&mut commands, &asset_server, parcel_to_download);
   } 
 
   commands.spawn().insert(DownloadingScene{task:task_download_parcels,parcels: parcels_to_download});
@@ -365,12 +350,6 @@ pub fn world_location_to_parcel(location: Vec3) -> Parcel
     return Parcel((location.x/PARCEL_SIZE_X).round() as i16,(location.y/PARCEL_SIZE_Y).round() as i16);
 }
 
-
-pub fn parcel_to_world_location(parcel: Parcel) -> Vec3
-{
-    return Vec3::new(parcel.0 as  f32 * PARCEL_SIZE_X,parcel.1 as  f32 * PARCEL_SIZE_Y,parcel.1 as  f32 * PARCEL_SIZE_Y * -1f32);
-}
-
 #[tokio::main]
 pub async fn download_parcels(parcels: Vec<Parcel>) -> dcl_common::Result<()> {
     let server = Server::production();
@@ -414,7 +393,7 @@ pub async fn download_parcels(parcels: Vec<Parcel>) -> dcl_common::Result<()> {
                 if let Ok(file) = File::open(filename)
                 {
                     let reader = BufReader::new(file);
-                    let scene: serde_json::Result<dcl_scene::DCLScene> = serde_json::from_reader(reader);
+                    let scene: serde_json::Result<dcl_3d_scene::DCL3dScene> = serde_json::from_reader(reader);
                     
                     if scene.is_ok()
                     { 
@@ -442,10 +421,6 @@ pub async fn download_parcels(parcels: Vec<Parcel>) -> dcl_common::Result<()> {
                         downloadable.filename.to_str().unwrap()
                     );
                     println!("Downloading {}", filename);
-
-                    // We're downloading this synchronously, in a production client you want to
-                    // store all of these and use `futures::join_all` (https://docs.rs/futures/latest/futures/future/fn.join_all.html)
-                    // or something of the sorts.
                     ContentClient::download(&server, downloadable.cid, filename).await?;
                 }
             }
@@ -457,35 +432,8 @@ pub async fn download_parcels(parcels: Vec<Parcel>) -> dcl_common::Result<()> {
 }
 
 
-fn make_empty_scene_for_parcel (parcel: &Parcel)
-{
-    let scene = read_scene_file("./assets/scenes/templates/empty_parcel/scene.2dcl");
-
-    if scene.is_some()
-    {
-        let mut scene = scene.unwrap();
-        scene.parcels = vec![parcel.clone()];
-      
-        let mut buf: Vec<u8> = Vec::new();
-        scene.serialize(&mut Serializer::new(&mut buf)).unwrap();   
-        let save_path =  "./assets/scenes/empty_parcel_".to_string() + &parcel.0.to_string() + "_" + &parcel.1.to_string();
-        create_dir(&save_path);
-        let mut file = File::create(save_path.clone() + "/scene.2dcl").unwrap();
-        file.write_all(&buf); 
-
-        fs::copy("./assets/scenes/templates/empty_parcel/background.png", save_path + "/background.png");
-    }
-}
-
 fn make_road_scene_for_parcel (parcel: &Parcel)
 {
-    
-  /*  println!("spawning default scene for: {:?}",parcel);
-    let mut scene = read_scene_file("./2dcl/assets/scenes/templates/empty_parcel/scene.2dcl").unwrap();
-    scene.parcels = vec![parcel.clone()];
-    let entity = spawn_scene(commands, asset_server, texture_atlases, scene,"./scenes/templates/empty_parcel",SystemTime::now());
-  
-     */
     let scene = read_scene_file("./assets/scenes/templates/road/scene.2dcl");
 
     if scene.is_some()
@@ -550,63 +498,6 @@ where P: AsRef<Path>
     
     None
 }
-#[tokio::main]
-pub async fn download_parcel(parcel: Parcel) -> dcl_common::Result<()> {
-    let server = Server::production();
-
-    let scene_files = ContentClient::scene_files_for_parcels(&server, &vec![parcel]).await?;
-
-    for scene_file in scene_files {
-        
-     
-        let path_str = "./assets/scenes/".to_string() + &scene_file.id.to_string();
-        let scene_path = Path::new(&path_str);
-        if !scene_path.exists()
-        {
-        
-            fs::create_dir_all(format!("./assets/scenes/{}", scene_file.id))?;
-
-            for downloadable in scene_file.content {
-                let filename = format!(
-                    "./assets/scenes/{}/{}",
-                    scene_file.id,
-                    downloadable.filename.to_str().unwrap()
-                );
-                println!("Downloading {}", filename);
-
-                // We're downloading this synchronously, in a production client you want to
-                // store all of these and use `futures::join_all` (https://docs.rs/futures/latest/futures/future/fn.join_all.html)
-                // or something of the sorts.
-                ContentClient::download(&server, downloadable.cid, filename).await?;
-            }
-        }
-    }
-    println!("finished downloading");
-    Ok(())
-}
-/*
-pub fn save_scene <P>(scene: Scene, path: P)
-where
-    P: AsRef<Path>
-{
-    let writer;
-
-    match File::create(path)
-    {
-        Ok(v) => writer = v,
-        Err(_e) => return
-    } 
-
-
-
-    match serde_json::to_writer(&writer, &scene)
-    {
-        Ok(_v) => println!("saved json scene"),
-        Err(_e) => return
-    }
-    
-} */
-
 
 fn get_scene(parcel: Parcel) -> (Result<dcl2d_ecs_v1::Scene, String>, PathBuf)
 {
@@ -620,13 +511,13 @@ fn get_scene(parcel: Parcel) -> (Result<dcl2d_ecs_v1::Scene, String>, PathBuf)
         {
             let mut path = path.unwrap().path();
             path.push("scene.2dcl");
-
-            if let Ok(file) = File::open(&path)
+         
+            if path.exists()
             {
                 let scene = read_scene_file(&path);
                 if scene.is_some()
                 {
-                    let mut scene = scene.unwrap();
+                    let scene = scene.unwrap();
                     if scene.parcels.contains(&parcel)
                     {   
                         let path = path.parent().unwrap().to_path_buf();
@@ -660,42 +551,14 @@ fn get_scene(parcel: Parcel) -> (Result<dcl2d_ecs_v1::Scene, String>, PathBuf)
 
 fn handle_tasks(
     mut commands: Commands,
-    mut collision_map: ResMut<CollisionMap>,
     asset_server: Res<AssetServer>,
-    mut texture_atlases: ResMut<Assets<TextureAtlas>>,
-    mut tasks_texture_loading: Query<(Entity, &mut TextureLoading)>,
-    mut tasks_sprite_loading: Query<(Entity, &mut SpriteLoading)>,
-    mut tasks_alpha_collider_loading: Query<(Entity, &mut AlphaColliderLoading)>,
     mut tasks_downloading_scenes: Query<(Entity, &mut DownloadingScene)>,
-    mut scenes_query: Query<(Entity, &SceneComponent)>,
+    scenes_query: Query<(Entity, &SceneComponent)>,
 ) 
 { 
-    for (entity, mut task) in &mut tasks_texture_loading {
-        if let Some(image) = future::block_on(future::poll_once(&mut task.0)) {
-
-            commands.entity(entity).insert(image);
-            commands.entity(entity).remove::<TextureLoading>();
-        }
-    }
-
-    for (entity, mut task) in &mut tasks_sprite_loading {
-        if let Some(sprite) = future::block_on(future::poll_once(&mut task.0)) {
-    
-            commands.entity(entity).insert(sprite);
-            commands.entity(entity).remove::<SpriteLoading>();
-        }
-    }
-
-    for (entity, mut task) in &mut tasks_alpha_collider_loading {
-        if let Some(collision) = future::block_on(future::poll_once(&mut task.0)) {
-            let mut collision = collision.clone();
-            collision_map.collision_locations.append(&mut collision);
-            commands.entity(entity).remove::<AlphaColliderLoading>();
-        }
-    }
 
     for (entity, mut downloading_scene) in &mut tasks_downloading_scenes {
-        if let Some(finished) = future::block_on(future::poll_once(&mut downloading_scene.task)) 
+        if let Some(_finished) = future::block_on(future::poll_once(&mut downloading_scene.task)) 
         {
             commands.entity(entity).despawn_recursive();
 
@@ -705,7 +568,7 @@ fn handle_tasks(
 
               if result.0.is_ok()
               {
-                spawn_scene(&mut commands, &asset_server, &mut texture_atlases, result.0.unwrap(), result.1, SystemTime::now());
+                spawn_scene(&mut commands, &asset_server, result.0.unwrap(), result.1, SystemTime::now());
               }
             }
         }
@@ -749,22 +612,20 @@ fn handle_tasks(
 
 
 fn spawn_default_scene(    
-    mut commands: &mut Commands,
+    commands: &mut Commands,
     asset_server: &Res<AssetServer>,
-    mut texture_atlases: &mut ResMut<Assets<TextureAtlas>>,
     parcel: &Parcel,
 )
 {
 
   let mut scene = read_scene_file("./assets/scenes/templates/empty_parcel/scene.2dcl").unwrap();
   scene.parcels = vec![parcel.clone()];
-  let entity = spawn_scene(commands, asset_server, texture_atlases, scene,"./scenes/templates/empty_parcel",SystemTime::now());
+  spawn_scene(commands, asset_server, scene,"./scenes/templates/empty_parcel",SystemTime::now());
 }
 
 pub fn spawn_level<T>( 
-    mut commands: &mut Commands,
+    commands: &mut Commands,
     asset_server: &Res<AssetServer>,
-    mut texture_atlases: &mut ResMut<Assets<TextureAtlas>>,
     scene: &dcl2d_ecs_v1::Scene,
     level_id: usize,
     path: T,
@@ -836,19 +697,13 @@ T: AsRef<Path>
 
                 commands.entity(spawned_entity).insert(transform);
 
-                let thread_pool = AsyncComputeTaskPool::get();
                 let server = (*asset_server).clone();
                 let mut image_path = path.as_ref().clone().to_path_buf();
-                // image_path.push(&scene.path.clone().unwrap());
                 image_path.push("assets");
                 image_path.push(&sprite_renderer.sprite);
 
-                let task_texture_load = thread_pool.spawn(async move {
-                    let texture: Handle<Image> = server.load(image_path);
-                    texture
-                }); 
-                commands.entity(spawned_entity).insert(TextureLoading(task_texture_load));
-  
+                let texture: Handle<Image> = server.load(image_path);
+                commands.entity(spawned_entity).insert(texture);
               
                 let renderer  = (*sprite_renderer).clone();
                 let mut sprite_path = std::fs::canonicalize(PathBuf::from_str(".").unwrap()).unwrap();
@@ -857,42 +712,20 @@ T: AsRef<Path>
                 sprite_path.push("assets");
                 sprite_path.push(&sprite_renderer.sprite);
 
-                let task_sprite_load = thread_pool.spawn(async move {
+                let sprite = Sprite{
+                  color: Color::Rgba { 
+                      red: renderer.color.r, 
+                      green: renderer.color.g, 
+                      blue: renderer.color.b, 
+                      alpha:  renderer.color.a
+                  },
+                  anchor: entity_anchor_to_anchor(renderer.anchor.clone()),
+                  flip_x: renderer.flip.x,
+                  flip_y: renderer.flip.y,
+                  ..default()
+              };
 
-                    if let Ok(mut reader) = ImageReader::open(&sprite_path)
-                    {
-                        reader.set_format(ImageFormat::Png);
-                        if let Ok(dynamic_image) = reader.decode()
-                        {
-                            if let DynamicImage::ImageRgba8(image) = dynamic_image
-                            {
-                                let pixels = image.pixels().into_iter();
-                                let rows = image.rows().len();
-                                let columns = pixels.len()/rows;
-                                let sprite = Sprite{
-                                    color: Color::Rgba { 
-                                        red: renderer.color.r, 
-                                        green: renderer.color.g, 
-                                        blue: renderer.color.b, 
-                                        alpha:  renderer.color.a
-                                    },
-                                    anchor: entity_anchor_to_anchor(Vec2{x:columns as f32, y:rows as f32},renderer.anchor.clone()),
-                                    flip_x: renderer.flip.x,
-                                    flip_y: renderer.flip.y,
-                                    ..default()
-                                };
-                                return sprite;
-                            }
-                        }
-                    }
-                    else
-                    {
-                        println!("failed: {:?}",sprite_path);
-                    }
-                    Sprite::default()
-                }); 
-                commands.entity(spawned_entity).insert(SpriteLoading(task_sprite_load));
-
+              commands.entity(spawned_entity).insert(sprite);
             }
 
             if let Some(collider) = component.as_any().downcast_ref::<dcl2d_ecs_v1::components::BoxCollider>() {
@@ -931,88 +764,6 @@ T: AsRef<Path>
               commands.entity(spawned_entity).insert(level_change_component);
      
           }
-
-
-        //     //TODO: Test performance, might do async
-        //     if let EntityComponent::AsepriteAnimation(aseprite_animation) = component
-        //     {
-        //         let mut  animator_path = scene.path.clone().unwrap();
-        //         animator_path.push(&aseprite_animation.json_path);
-
-        //         let mut animator =  get_animator(&animator_path, &asset_server,&mut texture_atlases).unwrap();
-                
-        //         let sprite = TextureAtlasSprite
-        //         {
-        //         color: Color::Rgba { 
-        //             red: aseprite_animation.color.x, 
-        //             green: aseprite_animation.color.y, 
-        //             blue: aseprite_animation.color.z, 
-        //             alpha:  aseprite_animation.color.w},
-        //             anchor: entity_anchor_to_anchor(Vec2{x:1 as f32, y:1 as f32},aseprite_animation.anchor.clone()),
-        //             flip_x: aseprite_animation.flip_x,
-        //             flip_y: aseprite_animation.flip_y,
-        //         ..default()
-        //         };
-        //         change_animator_state(animator.borrow_mut(),aseprite_animation.starting_state.clone()); 
-        //         commands.entity(spawned_entity).insert(sprite);
-        //         commands.entity(spawned_entity).insert(animator.atlas.clone());
-        //         commands.entity(spawned_entity).insert(animator);
-        //     }
-            
-            
-            
-        //     if let EntityComponent::AlphaCollider(collider) = component
-        //     {
-                          
-        //         let mut  sprite_path = scene.path.clone().unwrap();
-        //         sprite_path.push(&collider.sprite);
-
-        //         let alpha_collider  = (*collider).clone();
-        //         let thread_pool = AsyncComputeTaskPool::get();
-        //         let fixed_transform = transform.clone();
-        //         let scene_translation = scene_location.clone();
-        //         let task_collision_map = thread_pool.spawn(async move {
-
-        //             let mut collision_map:Vec<Vec2> = Vec::default();
-
-        //             if let Ok(mut reader) = ImageReader::open(sprite_path)
-        //             {
-        //                 reader.set_format(ImageFormat::Png);
-        //                 if let Ok(dynamic_image) = reader.decode()
-        //                 {
-        //                     if let DynamicImage::ImageRgba8(image) = dynamic_image
-        //                     {
-        //                         let mut pixels = image.pixels().into_iter(); 
-        //                         let rows = image.rows().len();
-        //                         let columns = pixels.len()/rows;
-
-        //                         let fixed_translation = get_fixed_translation_by_anchor(
-        //                             Vec2{x:columns as f32, y: rows as f32},
-        //                             Vec3 { x: fixed_transform.translation.x + scene_translation.x, 
-        //                                 y: fixed_transform.translation.y + scene_translation.y, 
-        //                                 z: fixed_transform.translation.z + scene_translation.z },
-        //                                 alpha_collider.anchor.clone(),
-        //                         );
-        //                         let mut index =0;
-        //                         let strating_world_location =
-                            
-        //                         fixed_translation.truncate() - (Vec2::new((columns as f32)/2.0 , (rows as f32)/2.0)* super::collision::TILE_SIZE);
-        //                         while pixels.len() >0
-        //                         {   
-        //                             if pixels.next().unwrap()[alpha_collider.channel as usize] > 0 
-        //                             {
-        //                                 let world_location = strating_world_location + (Vec2::new((index%columns) as f32,(index/columns) as f32)*super::collision::TILE_SIZE);
-        //                                 collision_map.push(world_location);
-        //                             }                             
-        //                             index +=1;
-        //                         }
-        //                     }
-        //                 }
-        //             }
-        //             collision_map
-        //         });
-        //         commands.entity(spawned_entity).insert(AlphaColliderLoading(task_collision_map));
-        //     }
         }
     } 
     scene_entity
@@ -1020,9 +771,8 @@ T: AsRef<Path>
 
 
 pub fn spawn_scene<T>(    
-    mut commands: &mut Commands,
+    commands: &mut Commands,
     asset_server: &Res<AssetServer>,
-    mut texture_atlases: &mut ResMut<Assets<TextureAtlas>>,
     scene: dcl2d_ecs_v1::Scene,
     path: T,
     timestamp: SystemTime
@@ -1045,7 +795,7 @@ where T: AsRef<Path>
 
   if scene.levels.len()>0
   {
-    let level_entity = spawn_level(commands,asset_server,texture_atlases,&scene,0,path,SystemTime::now());
+    let level_entity = spawn_level(commands,asset_server,&scene,0,path,SystemTime::now());
     commands.entity(scene_entity).add_child(level_entity);
   }
   
@@ -1054,7 +804,7 @@ where T: AsRef<Path>
 
 }
 
-fn entity_anchor_to_anchor(size: Vec2, anchor: dcl2d_ecs_v1::Anchor) -> Anchor
+fn entity_anchor_to_anchor(anchor: dcl2d_ecs_v1::Anchor) -> Anchor
 {
     match anchor
     {
@@ -1072,7 +822,7 @@ fn entity_anchor_to_anchor(size: Vec2, anchor: dcl2d_ecs_v1::Anchor) -> Anchor
     }
 }
 
-
+/*
 fn  get_fixed_translation_by_anchor(size: Vec2, translation: Vec3, anchor: dcl2d_ecs_v1::Anchor) -> Vec3
 {
 
@@ -1090,5 +840,5 @@ fn  get_fixed_translation_by_anchor(size: Vec2, translation: Vec3, anchor: dcl2d
         dcl2d_ecs_v1::Anchor::TopRight => return  Vec3{x:translation.x - size.x/2.0, y:translation.y -size.y/2.0, z:translation.z},
         dcl2d_ecs_v1::Anchor::Custom(_) => todo!(),
     }
-}
+} */
 
