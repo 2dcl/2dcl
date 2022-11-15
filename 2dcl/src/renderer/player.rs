@@ -1,7 +1,8 @@
 use bevy::{prelude::*, sprite::{collide_aabb::collide, Anchor}};
 use bevy_inspector_egui::Inspectable;
-use dcl2d_ecs_v1::collision_type::CollisionType;
-use super::{scene_loader::BoxCollider, collision::{*, self}, animations::*};
+use dcl2d_ecs_v1::{collision_type::CollisionType};
+use dcl_common::Parcel;
+use super::{scene_loader::{BoxCollider, LevelChangeComponent}, collision::{*, self}, animations::*};
 
 pub struct PlayerPlugin;
 
@@ -10,11 +11,14 @@ pub const PLAYER_SCALE: f32 = 1.0;
 pub const PLAYER_SPEED: f32 = 200.0;
 pub const PLAYER_COLLIDER: Vec2 = Vec2::new(20.0,5.0);
 
-#[derive(Component, Default, Inspectable)]
-pub struct Player
+
+#[derive(Component)]
+pub struct PlayerComponent
 {
     speed: f32,
-    collider: Vec2,
+    collider_size: Vec2,
+    pub current_level: usize,
+    pub current_parcel: Parcel,
 }
 
 
@@ -59,10 +63,12 @@ fn spawn_player(
         })
         .insert(animator)
         .insert(Name::new("Player"))
-        .insert(Player
+        .insert(PlayerComponent
             {
                 speed: PLAYER_SPEED,
-                collider: PLAYER_COLLIDER 
+                collider_size: PLAYER_COLLIDER,
+                current_level: 0,
+                current_parcel:Parcel(0,0)
             })
         .id();
     
@@ -73,16 +79,15 @@ fn spawn_player(
         let camera_entity = commands.spawn_bundle(camera_bundle).id();
         
         commands.entity(player).add_child(camera_entity);
-
     
 }
 
 
 fn player_movement
 (
-    mut player_query: Query<(&mut Player, &mut Transform, &mut Animator, &mut TextureAtlasSprite)>,
-   // mut player_renderer_query:  Query<(&mut Animator, &mut TextureAtlasSprite, Without<Player>)>,
-    box_collision_query: Query<(&GlobalTransform, &BoxCollider)>,
+    mut player_query: Query<(&mut PlayerComponent, &mut Transform, &mut Animator, &mut TextureAtlasSprite)>,
+    box_collision_query: Query<(Entity, &GlobalTransform, &BoxCollider,Without<PlayerComponent>)>,
+    trigger_query: Query<(Entity, &LevelChangeComponent, Without<PlayerComponent>)>,  
     keyboard: Res<Input<KeyCode>>,
     collision_map: Res<CollisionMap>,
     time: Res<Time>
@@ -90,7 +95,7 @@ fn player_movement
 )
 {  
 
-    let (player, mut transform, mut animator, mut texture_atlas) = player_query.single_mut();
+    let (mut player, mut transform, mut animator, mut texture_atlas) = player_query.single_mut();
     let mut y_delta = 0.0;
     let mut animation_state = "Idle";
 
@@ -123,26 +128,31 @@ fn player_movement
 
     if walking
     {
-        animation_state = "Run";
+      animation_state = "Run";
 
-        let target = transform.translation + Vec3::new(x_delta,0.0,0.0);
+      let target = transform.translation + Vec3::new(x_delta,0.0,0.0);
 
-        let collision_result = collision_check(target, player.collider,&box_collision_query, collision_map.clone());
-        
-        if !collision_result.hit
-        {
-          transform.translation = target;
-        }
- 
+      if !check_player_collision (
+        player.as_mut(),
+        target,
+        &box_collision_query,
+        &trigger_query,
+        collision_map.clone() )
+      {
+        transform.translation = target;
+      }
+      
+      let target = transform.translation + Vec3::new(0.0,y_delta,y_delta * -1.0);
 
-        let target = transform.translation + Vec3::new(0.0,y_delta,y_delta * -1.0);
-
-        let collision_result = collision_check(target, player.collider,&box_collision_query, collision_map.clone());
-        
-        if !collision_result.hit
-        {
-          transform.translation = target;
-        }
+      if !check_player_collision (
+        player.as_mut(),
+        target,
+        &box_collision_query,
+        &trigger_query,
+        collision_map.clone() )
+      {
+        transform.translation = target;
+      }
     }
 
     if x_delta > 0.0
@@ -156,3 +166,59 @@ fn player_movement
     change_animator_state(animator.as_mut(),animation_state.to_string()); 
 
 }
+
+
+fn check_player_collision(
+  player: &mut PlayerComponent,
+  target_location: Vec3,
+  box_collision_query: &Query<(Entity, &GlobalTransform, &BoxCollider,Without<PlayerComponent>)>,
+  trigger_query: &Query<(Entity, &LevelChangeComponent, Without<PlayerComponent>)>,  
+  collision_map: CollisionMap,
+) -> bool
+{
+  let mut blocked = false;
+  for (collision_entity, collision_transform, collider, _player) in box_collision_query.iter()
+  {
+    let collision_result = box_collision_check (
+      target_location,player.collider_size, 
+      collision_transform.translation(), 
+      collider);
+   
+    if collision_result.hit
+    {
+      if collision_result.collision_type == CollisionType::Solid
+      {
+        blocked = true;
+      }
+      else
+      {
+      
+        for (trigger_entity, trigger, _player) in trigger_query.iter()
+        {
+          if trigger_entity == collision_entity
+          {
+            player.current_level = trigger.level;
+            break;
+          }
+        }
+      }
+    } 
+  }
+
+  if blocked
+  {
+    return true;
+  }
+  
+  let collision_result =  map_collision_check (
+    target_location,
+    player.collider_size,
+    collision_map);
+  if collision_result.hit
+  {
+    return true;
+  } 
+  
+  return false;
+}
+

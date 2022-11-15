@@ -1,10 +1,8 @@
-use crate::Vec2;
-use crate::Size;
-use crate::collision_type::CollisionType;
-use core::any::Any;
+use crate::{Vec2, Component};
 use serde::{Serialize, Deserialize};
-
-use crate::Component;
+use crate::components::Trigger;
+use core::any::Any;
+use std::io::Error;
 
 #[derive(Deserialize, Serialize, Debug, Clone, PartialEq)]
 pub struct LevelChange {
@@ -16,9 +14,18 @@ pub struct LevelChange {
 #[typetag::serde]
 impl Component for LevelChange 
 {
-    fn as_any(&self) -> &dyn Any {
-        self
-    }
+  fn as_any(&self) -> &dyn Any {
+    self
+  }
+}
+
+#[typetag::serde]
+impl Trigger for LevelChange 
+{
+  fn on_trigger(&self) -> Result<(),Error>
+  {
+    Ok(())
+  }
 }
 
 #[cfg(test)]

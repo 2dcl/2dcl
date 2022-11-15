@@ -3,6 +3,7 @@ use std::fs;
 use std::fs::create_dir;
 use std::io::Write;
 use std::str::FromStr;
+use bevy::log::Level;
 use bevy::prelude::*;
 use bevy::tasks::AsyncComputeTaskPool;
 use bevy::tasks::Task;
@@ -10,6 +11,7 @@ use bevy::tasks::Task;
 use catalyst::entity_files::ContentFile;
 use catalyst::{ContentClient, Server};
 use dcl2d_ecs_v1::collision_type::CollisionType;
+use dcl2d_ecs_v1::components::Trigger;
 use dcl_common::{Parcel};
 use bevy::sprite::Anchor;
 use serde::{Deserialize, Serialize};
@@ -25,7 +27,7 @@ use super::collision::*;
 use super::dcl_scene;
 use image::io::Reader as ImageReader;
 use image::{DynamicImage, ImageFormat};
-use super::player::Player;
+use super::player::PlayerComponent;
 use futures_lite::future;
 use rmp_serde::*;
 
@@ -63,8 +65,8 @@ pub struct BoxCollider {
 }
 
 #[derive(Debug, Component, Clone)]
-pub struct LevelChange {
-  pub level: LevelComponent,
+pub struct LevelChangeComponent {
+  pub level: usize,
   pub spawn_point: Vec2,
 }
 
@@ -73,14 +75,17 @@ pub struct SceneComponent
 {
     pub name: String,
     pub parcels: Vec<Parcel>,
-    pub timestamp: SystemTime
+    pub timestamp: SystemTime,
+    pub scene_data: Vec<u8>,
+    pub path: PathBuf,
 }
 
 #[derive(Debug, Component, Clone)]
 pub struct LevelComponent
 {
     pub name: String,
-    pub timestamp: SystemTime
+    pub timestamp: SystemTime,
+    pub id: usize,
 }
 
 
@@ -99,8 +104,9 @@ impl Plugin for SceneLoaderPlugin
 
 
 pub fn scene_handler(
-    player_query: Query<(&mut Player, &mut GlobalTransform)>,  
-    scene_query: Query<(Entity, &mut SceneComponent, Without<Player>)>,  
+    mut player_query: Query<(&mut PlayerComponent, &mut GlobalTransform)>,  
+    scene_query: Query<(Entity, &mut SceneComponent, Without<PlayerComponent>)>,  
+    level_query: Query<(Entity, &LevelComponent,&Parent)>,
     downloading_scenes_query: Query<&DownloadingScene>,  
     mut commands: Commands,
     asset_server: Res<AssetServer>,
@@ -109,14 +115,67 @@ pub fn scene_handler(
 )
 {
   //Find the player
-  let player_query = player_query.get_single();
+  let mut player_query = player_query.get_single_mut();
 
   if player_query.is_err()
   {
     return;
   }
+  
 
-  let player_parcel = world_location_to_parcel(player_query.unwrap().1.translation());
+  let mut player_query = player_query.unwrap();
+  let player_parcel = player_query.0.current_parcel.clone();
+  
+  
+  let current_level = player_query.0.current_level;
+
+  //We check if we're on the correct level
+ 
+  for(scene_entity, scene, _player) in scene_query.iter()
+  {       
+
+    if  scene.parcels.contains(&player_parcel)
+    {   
+      for (level_entity, level, level_parent) in level_query.iter()
+      {
+  
+        if **level_parent == scene_entity
+        {
+
+          if current_level != level.id
+          {
+            //Despawn level for current parcel
+            commands.entity(level_entity).despawn_recursive();
+        
+            //Despawn every other scene and level
+            for(other_scene_entity, _other_scene, _player) in scene_query.iter()
+            {
+              if other_scene_entity != scene_entity
+              {
+                commands.entity(other_scene_entity).despawn_recursive();
+              }
+            }
+
+            //Spawn correct level
+            let mut de = Deserializer::from_read_ref(&scene.scene_data);
+            let scene_data: dcl2d_ecs_v1::Scene = Deserialize::deserialize(&mut de).unwrap();
+            let level_entity = spawn_level(&mut commands,&asset_server,&mut texture_atlases,&scene_data,current_level,&scene.path,SystemTime::now());
+            commands.entity(scene_entity).add_child(level_entity);
+          }
+          break;
+        }
+      
+      }
+      break;
+    } 
+  }
+
+  //Only continue if we're in the overworld.
+  if current_level != 0
+  {  
+    return;
+  }
+
   let mut parcels_to_spawn = get_all_parcels_around(&player_parcel, MIN_RENDERING_DISTANCE_IN_PARCELS);
   let parcels_to_keep = get_all_parcels_around(&player_parcel, MAX_RENDERING_DISTANCE_IN_PARCELS);
   
@@ -207,6 +266,9 @@ pub fn scene_handler(
     itr = parcels_to_spawn.len() as i16 -1;
   }
 
+  player_query.0.current_parcel = world_location_to_parcel(player_query.1.translation());
+  
+
   if parcels_to_download.is_empty()
   {    
       return;
@@ -228,6 +290,7 @@ pub fn scene_handler(
   } 
 
   commands.spawn().insert(DownloadingScene{task:task_download_parcels,parcels: parcels_to_download});
+
 
 } 
 
@@ -702,23 +765,30 @@ pub fn spawn_level<T>(
     mut commands: &mut Commands,
     asset_server: &Res<AssetServer>,
     mut texture_atlases: &mut ResMut<Assets<TextureAtlas>>,
-    level: &dcl2d_ecs_v1::Level,
+    scene: &dcl2d_ecs_v1::Scene,
+    level_id: usize,
     path: T,
     timestamp: SystemTime
 ) -> Entity
 where
 T: AsRef<Path>
 {
+  let scene_entity = commands.spawn().id();
 
+  if scene.levels.len()<=level_id
+  {
+    return scene_entity;
+  }
 
-    let scene_entity = commands.spawn()
+  let level = &scene.levels[level_id];
+   
+    commands.entity(scene_entity)
     .insert(Name::new(level.name.clone()))
     .insert(Visibility{is_visible: true})
     .insert(GlobalTransform::default())
     .insert(ComputedVisibility::default())
     .insert(Transform::default())
-    .insert(LevelComponent{name:level.name.clone(),timestamp})
-    .id();
+    .insert(LevelComponent{name:level.name.clone(),timestamp,id: level_id});
     
     
     
@@ -840,6 +910,29 @@ T: AsRef<Path>
                 commands.entity(spawned_entity).insert(circle_collider);
             }
 
+
+            if let Some(level_change) = component.as_any().downcast_ref::<dcl2d_ecs_v1::components::triggers::LevelChange>() {
+
+              let mut new_level_id = 0;
+
+              for i in 0..scene.levels.len()
+              {
+                if scene.levels[i].name == level_change.level
+                {
+                  new_level_id = i;
+                  break;
+                }
+              }
+
+              let level_change_component = LevelChangeComponent {
+                level:new_level_id,
+                spawn_point: Vec2::new(level_change.spawn_point.x as f32, level_change.spawn_point.y as f32),
+              };
+              commands.entity(spawned_entity).insert(level_change_component);
+     
+          }
+
+
         //     //TODO: Test performance, might do async
         //     if let EntityComponent::AsepriteAnimation(aseprite_animation) = component
         //     {
@@ -939,18 +1032,20 @@ where T: AsRef<Path>
   
 
   let scene_location: Vec3 = get_scene_center_location(&scene);
+  let mut scene_data: Vec<u8> = Vec::new();
+  scene.serialize(&mut Serializer::new(&mut scene_data)).unwrap();
   let scene_entity = commands.spawn()
   .insert(Visibility{is_visible: true})
   .insert(GlobalTransform::default())
   .insert(ComputedVisibility::default())
   .insert(Name::new(scene.name.clone()))
   .insert(Transform::from_translation(scene_location))
-  .insert(SceneComponent{name:scene.name.clone(),parcels:scene.parcels, timestamp})
+  .insert(SceneComponent{name:scene.name.clone(),parcels:scene.parcels.clone(), timestamp, scene_data,path: path.as_ref().to_path_buf()})
   .id();
 
   if scene.levels.len()>0
   {
-    let level_entity = spawn_level(commands,asset_server,texture_atlases,&scene.levels[0],path,SystemTime::now());
+    let level_entity = spawn_level(commands,asset_server,texture_atlases,&scene,0,path,SystemTime::now());
     commands.entity(scene_entity).add_child(level_entity);
   }
   
@@ -996,3 +1091,4 @@ fn  get_fixed_translation_by_anchor(size: Vec2, translation: Vec3, anchor: dcl2d
         dcl2d_ecs_v1::Anchor::Custom(_) => todo!(),
     }
 }
+
