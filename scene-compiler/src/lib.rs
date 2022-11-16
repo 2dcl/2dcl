@@ -79,8 +79,10 @@ where T: AsRef<Path>, U: AsRef<Path>
 
     let mut options = CopyOptions::new();
     options.overwrite = true;
+    options.copy_inside = true;
 
     println!("Copying: {} -> {}", assets_source_path.display(), assets_destination_path.display());
+
     fs_extra::dir::copy(assets_source_path, assets_destination_path, &options)?;
 
 

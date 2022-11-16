@@ -23,8 +23,8 @@ use scene_loader::SceneLoaderPlugin;
 mod preview;
 use preview::PreviewPlugin;
 
-//mod debug;
-//use debug::DebugPlugin;
+mod debug;
+use debug::DebugPlugin;
 
 //mod console;
 //use console::MyConsolePlugin;
@@ -68,7 +68,7 @@ pub fn setup(app: &mut bevy::app::App )
     .insert_resource(ImageSettings{default_sampler: SamplerDescriptor { 
         mag_filter: FilterMode::Nearest,
       ..default()}})
-    //.add_plugin(DebugPlugin)
+    .add_plugin(DebugPlugin)
     //.add_plugin(MyConsolePlugin)
     .add_plugins(DefaultPlugins)
     .add_plugin(AnimationsPlugin)

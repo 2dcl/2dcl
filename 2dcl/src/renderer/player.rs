@@ -58,6 +58,7 @@ fn spawn_player(
         texture_atlas: animator.atlas.clone(),
         transform: Transform{
             scale: Vec3::ONE * PLAYER_SCALE * animator.scale,
+            translation: Vec3::new(-100.0, 0.0, 0.0),
             ..default()
         },
         ..default()
