@@ -1,114 +1,186 @@
 { "frames": [
    {
-    "filename": "2DCL_BaseCharacterAnimations_withWearables_Body 0.aseprite",
-    "frame": { "x": 0, "y": 0, "w": 42, "h": 52 },
+    "filename": "PH-spritesheet 0.aseprite",
+    "frame": { "x": 0, "y": 0, "w": 96, "h": 96 },
     "rotated": false,
     "trimmed": false,
-    "spriteSourceSize": { "x": 0, "y": 0, "w": 42, "h": 52 },
-    "sourceSize": { "w": 42, "h": 52 },
-    "duration": 120
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 96, "h": 96 },
+    "sourceSize": { "w": 96, "h": 96 },
+    "duration": 125
    },
    {
-    "filename": "2DCL_BaseCharacterAnimations_withWearables_Body 1.aseprite",
-    "frame": { "x": 42, "y": 0, "w": 42, "h": 52 },
+    "filename": "PH-spritesheet 1.aseprite",
+    "frame": { "x": 96, "y": 0, "w": 96, "h": 96 },
     "rotated": false,
     "trimmed": false,
-    "spriteSourceSize": { "x": 0, "y": 0, "w": 42, "h": 52 },
-    "sourceSize": { "w": 42, "h": 52 },
-    "duration": 120
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 96, "h": 96 },
+    "sourceSize": { "w": 96, "h": 96 },
+    "duration": 125
    },
    {
-    "filename": "2DCL_BaseCharacterAnimations_withWearables_Body 2.aseprite",
-    "frame": { "x": 84, "y": 0, "w": 42, "h": 52 },
+    "filename": "PH-spritesheet 2.aseprite",
+    "frame": { "x": 192, "y": 0, "w": 96, "h": 96 },
     "rotated": false,
     "trimmed": false,
-    "spriteSourceSize": { "x": 0, "y": 0, "w": 42, "h": 52 },
-    "sourceSize": { "w": 42, "h": 52 },
-    "duration": 120
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 96, "h": 96 },
+    "sourceSize": { "w": 96, "h": 96 },
+    "duration": 125
    },
    {
-    "filename": "2DCL_BaseCharacterAnimations_withWearables_Body 3.aseprite",
-    "frame": { "x": 126, "y": 0, "w": 42, "h": 52 },
+    "filename": "PH-spritesheet 3.aseprite",
+    "frame": { "x": 299, "y": 0, "w": 96, "h": 96 },
     "rotated": false,
     "trimmed": false,
-    "spriteSourceSize": { "x": 0, "y": 0, "w": 42, "h": 52 },
-    "sourceSize": { "w": 42, "h": 52 },
-    "duration": 120
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 96, "h": 96 },
+    "sourceSize": { "w": 96, "h": 96 },
+    "duration": 125
    },
    {
-    "filename": "2DCL_BaseCharacterAnimations_withWearables_Body 4.aseprite",
-    "frame": { "x": 168, "y": 0, "w": 42, "h": 52 },
+    "filename": "PH-spritesheet 4.aseprite",
+    "frame": { "x": 384, "y": 0, "w": 96, "h": 96 },
     "rotated": false,
     "trimmed": false,
-    "spriteSourceSize": { "x": 0, "y": 0, "w": 42, "h": 52 },
-    "sourceSize": { "w": 42, "h": 52 },
-    "duration": 120
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 96, "h": 96 },
+    "sourceSize": { "w": 96, "h": 96 },
+    "duration": 125
    },
    {
-    "filename": "2DCL_BaseCharacterAnimations_withWearables_Body 5.aseprite",
-    "frame": { "x": 210, "y": 0, "w": 42, "h": 52 },
+    "filename": "PH-spritesheet 5.aseprite",
+    "frame": { "x": 480, "y": 0, "w": 96, "h": 96 },
     "rotated": false,
     "trimmed": false,
-    "spriteSourceSize": { "x": 0, "y": 0, "w": 42, "h": 52 },
-    "sourceSize": { "w": 42, "h": 52 },
-    "duration": 120
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 96, "h": 96 },
+    "sourceSize": { "w": 96, "h": 96 },
+    "duration": 125
    },
    {
-    "filename": "2DCL_BaseCharacterAnimations_withWearables_Body 6.aseprite",
-    "frame": { "x": 252, "y": 0, "w": 42, "h": 52 },
+    "filename": "PH-spritesheet 6.aseprite",
+    "frame": { "x": 576, "y": 0, "w": 96, "h": 96 },
     "rotated": false,
     "trimmed": false,
-    "spriteSourceSize": { "x": 0, "y": 0, "w": 42, "h": 52 },
-    "sourceSize": { "w": 42, "h": 52 },
-    "duration": 120
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 96, "h": 96 },
+    "sourceSize": { "w": 96, "h": 96 },
+    "duration": 125
    },
    {
-    "filename": "2DCL_BaseCharacterAnimations_withWearables_Body 7.aseprite",
-    "frame": { "x": 294, "y": 0, "w": 42, "h": 52 },
+    "filename": "PH-spritesheet 7.aseprite",
+    "frame": { "x": 672, "y": 0, "w": 96, "h": 96 },
     "rotated": false,
     "trimmed": false,
-    "spriteSourceSize": { "x": 0, "y": 0, "w": 42, "h": 52 },
-    "sourceSize": { "w": 42, "h": 52 },
-    "duration": 120
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 96, "h": 96 },
+    "sourceSize": { "w": 96, "h": 96 },
+    "duration": 125
    },
    {
-    "filename": "2DCL_BaseCharacterAnimations_withWearables_Body 8.aseprite",
-    "frame": { "x": 336, "y": 0, "w": 42, "h": 52 },
+    "filename": "PH-spritesheet 8.aseprite",
+    "frame": { "x": 769, "y": 0, "w": 96, "h": 96 },
     "rotated": false,
     "trimmed": false,
-    "spriteSourceSize": { "x": 0, "y": 0, "w": 42, "h": 52 },
-    "sourceSize": { "w": 42, "h": 52 },
-    "duration": 120
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 96, "h": 96 },
+    "sourceSize": { "w": 96, "h": 96 },
+    "duration": 125
    },
    {
-    "filename": "2DCL_BaseCharacterAnimations_withWearables_Body 9.aseprite",
-    "frame": { "x": 378, "y": 0, "w": 42, "h": 52 },
+    "filename": "PH-spritesheet 9.aseprite",
+    "frame": { "x": 869, "y": 0, "w": 96, "h": 96 },
     "rotated": false,
     "trimmed": false,
-    "spriteSourceSize": { "x": 0, "y": 0, "w": 42, "h": 52 },
-    "sourceSize": { "w": 42, "h": 52 },
-    "duration": 1500
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 96, "h": 96 },
+    "sourceSize": { "w": 96, "h": 96 },
+    "duration": 125
    },
    {
-    "filename": "2DCL_BaseCharacterAnimations_withWearables_Body 10.aseprite",
-    "frame": { "x": 420, "y": 0, "w": 42, "h": 52 },
+    "filename": "PH-spritesheet 10.aseprite",
+    "frame": { "x": 960, "y": 0, "w": 96, "h": 96 },
     "rotated": false,
     "trimmed": false,
-    "spriteSourceSize": { "x": 0, "y": 0, "w": 42, "h": 52 },
-    "sourceSize": { "w": 42, "h": 52 },
-    "duration": 1500
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 96, "h": 96 },
+    "sourceSize": { "w": 96, "h": 96 },
+    "duration": 125
+   },
+   {
+    "filename": "PH-spritesheet 9.aseprite",
+    "frame": { "x": 869, "y": 0, "w": 96, "h": 96 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 96, "h": 96 },
+    "sourceSize": { "w": 96, "h": 96 },
+    "duration": 125
+   },
+   {
+    "filename": "PH-spritesheet 10.aseprite",
+    "frame": { "x": 960, "y": 0, "w": 96, "h": 96 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 96, "h": 96 },
+    "sourceSize": { "w": 96, "h": 96 },
+    "duration": 125
+   },
+   {
+    "filename": "PH-spritesheet 9.aseprite",
+    "frame": { "x": 869, "y": 0, "w": 96, "h": 96 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 96, "h": 96 },
+    "sourceSize": { "w": 96, "h": 96 },
+    "duration": 125
+   },
+   {
+    "filename": "PH-spritesheet 10.aseprite",
+    "frame": { "x": 960, "y": 0, "w": 96, "h": 96 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 96, "h": 96 },
+    "sourceSize": { "w": 96, "h": 96 },
+    "duration": 125
+   },
+   {
+    "filename": "PH-spritesheet 9.aseprite",
+    "frame": { "x": 869, "y": 0, "w": 96, "h": 96 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 96, "h": 96 },
+    "sourceSize": { "w": 96, "h": 96 },
+    "duration": 125
+   },
+   {
+    "filename": "PH-spritesheet 10.aseprite",
+    "frame": { "x": 960, "y": 0, "w": 96, "h": 96 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 96, "h": 96 },
+    "sourceSize": { "w": 96, "h": 96 },
+    "duration": 125
+   },
+   {
+    "filename": "PH-spritesheet 11.aseprite",
+    "frame": { "x": 1056, "y": 0, "w": 96, "h": 96 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 96, "h": 96 },
+    "sourceSize": { "w": 96, "h": 96 },
+    "duration": 125
+   },
+   {
+    "filename": "PH-spritesheet 12.aseprite",
+    "frame": { "x": 1152, "y": 0, "w": 96, "h": 96 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 96, "h": 96 },
+    "sourceSize": { "w": 96, "h": 96 },
+    "duration": 125
    }
  ],
  "meta": {
   "app": "https://www.aseprite.org/",
   "version": "1.2.39-x64",
-  "image": "2DCL_BaseCharacterAnimations_withWearables_Body.png",
+  "image": "PH-spritesheet.png",
   "format": "RGBA8888",
-  "size": { "w": 462, "h": 52 },
+  "size": { "w": 1248, "h": 96 },
   "scale": "1",
   "frameTags": [
-   { "name": "Run", "from": 0, "to": 8, "direction": "forward" },
-   { "name": "Idle", "from": 9, "to": 10, "direction": "forward" }
+   { "name": "Idle", "from": 0, "to": 4, "direction": "forward" },
+   { "name": "Run", "from": 5, "to": 12, "direction": "forward" }
   ],
   "layers": [
    { "name": "Body", "opacity": 255, "blendMode": "normal" }

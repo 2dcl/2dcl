@@ -9,6 +9,7 @@ use std::fmt::Debug;
 
 #[derive(Debug, Eq, Ord, PartialEq, PartialOrd)]
 enum WearableType{
+    Background,
     Body,
     Feet,
     Lower,
@@ -34,14 +35,13 @@ where
     let mut wearables :Vec<WearableData> = Vec::new();
 
     let wearables_dir;
-    println!("Wearable path exists? {:?}",wearables_path.clone());
+
     match fs::read_dir(wearables_path.clone())
     {
         Ok(v) => wearables_dir = v,
         Err(_e) => return false
     } 
     
-    println!("Wearable path found");
     for wearable_path in wearables_dir
     {
         let wearable_path_string;
@@ -85,6 +85,12 @@ where
         if wearable_path_string.to_lowercase().trim_end().ends_with("hair.json")
         {   
             wearables.push(WearableData{json_path: wearable_path_string,wearable_type: WearableType::Hair});
+            continue;
+        }
+        
+        if wearable_path_string.to_lowercase().trim_end().ends_with("background.json") || wearable_path_string.to_lowercase().trim_end().ends_with("bg.json") 
+        {   
+            wearables.push(WearableData{json_path: wearable_path_string,wearable_type: WearableType::Background});
             continue;
         }
             

@@ -35,10 +35,9 @@ pub fn start() {
   let current_path = current_path.parent().unwrap();
   std::env::set_current_dir(current_path).unwrap();
 
-  player_sprite_maker::make_player_spritesheet("./assets/wearables/".to_owned(), "./2dcl/assets/player.json".to_owned()); 
+  player_sprite_maker::make_player_spritesheet("./assets/wearables/".to_owned(), "./assets/player.json".to_owned()); 
   let mut app = App::new();
   setup(&mut app);
-
   app.add_plugin(SceneLoaderPlugin)
       .run();
       

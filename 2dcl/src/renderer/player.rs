@@ -2,16 +2,12 @@ use bevy::{prelude::*, sprite::Anchor};
 use dcl2d_ecs_v1::{collision_type::CollisionType};
 use dcl_common::Parcel;
 use super::{scene_loader::{BoxCollider, LevelChangeComponent}, collision::*, animations::*};
+use crate::renderer::config::*;
 
 pub struct PlayerPlugin;
 
 
-pub const PLAYER_SCALE: f32 = 1.0;
-pub const PLAYER_SPEED: f32 = 200.0;
-pub const PLAYER_COLLIDER: Vec2 = Vec2::new(20.0,5.0);
-
-
-#[derive(Component)]
+#[derive(Component, Debug)]
 pub struct PlayerComponent
 {
     speed: f32,
@@ -19,7 +15,6 @@ pub struct PlayerComponent
     pub current_level: usize,
     pub current_parcel: Parcel,
 }
-
 
 
 impl Plugin for  PlayerPlugin
@@ -40,13 +35,20 @@ fn spawn_player(
 )
 {   
 
-  let mut current_path = std::env::current_exe().unwrap();
+  let mut current_path = std::env::current_exe().unwrap_or_default();
   current_path.pop();
   current_path.push("assets");
   current_path.push("player.json");
 
-    let animator = get_animator(current_path, &assets,  &mut texture_atlases).unwrap();
+    let animator = get_animator(current_path, &assets,  &mut texture_atlases);
    
+    if animator.is_err()
+    {
+      println!("{}",animator.unwrap_err());
+      return;
+    }
+
+    let animator = animator.unwrap();
     let mut sprite = TextureAtlasSprite::new(0);
     sprite.anchor = Anchor::BottomCenter;
 
@@ -74,7 +76,7 @@ fn spawn_player(
         let mut camera_bundle = Camera2dBundle::new_with_far(10000.0);
         camera_bundle.transform = Transform::from_translation(Vec3{x:0.0,y:0.0,z:5000.0});
 
-        camera_bundle.projection.scale = 0.5;
+        camera_bundle.projection.scale = CAMERA_SCALE;
         let camera_entity = commands.spawn_bundle(camera_bundle).id();
         
         commands.entity(player).add_child(camera_entity);
@@ -94,33 +96,24 @@ fn player_movement
 )
 {  
 
-    let (mut player, mut transform, mut animator, mut texture_atlas) = player_query.single_mut();
-    let mut y_delta = 0.0;
+    let result = player_query.get_single_mut();
+    
+    if result.is_err()
+    {
+      println!("{}",result.unwrap_err());
+      return;
+    }
+
+    let (mut player, mut transform, mut animator, mut texture_atlas) = result.unwrap();
+
     let mut animation_state = "Idle";
+    let mut movement_input = get_movment_axis_input(&keyboard);
 
-    if keyboard.pressed(KeyCode::W)
-    {
-        y_delta += player.speed * PLAYER_SCALE * time.delta_seconds();
-    }
-
-    if keyboard.pressed(KeyCode::S)
-    {
-        y_delta -= player.speed * PLAYER_SCALE * time.delta_seconds();
-    }
-
-    let mut x_delta = 0.0;
-    if keyboard.pressed(KeyCode::A)
-    {
-        x_delta -= player.speed * PLAYER_SCALE * time.delta_seconds();
-    }
-
-    if keyboard.pressed(KeyCode::D)
-    {
-        x_delta += player.speed * PLAYER_SCALE * time.delta_seconds();
-    }
-
+    movement_input = movement_input.normalize();
+    movement_input = movement_input * player.speed * PLAYER_SCALE * time.delta_seconds();
+    
     let mut walking = false;
-    if x_delta.abs()>0.0 || y_delta.abs()>0.0
+    if movement_input.length() > 0f32
     {
         walking = true;
     }
@@ -129,7 +122,7 @@ fn player_movement
     {
       animation_state = "Run";
 
-      let target = transform.translation + Vec3::new(x_delta,0.0,0.0);
+      let target = transform.translation + Vec3::new(movement_input.x,0.0,0.0);
 
       if !check_player_collision (
         player.as_mut(),
@@ -141,7 +134,7 @@ fn player_movement
         transform.translation = target;
       }
       
-      let target = transform.translation + Vec3::new(0.0,y_delta,y_delta * -1.0);
+      let target = transform.translation + Vec3::new(0.0,movement_input.y,movement_input.y * -1.0);
 
       if !check_player_collision (
         player.as_mut(),
@@ -154,13 +147,13 @@ fn player_movement
       }
     }
 
-    if x_delta > 0.0
-    {
-        texture_atlas.flip_x = false;
-    }
-    else if x_delta< 0.0
+    if movement_input.x > 0.0
     {
         texture_atlas.flip_x = true;
+    }
+    else if movement_input.x< 0.0
+    {
+        texture_atlas.flip_x = false;
     }
     change_animator_state(animator.as_mut(),animation_state.to_string()); 
 
@@ -221,3 +214,33 @@ fn check_player_collision(
   return false;
 }
 
+
+fn get_movment_axis_input(
+  keyboard: &Res<Input<KeyCode>>,
+) -> Vec3
+{
+  let mut movement_input = Vec3::default();
+
+  if keyboard.pressed(KeyCode::W)
+  {
+    movement_input.y+= 1f32;
+  }
+
+  if keyboard.pressed(KeyCode::S)
+  {
+    movement_input.y-= 1f32;
+  }
+
+  if keyboard.pressed(KeyCode::D)
+  {
+    movement_input.x+= 1f32;
+  }
+
+  if keyboard.pressed(KeyCode::A)
+  {
+    movement_input.x-= 1f32;
+  }
+
+  movement_input
+  
+}

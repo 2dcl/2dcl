@@ -58,7 +58,13 @@ fn setup(mut commands:  Commands,
     asset_server: Res<AssetServer>,
 )
 {
-    asset_server.watch_for_changes().unwrap();
+    let result = asset_server.watch_for_changes();
+
+    if result.is_err()
+    {
+      println!("{}",result.unwrap_err());
+      return;
+    }
 
     let handler : Handle<SceneAsset> = asset_server.load("../scene.2dcl");
 
@@ -84,16 +90,22 @@ fn scene_reload(
                 if scene.timestamp != current_scene.timestamp {
                     commands.entity(entity).despawn_recursive();
                     let timestamp = scene.timestamp;
-                    let scene = scene_loader::read_scene(&scene.bytes).unwrap();
-                    scene_loader::spawn_scene(&mut commands, &asset_server, scene, "../",timestamp);
+                    let scene = scene_loader::read_scene(&scene.bytes);
+                    if scene.is_some()
+                    {
+                      scene_loader::spawn_scene(&mut commands, &asset_server, scene.unwrap(), "../",timestamp);
+                    }
                 }
 
             }
             else 
             {
                 let timestamp = scene.timestamp;
-                let scene = scene_loader::read_scene(&scene.bytes).unwrap();
-                scene_loader::spawn_scene(&mut commands, &asset_server, scene, "../",timestamp);
+                let scene = scene_loader::read_scene(&scene.bytes);
+                if scene.is_some()
+                {
+                  scene_loader::spawn_scene(&mut commands, &asset_server, scene.unwrap(), "../",timestamp);
+                }
             }
         }
         None => {},

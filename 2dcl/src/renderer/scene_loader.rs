@@ -74,8 +74,6 @@ pub struct LevelComponent
     pub id: usize,
 }
 
-
-
 impl Plugin for SceneLoaderPlugin
 {
 
@@ -86,8 +84,6 @@ impl Plugin for SceneLoaderPlugin
     ;
     }
 }
-
-
 
 pub fn scene_handler(
     mut player_query: Query<(&mut PlayerComponent, &mut GlobalTransform)>,  
