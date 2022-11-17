@@ -31,6 +31,8 @@ use crate::renderer::config::*;
 use image::io::Reader as ImageReader;
 use image::{DynamicImage, ImageFormat};
 
+use imagesize::size;
+
 
 pub struct SceneLoaderPlugin;
 
@@ -719,6 +721,16 @@ T: AsRef<Path>
                 sprite_path.push("assets");
                 sprite_path.push(&sprite_renderer.sprite);
 
+
+                let mut image_size = Vec2::new(0.0,0.0);
+                let result = size(sprite_path);
+                
+                if result.is_ok()
+                {
+                  let result = result.unwrap();
+                  image_size = Vec2::new(result.width as f32,result.height as f32);
+                }
+
                 let sprite = Sprite{
                   color: Color::Rgba { 
                       red: renderer.color.r, 
@@ -726,7 +738,7 @@ T: AsRef<Path>
                       blue: renderer.color.b, 
                       alpha:  renderer.color.a
                   },
-                  anchor: entity_anchor_to_anchor(renderer.anchor.clone()),
+                  anchor: entity_anchor_to_anchor(renderer.anchor.clone(),image_size),
                   flip_x: renderer.flip.x,
                   flip_y: renderer.flip.y,
                   ..default()
@@ -780,14 +792,12 @@ T: AsRef<Path>
                     );
 
                     let mut index =0;
-          
                     let channel = collider.channel.clone() as usize;
 
                     while pixels.len() >0
                     {   
                         if pixels.next().unwrap()[channel] > 0 
                         {
-                            
                             let tile_location = fixed_translation + (Vec2::new((index%columns) as f32,((index/columns)) as f32 * -1.0 )*super::collision::TILE_SIZE);
                             let collision_tile = CollisionTile{location:tile_location, colliision_type:collider.collision_type.clone(),entity:Some(spawned_entity)};
                             collision_map.tiles.push(collision_tile);
@@ -862,7 +872,7 @@ where T: AsRef<Path>
 
 }
 
-fn entity_anchor_to_anchor(anchor: dcl2d_ecs_v1::Anchor) -> Anchor
+fn entity_anchor_to_anchor(anchor: dcl2d_ecs_v1::Anchor, size: Vec2) -> Anchor
 {
     match anchor
     {
@@ -872,11 +882,10 @@ fn entity_anchor_to_anchor(anchor: dcl2d_ecs_v1::Anchor) -> Anchor
         dcl2d_ecs_v1::Anchor::Center => return Anchor::Center,
         dcl2d_ecs_v1::Anchor::CenterLeft => return Anchor::CenterLeft,
         dcl2d_ecs_v1::Anchor::CenterRight => return Anchor::CenterRight,
-        // dcl2d_ecs_v1::Anchor::Custom(vec) => return Anchor::Custom(Vec2::new(vec.0, vec.1)/size),
+        dcl2d_ecs_v1::Anchor::Custom(vec) => return Anchor::Custom(Vec2::new(vec.x as f32 - size.x/2.0, vec.y as f32- size.y/2.0)/size),
         dcl2d_ecs_v1::Anchor::TopCenter => return Anchor::TopCenter,
         dcl2d_ecs_v1::Anchor::TopLeft => return Anchor::TopLeft,
         dcl2d_ecs_v1::Anchor::TopRight => return Anchor::TopRight,
-        dcl2d_ecs_v1::Anchor::Custom(_) => todo!()
     }
 }
 
@@ -884,7 +893,6 @@ fn entity_anchor_to_anchor(anchor: dcl2d_ecs_v1::Anchor) -> Anchor
 fn  get_fixed_translation_by_anchor(size: &Vec2, translation: &Vec2, anchor: &dcl2d_ecs_v1::Anchor) -> Vec2
 {
 
-  println!("size:{},translation:{},anchor:{:?}",size,translation,anchor);
     match anchor
     {
         dcl2d_ecs_v1::Anchor::BottomCenter => return Vec2{x:translation.x - size.x/2.0, y:translation.y +size.y},
@@ -893,11 +901,10 @@ fn  get_fixed_translation_by_anchor(size: &Vec2, translation: &Vec2, anchor: &dc
         dcl2d_ecs_v1::Anchor::Center => return Vec2{x:translation.x - size.x/2.0 , y:translation.y +size.y/2.0},
         dcl2d_ecs_v1::Anchor::CenterLeft => return Vec2{x:translation.x, y:translation.y +size.y/2.0},
         dcl2d_ecs_v1::Anchor::CenterRight =>return Vec2{x:translation.x - size.x, y:translation.y +size.y/2.0},
-        // dcl2d_ecs_v1::Anchor::Custom(vec) => return Vec3{x:translation.x - vec.0, y:translation.y - vec.1, z:translation.z},
+        dcl2d_ecs_v1::Anchor::Custom(vec) => return Vec2{x:translation.x - vec.x as f32, y:translation.y +size.y - vec.y as f32},
         dcl2d_ecs_v1::Anchor::TopCenter => return Vec2{x:translation.x - size.x/2.0, y:translation.y},
         dcl2d_ecs_v1::Anchor::TopLeft => return *translation,
         dcl2d_ecs_v1::Anchor::TopRight => return Vec2{x:translation.x - size.x, y:translation.y},
-        dcl2d_ecs_v1::Anchor::Custom(_) => todo!(),
     }
 } 
 

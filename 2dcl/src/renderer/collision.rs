@@ -57,7 +57,6 @@ pub fn map_collision_check(
   for tile in collision_map.tiles
   {
 
-
     let min = Vec2::new(position.x-size.x/2.0,position.y);
     let max = Vec2::new(position.x+size.x/2.0,position.y+size.y);
     if tile.location.x>min.x 
@@ -95,3 +94,4 @@ pub fn box_collision_check(
 
   return CollisionResult{hit:false,collision_type:CollisionType::Solid,entity:None};   
 }
+

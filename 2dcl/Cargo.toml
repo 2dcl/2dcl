@@ -32,3 +32,4 @@ notify = "=5.0.0-pre.15"
 scene-compiler = { path = "../scene-compiler" }
 dcl2d-ecs-v1 = { path = "../ecs-v1" }
 ron = "0.8.0"
+imagesize = "0.10.1"
