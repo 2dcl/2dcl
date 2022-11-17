@@ -1,7 +1,7 @@
 
 use crate::renderer::scene_loader::SceneComponent;
 use bevy::prelude::*;
-use super::{scene_loader::{self, LevelComponent}, player::PlayerComponent}; 
+use super::{scene_loader::{self, LevelComponent}, player::PlayerComponent, collision::CollisionMap}; 
 use bevy::{
     asset::{AssetLoader, LoadContext, LoadedAsset},
     reflect::TypeUuid,
@@ -79,7 +79,8 @@ fn scene_reload(
     scene_assets: ResMut<Assets<SceneAsset>>,
     asset_server: Res<AssetServer>,
     scene_handlers: Res<SceneHandler>,
-    mut scenes: Query<(Entity, &mut SceneComponent)>
+    mut scenes: Query<(Entity, &mut SceneComponent)>,
+    mut collision_map: ResMut<CollisionMap>,
 )
 {
     let handler = scene_assets.get(&scene_handlers.0);
@@ -95,7 +96,7 @@ fn scene_reload(
                     let scene = scene_loader::read_scene(&scene.bytes);
                     if scene.is_some()
                     {
-                      scene_loader::spawn_scene(&mut commands, &asset_server, scene.unwrap(), "../",timestamp);
+                      scene_loader::spawn_scene(&mut commands, &asset_server, scene.unwrap(), "../",&mut collision_map,timestamp);
                     }
                 }
 
@@ -106,7 +107,7 @@ fn scene_reload(
                 let scene = scene_loader::read_scene(&scene.bytes);
                 if scene.is_some()
                 {
-                  scene_loader::spawn_scene(&mut commands, &asset_server, scene.unwrap(), "../",timestamp);
+                  scene_loader::spawn_scene(&mut commands, &asset_server, scene.unwrap(), "../",&mut collision_map,timestamp);
                 }
             }
         }
@@ -120,6 +121,7 @@ pub fn level_change(
   level_query: Query<(Entity, &LevelComponent)>,
   mut commands: Commands,
   asset_server: Res<AssetServer>,
+  mut collision_map: ResMut<CollisionMap>,
   
 )
 {
@@ -152,10 +154,13 @@ let current_level = player.current_level;
         //Despawn level for current parcel
         commands.entity(level_entity).despawn_recursive();
 
+        //Clear collision map
+        collision_map.tiles.clear();
+
         //Spawn correct level
         let mut de = Deserializer::from_read_ref(&scene.scene_data);
         let scene_data: dcl2d_ecs_v1::Scene = Deserialize::deserialize(&mut de).unwrap();
-        let level_entity = scene_loader::spawn_level(&mut commands,&asset_server,&scene_data,current_level,&scene.path,SystemTime::now());
+        let level_entity = scene_loader::spawn_level(&mut commands,&asset_server,&scene_data,current_level,&scene.path,&mut collision_map,SystemTime::now());
         commands.entity(scene_entity).add_child(level_entity);
       }
   }

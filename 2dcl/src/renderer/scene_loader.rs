@@ -21,12 +21,16 @@ use bevy_inspector_egui::Inspectable;
 use std::path::PathBuf;
 
 use super::collision::CollisionMap;
+use super::collision::CollisionTile;
 use super::dcl_3d_scene;
 use super::player::PlayerComponent;
 use futures_lite::future;
 use rmp_serde::*;
 
 use crate::renderer::config::*;
+use image::io::Reader as ImageReader;
+use image::{DynamicImage, ImageFormat};
+
 
 pub struct SceneLoaderPlugin;
 
@@ -36,10 +40,6 @@ pub struct DownloadingScene {
     pub task: Task<()>,
     pub parcels: Vec<Parcel>,
 }
-
-#[derive(Component)]
-pub struct AlphaColliderLoading(pub Task<Vec<Vec2>>);
-
 
 #[derive(Debug, Component, Clone, Inspectable)]
 pub struct CircleCollider {
@@ -96,6 +96,7 @@ pub fn scene_handler(
     downloading_scenes_query: Query<&DownloadingScene>,  
     mut commands: Commands,
     asset_server: Res<AssetServer>,
+    mut collision_map: ResMut<CollisionMap>,
     
 )
 {
@@ -141,10 +142,13 @@ pub fn scene_handler(
               }
             }
 
+            //Clear collision map
+            collision_map.tiles.clear();
+
             //Spawn correct level
             let mut de = Deserializer::from_read_ref(&scene.scene_data);
             let scene_data: dcl2d_ecs_v1::Scene = Deserialize::deserialize(&mut de).unwrap();
-            let level_entity = spawn_level(&mut commands,&asset_server,&scene_data,current_level,&scene.path,SystemTime::now());
+            let level_entity = spawn_level(&mut commands,&asset_server,&scene_data,current_level,&scene.path,&mut collision_map,SystemTime::now());
             commands.entity(scene_entity).add_child(level_entity);
           }
           break;
@@ -223,7 +227,7 @@ pub fn scene_handler(
       }
 
       //If it's already downloaded, we spawn the scene.
-      spawn_scene(&mut commands,&asset_server, scene,path,SystemTime::now());   
+      spawn_scene(&mut commands,&asset_server, scene,path,&mut collision_map,SystemTime::now());   
       continue;
     }
     else
@@ -271,7 +275,7 @@ pub fn scene_handler(
 
   for parcel_to_download in &parcels_to_download
   {
-      spawn_default_scene(&mut commands, &asset_server, parcel_to_download);
+      spawn_default_scene(&mut commands, &asset_server, parcel_to_download,&mut collision_map);
   } 
 
   commands.spawn().insert(DownloadingScene{task:task_download_parcels,parcels: parcels_to_download});
@@ -553,18 +557,9 @@ fn handle_tasks(
     mut collision_map: ResMut<CollisionMap>,
     asset_server: Res<AssetServer>,
     mut tasks_downloading_scenes: Query<(Entity, &mut DownloadingScene)>,
-    mut tasks_alpha_collider_loading: Query<(Entity, &mut AlphaColliderLoading)>,
     scenes_query: Query<(Entity, &SceneComponent)>,
 ) 
 { 
-
-  for (entity, mut task) in &mut tasks_alpha_collider_loading {
-    if let Some(collision) = future::block_on(future::poll_once(&mut task.0)) {
-        let mut collision = collision.clone();
-        collision_map.collision_locations.append(&mut collision);
-        commands.entity(entity).remove::<AlphaColliderLoading>();
-    }
-  }
 
     for (entity, mut downloading_scene) in &mut tasks_downloading_scenes {
         if let Some(_finished) = future::block_on(future::poll_once(&mut downloading_scene.task)) 
@@ -577,7 +572,7 @@ fn handle_tasks(
 
               if result.0.is_ok()
               {
-                spawn_scene(&mut commands, &asset_server, result.0.unwrap(), result.1, SystemTime::now());
+                spawn_scene(&mut commands, &asset_server, result.0.unwrap(), result.1, &mut collision_map,SystemTime::now());
               }
             }
         }
@@ -624,12 +619,14 @@ fn spawn_default_scene(
     commands: &mut Commands,
     asset_server: &Res<AssetServer>,
     parcel: &Parcel,
+    collision_map: &mut CollisionMap,
+    
 )
 {
 
   let mut scene = read_scene_file("./assets/scenes/templates/empty_parcel/scene.2dcl").unwrap();
   scene.parcels = vec![parcel.clone()];
-  spawn_scene(commands, asset_server, scene,"./scenes/templates/empty_parcel",SystemTime::now());
+  spawn_scene(commands, asset_server, scene,"./scenes/templates/empty_parcel",collision_map,SystemTime::now());
 }
 
 pub fn spawn_level<T>( 
@@ -638,6 +635,7 @@ pub fn spawn_level<T>(
     scene: &dcl2d_ecs_v1::Scene,
     level_id: usize,
     path: T,
+    collision_map: &mut CollisionMap,
     timestamp: SystemTime
 ) -> Entity
 where
@@ -757,6 +755,51 @@ T: AsRef<Path>
               commands.entity(spawned_entity).insert(circle_collider);
             }
 
+            if let Some(collider) = component.as_any().downcast_ref::<dcl2d_ecs_v1::components::MaskCollider>() {                      
+            
+              let mut sprite_path = std::fs::canonicalize(PathBuf::from_str(".").unwrap()).unwrap();
+              sprite_path.push("assets");
+              sprite_path.push(path.as_ref().clone());
+              sprite_path.push("assets");
+              sprite_path.push(&collider.sprite);
+              
+              if let Ok(mut reader) = ImageReader::open(sprite_path)
+              {
+                reader.set_format(ImageFormat::Png);
+                if let Ok(dynamic_image) = reader.decode(){
+                  if let DynamicImage::ImageRgba8(image) = dynamic_image{
+                    let mut pixels = image.pixels().into_iter(); 
+                    let rows = image.rows().len();
+                    let columns = pixels.len()/rows;
+                    let world_transform  = transform.translation + get_scene_center_location(scene);
+
+                    let fixed_translation = get_fixed_translation_by_anchor(
+                        &Vec2{x:columns as f32, y: rows as f32},
+                        &world_transform.truncate(),
+                            &collider.anchor,
+                    );
+
+                    let mut index =0;
+          
+                    let channel = collider.channel.clone() as usize;
+
+                    while pixels.len() >0
+                    {   
+                        if pixels.next().unwrap()[channel] > 0 
+                        {
+                            
+                            let tile_location = fixed_translation + (Vec2::new((index%columns) as f32,((index/columns)) as f32 * -1.0 )*super::collision::TILE_SIZE);
+                            let collision_tile = CollisionTile{location:tile_location, colliision_type:collider.collision_type.clone(),entity:Some(spawned_entity)};
+                            collision_map.tiles.push(collision_tile);
+                        }                             
+                        index +=1;
+                    }
+
+                  }
+                }
+              }
+            }
+
             if let Some(level_change) = component.as_any().downcast_ref::<dcl2d_ecs_v1::components::triggers::LevelChange>() {
 
               let mut new_level_id = 0;
@@ -789,6 +832,7 @@ pub fn spawn_scene<T>(
     asset_server: &Res<AssetServer>,
     scene: dcl2d_ecs_v1::Scene,
     path: T,
+    collision_map: &mut CollisionMap,
     timestamp: SystemTime
 ) -> Entity
 where T: AsRef<Path>
@@ -809,7 +853,7 @@ where T: AsRef<Path>
 
   if scene.levels.len()>0
   {
-    let level_entity = spawn_level(commands,asset_server,&scene,0,path,SystemTime::now());
+    let level_entity = spawn_level(commands,asset_server,&scene,0,path,collision_map,SystemTime::now());
     commands.entity(scene_entity).add_child(level_entity);
   }
   
@@ -836,23 +880,24 @@ fn entity_anchor_to_anchor(anchor: dcl2d_ecs_v1::Anchor) -> Anchor
     }
 }
 
-/*
-fn  get_fixed_translation_by_anchor(size: Vec2, translation: Vec3, anchor: dcl2d_ecs_v1::Anchor) -> Vec3
+
+fn  get_fixed_translation_by_anchor(size: &Vec2, translation: &Vec2, anchor: &dcl2d_ecs_v1::Anchor) -> Vec2
 {
 
+  println!("size:{},translation:{},anchor:{:?}",size,translation,anchor);
     match anchor
     {
-        dcl2d_ecs_v1::Anchor::BottomCenter => return Vec3{x:translation.x, y:translation.y +size.y/2.0, z:translation.z},
-        dcl2d_ecs_v1::Anchor::BottomLeft => return  Vec3{x:translation.x + size.x/2.0, y:translation.y +size.y/2.0, z:translation.z},
-        dcl2d_ecs_v1::Anchor::BottomRight => return Vec3{x:translation.x - size.x/2.0, y:translation.y +size.y/2.0, z:translation.z},
-        dcl2d_ecs_v1::Anchor::Center => return translation,
-        dcl2d_ecs_v1::Anchor::CenterLeft => return Vec3{x:translation.x + size.x/2.0, y:translation.y, z:translation.z},
-        dcl2d_ecs_v1::Anchor::CenterRight => return Vec3{x:translation.x - size.x/2.0, y:translation.y, z:translation.z},
+        dcl2d_ecs_v1::Anchor::BottomCenter => return Vec2{x:translation.x - size.x/2.0, y:translation.y +size.y},
+        dcl2d_ecs_v1::Anchor::BottomLeft => return Vec2{x:translation.x, y:translation.y +size.y},
+        dcl2d_ecs_v1::Anchor::BottomRight => return  Vec2{x:translation.x - size.x, y:translation.y +size.y},
+        dcl2d_ecs_v1::Anchor::Center => return Vec2{x:translation.x - size.x/2.0 , y:translation.y +size.y/2.0},
+        dcl2d_ecs_v1::Anchor::CenterLeft => return Vec2{x:translation.x, y:translation.y +size.y/2.0},
+        dcl2d_ecs_v1::Anchor::CenterRight =>return Vec2{x:translation.x - size.x, y:translation.y +size.y/2.0},
         // dcl2d_ecs_v1::Anchor::Custom(vec) => return Vec3{x:translation.x - vec.0, y:translation.y - vec.1, z:translation.z},
-        dcl2d_ecs_v1::Anchor::TopCenter => return Vec3{x:translation.x, y:translation.y - size.y/2.0, z:translation.z},
-        dcl2d_ecs_v1::Anchor::TopLeft => return Vec3{x:translation.x + size.x/2.0, y:translation.y -size.y/2.0, z:translation.z},
-        dcl2d_ecs_v1::Anchor::TopRight => return  Vec3{x:translation.x - size.x/2.0, y:translation.y -size.y/2.0, z:translation.z},
+        dcl2d_ecs_v1::Anchor::TopCenter => return Vec2{x:translation.x - size.x/2.0, y:translation.y},
+        dcl2d_ecs_v1::Anchor::TopLeft => return *translation,
+        dcl2d_ecs_v1::Anchor::TopRight => return Vec2{x:translation.x - size.x, y:translation.y},
         dcl2d_ecs_v1::Anchor::Custom(_) => todo!(),
     }
-} */
+} 
 

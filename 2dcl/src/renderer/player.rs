@@ -1,5 +1,5 @@
 use bevy::{prelude::*, sprite::Anchor};
-use dcl2d_ecs_v1::{collision_type::CollisionType};
+use dcl2d_ecs_v1::{collision_type::CollisionType, components::triggers::LevelChange};
 use dcl_common::Parcel;
 use super::{scene_loader::{BoxCollider, LevelChangeComponent}, collision::*, animations::*};
 use crate::renderer::config::*;
@@ -115,7 +115,7 @@ fn player_movement
     }
 
     let (mut player, mut transform, mut animator, mut texture_atlas) = result.unwrap();
-
+    
     let mut animation_state = "Idle";
     let mut movement_input = get_movment_axis_input(&keyboard);
 
@@ -173,8 +173,10 @@ fn player_movement
 
 fn player_interact(
   mut player_query: Query<(&mut PlayerComponent, &mut Transform)>,
-  level_change_query: Query<(&GlobalTransform, &BoxCollider, &LevelChangeComponent)>,
+  colliders_with_level_change: Query<(&GlobalTransform, &BoxCollider, &LevelChangeComponent)>,
+  entities_with_level_change: Query<(Entity, &LevelChangeComponent)>,
   keyboard: Res<Input<KeyCode>>,
+  collision_map: Res<CollisionMap>,
 )
 {
   let result = player_query.get_single_mut();
@@ -189,7 +191,7 @@ fn player_interact(
 
   if keyboard.pressed(KeyCode::E)
   {
-    enter_level(&mut player,&mut transform, &level_change_query);
+    try_change_level(&mut player,&mut transform, &colliders_with_level_change, &entities_with_level_change,collision_map.clone());
   }
 
   if keyboard.pressed(KeyCode::Escape)
@@ -199,13 +201,55 @@ fn player_interact(
 }
 
 
-fn enter_level( 
+fn change_level(
   player: &mut PlayerComponent,
   player_transform: &mut Transform,
-  level_change_query: &Query<(&GlobalTransform, &BoxCollider, &LevelChangeComponent)>,
+  level_change: &LevelChangeComponent
 )
 {
-  for (collision_transform, collider, level_change) in level_change_query.iter()
+  let level_change_stack_data = LevelChangeStackData{
+    level_id: player.current_level,
+    location: player_transform.translation
+  };
+
+  player.current_level = level_change.level;
+  player.level_change_stack.push(level_change_stack_data);
+  player_transform.translation = level_change.spawn_point.extend(level_change.spawn_point.y*-1f32);
+  
+  if level_change.level==0
+  {
+    player.level_change_stack.clear();
+  }
+}
+
+fn try_change_level( 
+  player: &mut PlayerComponent,
+  player_transform: &mut Transform,
+  colliders_with_level_change: &Query<(&GlobalTransform, &BoxCollider, &LevelChangeComponent)>,
+  entities_with_level_change: &Query<(Entity, &LevelChangeComponent)>,
+  collision_map: CollisionMap,
+)
+{
+
+
+  let collision_result =  map_collision_check (
+    &player_transform.translation,
+    &player.collider_size,
+    collision_map);
+  if collision_result.hit && collision_result.collision_type == CollisionType::Trigger &&  collision_result.entity.is_some()
+  {
+    
+    for (entity, level_change) in entities_with_level_change.iter()
+    {
+      if entity ==collision_result.entity.unwrap()
+      {  
+        change_level(player, player_transform, level_change);
+        break;
+      }
+    }
+  } 
+
+  for (collision_transform, collider, level_change) in colliders_with_level_change.iter()
   {
     let collision_result = box_collision_check (
       &player_transform.translation,
@@ -215,18 +259,7 @@ fn enter_level(
 
       if collision_result.hit && collision_result.collision_type == CollisionType::Trigger
       {
-        let level_change_stack_data = LevelChangeStackData{
-          level_id: player.current_level,
-          location: player_transform.translation
-        };
-
-        player.current_level = level_change.level;
-        player.level_change_stack.push(level_change_stack_data);
-        player_transform.translation = level_change.spawn_point.extend(level_change.spawn_point.y*-1f32);
-        if level_change.level==0
-        {
-          player.level_change_stack.clear();
-        }
+        change_level(player, player_transform, level_change);
       }
   }
 }
@@ -257,6 +290,15 @@ fn check_player_collision(
 ) -> bool
 {
 
+  let collision_result =  map_collision_check (
+    target_location,
+    &player.collider_size,
+    collision_map);
+  if collision_result.hit && collision_result.collision_type == CollisionType::Solid
+  {
+    return true;
+  } 
+  
   for (collision_transform, collider, _player) in box_collision_query.iter()
   {
     let collision_result = box_collision_check (
@@ -265,23 +307,11 @@ fn check_player_collision(
       &collision_transform.translation(), 
       collider);
    
-    if collision_result.hit
+    if collision_result.hit && collision_result.collision_type == CollisionType::Solid
     {
-      if collision_result.collision_type == CollisionType::Solid
-      {
-        return true;
-      }
+      return true;
     } 
   }
-  
-  let collision_result =  map_collision_check (
-    target_location,
-    &player.collider_size,
-    collision_map);
-  if collision_result.hit
-  {
-    return true;
-  } 
   
   false
 }
