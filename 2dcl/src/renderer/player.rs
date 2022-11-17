@@ -12,8 +12,16 @@ pub struct PlayerComponent
 {
     speed: f32,
     collider_size: Vec2,
+    level_change_stack: Vec<LevelChangeStackData>,
     pub current_level: usize,
     pub current_parcel: Parcel,
+}
+
+#[derive(Debug)]
+struct LevelChangeStackData
+{
+  location: Vec3,
+  level_id: usize,
 }
 
 
@@ -23,6 +31,7 @@ impl Plugin for  PlayerPlugin
     fn build(&self, app: &mut App) {
     app
         .add_startup_system(spawn_player)
+        .add_system(player_interact)
         .add_system(player_movement)
         ;
     }
@@ -70,7 +79,8 @@ fn spawn_player(
                 speed: PLAYER_SPEED,
                 collider_size: PLAYER_COLLIDER,
                 current_level: 0,
-                current_parcel:Parcel(0,0)
+                current_parcel:Parcel(0,0),
+                level_change_stack: vec![]
             })
         .id();
     
@@ -88,8 +98,7 @@ fn spawn_player(
 fn player_movement
 (
     mut player_query: Query<(&mut PlayerComponent, &mut Transform, &mut Animator, &mut TextureAtlasSprite)>,
-    box_collision_query: Query<(Entity, &GlobalTransform, &BoxCollider,Without<PlayerComponent>)>,
-    trigger_query: Query<(Entity, &LevelChangeComponent, Without<PlayerComponent>)>,  
+    box_collision_query: Query<(&GlobalTransform, &BoxCollider,Without<PlayerComponent>)>,
     keyboard: Res<Input<KeyCode>>,
     collision_map: Res<CollisionMap>,
     time: Res<Time>
@@ -123,26 +132,26 @@ fn player_movement
     {
       animation_state = "Run";
 
-      let target = transform.translation + Vec3::new(movement_input.x,0.0,0.0);
+      let mut target = transform.translation + Vec3::new(movement_input.x,0.0,0.0);
 
       if !check_player_collision (
         player.as_mut(),
-        target,
+        &target,
         &box_collision_query,
-        &trigger_query,
-        collision_map.clone() )
+        collision_map.clone()
+      )
       {
         transform.translation = target;
       }
       
-      let target = transform.translation + Vec3::new(0.0,movement_input.y,movement_input.y * -1.0);
+      target = transform.translation + Vec3::new(0.0,movement_input.y,movement_input.y * -1.0);
 
       if !check_player_collision (
         player.as_mut(),
-        target,
+        &target,
         &box_collision_query,
-        &trigger_query,
-        collision_map.clone() )
+        collision_map.clone() 
+      )
       {
         transform.translation = target;
       }
@@ -161,58 +170,120 @@ fn player_movement
 }
 
 
+
+fn player_interact(
+  mut player_query: Query<(&mut PlayerComponent, &mut Transform)>,
+  level_change_query: Query<(&GlobalTransform, &BoxCollider, &LevelChangeComponent)>,
+  keyboard: Res<Input<KeyCode>>,
+)
+{
+  let result = player_query.get_single_mut();
+    
+  if result.is_err()
+  {
+    println!("{}",result.unwrap_err());
+    return;
+  }
+  
+  let (mut player, mut transform) = result.unwrap();
+
+  if keyboard.pressed(KeyCode::E)
+  {
+    enter_level(&mut player,&mut transform, &level_change_query);
+  }
+
+  if keyboard.pressed(KeyCode::Escape)
+  {
+    exit_level(&mut player,&mut transform);
+  }
+}
+
+
+fn enter_level( 
+  player: &mut PlayerComponent,
+  player_transform: &mut Transform,
+  level_change_query: &Query<(&GlobalTransform, &BoxCollider, &LevelChangeComponent)>,
+)
+{
+  for (collision_transform, collider, level_change) in level_change_query.iter()
+  {
+    let collision_result = box_collision_check (
+      &player_transform.translation,
+      &player.collider_size, 
+      &collision_transform.translation(), 
+      collider);
+
+      if collision_result.hit && collision_result.collision_type == CollisionType::Trigger
+      {
+        let level_change_stack_data = LevelChangeStackData{
+          level_id: player.current_level,
+          location: player_transform.translation
+        };
+
+        player.current_level = level_change.level;
+        player.level_change_stack.push(level_change_stack_data);
+        player_transform.translation = level_change.spawn_point.extend(level_change.spawn_point.y*-1f32);
+        if level_change.level==0
+        {
+          player.level_change_stack.clear();
+        }
+      }
+  }
+}
+
+
+fn exit_level(
+  player: &mut PlayerComponent,
+  transform: &mut Transform,
+)
+{
+  match player.level_change_stack.pop()
+  {
+    Some(data) => {
+      transform.translation = data.location;
+      player.current_level = data.level_id;
+    }
+    None => {}
+  }
+  
+}
+
+
 fn check_player_collision(
   player: &mut PlayerComponent,
-  target_location: Vec3,
-  box_collision_query: &Query<(Entity, &GlobalTransform, &BoxCollider,Without<PlayerComponent>)>,
-  trigger_query: &Query<(Entity, &LevelChangeComponent, Without<PlayerComponent>)>,  
+  target_location: &Vec3,
+  box_collision_query: &Query<(&GlobalTransform, &BoxCollider,Without<PlayerComponent>)>,
   collision_map: CollisionMap,
 ) -> bool
 {
-  let mut blocked = false;
-  for (collision_entity, collision_transform, collider, _player) in box_collision_query.iter()
+
+  for (collision_transform, collider, _player) in box_collision_query.iter()
   {
     let collision_result = box_collision_check (
-      target_location,player.collider_size, 
-      collision_transform.translation(), 
+      target_location,
+      &player.collider_size, 
+      &collision_transform.translation(), 
       collider);
    
     if collision_result.hit
     {
       if collision_result.collision_type == CollisionType::Solid
       {
-        blocked = true;
-      }
-      else
-      {
-      
-        for (trigger_entity, trigger, _player) in trigger_query.iter()
-        {
-          if trigger_entity == collision_entity
-          {
-            player.current_level = trigger.level;
-            break;
-          }
-        }
+        return true;
       }
     } 
-  }
-
-  if blocked
-  {
-    return true;
   }
   
   let collision_result =  map_collision_check (
     target_location,
-    player.collider_size,
+    &player.collider_size,
     collision_map);
   if collision_result.hit
   {
     return true;
   } 
   
-  return false;
+  false
 }
 
 

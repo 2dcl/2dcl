@@ -39,8 +39,8 @@ fn setup(mut commands: Commands,)
 
 
 pub fn map_collision_check(
-  position: Vec3,
-  size: Vec2,
+  position: &Vec3,
+  size: &Vec2,
   collision_map: CollisionMap
 ) -> CollisionResult
 {
@@ -49,7 +49,7 @@ pub fn map_collision_check(
   {
       let collision = collide(
           Vec3{x:position.x,y:position.y+size.y/2.0,z:0.0},
-          size,
+          *size,
           collision_location.extend(0.0),
           Vec2::splat(collision_map.tile_size)
       );
@@ -66,16 +66,16 @@ pub fn map_collision_check(
 
 
 pub fn box_collision_check(
-  position: Vec3,
-  size: Vec2,
-  collision_location: Vec3,
+  position: &Vec3,
+  size: &Vec2,
+  collision_location: &Vec3,
   collision_collider: &BoxCollider
 ) -> CollisionResult
 {
   let collision = collide(
           Vec3{x:position.x,y:position.y+size.y/2.0,z:0.0},
-          size,
-          collision_location + collision_collider.center.extend(0.0),
+          *size,
+          *collision_location + collision_collider.center.extend(0.0),
           collision_collider.size
     );
 

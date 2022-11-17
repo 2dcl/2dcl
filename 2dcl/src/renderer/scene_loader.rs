@@ -20,6 +20,7 @@ use std::path::Path;
 use bevy_inspector_egui::Inspectable;
 use std::path::PathBuf;
 
+use super::collision::CollisionMap;
 use super::dcl_3d_scene;
 use super::player::PlayerComponent;
 use futures_lite::future;
@@ -35,6 +36,9 @@ pub struct DownloadingScene {
     pub task: Task<()>,
     pub parcels: Vec<Parcel>,
 }
+
+#[derive(Component)]
+pub struct AlphaColliderLoading(pub Task<Vec<Vec2>>);
 
 
 #[derive(Debug, Component, Clone, Inspectable)]
@@ -274,7 +278,6 @@ pub fn scene_handler(
 
 
 } 
-
 
 
 fn get_scene_center_location(scene: &dcl2d_ecs_v1::Scene) -> Vec3
@@ -547,11 +550,21 @@ fn get_scene(parcel: Parcel) -> (Result<dcl2d_ecs_v1::Scene, String>, PathBuf)
 
 fn handle_tasks(
     mut commands: Commands,
+    mut collision_map: ResMut<CollisionMap>,
     asset_server: Res<AssetServer>,
     mut tasks_downloading_scenes: Query<(Entity, &mut DownloadingScene)>,
+    mut tasks_alpha_collider_loading: Query<(Entity, &mut AlphaColliderLoading)>,
     scenes_query: Query<(Entity, &SceneComponent)>,
 ) 
 { 
+
+  for (entity, mut task) in &mut tasks_alpha_collider_loading {
+    if let Some(collision) = future::block_on(future::poll_once(&mut task.0)) {
+        let mut collision = collision.clone();
+        collision_map.collision_locations.append(&mut collision);
+        commands.entity(entity).remove::<AlphaColliderLoading>();
+    }
+  }
 
     for (entity, mut downloading_scene) in &mut tasks_downloading_scenes {
         if let Some(_finished) = future::block_on(future::poll_once(&mut downloading_scene.task)) 
@@ -630,16 +643,16 @@ pub fn spawn_level<T>(
 where
 T: AsRef<Path>
 {
-  let scene_entity = commands.spawn().id();
+  let level_entity = commands.spawn().id();
 
   if scene.levels.len()<=level_id
   {
-    return scene_entity;
+    return level_entity;
   }
 
   let level = &scene.levels[level_id];
    
-    commands.entity(scene_entity)
+    commands.entity(level_entity)
     .insert(Name::new(level.name.clone()))
     .insert(Visibility{is_visible: true})
     .insert(GlobalTransform::default())
@@ -679,7 +692,7 @@ T: AsRef<Path>
             .insert(transform)
             .id();
        
-        commands.entity(scene_entity).add_child(spawned_entity);
+        commands.entity(level_entity).add_child(spawned_entity);
         
         // Inserting components
         for component in entity.components.iter()
@@ -739,6 +752,10 @@ T: AsRef<Path>
                 commands.entity(spawned_entity).insert(circle_collider);
             }
 
+            if let Some(collider) = component.as_any().downcast_ref::<dcl2d_ecs_v1::components::CircleCollider>() {                      
+              let circle_collider = CircleCollider{center:Vec2::new(collider.center.x as f32,collider.center.y as f32),radius:collider.radius};
+              commands.entity(spawned_entity).insert(circle_collider);
+            }
 
             if let Some(level_change) = component.as_any().downcast_ref::<dcl2d_ecs_v1::components::triggers::LevelChange>() {
 
@@ -753,16 +770,17 @@ T: AsRef<Path>
                 }
               }
 
+              let scene_center_location = get_scene_center_location(scene);
               let level_change_component = LevelChangeComponent {
                 level:new_level_id,
-                spawn_point: Vec2::new(level_change.spawn_point.x as f32, level_change.spawn_point.y as f32),
+                spawn_point: Vec2::new(level_change.spawn_point.x as f32 +scene_center_location.x , level_change.spawn_point.y as f32+scene_center_location.y),
               };
               commands.entity(spawned_entity).insert(level_change_component);
      
           }
         }
     } 
-    scene_entity
+    level_entity
 }
 
 

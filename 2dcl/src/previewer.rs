@@ -15,9 +15,14 @@ where
 
 
   let source_path = source_path.as_ref();
-  let destination_path = destination_path.as_ref().to_path_buf();
+  let destination_path = destination_path.as_ref();
 
-  let mut watcher = notify::recommended_watcher(|res| {
+  let mut src_abs_path =  std::fs::canonicalize(".").unwrap();
+  src_abs_path.push(source_path);
+  let mut dst_abs_path= std::fs::canonicalize(".").unwrap();
+  dst_abs_path.push(destination_path);
+  
+  let mut watcher = notify::recommended_watcher(move|res| {
     match res {
       Ok(event) => {
         let Event { kind, paths, attrs: _ } = event;
@@ -25,7 +30,7 @@ where
         if let Access(Close(_)) = kind {
           for path in paths {
             if path.ends_with("scene.json") || path.extension().unwrap().to_string_lossy() == "png"  {
-              scene_compiler::compile("../", ".").unwrap();
+              scene_compiler::compile(&src_abs_path, &dst_abs_path).unwrap();
             }
           }          
         }
@@ -43,7 +48,5 @@ where
   scene_compiler::compile(&source_path, &destination_path).unwrap();
 
   // run preview
-  // destination_path.push("../scene.2dcl");
-  println!("destination_path: {}", destination_path.display());
-  renderer::preview_scene(destination_path);
+  renderer::preview_scene(destination_path.to_path_buf());
 }
