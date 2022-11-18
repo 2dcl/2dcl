@@ -1,0 +1,7 @@
+rm -rf build &&
+cargo build --release &&
+mkdir -p build/macos &&
+cp target/release/2dcl build/macos &&
+cp -rf 2dcl/assets build/macos &&
+cd build/macos &&
+tar cvzf ../2dcl-macos-0.1.0.tar.gz *
