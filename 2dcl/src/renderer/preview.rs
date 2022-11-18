@@ -32,7 +32,6 @@ impl AssetLoader for SceneAssetLoader {
                 bytes: bytes.to_vec(),
                 timestamp: SystemTime::now()
             }));
-            println!("Loaded Scene Asset");
             Ok(())
         })
     }

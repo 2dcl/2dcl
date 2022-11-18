@@ -29,8 +29,15 @@ where
 
         if let Access(Close(_)) = kind {
           for path in paths {
-            if path.ends_with("scene.json") || path.extension().unwrap().to_string_lossy() == "png"  {
-              scene_compiler::compile(&src_abs_path, &dst_abs_path).unwrap();
+            if !path.starts_with(&dst_abs_path) && (
+                path.ends_with("scene.json") || path.extension().unwrap().to_string_lossy() == "png"
+              ) {
+              println!("Reloading {}...", src_abs_path.display());
+
+              match scene_compiler::compile(&src_abs_path, &dst_abs_path) {
+                Err(error) => println!("Error compiling: {}", error),
+                _ => {}
+              }
             }
           }          
         }
