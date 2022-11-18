@@ -151,6 +151,7 @@ pub fn scene_handler(
             //Spawn correct level
             let mut de = Deserializer::from_read_ref(&scene.scene_data);
             let scene_data: dcl2d_ecs_v1::Scene = Deserialize::deserialize(&mut de).unwrap();
+            
             let level_entity = spawn_level(&mut commands,&asset_server,&scene_data,current_level,&scene.path,&mut collision_map,SystemTime::now());
             commands.entity(scene_entity).add_child(level_entity);
           }
@@ -440,26 +441,33 @@ pub async fn download_parcels(parcels: Vec<Parcel>) -> dcl_common::Result<()> {
 
 fn make_road_scene_for_parcel (parcel: &Parcel)
 {
-    let scene = read_scene_file("./assets/scenes/templates/road/scene.2dcl");
 
-    if scene.is_some()
-    {
-        let mut scene = scene.unwrap();
-        scene.parcels = vec![parcel.clone()];
-      
-        let mut buf: Vec<u8> = Vec::new();
-        scene.serialize(&mut Serializer::new(&mut buf)).unwrap();   
-        let save_path =  "./assets/scenes/road_".to_string() + &parcel.0.to_string() + "_" + &parcel.1.to_string();
-        create_dir(&save_path);
-        let mut file = File::create(save_path.clone() + "/scene.2dcl").unwrap();
-        file.write_all(&buf); 
+  let mut scene = dcl2d_ecs_v1::Scene::default();
+  scene.parcels.push(parcel.clone());
 
-        
-        let save_path = save_path + "/assets";
-        create_dir(&save_path);
-        
-        fs::copy("./assets/scenes/templates/road/assets/background.png", save_path + "/background.png");
-    }
+  let mut background = dcl2d_ecs_v1::Entity::new("Background".to_string());
+  let mut renderer = SpriteRenderer::default();
+  renderer.sprite = "road-parcel.png".to_string();
+  renderer.layer = -1;
+  background.components.push(Box::new(renderer));
+
+  let level = dcl2d_ecs_v1::Level {
+    entities: vec![
+        background
+    ],
+    ..Default::default()
+  };
+  scene.levels.push(level);
+
+  let mut buf: Vec<u8> = Vec::new();
+  scene.serialize(&mut Serializer::new(&mut buf)).unwrap();   
+  let save_path =  "./assets/scenes/road_".to_string() + &parcel.0.to_string() + "_" + &parcel.1.to_string();
+  create_dir(&save_path).unwrap();
+  let mut file = File::create(save_path.clone() + "/scene.2dcl").unwrap();
+  file.write_all(&buf).unwrap(); 
+  let save_path = save_path + "/assets";
+  create_dir(&save_path).unwrap();
+  fs::copy("./assets/road-parcel.png", save_path + "/road-parcel.png").unwrap();
 }
 
 
@@ -538,11 +546,11 @@ fn get_scene(parcel: Parcel) -> (Result<dcl2d_ecs_v1::Scene, String>, PathBuf)
                         let iter = new_path.iter().rev();
 
                         let mut final_path = PathBuf::default();
+                        final_path.push("scenes");
                         for i in iter
                         {
                             final_path.push(i);
                         }
-
                         return (Ok(scene),final_path);
                     }
                 }
