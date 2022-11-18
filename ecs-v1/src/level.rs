@@ -3,7 +3,7 @@ use crate::{Entity, Vec2};
 
 
 
-#[derive(Serialize, Deserialize, Debug)]
+#[derive(Serialize, Deserialize, Debug, Default)]
 pub struct Level {
    #[serde(skip)]
    pub id: usize,

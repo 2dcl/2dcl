@@ -10,6 +10,7 @@ use bevy::tasks::Task;
 use catalyst::entity_files::ContentFile;
 use catalyst::{ContentClient, Server};
 use dcl2d_ecs_v1::collision_type::CollisionType;
+use dcl2d_ecs_v1::components::SpriteRenderer;
 use dcl_common::{Parcel};
 use bevy::sprite::Anchor;
 use serde::{Deserialize, Serialize};
@@ -625,10 +626,24 @@ fn spawn_default_scene(
     
 )
 {
+  let mut scene = dcl2d_ecs_v1::Scene::default();
+  scene.parcels.push(parcel.clone());
 
-  let mut scene = read_scene_file("./assets/scenes/templates/empty_parcel/scene.2dcl").unwrap();
-  scene.parcels = vec![parcel.clone()];
-  spawn_scene(commands, asset_server, scene,"./scenes/templates/empty_parcel",collision_map,SystemTime::now());
+  let mut background = dcl2d_ecs_v1::Entity::new("Background".to_string());
+  let mut renderer = SpriteRenderer::default();
+  renderer.sprite = "default-parcel.png".to_string();
+  renderer.layer = -1;
+  background.components.push(Box::new(renderer));
+
+  let level = dcl2d_ecs_v1::Level {
+    entities: vec![
+        background
+    ],
+    ..Default::default()
+  };
+  scene.levels.push(level);
+
+  spawn_scene(commands, asset_server, scene, "../", collision_map, SystemTime::now());
 }
 
 pub fn spawn_level<T>( 

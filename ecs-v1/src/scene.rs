@@ -2,7 +2,7 @@ use serde::{Serialize, Deserialize};
 use dcl_common::Parcel;
 use crate::Level;
 
-#[derive(Serialize, Deserialize, Debug)]
+#[derive(Serialize, Deserialize, Debug, Default)]
 pub struct Scene {
    #[serde(skip)]
    pub id: usize,

@@ -3,7 +3,7 @@ use core::any::Any;
 use serde::{Serialize, Deserialize};
 use crate::{Anchor, Component, color::RGBA};
 
-#[derive(Deserialize, Serialize, Debug, Clone, PartialEq)]
+#[derive(Deserialize, Serialize, Debug, Clone, PartialEq, Default)]
 pub struct SpriteRenderer {
     pub sprite: String,
     #[serde(default)]
