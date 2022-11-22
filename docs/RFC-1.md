@@ -54,13 +54,19 @@ That's why our scene serialization includes an array of entities.
 
 Each entity is defined by an object with two attributes: `name` (name of the entity), and `components` (an array of components).
 
+An entity also has `children`, which are entities that inherit the `Transform` component of the parent.
+
 ```json
 {
   "name": "My Entity",
   "components": [
     // See components below
     // ...
-  ] 
+  ],
+  "children" : [
+    // Child entities
+    //... 
+  ]
 }
 ```
 
