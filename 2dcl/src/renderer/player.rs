@@ -1,4 +1,4 @@
-use bevy::{prelude::*, sprite::Anchor};
+use bevy::{prelude::*, sprite::Anchor, core_pipeline::clear_color::ClearColorConfig};
 use dcl2d_ecs_v1::{collision_type::CollisionType, components::triggers::LevelChange};
 use dcl_common::Parcel;
 use super::{scene_loader::{BoxCollider, LevelChangeComponent}, collision::*, animations::*};
@@ -67,7 +67,7 @@ fn spawn_player(
         texture_atlas: animator.atlas.clone(),
         transform: Transform{
             scale: Vec3::ONE * PLAYER_SCALE * animator.scale,
-            translation: Vec3::new(-100.0, 0.0, 0.0),
+            translation: Vec3::new(0.0, 0.0, 0.0),
             ..default()
         },
         ..default()
@@ -84,7 +84,9 @@ fn spawn_player(
             })
         .id();
     
+        let clear_color = ClearColorConfig::Custom(Color::BLACK);
         let mut camera_bundle = Camera2dBundle::new_with_far(10000.0);
+        camera_bundle.camera_2d.clear_color = clear_color;
         camera_bundle.transform = Transform::from_translation(Vec3{x:0.0,y:0.0,z:5000.0});
 
         camera_bundle.projection.scale = CAMERA_SCALE;

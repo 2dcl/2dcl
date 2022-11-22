@@ -656,7 +656,7 @@ fn spawn_default_scene(
 
 pub fn spawn_level<T>( 
     commands: &mut Commands,
-    asset_server: &Res<AssetServer>,
+    asset_server: &AssetServer,
     scene: &dcl2d_ecs_v1::Scene,
     level_id: usize,
     path: T,
@@ -687,174 +687,9 @@ T: AsRef<Path>
     
     for entity in  level.entities.iter()
     {
-        let mut transform = Transform::identity();
-
-        for component in entity.components.iter()
-        {
-            if let Some(source_transform) = component.as_any().downcast_ref::<dcl2d_ecs_v1::components::Transform>() {
-                let location = Vec2::new(source_transform.location.x as f32, source_transform.location.y as f32);
-                let scale = Vec2::new(source_transform.scale.x, source_transform.scale.y);
-
-                transform.translation = transform.translation + location.extend(location.y * -1.0);
-                transform.rotation = Quat::from_euler(
-                    EulerRot::XYZ,
-                    source_transform.rotation.x.to_radians(),
-                    source_transform.rotation.y.to_radians(),
-                    source_transform.rotation.z.to_radians());
-
-                transform.scale = scale.extend(1.0);
-            };
-        }
-        
-        //Spawning Entity
-        let spawned_entity = commands.spawn()
-            .insert(Name::new(entity.name.clone()))
-            .insert(Visibility{is_visible: true})
-            .insert(GlobalTransform::default())
-            .insert(ComputedVisibility::default())
-            .insert(transform)
-            .id();
-       
-        commands.entity(level_entity).add_child(spawned_entity);
-        
-        // Inserting components
-        for component in entity.components.iter()
-        { 
-            if let Some(sprite_renderer) = component.as_any().downcast_ref::<dcl2d_ecs_v1::components::SpriteRenderer>() {
-                transform.translation = Vec3{
-                    x:transform.translation.x,
-                    y:transform.translation.y,
-                    z:transform.translation.z + sprite_renderer.layer as f32 * 500.0
-                };
-
-                commands.entity(spawned_entity).insert(transform);
-
-                let server = (*asset_server).clone();
-                let mut image_path = path.as_ref().clone().to_path_buf();
-                image_path.push("assets");
-                image_path.push(&sprite_renderer.sprite);
-
-                let texture: Handle<Image> = server.load(image_path);
-                commands.entity(spawned_entity).insert(texture);
-              
-                let renderer  = (*sprite_renderer).clone();
-                let mut sprite_path = std::fs::canonicalize(PathBuf::from_str(".").unwrap()).unwrap();
-                sprite_path.push("assets");
-                sprite_path.push(path.as_ref().clone());
-                sprite_path.push("assets");
-                sprite_path.push(&sprite_renderer.sprite);
-
-
-                let mut image_size = Vec2::new(0.0,0.0);
-                let result = size(sprite_path);
-                
-                if result.is_ok()
-                {
-                  let result = result.unwrap();
-                  image_size = Vec2::new(result.width as f32,result.height as f32);
-                }
-
-                let sprite = Sprite{
-                  color: Color::Rgba { 
-                      red: renderer.color.r, 
-                      green: renderer.color.g, 
-                      blue: renderer.color.b, 
-                      alpha:  renderer.color.a
-                  },
-                  anchor: entity_anchor_to_anchor(renderer.anchor.clone(),image_size),
-                  flip_x: renderer.flip.x,
-                  flip_y: renderer.flip.y,
-                  ..default()
-              };
-
-              commands.entity(spawned_entity).insert(sprite);
-            }
-
-            if let Some(collider) = component.as_any().downcast_ref::<dcl2d_ecs_v1::components::BoxCollider>() {
-
-                let box_collider= BoxCollider{
-                  center:Vec2::new(collider.center.x as f32, collider.center.y as f32),
-                  size:Vec2::new(collider.size.width as f32, collider.size.height as f32),
-                  collision_type: collider.collision_type.clone()
-                };
-                commands.entity(spawned_entity).insert(box_collider);
-            }
-
-             if let Some(collider) = component.as_any().downcast_ref::<dcl2d_ecs_v1::components::CircleCollider>() {                      
-                let circle_collider = CircleCollider{center:Vec2::new(collider.center.x as f32,collider.center.y as f32),radius:collider.radius};
-                commands.entity(spawned_entity).insert(circle_collider);
-            }
-
-            if let Some(collider) = component.as_any().downcast_ref::<dcl2d_ecs_v1::components::CircleCollider>() {                      
-              let circle_collider = CircleCollider{center:Vec2::new(collider.center.x as f32,collider.center.y as f32),radius:collider.radius};
-              commands.entity(spawned_entity).insert(circle_collider);
-            }
-
-            if let Some(collider) = component.as_any().downcast_ref::<dcl2d_ecs_v1::components::MaskCollider>() {                      
-            
-              let mut sprite_path = std::fs::canonicalize(PathBuf::from_str(".").unwrap()).unwrap();
-              sprite_path.push("assets");
-              sprite_path.push(path.as_ref().clone());
-              sprite_path.push("assets");
-              sprite_path.push(&collider.sprite);
-              
-              if let Ok(mut reader) = ImageReader::open(sprite_path)
-              {
-                reader.set_format(ImageFormat::Png);
-                if let Ok(dynamic_image) = reader.decode(){
-                  if let DynamicImage::ImageRgba8(image) = dynamic_image{
-                    let mut pixels = image.pixels().into_iter(); 
-                    let rows = image.rows().len();
-                    let columns = pixels.len()/rows;
-                    let world_transform  = transform.translation + get_scene_center_location(scene);
-
-                    let fixed_translation = get_fixed_translation_by_anchor(
-                        &Vec2{x:columns as f32, y: rows as f32},
-                        &world_transform.truncate(),
-                            &collider.anchor,
-                    );
-
-                    let mut index =0;
-                    let channel = collider.channel.clone() as usize;
-
-                    while pixels.len() >0
-                    {   
-                        if pixels.next().unwrap()[channel] > 0 
-                        {
-                            let tile_location = fixed_translation + (Vec2::new((index%columns) as f32,((index/columns)) as f32 * -1.0 )*super::collision::TILE_SIZE);
-                            let collision_tile = CollisionTile{location:tile_location, colliision_type:collider.collision_type.clone(),entity:Some(spawned_entity)};
-                            collision_map.tiles.push(collision_tile);
-                        }                             
-                        index +=1;
-                    }
-
-                  }
-                }
-              }
-            }
-
-            if let Some(level_change) = component.as_any().downcast_ref::<dcl2d_ecs_v1::components::triggers::LevelChange>() {
-
-              let mut new_level_id = 0;
-
-              for i in 0..scene.levels.len()
-              {
-                if scene.levels[i].name == level_change.level
-                {
-                  new_level_id = i;
-                  break;
-                }
-              }
-
-              let scene_center_location = get_scene_center_location(scene);
-              let level_change_component = LevelChangeComponent {
-                level:new_level_id,
-                spawn_point: Vec2::new(level_change.spawn_point.x as f32 +scene_center_location.x , level_change.spawn_point.y as f32+scene_center_location.y),
-              };
-              commands.entity(spawned_entity).insert(level_change_component);
-     
-          }
-        }
+      let spawned_entity = spawn_entity(commands,asset_server,path.as_ref(),collision_map,entity,scene);
+      commands.entity(level_entity).add_child(spawned_entity);
+  
     } 
     level_entity
 }
@@ -862,7 +697,7 @@ T: AsRef<Path>
 
 pub fn spawn_scene<T>(    
     commands: &mut Commands,
-    asset_server: &Res<AssetServer>,
+    asset_server: &AssetServer,
     scene: dcl2d_ecs_v1::Scene,
     path: T,
     collision_map: &mut CollisionMap,
@@ -931,3 +766,188 @@ fn  get_fixed_translation_by_anchor(size: &Vec2, translation: &Vec2, anchor: &dc
     }
 } 
 
+
+fn spawn_entity<T>(
+  commands: &mut Commands, 
+  asset_server: &AssetServer,
+  path: T, 
+  collision_map: &mut CollisionMap,
+  entity: &dcl2d_ecs_v1::Entity,
+  scene: &dcl2d_ecs_v1::Scene) -> Entity
+  where T: AsRef<Path>
+{
+        
+  let mut transform = Transform::identity();
+  for component in entity.components.iter()
+  {   
+
+      if let Some(source_transform) = component.as_any().downcast_ref::<dcl2d_ecs_v1::components::Transform>() {
+          let location = Vec2::new(source_transform.location.x as f32, source_transform.location.y as f32);
+          let scale = Vec2::new(source_transform.scale.x, source_transform.scale.y);
+
+          transform.translation = transform.translation + location.extend(location.y * -1.0);
+          transform.rotation = Quat::from_euler(
+              EulerRot::XYZ,
+              source_transform.rotation.x.to_radians(),
+              source_transform.rotation.y.to_radians(),
+              source_transform.rotation.z.to_radians());
+
+          transform.scale = scale.extend(1.0);
+      };
+  }
+  
+  //Spawning Entity
+  let spawned_entity = commands.spawn()
+      .insert(Name::new(entity.name.clone()))
+      .insert(Visibility{is_visible: true})
+      .insert(GlobalTransform::default())
+      .insert(ComputedVisibility::default())
+      .insert(transform)
+      .id();
+ 
+
+  
+  // Inserting components
+  for component in entity.components.iter()
+  { 
+      if let Some(sprite_renderer) = component.as_any().downcast_ref::<dcl2d_ecs_v1::components::SpriteRenderer>() {
+          transform.translation = Vec3{
+              x:transform.translation.x,
+              y:transform.translation.y,
+              z:transform.translation.z + sprite_renderer.layer as f32 * 500.0
+          };
+
+          commands.entity(spawned_entity).insert(transform);
+
+          let mut image_path = path.as_ref().clone().to_path_buf();
+          image_path.push("assets");
+          image_path.push(&sprite_renderer.sprite);
+
+          let texture: Handle<Image> = asset_server.load(image_path);
+          commands.entity(spawned_entity).insert(texture);
+        
+          let renderer  = (*sprite_renderer).clone();
+          let mut sprite_path = std::fs::canonicalize(PathBuf::from_str(".").unwrap()).unwrap();
+          sprite_path.push("assets");
+          sprite_path.push(path.as_ref().clone());
+          sprite_path.push("assets");
+          sprite_path.push(&sprite_renderer.sprite);
+
+
+          let mut image_size = Vec2::new(0.0,0.0);
+          let result = size(sprite_path);
+          
+          if result.is_ok()
+          {
+            let result = result.unwrap();
+            image_size = Vec2::new(result.width as f32,result.height as f32);
+          }
+
+          let sprite = Sprite{
+            color: Color::Rgba { 
+                red: renderer.color.r, 
+                green: renderer.color.g, 
+                blue: renderer.color.b, 
+                alpha:  renderer.color.a
+            },
+            anchor: entity_anchor_to_anchor(renderer.anchor.clone(),image_size),
+            flip_x: renderer.flip.x,
+            flip_y: renderer.flip.y,
+            ..default()
+        };
+
+        commands.entity(spawned_entity).insert(sprite);
+      }
+
+      if let Some(collider) = component.as_any().downcast_ref::<dcl2d_ecs_v1::components::BoxCollider>() {
+
+          let box_collider= BoxCollider{
+            center:Vec2::new(collider.center.x as f32, collider.center.y as f32),
+            size:Vec2::new(collider.size.width as f32, collider.size.height as f32),
+            collision_type: collider.collision_type.clone()
+          };
+          commands.entity(spawned_entity).insert(box_collider);
+      }
+
+       if let Some(collider) = component.as_any().downcast_ref::<dcl2d_ecs_v1::components::CircleCollider>() {                      
+          let circle_collider = CircleCollider{center:Vec2::new(collider.center.x as f32,collider.center.y as f32),radius:collider.radius};
+          commands.entity(spawned_entity).insert(circle_collider);
+      }
+
+      if let Some(collider) = component.as_any().downcast_ref::<dcl2d_ecs_v1::components::CircleCollider>() {                      
+        let circle_collider = CircleCollider{center:Vec2::new(collider.center.x as f32,collider.center.y as f32),radius:collider.radius};
+        commands.entity(spawned_entity).insert(circle_collider);
+      }
+
+      if let Some(collider) = component.as_any().downcast_ref::<dcl2d_ecs_v1::components::MaskCollider>() {                      
+      
+        let mut sprite_path = std::fs::canonicalize(PathBuf::from_str(".").unwrap()).unwrap();
+        sprite_path.push("assets");
+        sprite_path.push(path.as_ref().clone());
+        sprite_path.push("assets");
+        sprite_path.push(&collider.sprite);
+        
+        if let Ok(mut reader) = ImageReader::open(sprite_path)
+        {
+          reader.set_format(ImageFormat::Png);
+          if let Ok(dynamic_image) = reader.decode(){
+            if let DynamicImage::ImageRgba8(image) = dynamic_image{
+              let mut pixels = image.pixels().into_iter(); 
+              let rows = image.rows().len();
+              let columns = pixels.len()/rows;
+              let world_transform  = transform.translation + get_scene_center_location(scene);
+
+              let fixed_translation = get_fixed_translation_by_anchor(
+                  &Vec2{x:columns as f32, y: rows as f32},
+                  &world_transform.truncate(),
+                      &collider.anchor,
+              );
+
+              let mut index =0;
+              let channel = collider.channel.clone() as usize;
+
+              while pixels.len() >0
+              {   
+                  if pixels.next().unwrap()[channel] > 0 
+                  {
+                      let tile_location = fixed_translation + (Vec2::new((index%columns) as f32,((index/columns)) as f32 * -1.0 )*super::collision::TILE_SIZE);
+                      let collision_tile = CollisionTile{location:tile_location, colliision_type:collider.collision_type.clone(),entity:Some(spawned_entity)};
+                      collision_map.tiles.push(collision_tile);
+                  }                             
+                  index +=1;
+              }
+
+            }
+          }
+        }
+      }
+
+      if let Some(level_change) = component.as_any().downcast_ref::<dcl2d_ecs_v1::components::triggers::LevelChange>() {
+
+        let mut new_level_id = 0;
+
+        for i in 0..scene.levels.len()
+        {
+          if scene.levels[i].name == level_change.level
+          {
+            new_level_id = i;
+            break;
+          }
+        }
+
+        let scene_center_location = get_scene_center_location(scene);
+        let level_change_component = LevelChangeComponent {
+          level:new_level_id,
+          spawn_point: Vec2::new(level_change.spawn_point.x as f32 +scene_center_location.x , level_change.spawn_point.y as f32+scene_center_location.y),
+        };
+        commands.entity(spawned_entity).insert(level_change_component);
+
+    }
+
+    if let Some(child_entity) = component.as_any().downcast_ref::<dcl2d_ecs_v1::Entity>() {
+      let spawned_child_entity = spawn_entity(commands,asset_server,path.as_ref(),collision_map,child_entity,scene);
+      commands.entity(spawned_entity).add_child(spawned_child_entity);
+    }
+  }
+  spawned_entity
+}

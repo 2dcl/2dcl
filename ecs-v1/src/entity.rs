@@ -1,5 +1,6 @@
 use serde::{Serialize, Deserialize};
 use crate::Component;
+use core::any::Any;
 
 #[derive(Serialize, Deserialize, Debug, Default)]
 pub struct Entity {
@@ -15,6 +16,14 @@ impl Entity {
             name: name,
             ..Default::default()
         }
+    }
+}
+
+#[typetag::serde]
+impl Component for Entity 
+{
+    fn as_any(&self) -> &dyn Any {
+        self
     }
 }
 
