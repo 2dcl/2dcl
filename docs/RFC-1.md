@@ -102,6 +102,7 @@ The attributes available are:
 
 ```json
 {
+  "type" : "SpriteRenderer",
   "sprite": "a_pixel.png",
   "color": { "r": 1.0, "g": 1.0, "b": 1.0, "a": 1.0 }, // optional, defaults to no coloring (white)
   "layer": 0, // optional, defaults to `player_layer` in level

@@ -1,7 +1,8 @@
 use bevy::{prelude::*, sprite::Anchor, core_pipeline::clear_color::ClearColorConfig};
 use dcl2d_ecs_v1::{collision_type::CollisionType};
 use dcl_common::Parcel;
-use super::{scene_loader::{BoxCollider, LevelChangeComponent}, collision::*, animations::*};
+use super::{collision::*, animations::*};
+use crate::components::{BoxCollider, LevelChange};
 use crate::renderer::config::*;
 
 pub struct PlayerPlugin;
@@ -175,8 +176,8 @@ fn player_movement
 
 fn player_interact(
   mut player_query: Query<(&mut PlayerComponent, &mut Transform)>,
-  colliders_with_level_change: Query<(&GlobalTransform, &BoxCollider, &LevelChangeComponent)>,
-  entities_with_level_change: Query<(Entity, &LevelChangeComponent)>,
+  colliders_with_level_change: Query<(&GlobalTransform, &BoxCollider, &LevelChange)>,
+  entities_with_level_change: Query<(Entity, &LevelChange)>,
   keyboard: Res<Input<KeyCode>>,
   collision_map: Res<CollisionMap>,
 )
@@ -206,7 +207,7 @@ fn player_interact(
 fn change_level(
   player: &mut PlayerComponent,
   player_transform: &mut Transform,
-  level_change: &LevelChangeComponent
+  level_change: &LevelChange
 )
 {
   let level_change_stack_data = LevelChangeStackData{
@@ -227,8 +228,8 @@ fn change_level(
 fn try_change_level( 
   player: &mut PlayerComponent,
   player_transform: &mut Transform,
-  colliders_with_level_change: &Query<(&GlobalTransform, &BoxCollider, &LevelChangeComponent)>,
-  entities_with_level_change: &Query<(Entity, &LevelChangeComponent)>,
+  colliders_with_level_change: &Query<(&GlobalTransform, &BoxCollider, &LevelChange)>,
+  entities_with_level_change: &Query<(Entity, &LevelChange)>,
   collision_map: CollisionMap,
 )
 {

@@ -1,3 +1,5 @@
+use crate::components::*;
+
 use std::time::SystemTime;
 use std::fs;
 use std::fs::create_dir;
@@ -5,11 +7,11 @@ use std::io::Write;
 use std::str::FromStr;
 use bevy::prelude::*;
 use bevy::tasks::AsyncComputeTaskPool;
-use bevy::tasks::Task;
 
+use bevy_console::PrintConsoleLine;
 use catalyst::entity_files::ContentFile;
 use catalyst::{ContentClient, Server};
-use dcl2d_ecs_v1::collision_type::CollisionType;
+
 use dcl2d_ecs_v1::components::SpriteRenderer;
 use dcl_common::{Parcel};
 use bevy::sprite::Anchor;
@@ -18,7 +20,7 @@ use serde::{Deserialize, Serialize};
 use std::fs::File;
 use std::io::BufReader;
 use std::path::Path;
-use bevy_inspector_egui::Inspectable;
+
 use std::path::PathBuf;
 
 use super::collision::CollisionMap;
@@ -37,50 +39,6 @@ use imagesize::size;
 
 pub struct SceneLoaderPlugin;
 
-
-#[derive(Component)]
-pub struct DownloadingScene {
-    pub task: Task<()>,
-    pub parcels: Vec<Parcel>,
-}
-
-#[derive(Debug, Component, Clone, Inspectable)]
-pub struct CircleCollider {
-    pub center: Vec2,
-    pub radius: u32,
-}
-
-#[derive(Debug, Component, Clone)]
-pub struct BoxCollider {
-    pub center: Vec2,
-    pub size: Vec2,
-    pub collision_type: CollisionType,
-}
-
-#[derive(Debug, Component, Clone)]
-pub struct LevelChangeComponent {
-  pub level: usize,
-  pub spawn_point: Vec2,
-}
-
-#[derive(Debug, Component)]
-pub struct SceneComponent
-{
-    pub name: String,
-    pub parcels: Vec<Parcel>,
-    pub timestamp: SystemTime,
-    pub scene_data: Vec<u8>,
-    pub path: PathBuf,
-}
-
-#[derive(Debug, Component, Clone)]
-pub struct LevelComponent
-{
-    pub name: String,
-    pub timestamp: SystemTime,
-    pub id: usize,
-}
-
 impl Plugin for SceneLoaderPlugin
 {
 
@@ -94,8 +52,8 @@ impl Plugin for SceneLoaderPlugin
 
 pub fn scene_handler(
     mut player_query: Query<(&mut PlayerComponent, &mut GlobalTransform)>,  
-    scene_query: Query<(Entity, &mut SceneComponent, Without<PlayerComponent>)>,  
-    level_query: Query<(Entity, &LevelComponent,&Parent)>,
+    scene_query: Query<(Entity, &mut crate::components::Scene, Without<PlayerComponent>)>,  
+    level_query: Query<(Entity, &crate::components::Level,&Parent)>,
     downloading_scenes_query: Query<&DownloadingScene>,  
     mut commands: Commands,
     asset_server: Res<AssetServer>,
@@ -566,7 +524,7 @@ fn handle_tasks(
     mut collision_map: ResMut<CollisionMap>,
     asset_server: Res<AssetServer>,
     mut tasks_downloading_scenes: Query<(Entity, &mut DownloadingScene)>,
-    scenes_query: Query<(Entity, &SceneComponent)>,
+    scenes_query: Query<(Entity, &crate::components::Scene)>,
 ) 
 { 
 
@@ -673,23 +631,21 @@ T: AsRef<Path>
 
   let level = &scene.levels[level_id];
    
-    commands.entity(level_entity)
+  commands.entity(level_entity)
     .insert(Name::new(level.name.clone()))
     .insert(Visibility{is_visible: true})
     .insert(GlobalTransform::default())
     .insert(ComputedVisibility::default())
     .insert(Transform::default())
-    .insert(LevelComponent{name:level.name.clone(),timestamp,id: level_id});
+    .insert(Level{name:level.name.clone(),timestamp,id: level_id});
     
-    
-    
-    for entity in  level.entities.iter()
-    {
-      let spawned_entity = spawn_entity(commands,asset_server,path.as_ref(),collision_map,entity,scene);
-      commands.entity(level_entity).add_child(spawned_entity);
-  
-    } 
-    level_entity
+  for entity in  level.entities.iter()
+  {
+    let spawned_entity = spawn_entity(commands,asset_server,path.as_ref(),collision_map,entity,scene);
+    commands.entity(level_entity).add_child(spawned_entity);
+
+  } 
+  level_entity
 }
 
 
@@ -714,7 +670,7 @@ where T: AsRef<Path>
   .insert(ComputedVisibility::default())
   .insert(Name::new(scene.name.clone()))
   .insert(Transform::from_translation(scene_location))
-  .insert(SceneComponent{name:scene.name.clone(),parcels:scene.parcels.clone(), timestamp, scene_data,path: path.as_ref().to_path_buf()})
+  .insert(crate::components::Scene{name:scene.name.clone(),parcels:scene.parcels.clone(), timestamp, scene_data,path: path.as_ref().to_path_buf()})
   .id();
 
   if scene.levels.len()>0
@@ -934,7 +890,7 @@ fn spawn_entity<T>(
         }
 
         let scene_center_location = get_scene_center_location(scene);
-        let level_change_component = LevelChangeComponent {
+        let level_change_component = LevelChange {
           level:new_level_id,
           spawn_point: Vec2::new(level_change.spawn_point.x as f32 +scene_center_location.x , level_change.spawn_point.y as f32+scene_center_location.y),
         };

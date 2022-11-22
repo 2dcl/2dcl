@@ -3,7 +3,7 @@ use bevy::sprite::collide_aabb::collide;
 use dcl2d_ecs_v1::collision_type::CollisionType;
 
 
-use super::scene_loader::BoxCollider;
+use crate::components::BoxCollider;
 
 pub const TILE_SIZE: f32 = 1.0;
 

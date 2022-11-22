@@ -3,6 +3,8 @@ use dcl_common::Result;
 mod renderer;
 mod previewer;
 
+pub mod components;
+
 use clap::Parser;
 
 /// Search for a pattern in a file and display the lines that contain it.
