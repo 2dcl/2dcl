@@ -15,6 +15,7 @@ pub struct Animator
     frame_durations: Vec<f32>,
     timer:Timer,
     current_animation: Animation,
+    animation_queue: Vec<Animation>,
 }
 
 #[derive(Debug, Clone)]
@@ -56,77 +57,77 @@ pub fn update_animations
     )>,
 )
 {
-    for (mut animator, mut sprite) in &mut query.iter_mut() 
-    {
-        animator.timer.tick(time.delta());
+  for (mut animator, mut sprite) in &mut query.iter_mut() 
+  {
+    animator.timer.tick(time.delta());
 
-        if animator.timer.just_finished() 
-        {           
-            let mut new_index = sprite.index;
-            match animator.current_animation.direction
-            {
-                Direction::Forward =>
-                {
-                    new_index+= 1;
+    if animator.timer.just_finished() 
+    {           
+      let mut new_index = sprite.index;
+      match animator.current_animation.direction
+      {
+          Direction::Forward =>
+          {
+              new_index+= 1;
 
-                    if new_index < animator.current_animation.from || new_index > animator.current_animation.to
-                    {
-                        new_index = animator.current_animation.from;
-                    }
-                }
+              if new_index < animator.current_animation.from || new_index > animator.current_animation.to
+              {
+                  new_index = animator.current_animation.from;
+              }
+          }
 
-                Direction::Reverse =>
-                {
-                    if new_index <= animator.current_animation.from || new_index > animator.current_animation.to
-                    {   
-                        new_index = animator.current_animation.to;
-                    }
-                    else 
-                    {
-                        new_index -=1;
-                    }
-                }
+          Direction::Reverse =>
+          {
+              if new_index <= animator.current_animation.from || new_index > animator.current_animation.to
+              {   
+                  new_index = animator.current_animation.to;
+              }
+              else 
+              {
+                  new_index -=1;
+              }
+          }
 
-                Direction::PingpongForward =>
-                {
-                    new_index+= 1;
-                    if new_index < animator.current_animation.from || new_index > animator.current_animation.to
-                    {
-                        animator.current_animation.direction = Direction::PingpongReverse;
-                        if animator.current_animation.from<=animator.current_animation.to-1
-                        {
-                            new_index = animator.current_animation.to-1;
-                        }
-                        else
-                        {
-                            new_index-=1;
-                        }
-                    }
-                }
+          Direction::PingpongForward =>
+          {
+              new_index+= 1;
+              if new_index < animator.current_animation.from || new_index > animator.current_animation.to
+              {
+                  animator.current_animation.direction = Direction::PingpongReverse;
+                  if animator.current_animation.from<=animator.current_animation.to-1
+                  {
+                      new_index = animator.current_animation.to-1;
+                  }
+                  else
+                  {
+                      new_index-=1;
+                  }
+              }
+          }
 
-                Direction::PingpongReverse =>
-                {
-                    if new_index <= animator.current_animation.from || new_index > animator.current_animation.to && animator.current_animation.from +1 <= animator.current_animation.to
-                    {   
-                        animator.current_animation.direction = Direction::PingpongForward;
-                        new_index = animator.current_animation.from+1;    
-                        
-                    }
-                    else 
-                    {
-                        new_index -=1;
-                    }
+          Direction::PingpongReverse =>
+          {
+              if new_index <= animator.current_animation.from || new_index > animator.current_animation.to && animator.current_animation.from +1 <= animator.current_animation.to
+              {   
+                  animator.current_animation.direction = Direction::PingpongForward;
+                  new_index = animator.current_animation.from+1;    
+                  
+              }
+              else 
+              {
+                  new_index -=1;
+              }
 
-                }
+          }
 
-            }
+      }
 
-            sprite.index = new_index;
+      sprite.index = new_index;
 
-            let new_duration = Duration::from_secs_f32(animator.frame_durations[sprite.index]);
-            animator.timer.set_duration(new_duration);
-        }
+      let new_duration = Duration::from_secs_f32(animator.frame_durations[sprite.index]);
+      animator.timer.set_duration(new_duration);
     }
+  }
 }
 
 pub fn change_animator_state
@@ -136,26 +137,44 @@ pub fn change_animator_state
 )
 {
 
-    if animator.current_animation.name == new_state
-    {
-        return;
-    }
+  animator.animation_queue.clear();
 
-    for  i in 0..animator.animations.len()
-    {
-        if animator.animations[i].name == new_state
-        {   
-            animator.current_animation = animator.animations[i].clone();
-
-            let elapsed = animator.timer.duration();
-            animator.timer.set_elapsed(elapsed);
-            break;
-        }
-    }
+  if animator.current_animation.name == new_state
+  {
+      return;
+  }
   
-    
+  for  i in 0..animator.animations.len()
+  {
+      if animator.animations[i].name == new_state
+      {   
+          animator.current_animation = animator.animations[i].clone();
+
+          let elapsed = animator.timer.duration();
+          animator.timer.set_elapsed(elapsed);
+          break;
+      }
+  }
 }
 
+pub fn queue_animation(  
+  animator: &mut Animator,
+  new_state: String)
+{
+  if animator.current_animation.name == new_state
+  {
+      return;
+  }
+
+  for  i in 0..animator.animations.len()
+  {
+    if animator.animations[i].name == new_state
+    {   
+      animator.animation_queue.push(animator.animations[i].clone());
+      break;
+    }
+  }
+}
 
 pub fn get_animator <P>(
     path: P,
@@ -255,6 +274,7 @@ where
         frame_durations,
         timer:Timer::from_seconds(current_duration, true),
         current_animation,
+        animation_queue: Vec::default()
     };
 
     return Ok(animator);

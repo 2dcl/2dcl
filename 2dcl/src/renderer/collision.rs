@@ -3,7 +3,7 @@ use bevy::sprite::collide_aabb::collide;
 use dcl2d_ecs_v1::collision_type::CollisionType;
 
 
-use crate::components::BoxCollider;
+use crate::components::{BoxCollider, LevelChange};
 
 pub const TILE_SIZE: f32 = 1.0;
 
@@ -12,7 +12,7 @@ pub struct CollisionResult
 {
   pub hit: bool,
   pub collision_type: CollisionType,
-  pub entity: Option<Entity>
+  pub level_change: Option<LevelChange>,
 }
 
 #[derive(Default, Clone)]
@@ -47,10 +47,11 @@ fn setup(mut commands: Commands,)
 }
 
 
-pub fn map_collision_check(
+pub fn get_mask_collision(
   position: &Vec3,
   size: &Vec2,
-  collision_map: CollisionMap
+  collision_map: CollisionMap,
+  entities_with_level_change: &Query<(Entity, &LevelChange)>,
 ) -> CollisionResult
 {
 
@@ -64,34 +65,87 @@ pub fn map_collision_check(
     && tile.location.y>min.y
     && tile.location.y<max.y
     {
-      return CollisionResult{hit:true,collision_type:tile.colliision_type,entity:tile.entity};
+      if tile.colliision_type ==  CollisionType::Trigger 
+      {
+        if let Some(entity) = tile.entity
+        {
+         let level_change = get_level_change_of_entity(entity,entities_with_level_change);
+         return CollisionResult{hit:true,collision_type:tile.colliision_type,level_change:level_change};
+        }
+      }
+      else
+      {
+        return CollisionResult{hit:true,collision_type:tile.colliision_type,level_change:None};
+      }
     }
   }
  
-  return CollisionResult{hit:false,collision_type:CollisionType::Solid,entity:None};
+  return CollisionResult{hit:false,collision_type:CollisionType::Solid,level_change:None};
   
 }
 
 
-pub fn box_collision_check(
-  position: &Vec3,
-  size: &Vec2,
-  collision_location: &Vec3,
-  collision_collider: &BoxCollider
-) -> CollisionResult
+pub fn get_level_change_of_entity(entity: Entity, entities_with_level_change: &Query<(Entity, &LevelChange)>)
+-> Option<LevelChange>
 {
-  let collision = collide(
-          Vec3{x:position.x,y:position.y+size.y/2.0,z:0.0},
-          *size,
-          *collision_location + collision_collider.center.extend(0.0),
-          collision_collider.size
-    );
-
-  if collision.is_some()
-  { 
-    return CollisionResult{hit:true,collision_type:collision_collider.collision_type.clone(),entity:None};
+  for (current_entity, level_change) in entities_with_level_change
+  {
+    if entity == current_entity
+    {
+      return Some(level_change.clone());
+    }
   }
-
-  return CollisionResult{hit:false,collision_type:CollisionType::Solid,entity:None};   
+  None
 }
 
+pub fn get_box_collisions(
+  position: &Vec3,
+  size: &Vec2,
+  box_colliders: &Query<(Entity, &GlobalTransform, &BoxCollider)>,
+  entities_with_level_change: &Query<(Entity, &LevelChange)>,
+) -> Vec<CollisionResult>
+{
+  let mut collisions_result:  Vec<CollisionResult> = Vec::new();
+
+  for (entity, transform, collider) in box_colliders
+  {
+    
+    let collision = collide(
+      Vec3{x:position.x,y:position.y+size.y/2.0,z:0.0},
+      *size,
+      transform.translation() + collider.center.extend(0.0),
+      collider.size
+      );
+
+      if collision.is_some() 
+      {
+        if collider.collision_type == CollisionType::Trigger
+        {
+          let level_change = get_level_change_of_entity(entity, entities_with_level_change);
+          collisions_result.push(CollisionResult{hit:true,collision_type:collider.collision_type.clone(),level_change});
+        }
+        else
+        {
+          collisions_result.push(CollisionResult{hit:true,collision_type:collider.collision_type.clone(),level_change:None});
+        }
+      }
+  }
+
+  collisions_result 
+}
+
+
+pub fn get_collisions(
+  position: &Vec3,
+  size: &Vec2,
+  box_colliders: &Query<(Entity, &GlobalTransform, &BoxCollider)>,
+  entities_with_level_change: &Query<(Entity, &LevelChange)>,
+  collision_map: CollisionMap,
+) -> Vec<CollisionResult>
+{
+  
+  let mut collision_results = get_box_collisions(position, size, box_colliders, entities_with_level_change);
+  collision_results.push(get_mask_collision(position,size,collision_map,entities_with_level_change));
+  collision_results
+
+}
