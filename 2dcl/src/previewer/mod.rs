@@ -13,6 +13,25 @@ use bevy::prelude::*;
 mod scene_hot_reload;
 use scene_hot_reload::{SceneAsset, SceneAssetLoader, SceneHotReloadPlugin };
 
+mod level_switch;
+use level_switch::level_switch;
+
+mod collider_debugger;
+use collider_debugger::collider_debugger;
+
+
+#[derive(Debug, Default, PartialEq)]
+pub enum PreviewerState {
+  #[default]
+  Idle,
+  LevelSwitch,
+}
+
+#[derive(Debug, Default)]
+pub struct Previewer {
+  state: PreviewerState
+}
+
 pub fn preview<T,U>(source_path: T, destination_path: U) 
 where
   T: AsRef<Path>,
@@ -74,6 +93,9 @@ pub fn preview_scene(base_dir: std::path::PathBuf)
 
     app
         .add_plugin(SceneHotReloadPlugin)
+        .add_system(level_switch)
+        .add_system(collider_debugger)
+        .insert_resource(Previewer::default())
         .add_asset::<SceneAsset>()
         .init_asset_loader::<SceneAssetLoader>()
         .run();

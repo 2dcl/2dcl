@@ -131,43 +131,48 @@ pub fn level_change(
   
 )
 {
-//Find the player
-let player = player_query.get_single_mut();
+  //Find the player
+  let player = player_query.get_single_mut();
 
-if player.is_err()
-{
-  return;
-}
+  if player.is_err()
+  {
+    return;
+  }
 
-let player = player.unwrap();
+  let player = player.unwrap();
 
 
-let scene_query = scene_query.get_single();
-if scene_query.is_err()
-{
-  return;
-}
+  let scene_query = scene_query.get_single();
+  if scene_query.is_err()
+  {
+    return;
+  }
 
-let (scene_entity,scene ) = scene_query.unwrap();
-let current_level = player.current_level;
+  let (scene_entity,scene ) = scene_query.unwrap();
+  let current_level = player.current_level;
 
-//We check if we're on the correct level
+  let mut should_spawn = true;
 
+  //We check if we're on the correct level
   for (level_entity, level) in level_query.iter()
   {
-      if current_level != level.id
-      {
-        //Despawn level for current parcel
-        commands.entity(level_entity).despawn_recursive();
+    if current_level != level.id
+    {
+      //Despawn level for current parcel
+      commands.entity(level_entity).despawn_recursive();
 
-        //Clear collision map
-        collision_map.tiles.clear();
-
-        //Spawn correct level
-        let mut de = Deserializer::from_read_ref(&scene.scene_data);
-        let scene_data: dcl2d_ecs_v1::Scene = Deserialize::deserialize(&mut de).unwrap();
-        let level_entity = scene_loader::spawn_level(&mut commands,&asset_server,&scene_data,current_level,&scene.path,&mut collision_map,SystemTime::now());
-        commands.entity(scene_entity).add_child(level_entity);
-      }
+      //Clear collision map
+      collision_map.tiles.clear();
+    } else {
+      should_spawn = false;
+    }
   }
+
+  if should_spawn {
+    let mut de = Deserializer::from_read_ref(&scene.scene_data);
+    let scene_data: dcl2d_ecs_v1::Scene = Deserialize::deserialize(&mut de).unwrap();
+    let level_entity = scene_loader::spawn_level(&mut commands,&asset_server,&scene_data,current_level,&scene.path,&mut collision_map,SystemTime::now());
+    commands.entity(scene_entity).add_child(level_entity);    
+  }
+
 }
