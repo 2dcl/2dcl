@@ -1,5 +1,3 @@
-use std::str::FromStr;
-use std::path::PathBuf;
 use bevy::{prelude::*, render::{render_resource::FilterMode, texture::ImageSettings}};
 use bevy::render::render_resource::SamplerDescriptor;
 
@@ -10,18 +8,17 @@ pub mod config;
 
 mod player;
 use player::PlayerPlugin;
+pub use player::PlayerComponent;
 
 mod animations;
 use animations::AnimationsPlugin;
 
 mod collision;
 use collision::CollisionPlugin;
+pub use collision::CollisionMap;
 
 pub mod scene_loader;
 use scene_loader::SceneLoaderPlugin;
-
-mod preview;
-use preview::PreviewPlugin;
 
 //mod debug;
 //use debug::DebugPlugin;
@@ -42,24 +39,6 @@ pub fn start() {
       .run();
       
 }
-
-pub fn preview_scene(base_dir: std::path::PathBuf)
-{
-   
-    std::env::set_current_dir(&base_dir).unwrap();
-    let absolute_base_dir = std::fs::canonicalize(PathBuf::from_str(".").unwrap()).unwrap();
-    std::env::set_var("CARGO_MANIFEST_DIR", absolute_base_dir);
-
-    let mut app = App::new();
-    setup(&mut app);
-
-    app
-        .add_plugin(PreviewPlugin)
-        .add_asset::<preview::SceneAsset>()
-        .init_asset_loader::<preview::SceneAssetLoader>()
-        .run();
-}
-
 
 pub fn setup(app: &mut bevy::app::App )
 {

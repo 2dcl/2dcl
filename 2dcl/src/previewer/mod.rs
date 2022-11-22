@@ -1,19 +1,23 @@
+use std::str::FromStr;
+use std::path::PathBuf;
 
 use notify::EventKind::Access;
 use notify::event::AccessKind::Close;
 
 use std::path::Path;
 use notify::{Watcher, Event, RecursiveMode};
-use crate::renderer;
 use scene_compiler;
+
+use bevy::prelude::*;
+
+mod scene_hot_reload;
+use scene_hot_reload::{SceneAsset, SceneAssetLoader, SceneHotReloadPlugin };
 
 pub fn preview<T,U>(source_path: T, destination_path: U) 
 where
   T: AsRef<Path>,
   U: AsRef<Path>
 {
-
-
   let source_path = source_path.as_ref();
   let destination_path = destination_path.as_ref();
 
@@ -55,5 +59,25 @@ where
   scene_compiler::compile(&source_path, &destination_path).unwrap();
 
   // run preview
-  renderer::preview_scene(destination_path.to_path_buf());
+  preview_scene(destination_path.to_path_buf());
 }
+
+pub fn preview_scene(base_dir: std::path::PathBuf)
+{
+   
+    std::env::set_current_dir(&base_dir).unwrap();
+    let absolute_base_dir = std::fs::canonicalize(PathBuf::from_str(".").unwrap()).unwrap();
+    std::env::set_var("CARGO_MANIFEST_DIR", absolute_base_dir);
+
+    let mut app = App::new();
+    crate::renderer::setup(&mut app);
+
+    app
+        .add_plugin(SceneHotReloadPlugin)
+        .add_asset::<SceneAsset>()
+        .init_asset_loader::<SceneAssetLoader>()
+        .run();
+}
+
+
+

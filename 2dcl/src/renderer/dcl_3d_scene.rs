@@ -10,7 +10,7 @@ pub struct DCL3dScene {
    pub scene: Scene,
    pub communications: Option<Communications>,
    pub policy: Option<Policy>,
-   pub requiredPermissions: Option<Vec<String>>,
+   pub required_permissions: Option<Vec<String>>,
    pub main: String,
    pub tags: Option<Vec<String>>,
 //   pub spawnPoints: Option<Vec<SpawnPoints>>,
@@ -20,7 +20,7 @@ pub struct DCL3dScene {
 pub struct Display {
    pub title: String,
    pub description: Option<String>,
-   pub navmapThumbnail: Option<String>,
+   pub navmap_thumbnail: Option<String>,
    pub favicon: Option<String>,
 }
 
@@ -44,9 +44,9 @@ pub struct Communications {
 
 #[derive(Debug, Deserialize, Serialize, Default, Clone)]
 pub struct Policy {
-   pub contentRating: String,
+   pub content_rating: String,
    pub fly: bool,
-   pub voiceEnabled: bool,
+   pub voice_enabled: bool,
    pub blacklist: Vec<String>,
 }
 
@@ -55,7 +55,7 @@ pub struct SpawnPoints {
    pub name: String,
    pub default: bool,
    pub position: Position,
-   pub cameraTarget: CameraTarget,
+   pub camera_target: CameraTarget,
 }
 
 

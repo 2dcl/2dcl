@@ -1,14 +1,21 @@
-
-use crate::renderer::scene_loader::SceneComponent;
+use crate::renderer::PlayerComponent;
+use crate::renderer::CollisionMap;
 use bevy::prelude::*;
-use super::{scene_loader::{self, LevelComponent}, player::PlayerComponent, collision::CollisionMap}; 
+use bevy::asset::Handle;
+use std::time::SystemTime;
+
 use bevy::{
     asset::{AssetLoader, LoadContext, LoadedAsset},
     reflect::TypeUuid,
     utils::BoxedFuture,
 };
+
+
+use crate::renderer::scene_loader::SceneComponent;
+use crate::renderer::scene_loader::LevelComponent;
+use crate::renderer::scene_loader;
+
 use serde::Deserialize;
-use std::time::SystemTime;
 use rmp_serde::*;
 
 #[derive(Debug, Deserialize, TypeUuid)]
@@ -41,11 +48,11 @@ impl AssetLoader for SceneAssetLoader {
     }
 }
 
-pub struct PreviewPlugin;
+pub struct SceneHotReloadPlugin;
 
 pub struct SceneHandler(Handle<SceneAsset>);
 
-impl Plugin for PreviewPlugin{
+impl Plugin for SceneHotReloadPlugin{
     fn build(&self, app: &mut App)
     {
         app

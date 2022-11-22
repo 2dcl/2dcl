@@ -272,9 +272,7 @@ pub fn scene_handler(
   let thread_pool = AsyncComputeTaskPool::get();
   let parcels_to_download_clone = parcels_to_download.clone();
   let task_download_parcels = thread_pool.spawn(async move {
-
-    download_parcels(parcels_to_download_clone);
-
+    download_parcels(parcels_to_download_clone).unwrap();
   }); 
 
   for parcel_to_download in &parcels_to_download

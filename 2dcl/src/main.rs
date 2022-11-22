@@ -1,10 +1,7 @@
 use dcl_common::Result;
-//use tokio::process::Command;
 
 mod renderer;
 mod previewer;
-
-//mod ws;
 
 use clap::Parser;
 
@@ -44,7 +41,7 @@ fn main() -> Result<()> {
       }
     ,
     Some(Action::Build {source_path, destination_path}) => {
-      scene_compiler::compile(source_path, destination_path);
+      scene_compiler::compile(source_path, destination_path).unwrap();
     }
     None =>
     {

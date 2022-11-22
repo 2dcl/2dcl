@@ -1,5 +1,5 @@
 use bevy::{prelude::*, sprite::Anchor, core_pipeline::clear_color::ClearColorConfig};
-use dcl2d_ecs_v1::{collision_type::CollisionType, components::triggers::LevelChange};
+use dcl2d_ecs_v1::{collision_type::CollisionType};
 use dcl_common::Parcel;
 use super::{scene_loader::{BoxCollider, LevelChangeComponent}, collision::*, animations::*};
 use crate::renderer::config::*;
