@@ -86,6 +86,3 @@ pub fn preview_scene(base_dir: std::path::PathBuf)
         .init_asset_loader::<SceneAssetLoader>()
         .run();
 }
-
-
-

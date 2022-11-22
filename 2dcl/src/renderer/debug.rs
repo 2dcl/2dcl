@@ -2,8 +2,6 @@
 use bevy::prelude::*; 
 use bevy_inspector_egui::RegisterInspectable;
 use bevy_inspector_egui::WorldInspectorPlugin;
-use super::collision::CollisionMap;
-
 
 pub struct DebugPlugin;
 
@@ -14,7 +12,7 @@ impl Plugin for DebugPlugin{
         {   
  
             app.add_plugin(WorldInspectorPlugin::new())
-            .register_inspectable::<CollisionMap>()
+            // .register_inspectable::<>()
             ;
         }
     }    

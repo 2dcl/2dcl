@@ -20,8 +20,8 @@ pub use collision::CollisionMap;
 pub mod scene_loader;
 use scene_loader::SceneLoaderPlugin;
 
-//mod debug;
-//use debug::DebugPlugin;
+// mod debug;
+// use debug::DebugPlugin;
 
 //mod console;
 //use console::MyConsolePlugin;
@@ -47,9 +47,9 @@ pub fn setup(app: &mut bevy::app::App )
     .insert_resource(ImageSettings{default_sampler: SamplerDescriptor { 
         mag_filter: FilterMode::Nearest,
       ..default()}})
-    //.add_plugin(DebugPlugin)
-    //.add_plugin(MyConsolePlugin)
     .add_plugins(DefaultPlugins)
+    // .add_plugin(DebugPlugin)
+    //.add_plugin(MyConsolePlugin)
     .add_plugin(AnimationsPlugin)
     .add_plugin(PlayerPlugin)
     .add_plugin(CollisionPlugin);
