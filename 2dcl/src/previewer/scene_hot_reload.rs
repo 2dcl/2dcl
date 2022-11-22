@@ -158,7 +158,6 @@ pub fn level_change(
   {
     if current_level != level.id
     {
-      println!("Despawning level {}", level.id);
       //Despawn level for current parcel
       commands.entity(level_entity).despawn_recursive();
 
@@ -170,7 +169,6 @@ pub fn level_change(
   }
 
   if should_spawn {
-    println!("Spawning {}", current_level);
     let mut de = Deserializer::from_read_ref(&scene.scene_data);
     let scene_data: dcl2d_ecs_v1::Scene = Deserialize::deserialize(&mut de).unwrap();
     let level_entity = scene_loader::spawn_level(&mut commands,&asset_server,&scene_data,current_level,&scene.path,&mut collision_map,SystemTime::now());
