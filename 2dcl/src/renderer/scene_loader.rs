@@ -943,11 +943,13 @@ fn spawn_entity<T>(
         commands.entity(spawned_entity).insert(level_change_component);
 
     }
+  }
 
-    if let Some(child_entity) = component.as_any().downcast_ref::<dcl2d_ecs_v1::Entity>() {
+
+  for child_entity in entity.children.iter()
+  {
       let spawned_child_entity = spawn_entity(commands,asset_server,path.as_ref(),collision_map,child_entity,scene);
       commands.entity(spawned_entity).add_child(spawned_child_entity);
-    }
   }
   spawned_entity
 }

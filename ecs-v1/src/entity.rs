@@ -7,6 +7,8 @@ pub struct Entity {
     #[serde(skip)]
     pub id: usize,
     pub name: String,
+    #[serde(default)]
+    pub children: Vec<Entity>,
     pub components: Vec<Box<dyn Component>>,
 }
 
@@ -16,14 +18,6 @@ impl Entity {
             name: name,
             ..Default::default()
         }
-    }
-}
-
-#[typetag::serde]
-impl Component for Entity 
-{
-    fn as_any(&self) -> &dyn Any {
-        self
     }
 }
 
