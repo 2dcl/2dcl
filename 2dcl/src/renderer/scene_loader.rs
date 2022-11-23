@@ -8,7 +8,6 @@ use std::str::FromStr;
 use bevy::prelude::*;
 use bevy::tasks::AsyncComputeTaskPool;
 
-use bevy_console::PrintConsoleLine;
 use catalyst::entity_files::ContentFile;
 use catalyst::{ContentClient, Server};
 

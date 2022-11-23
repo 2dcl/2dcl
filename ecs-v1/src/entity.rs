@@ -1,6 +1,5 @@
 use serde::{Serialize, Deserialize};
 use crate::Component;
-use core::any::Any;
 
 #[derive(Serialize, Deserialize, Debug, Default)]
 pub struct Entity {
