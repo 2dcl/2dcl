@@ -86,7 +86,6 @@ fn spawn_player(
     texture_atlas: player_animator.atlas.clone(),
     transform: Transform{
         scale: Vec3::ONE * PLAYER_SCALE * player_animator.scale,
-        translation: Vec3::new(0.0, 0.0, 0.0),
         ..default()
     },
     ..default()
@@ -286,7 +285,6 @@ fn update_interact_icon_visibility(
     if interact_icon_animator.current_animation.name == "hidden" ||
       interact_icon_animator.current_animation.name == "fade_out"
     {
-      println!("fading in");
       change_animator_state(interact_icon_animator, interact_sprite_atlas, "fade_in");
       queue_animation(interact_icon_animator, "idle")
     }
@@ -296,7 +294,6 @@ fn update_interact_icon_visibility(
     if interact_icon_animator.current_animation.name == "idle" ||
     interact_icon_animator.current_animation.name == "fade_in"
     {
-      println!("fading out");
       change_animator_state(interact_icon_animator, interact_sprite_atlas, "fade_out");
       queue_animation(interact_icon_animator, "hidden")
     }

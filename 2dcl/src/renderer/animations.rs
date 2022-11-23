@@ -28,7 +28,7 @@ pub struct Animation
   direction: Direction,
 }
 
-#[derive(Deserialize, Debug, Clone)]
+#[derive(Deserialize, Debug, Clone, PartialEq)]
 pub enum Direction {
   Forward,
   Reverse,
@@ -152,7 +152,7 @@ fn change_frame(index: usize, sprite: &mut TextureAtlasSprite, animator: &mut An
 pub fn change_animator_state<P>
 (
   mut animator: &mut Animator,
-  mut sprite: &mut TextureAtlasSprite,
+  sprite: &mut TextureAtlasSprite,
   new_state: P
 ) -> Option<Animation>
 where
@@ -171,7 +171,16 @@ P: AsRef<str>
     if animator.animations[i].name == *new_state.as_ref()
     {  
       animator.current_animation = animator.animations[i].clone();
-      change_frame(animator.current_animation.from,sprite,animator);
+      if animator.current_animation.direction == Direction::Forward || 
+        animator.current_animation.direction == Direction::PingpongForward
+      {
+        change_frame(animator.current_animation.from,sprite,animator);
+      }
+      else
+      {
+        change_frame(animator.current_animation.to,sprite,animator);
+      }
+
       return Some(animator.animations[i].clone());
     }
   }
@@ -179,15 +188,13 @@ P: AsRef<str>
   None
 }
 
-pub fn play_next_animation_in_queue(animator: &mut Animator, mut sprite: &mut TextureAtlasSprite ) -> usize
+pub fn play_next_animation_in_queue(animator: &mut Animator, sprite: &mut TextureAtlasSprite ) -> usize
 {
-  println!("play_next_animation_in_queue");
   let new_state = animator.animation_queue[0].clone().name;
   animator.animation_queue.remove(0);
 
   if let Some(animation) = change_animator_state(animator, sprite, new_state)
   {
-    println!("animation:{}",animation.name);
     return animation.from;
   }
 
