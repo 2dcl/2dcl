@@ -32,7 +32,7 @@ where
 
     let wearables_dir;
 
-    match fs::read_dir(wearables_path.clone()) {
+    match fs::read_dir(wearables_path) {
         Ok(v) => wearables_dir = v,
         Err(_e) => return false,
     }
@@ -191,7 +191,7 @@ where
         .to_str()
         .unwrap_or_default()
         .to_owned();
-    output_image_name = output_image_name + ".png";
+    output_image_name += ".png";
 
     output_image_path.pop();
     output_image_path.push(output_image_name.clone());
@@ -222,7 +222,7 @@ where
         }
     }
 
-    return true;
+    true
 }
 
 fn add_wearable<P>(
@@ -258,7 +258,7 @@ fn add_wearable<P>(
         Err(_e) => return,
     };
 
-    if let DynamicImage::ImageRgba8(wearable_dynamic_image) = wearable_image.clone() {
+    if let DynamicImage::ImageRgba8(wearable_dynamic_image) = wearable_image {
         for base_frame_tag in base_spritesheet.meta.frame_tags.clone().unwrap_or_default() {
             for wearable_frame_tag in wearable_spritesheet
                 .meta

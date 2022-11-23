@@ -62,7 +62,7 @@ pub fn get_mask_collision(
                     return CollisionResult {
                         hit: true,
                         collision_type: tile.colliision_type,
-                        level_change: level_change,
+                        level_change,
                     };
                 }
             } else {
@@ -75,11 +75,11 @@ pub fn get_mask_collision(
         }
     }
 
-    return CollisionResult {
+    CollisionResult {
         hit: false,
         collision_type: CollisionType::Solid,
         level_change: None,
-    };
+    }
 }
 
 pub fn get_level_change_of_entity(

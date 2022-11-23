@@ -5,7 +5,7 @@ use notify::event::AccessKind::Close;
 use notify::EventKind::Access;
 
 use notify::{Event, RecursiveMode, Watcher};
-use scene_compiler;
+
 use std::path::Path;
 
 use bevy::prelude::*;

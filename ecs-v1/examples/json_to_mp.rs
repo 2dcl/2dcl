@@ -7,7 +7,7 @@ use serde::ser::Serialize;
 
 fn main() {
     let json = include_str!("../fixtures/components/mask_collider.json");
-    let element: MaskCollider = serde_json::from_str(json.as_ref()).unwrap();
+    let element: MaskCollider = serde_json::from_str(json).unwrap();
     let mut result: Vec<u8> = Vec::new();
     element
         .serialize(&mut Serializer::new(&mut result))

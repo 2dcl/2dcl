@@ -228,7 +228,7 @@ fn player_interact(
 
         Err(e) => {
             println!("{}", e);
-            return;
+            
         }
     }
 }
@@ -253,13 +253,11 @@ fn update_interact_icon_visibility(
             change_animator_state(interact_icon_animator, interact_sprite_atlas, "fade_in");
             queue_animation(interact_icon_animator, "idle")
         }
-    } else {
-        if interact_icon_animator.current_animation.name == "idle"
-            || interact_icon_animator.current_animation.name == "fade_in"
-        {
-            change_animator_state(interact_icon_animator, interact_sprite_atlas, "fade_out");
-            queue_animation(interact_icon_animator, "hidden")
-        }
+    } else if interact_icon_animator.current_animation.name == "idle"
+        || interact_icon_animator.current_animation.name == "fade_in"
+    {
+        change_animator_state(interact_icon_animator, interact_sprite_atlas, "fade_out");
+        queue_animation(interact_icon_animator, "hidden")
     }
 }
 fn change_level(

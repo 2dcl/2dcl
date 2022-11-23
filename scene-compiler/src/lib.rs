@@ -23,12 +23,8 @@ where
     let assets_destination_path = destination_path.as_ref().to_path_buf();
     let mut destination_path = destination_path.as_ref().to_path_buf();
 
-    if !source_path.exists() {
+    if !source_path.exists() || !source_path.is_dir(){
         return Err(Box::new(SceneCompileError::SourceNotDirectory));
-    } else {
-        if !source_path.is_dir() {
-            return Err(Box::new(SceneCompileError::SourceNotDirectory));
-        }
     }
 
     source_path.push("scene.json");
@@ -48,10 +44,8 @@ where
 
     if !destination_path.exists() {
         fs::create_dir(&destination_path)?;
-    } else {
-        if !destination_path.is_dir() {
-            return Err(Box::new(SceneCompileError::DestinationNotDirectory));
-        }
+    } else if !destination_path.is_dir() {
+        return Err(Box::new(SceneCompileError::DestinationNotDirectory));
     }
 
     destination_path.push("scene.2dcl");

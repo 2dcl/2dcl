@@ -87,7 +87,7 @@ pub fn update_animations(
                             && animator.animation_queue.is_empty())
                     {
                         animator.current_animation.direction = Direction::PingpongReverse;
-                        if animator.current_animation.from <= animator.current_animation.to - 1 {
+                        if animator.current_animation.from < animator.current_animation.to {
                             new_index = animator.current_animation.to - 1;
                         } else {
                             new_index -= 1;
@@ -100,7 +100,7 @@ pub fn update_animations(
 
                 Direction::PingpongReverse => {
                     if (new_index > animator.current_animation.to
-                        && animator.current_animation.from + 1 <= animator.current_animation.to)
+                        && animator.current_animation.from < animator.current_animation.to)
                         || (new_index <= animator.current_animation.from
                             && animator.animation_queue.is_empty())
                     {
@@ -228,7 +228,7 @@ where
     let mut frame_durations: Vec<f32> = Vec::default();
 
     let mut atlas = TextureAtlas::new_empty(
-        texture.clone(),
+        texture,
         Vec2::new(
             spritesheet.meta.size.w as f32,
             spritesheet.meta.size.h as f32,
@@ -272,10 +272,10 @@ where
     }
 
     let current_animation = animations[0].clone();
-    let current_duration = frame_durations[0].clone();
+    let current_duration = frame_durations[0];
     let animator = Animator {
         animations,
-        scale: scale,
+        scale,
         atlas: texture_atlases.add(atlas),
         frame_durations,
         timer: Timer::from_seconds(current_duration, true),
@@ -283,5 +283,5 @@ where
         animation_queue: Vec::default(),
     };
 
-    return Ok(animator);
+    Ok(animator)
 }
