@@ -323,36 +323,33 @@ pub async fn download_parcels(parcels: Vec<Parcel>) -> dcl_common::Result<()> {
                 }
             }
 
-            if !file_2dcl_exists && file_json.is_some() {
-                let file_json = file_json.unwrap();
-                let filename = format!(
-                    "./assets/scenes/{}/{}",
-                    scene_file.id,
-                    file_json.filename.to_str().unwrap()
-                );
-                println!("Downloading {}", filename);
-                ContentClient::download(&server, file_json.cid, &filename).await?;
+            if !file_2dcl_exists {
+                if let Some(content) = file_json {
+                    let filename = format!(
+                        "./assets/scenes/{}/{}",
+                        scene_file.id,
+                        content.filename.to_str().unwrap()
+                    );
+                    println!("Downloading {}", filename);
+                    ContentClient::download(&server, content.cid, &filename).await?;
 
-                if let Ok(file) = File::open(filename) {
-                    let reader = BufReader::new(file);
-                    let scene: serde_json::Result<dcl_3d_scene::DCL3dScene> =
-                        serde_json::from_reader(reader);
+                    if let Ok(file) = File::open(filename) {
+                        let reader = BufReader::new(file);
+                        let scene: serde_json::Result<dcl_3d_scene::DCL3dScene> =
+                            serde_json::from_reader(reader);
 
-                    if scene.is_ok() {
-                        println!("scene.is_ok()");
-                        let scene = scene.unwrap();
-                        if scene.display.title.to_lowercase().contains("road")
-                            || scene.display.title.to_lowercase().contains("tram line")
-                        {
-                            for parcel_in_scene in scene.scene.parcels {
-                                make_road_scene_for_parcel(&parcel_in_scene);
+                        if let Ok(scene) = scene {
+                            if scene.display.title.to_lowercase().contains("road")
+                                || scene.display.title.to_lowercase().contains("tram line")
+                            {
+                                for parcel_in_scene in scene.scene.parcels {
+                                    make_road_scene_for_parcel(&parcel_in_scene);
+                                }
                             }
                         }
                     }
                 }
-            }
-
-            if file_2dcl_exists {
+            } else {
                 fs::create_dir_all(format!("./assets/scenes/{}", scene_file.id))?;
                 for downloadable in scene_file.content {
                     let filename = format!(
@@ -375,9 +372,11 @@ fn make_road_scene_for_parcel(parcel: &Parcel) {
     scene.parcels.push(parcel.clone());
 
     let mut background = dcl2d_ecs_v1::Entity::new("Background".to_string());
-    let mut renderer = SpriteRenderer::default();
-    renderer.sprite = "road-parcel.png".to_string();
-    renderer.layer = -1;
+    let renderer = SpriteRenderer {
+        sprite: "road-parcel.png".to_string(),
+        layer: -1,
+        ..default()
+    };
     background.components.push(Box::new(renderer));
 
     let level = dcl2d_ecs_v1::Level {
@@ -402,10 +401,10 @@ pub fn read_scene(content: &[u8]) -> Option<dcl2d_ecs_v1::Scene> {
     let mut de = Deserializer::new(content);
     let scene: Result<dcl2d_ecs_v1::Scene, rmp_serde::decode::Error> =
         Deserialize::deserialize(&mut de);
-    if scene.is_ok() {
-        Some(scene.unwrap())
-    } else {
-        None
+
+    match scene {
+        Ok(v) => Some(v),
+        Err(_) => None,
     }
 }
 
@@ -418,11 +417,10 @@ where
         let mut de = Deserializer::new(reader);
         let scene: Result<dcl2d_ecs_v1::Scene, rmp_serde::decode::Error> =
             Deserialize::deserialize(&mut de);
-        if scene.is_ok() {
-            return Some(scene.unwrap());
-        } else {
-            println!("scene is not ok");
-            return None;
+
+        match scene {
+            Ok(v) => return Some(v),
+            Err(_) => return None,
         }
     } else {
         println!("no path: {:?}", file_path.as_ref());
@@ -435,37 +433,34 @@ fn get_scene(parcel: Parcel) -> (Result<dcl2d_ecs_v1::Scene, String>, PathBuf) {
     //TODO: map paths to scenes to improve performance.
     let paths = fs::read_dir("./assets/scenes").unwrap();
 
-    for path in paths {
-        if path.is_ok() {
-            let mut path = path.unwrap().path();
-            path.push("scene.2dcl");
+    for path in paths.flatten() {
+        let mut path = path.path();
+        path.push("scene.2dcl");
 
-            if path.exists() {
-                let scene = read_scene_file(&path);
-                if scene.is_some() {
-                    let scene = scene.unwrap();
-                    if scene.parcels.contains(&parcel) {
-                        let path = path.parent().unwrap().to_path_buf();
-                        let iter = path.iter().rev();
-                        let mut new_path = PathBuf::default();
-                        for i in iter {
-                            new_path.push(i);
-                        }
-                        new_path.pop();
-                        new_path.pop();
-                        let iter = new_path.iter().rev();
-
-                        let mut final_path = PathBuf::default();
-                        final_path.push("scenes");
-                        for i in iter {
-                            final_path.push(i);
-                        }
-                        return (Ok(scene), final_path);
+        if path.exists() {
+            if let Some(scene) = read_scene_file(&path) {
+                if scene.parcels.contains(&parcel) {
+                    let path = path.parent().unwrap().to_path_buf();
+                    let iter = path.iter().rev();
+                    let mut new_path = PathBuf::default();
+                    for i in iter {
+                        new_path.push(i);
                     }
+                    new_path.pop();
+                    new_path.pop();
+                    let iter = new_path.iter().rev();
+
+                    let mut final_path = PathBuf::default();
+                    final_path.push("scenes");
+                    for i in iter {
+                        final_path.push(i);
+                    }
+                    return (Ok(scene), final_path);
                 }
             }
         }
     }
+
     (Err("Parcel not downloaded".to_string()), PathBuf::default())
 }
 
@@ -535,9 +530,11 @@ fn spawn_default_scene(
     scene.parcels.push(parcel.clone());
 
     let mut background = dcl2d_ecs_v1::Entity::new("Background".to_string());
-    let mut renderer = SpriteRenderer::default();
-    renderer.sprite = "default-parcel.png".to_string();
-    renderer.layer = -1;
+    let renderer = SpriteRenderer {
+        sprite: "default-parcel.png".to_string(),
+        layer: -1,
+        ..default()
+    };
     background.components.push(Box::new(renderer));
 
     let level = dcl2d_ecs_v1::Level {
@@ -791,13 +788,10 @@ where
             sprite_path.push("assets");
             sprite_path.push(&sprite_renderer.sprite);
 
-            let mut image_size = Vec2::new(0.0, 0.0);
-            let result = size(sprite_path);
-
-            if result.is_ok() {
-                let result = result.unwrap();
-                image_size = Vec2::new(result.width as f32, result.height as f32);
-            }
+            let image_size = match size(sprite_path) {
+                Ok(v) => Vec2::new(v.width as f32, v.height as f32),
+                Err(_) => Vec2::new(0.0, 0.0),
+            };
 
             let sprite = Sprite {
                 color: Color::Rgba {
@@ -861,42 +855,39 @@ where
 
             if let Ok(mut reader) = ImageReader::open(sprite_path) {
                 reader.set_format(ImageFormat::Png);
-                if let Ok(dynamic_image) = reader.decode() {
-                    if let DynamicImage::ImageRgba8(image) = dynamic_image {
-                        let mut pixels = image.pixels();
-                        let rows = image.rows().len();
-                        let columns = pixels.len() / rows;
-                        let world_transform =
-                            transform.translation + get_scene_center_location(scene);
+                if let Ok(DynamicImage::ImageRgba8(image)) = reader.decode() {
+                    let mut pixels = image.pixels();
+                    let rows = image.rows().len();
+                    let columns = pixels.len() / rows;
+                    let world_transform = transform.translation + get_scene_center_location(scene);
 
-                        let fixed_translation = get_fixed_translation_by_anchor(
-                            &Vec2 {
-                                x: columns as f32,
-                                y: rows as f32,
-                            },
-                            &world_transform.truncate(),
-                            &collider.anchor,
-                        );
+                    let fixed_translation = get_fixed_translation_by_anchor(
+                        &Vec2 {
+                            x: columns as f32,
+                            y: rows as f32,
+                        },
+                        &world_transform.truncate(),
+                        &collider.anchor,
+                    );
 
-                        let mut index = 0;
-                        let channel = collider.channel.clone() as usize;
+                    let mut index = 0;
+                    let channel = collider.channel.clone() as usize;
 
-                        while pixels.len() > 0 {
-                            if pixels.next().unwrap()[channel] > 0 {
-                                let tile_location = fixed_translation
-                                    + (Vec2::new(
-                                        (index % columns) as f32,
-                                        (index / columns) as f32 * -1.0,
-                                    ) * super::collision::TILE_SIZE);
-                                let collision_tile = CollisionTile {
-                                    location: tile_location,
-                                    colliision_type: collider.collision_type.clone(),
-                                    entity: Some(spawned_entity),
-                                };
-                                collision_map.tiles.push(collision_tile);
-                            }
-                            index += 1;
+                    while pixels.len() > 0 {
+                        if pixels.next().unwrap()[channel] > 0 {
+                            let tile_location = fixed_translation
+                                + (Vec2::new(
+                                    (index % columns) as f32,
+                                    (index / columns) as f32 * -1.0,
+                                ) * super::collision::TILE_SIZE);
+                            let collision_tile = CollisionTile {
+                                location: tile_location,
+                                colliision_type: collider.collision_type.clone(),
+                                entity: Some(spawned_entity),
+                            };
+                            collision_map.tiles.push(collision_tile);
                         }
+                        index += 1;
                     }
                 }
             }
