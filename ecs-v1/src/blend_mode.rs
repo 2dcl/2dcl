@@ -1,43 +1,43 @@
-use serde::{Serialize, Deserialize};
+use serde::{Deserialize, Serialize};
 
 #[derive(Deserialize, Serialize, Debug, Clone)]
 pub enum BlendFactor {
-  Zero,
-  One,
-  Src,
-  OneMinusSrc,
-  SrcAlpha,
-  OneMinusSrcAlpha,
-  Dst,
-  OneMinusDst,
-  DstAlpha,
-  OneMinusDstAlpha,
-  SrcAlphaSaturated,
-  Constant,
-  OneMinusConstant,
+    Zero,
+    One,
+    Src,
+    OneMinusSrc,
+    SrcAlpha,
+    OneMinusSrcAlpha,
+    Dst,
+    OneMinusDst,
+    DstAlpha,
+    OneMinusDstAlpha,
+    SrcAlphaSaturated,
+    Constant,
+    OneMinusConstant,
 }
 
 #[derive(Deserialize, Serialize, Debug, Clone)]
 pub struct BlendOptions {
-  pub src: BlendFactor,
-  pub dst: BlendFactor
+    pub src: BlendFactor,
+    pub dst: BlendFactor,
 }
 
 #[derive(Deserialize, Serialize, Debug, Clone)]
 pub enum BlendMode {
-  Add,
-  AlphaBlend,
-  Multiply,
-  Custom { 
-    color: BlendOptions,
-    alpha: BlendOptions
-  }
+    Add,
+    AlphaBlend,
+    Multiply,
+    Custom {
+        color: BlendOptions,
+        alpha: BlendOptions,
+    },
 }
 
 #[cfg(test)]
 mod test {
-    use crate::test_utils::*;
     use super::*;
+    use crate::test_utils::*;
 
     #[test]
     fn can_be_serialized_from_json() {

@@ -1,23 +1,25 @@
 use clap::Parser;
 use scene_compiler::compile;
 
-#[derive(Parser,Debug)]
+#[derive(Parser, Debug)]
 struct Args {
     json_path: std::path::PathBuf,
-    #[clap(default_value="./build")]
+    #[clap(default_value = "./build")]
     build_path: std::path::PathBuf,
 }
 
 fn main() {
-  let args = Args::parse();
+    let args = Args::parse();
 
-  match args {
-    Args { json_path, build_path } => {
-       let result = compile(json_path, build_path);
-       if result.is_err()
-       {
-        println!("{}",result.unwrap_err());
-       }
-      }
-  }
+    match args {
+        Args {
+            json_path,
+            build_path,
+        } => {
+            let result = compile(json_path, build_path);
+            if result.is_err() {
+                println!("{}", result.unwrap_err());
+            }
+        }
+    }
 }

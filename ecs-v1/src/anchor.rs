@@ -1,8 +1,8 @@
 use crate::Vec2;
-use serde::{Serialize, Deserialize};
+use serde::{Deserialize, Serialize};
 
-#[derive(Deserialize, Serialize, Debug, Clone, PartialEq, Default)]
-pub enum Anchor{
+#[derive(Deserialize, Serialize, Debug, Clone, PartialEq, Eq, Default)]
+pub enum Anchor {
     #[default]
     Center,
     BottomLeft,
@@ -18,8 +18,8 @@ pub enum Anchor{
 
 #[cfg(test)]
 mod test {
-    use crate::test_utils::*;
     use super::*;
+    use crate::test_utils::*;
 
     #[test]
     fn can_be_serialized_from_json() {

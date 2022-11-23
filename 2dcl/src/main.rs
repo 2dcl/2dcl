@@ -1,7 +1,7 @@
 use dcl_common::Result;
 
-mod renderer;
 mod previewer;
+mod renderer;
 
 pub mod components;
 
@@ -16,49 +16,48 @@ struct Cli {
 
 #[derive(clap::Subcommand)]
 enum Action {
-   Preview
-   {
-    #[clap(default_value="./")]
-    source_path: std::path::PathBuf,
-    #[clap(default_value="./build/")]
-    destination_path: std::path::PathBuf
-   },
-   Build
-   {
-    #[clap(default_value="./")]
-    source_path: std::path::PathBuf,
-    #[clap(default_value="./build/")]
-    destination_path: std::path::PathBuf
-   }
+    Preview {
+        #[clap(default_value = "./")]
+        source_path: std::path::PathBuf,
+        #[clap(default_value = "./build/")]
+        destination_path: std::path::PathBuf,
+    },
+    Build {
+        #[clap(default_value = "./")]
+        source_path: std::path::PathBuf,
+        #[clap(default_value = "./build/")]
+        destination_path: std::path::PathBuf,
+    },
 }
 
-
-
 fn main() -> Result<()> {
-  let args = Cli::parse();
+    let args = Cli::parse();
 
-  match args.action {
-    Some(Action::Preview {source_path, destination_path}) => {
-        previewer::preview(source_path, destination_path);
-      }
-    ,
-    Some(Action::Build {source_path, destination_path}) => {
-      scene_compiler::compile(source_path, destination_path).unwrap();
+    match args.action {
+        Some(Action::Preview {
+            source_path,
+            destination_path,
+        }) => {
+            previewer::preview(source_path, destination_path);
+        }
+        Some(Action::Build {
+            source_path,
+            destination_path,
+        }) => {
+            scene_compiler::compile(source_path, destination_path).unwrap();
+        }
+        None => {
+            renderer::start();
+        }
     }
-    None =>
-    {
-      renderer::start();
-    }
-  }
-      
- 
-//    ws::start().await?;
+
+    //    ws::start().await?;
 
     // spawn kernel process
-  //  let mut command = std::env::current_exe()?;
-  //  command.pop();
-  //  command.push("kernel");
-  //  Command::new(command).spawn().expect("failed to spawn");
+    //  let mut command = std::env::current_exe()?;
+    //  command.pop();
+    //  command.push("kernel");
+    //  Command::new(command).spawn().expect("failed to spawn");
 
     //
 

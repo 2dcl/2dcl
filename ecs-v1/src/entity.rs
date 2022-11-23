@@ -1,5 +1,5 @@
-use serde::{Serialize, Deserialize};
 use crate::Component;
+use serde::{Deserialize, Serialize};
 
 #[derive(Serialize, Deserialize, Debug, Default)]
 pub struct Entity {
@@ -20,14 +20,13 @@ impl Entity {
     }
 }
 
-
 #[cfg(test)]
 mod test {
-    use crate::test_utils::*;
     use super::*;
+    use crate::test_utils::*;
 
     #[test]
     fn can_be_serialized_from_json() {
-      can_go_from_json_to_mp::<Entity, _>("entity");
+        can_go_from_json_to_mp::<Entity, _>("entity");
     }
 }

@@ -1,16 +1,16 @@
-use serde::{Serialize, Deserialize};
+use serde::{Deserialize, Serialize};
 
 #[derive(Deserialize, Serialize, Debug, Clone, Default, PartialEq, Eq)]
-pub enum  CollisionType {
-  #[default]
-  Solid,
-  Trigger
+pub enum CollisionType {
+    #[default]
+    Solid,
+    Trigger,
 }
 
 #[cfg(test)]
 mod test {
-    use crate::test_utils::*;
     use super::*;
+    use crate::test_utils::*;
 
     #[test]
     fn can_be_serialized_from_json() {
