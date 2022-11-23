@@ -14,7 +14,7 @@ pub struct Entity {
 impl Entity {
     pub fn new(name: String) -> Entity {
         Entity {
-            name: name,
+            name,
             ..Default::default()
         }
     }

@@ -1,6 +1,6 @@
 use serde::{Serialize, Deserialize};
 
-#[derive(Deserialize, Serialize, Debug, Clone, Default, PartialEq)]
+#[derive(Deserialize, Serialize, Debug, Clone, Default, PartialEq, Eq)]
 pub enum  CollisionType {
   #[default]
   Solid,

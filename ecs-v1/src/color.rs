@@ -12,7 +12,7 @@ impl Default for RGBA {
   fn default() -> Self { RGBA { r: 1.0, g: 1.0, b: 1.0, a: 1.0 } }
 }
 
-#[derive(Deserialize, Serialize, Debug, Clone, Default, PartialEq)]
+#[derive(Deserialize, Serialize, Debug, Clone, Default, PartialEq, Eq)]
 pub enum Channel {
   R,
   G,

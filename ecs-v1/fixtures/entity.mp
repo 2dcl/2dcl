@@ -1,1 +1,1 @@
-’¨entity_1
+“¨entity_1
