@@ -154,11 +154,9 @@ pub fn scene_handler(
             parcels_to_spawn[itr as usize].0,
             parcels_to_spawn[itr as usize].1,
         ));
-        let scene = result.0;
         let path = result.1;
-        if scene.is_ok() {
-            let scene = scene.unwrap();
 
+        if let Ok(scene) = result.0 {
             for scene_parcel in &scene.parcels {
                 for i in (0..parcels_to_spawn.len()).rev() {
                     if parcels_to_spawn[i] == *scene_parcel {
@@ -665,11 +663,9 @@ fn entity_anchor_to_anchor(anchor: dcl2d_ecs_v1::Anchor, size: Vec2) -> Anchor {
         dcl2d_ecs_v1::Anchor::Center => Anchor::Center,
         dcl2d_ecs_v1::Anchor::CenterLeft => Anchor::CenterLeft,
         dcl2d_ecs_v1::Anchor::CenterRight => Anchor::CenterRight,
-        dcl2d_ecs_v1::Anchor::Custom(vec) => {
-            Anchor::Custom(
-                Vec2::new(vec.x as f32 - size.x / 2.0, vec.y as f32 - size.y / 2.0) / size,
-            )
-        }
+        dcl2d_ecs_v1::Anchor::Custom(vec) => Anchor::Custom(
+            Vec2::new(vec.x as f32 - size.x / 2.0, vec.y as f32 - size.y / 2.0) / size,
+        ),
         dcl2d_ecs_v1::Anchor::TopCenter => Anchor::TopCenter,
         dcl2d_ecs_v1::Anchor::TopLeft => Anchor::TopLeft,
         dcl2d_ecs_v1::Anchor::TopRight => Anchor::TopRight,
@@ -682,61 +678,43 @@ fn get_fixed_translation_by_anchor(
     anchor: &dcl2d_ecs_v1::Anchor,
 ) -> Vec2 {
     match anchor {
-        dcl2d_ecs_v1::Anchor::BottomCenter => {
-            Vec2 {
-                x: translation.x - size.x / 2.0,
-                y: translation.y + size.y,
-            }
-        }
-        dcl2d_ecs_v1::Anchor::BottomLeft => {
-            Vec2 {
-                x: translation.x,
-                y: translation.y + size.y,
-            }
-        }
-        dcl2d_ecs_v1::Anchor::BottomRight => {
-            Vec2 {
-                x: translation.x - size.x,
-                y: translation.y + size.y,
-            }
-        }
-        dcl2d_ecs_v1::Anchor::Center => {
-            Vec2 {
-                x: translation.x - size.x / 2.0,
-                y: translation.y + size.y / 2.0,
-            }
-        }
-        dcl2d_ecs_v1::Anchor::CenterLeft => {
-            Vec2 {
-                x: translation.x,
-                y: translation.y + size.y / 2.0,
-            }
-        }
-        dcl2d_ecs_v1::Anchor::CenterRight => {
-            Vec2 {
-                x: translation.x - size.x,
-                y: translation.y + size.y / 2.0,
-            }
-        }
-        dcl2d_ecs_v1::Anchor::Custom(vec) => {
-            Vec2 {
-                x: translation.x - vec.x as f32,
-                y: translation.y + size.y - vec.y as f32,
-            }
-        }
-        dcl2d_ecs_v1::Anchor::TopCenter => {
-            Vec2 {
-                x: translation.x - size.x / 2.0,
-                y: translation.y,
-            }
-        }
+        dcl2d_ecs_v1::Anchor::BottomCenter => Vec2 {
+            x: translation.x - size.x / 2.0,
+            y: translation.y + size.y,
+        },
+        dcl2d_ecs_v1::Anchor::BottomLeft => Vec2 {
+            x: translation.x,
+            y: translation.y + size.y,
+        },
+        dcl2d_ecs_v1::Anchor::BottomRight => Vec2 {
+            x: translation.x - size.x,
+            y: translation.y + size.y,
+        },
+        dcl2d_ecs_v1::Anchor::Center => Vec2 {
+            x: translation.x - size.x / 2.0,
+            y: translation.y + size.y / 2.0,
+        },
+        dcl2d_ecs_v1::Anchor::CenterLeft => Vec2 {
+            x: translation.x,
+            y: translation.y + size.y / 2.0,
+        },
+        dcl2d_ecs_v1::Anchor::CenterRight => Vec2 {
+            x: translation.x - size.x,
+            y: translation.y + size.y / 2.0,
+        },
+        dcl2d_ecs_v1::Anchor::Custom(vec) => Vec2 {
+            x: translation.x - vec.x as f32,
+            y: translation.y + size.y - vec.y as f32,
+        },
+        dcl2d_ecs_v1::Anchor::TopCenter => Vec2 {
+            x: translation.x - size.x / 2.0,
+            y: translation.y,
+        },
         dcl2d_ecs_v1::Anchor::TopLeft => *translation,
-        dcl2d_ecs_v1::Anchor::TopRight => {
-            Vec2 {
-                x: translation.x - size.x,
-                y: translation.y,
-            }
-        }
+        dcl2d_ecs_v1::Anchor::TopRight => Vec2 {
+            x: translation.x - size.x,
+            y: translation.y,
+        },
     }
 }
 
@@ -799,7 +777,7 @@ where
 
             commands.entity(spawned_entity).insert(transform);
 
-            let mut image_path = path.as_ref().clone().to_path_buf();
+            let mut image_path = path.as_ref().to_path_buf();
             image_path.push("assets");
             image_path.push(&sprite_renderer.sprite);
 
@@ -809,7 +787,7 @@ where
             let renderer = (*sprite_renderer).clone();
             let mut sprite_path = std::fs::canonicalize(PathBuf::from_str(".").unwrap()).unwrap();
             sprite_path.push("assets");
-            sprite_path.push(path.as_ref().clone());
+            sprite_path.push(path.as_ref());
             sprite_path.push("assets");
             sprite_path.push(&sprite_renderer.sprite);
 
@@ -877,7 +855,7 @@ where
         {
             let mut sprite_path = std::fs::canonicalize(PathBuf::from_str(".").unwrap()).unwrap();
             sprite_path.push("assets");
-            sprite_path.push(path.as_ref().clone());
+            sprite_path.push(path.as_ref());
             sprite_path.push("assets");
             sprite_path.push(&collider.sprite);
 

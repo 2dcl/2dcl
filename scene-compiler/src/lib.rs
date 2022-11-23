@@ -23,7 +23,7 @@ where
     let assets_destination_path = destination_path.as_ref().to_path_buf();
     let mut destination_path = destination_path.as_ref().to_path_buf();
 
-    if !source_path.exists() || !source_path.is_dir(){
+    if !source_path.exists() || !source_path.is_dir() {
         return Err(Box::new(SceneCompileError::SourceNotDirectory));
     }
 
@@ -57,23 +57,6 @@ where
     options.overwrite = true;
     options.copy_inside = true;
 
-    // println!("Copying: {} -> {}", assets_source_path.display(), assets_destination_path.display());
-
     fs_extra::dir::copy(assets_source_path, assets_destination_path, &options)?;
-
-    // for entity in scene.entities.iter()
-    // {
-    //     for component in entity.components.iter()
-    //     {
-    //         if let (Some(source_path), Some(destination_path)) = (source_path.parent(), destination_path.parent())
-    //         {
-    //             component.compile(source_path, destination_path)?;
-
-    //         }
-
-    //     }
-    // }
-
-    // println!("Compilation complete.");
     Ok(())
 }

@@ -47,10 +47,8 @@ where
                             || path.extension().unwrap().to_string_lossy() == "png")
                     {
                         println!("Reloading {}...", src_abs_path.display());
-
-                        match scene_compiler::compile(&src_abs_path, &dst_abs_path) {
-                            Err(error) => println!("Error compiling: {}", error),
-                            _ => {}
+                        if let Err(error) = scene_compiler::compile(&src_abs_path, &dst_abs_path) {
+                            println!("Error compiling: {}", error)
                         }
                     }
                 }

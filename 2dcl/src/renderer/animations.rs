@@ -196,27 +196,15 @@ pub fn get_animator<P>(
 where
     P: AsRef<Path>,
 {
-    let file: File;
+    let file: File = match File::open(&path) {
+        Ok(v) => v,
+        Err(e) => return Err(e.to_string()),
+    };
 
-    match File::open(&path) {
-        Ok(v) => {
-            file = v;
-        }
-        Err(e) => {
-            return Err(e.to_string());
-        }
-    }
-
-    let spritesheet: aseprite::SpritesheetData;
-
-    match serde_json::from_reader(file) {
-        Ok(v) => {
-            spritesheet = v;
-        }
-        Err(e) => {
-            return Err(e.to_string());
-        }
-    }
+    let spritesheet: aseprite::SpritesheetData = match serde_json::from_reader(file) {
+        Ok(v) => v,
+        Err(e) => return Err(e.to_string()),
+    };
 
     let mut image_path = PathBuf::from(path.as_ref());
     image_path.pop();
@@ -246,12 +234,11 @@ where
     }
 
     for frame_tag in spritesheet.meta.frame_tags.unwrap_or_default() {
-        let direction;
-        match frame_tag.direction {
-            aseprite::Direction::Forward => direction = Direction::Forward,
-            aseprite::Direction::Reverse => direction = Direction::Reverse,
-            aseprite::Direction::Pingpong => direction = Direction::PingpongForward,
-        }
+        let direction = match frame_tag.direction {
+            aseprite::Direction::Forward => Direction::Forward,
+            aseprite::Direction::Reverse => Direction::Reverse,
+            aseprite::Direction::Pingpong => Direction::PingpongForward,
+        };
 
         animations.push(Animation {
             name: frame_tag.name,
@@ -261,15 +248,10 @@ where
         });
     }
 
-    let scale;
-    match spritesheet.meta.scale.parse::<f32>() {
-        Ok(v) => {
-            scale = v;
-        }
-        Err(_e) => {
-            scale = 1.0;
-        }
-    }
+    let scale = match spritesheet.meta.scale.parse::<f32>() {
+        Ok(v) => v,
+        Err(_e) => 1.0,
+    };
 
     let current_animation = animations[0].clone();
     let current_duration = frame_durations[0];

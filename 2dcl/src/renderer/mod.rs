@@ -7,6 +7,7 @@ use bevy::{
 pub mod config;
 mod custom_material;
 mod dcl_3d_scene;
+mod error;
 mod player_sprite_maker;
 
 mod player;
@@ -34,10 +35,14 @@ pub fn start() {
     let current_path = current_path.parent().unwrap();
     std::env::set_current_dir(current_path).unwrap();
 
-    player_sprite_maker::make_player_spritesheet(
+    match player_sprite_maker::make_player_spritesheet(
         "./assets/wearables/".to_owned(),
         "./assets/player.json".to_owned(),
-    );
+    ) {
+        Ok(_) => {}
+        Err(e) => println!("{}", e),
+    };
+
     let mut app = App::new();
     setup(&mut app);
     app.add_plugin(SceneLoaderPlugin).run();

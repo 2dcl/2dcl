@@ -228,7 +228,6 @@ fn player_interact(
 
         Err(e) => {
             println!("{}", e);
-            
         }
     }
 }

@@ -3,23 +3,21 @@ use scene_compiler::compile;
 
 #[derive(Parser, Debug)]
 struct Args {
-    json_path: std::path::PathBuf,
+    source_path: std::path::PathBuf,
     #[clap(default_value = "./build")]
-    build_path: std::path::PathBuf,
+    destination_path: std::path::PathBuf,
 }
 
 fn main() {
     let args = Args::parse();
 
-    match args {
-        Args {
-            json_path,
-            build_path,
-        } => {
-            let result = compile(json_path, build_path);
-            if result.is_err() {
-                println!("{}", result.unwrap_err());
-            }
-        }
+    let Args {
+        source_path,
+        destination_path,
+    } = args;
+    let result = compile(source_path, destination_path);
+
+    if result.is_err() {
+        println!("{}", result.unwrap_err());
     }
 }

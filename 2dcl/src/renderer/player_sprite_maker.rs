@@ -1,4 +1,5 @@
 use aseprite::SpritesheetData;
+use dcl_common::Result;
 use image::io::Reader as ImageReader;
 use image::{DynamicImage, ImageBuffer};
 use std::fmt::Debug;
@@ -6,6 +7,8 @@ use std::fs;
 use std::fs::File;
 use std::path::Path;
 use std::path::PathBuf;
+
+use super::error::SpriteMakerError;
 
 #[derive(Debug, Eq, Ord, PartialEq, PartialOrd)]
 enum WearableType {
@@ -21,165 +24,151 @@ enum WearableType {
 #[derive(Debug, Eq, Ord, PartialEq, PartialOrd)]
 struct WearableData {
     wearable_type: WearableType,
-    json_path: String,
+    json_path: PathBuf,
 }
 
-pub fn make_player_spritesheet<P>(wearables_path: P, output_file: P) -> bool
+fn get_wearables_data<P>(wearables_path: P) -> Result<Vec<WearableData>>
 where
-    P: AsRef<Path> + Clone + Debug,
+    P: AsRef<Path>,
 {
     let mut wearables: Vec<WearableData> = Vec::new();
-
-    let wearables_dir;
-
-    match fs::read_dir(wearables_path) {
-        Ok(v) => wearables_dir = v,
-        Err(_e) => return false,
-    }
+    let wearables_dir = match fs::read_dir(wearables_path) {
+        Ok(v) => v,
+        Err(e) => return Err(Box::new(e)),
+    };
 
     for wearable_path in wearables_dir {
-        let wearable_path_string;
-
-        match wearable_path {
-            Ok(v) => wearable_path_string = v.path().display().to_string(),
+        let wearable_path = match wearable_path {
+            Ok(v) => v.path(),
             Err(_e) => continue,
+        };
+
+        let file_extension = match wearable_path.extension() {
+            Some(v) => v,
+            None => continue,
+        };
+
+        if file_extension != "json" {
+            continue;
         }
 
-        if wearable_path_string
-            .to_lowercase()
-            .trim_end()
-            .ends_with("body.json")
-        {
+        let file_name = match wearable_path.file_stem() {
+            Some(v) => v,
+            None => continue,
+        };
+
+        let file_name = match file_name.to_str() {
+            Some(v) => v.to_lowercase(),
+            None => continue,
+        };
+
+        if file_name.ends_with("body") {
             wearables.push(WearableData {
-                json_path: wearable_path_string,
+                json_path: wearable_path,
                 wearable_type: WearableType::Body,
             });
             continue;
         }
 
-        if wearable_path_string
-            .to_lowercase()
-            .trim_end()
-            .ends_with("feet.json")
-        {
+        if file_name.ends_with("feet") {
             wearables.push(WearableData {
-                json_path: wearable_path_string,
+                json_path: wearable_path,
                 wearable_type: WearableType::Feet,
             });
             continue;
         }
 
-        if wearable_path_string
-            .to_lowercase()
-            .trim_end()
-            .ends_with("lower.json")
-        {
+        if file_name.ends_with("lower.json") {
             wearables.push(WearableData {
-                json_path: wearable_path_string,
+                json_path: wearable_path,
                 wearable_type: WearableType::Lower,
             });
             continue;
         }
 
-        if wearable_path_string
-            .to_lowercase()
-            .trim_end()
-            .ends_with("upper.json")
-        {
+        if file_name.ends_with("upper.json") {
             wearables.push(WearableData {
-                json_path: wearable_path_string,
+                json_path: wearable_path,
                 wearable_type: WearableType::Upper,
             });
             continue;
         }
 
-        if wearable_path_string
-            .to_lowercase()
-            .trim_end()
-            .ends_with("headaccessory.json")
-        {
+        if file_name.ends_with("headaccessory.json") {
             wearables.push(WearableData {
-                json_path: wearable_path_string,
+                json_path: wearable_path,
                 wearable_type: WearableType::HeadAccesory,
             });
             continue;
         }
 
-        if wearable_path_string
-            .to_lowercase()
-            .trim_end()
-            .ends_with("hair.json")
-        {
+        if file_name.ends_with("hair.json") {
             wearables.push(WearableData {
-                json_path: wearable_path_string,
+                json_path: wearable_path,
                 wearable_type: WearableType::Hair,
             });
             continue;
         }
 
-        if wearable_path_string
-            .to_lowercase()
-            .trim_end()
-            .ends_with("background.json")
-            || wearable_path_string
-                .to_lowercase()
-                .trim_end()
-                .ends_with("bg.json")
-        {
+        if file_name.ends_with("background.json") || file_name.ends_with("bg.json") {
             wearables.push(WearableData {
-                json_path: wearable_path_string,
+                json_path: wearable_path,
                 wearable_type: WearableType::Background,
             });
             continue;
         }
     }
+    wearables.sort();
+    Ok(wearables)
+}
+pub fn make_player_spritesheet<P>(wearables_path: P, output_file: P) -> Result<()>
+where
+    P: AsRef<Path> + Clone + Debug,
+{
+    let wearables = match get_wearables_data(wearables_path) {
+        Ok(v) => v,
+        Err(e) => return Err(e),
+    };
 
-    if wearables.len() <= 0 {
-        return false;
+    if wearables.is_empty() {
+        return Err(Box::new(SpriteMakerError::NoWearables));
     }
 
-    wearables.sort();
+    let file = match File::open(&wearables[0].json_path) {
+        Ok(v) => v,
+        Err(e) => return Err(Box::new(e)),
+    };
 
-    let mut final_image: Option<ImageBuffer<image::Rgba<u8>, Vec<u8>>> = None;
-    let mut final_spritesheet: Option<aseprite::SpritesheetData> = None;
+    let mut final_spritesheet: aseprite::SpritesheetData = match serde_json::from_reader(file) {
+        Ok(v) => v,
+        Err(e) => return Err(Box::new(e)),
+    };
+
+    let mut image_path = PathBuf::from(&wearables[0].json_path);
+    image_path.pop();
+    image_path.push(final_spritesheet.meta.image.clone().unwrap_or_default());
+
+    let image_reader = match ImageReader::open(&image_path) {
+        Ok(v) => v,
+        Err(e) => return Err(Box::new(e)),
+    };
+
+    let image_reader = match image_reader.decode() {
+        Ok(v) => v,
+        Err(e) => return Err(Box::new(e)),
+    };
+
+    let mut final_image = match image_reader {
+        DynamicImage::ImageRgba8(v) => v,
+        _ => return Err(Box::new(SpriteMakerError::InvalidImageFormat(image_path))),
+    };
 
     for wearable in wearables {
-        if let Some(dynamic_image) = &mut final_image {
-            if let Some(spritesheet) = &final_spritesheet.clone() {
-                add_wearable(dynamic_image, wearable.json_path.clone(), spritesheet);
-            }
-        } else {
-            let file;
-
-            match File::open(wearable.json_path.clone()) {
-                Ok(v) => file = v,
-                Err(_e) => continue,
-            }
-
-            match serde_json::from_reader(file) {
-                Ok(v) => final_spritesheet = Some(v),
-                Err(_e) => continue,
-            }
-
-            let mut image_path = PathBuf::new();
-            image_path.push(wearable.json_path);
-            image_path.pop();
-
-            match final_spritesheet.clone() {
-                Some(v) => image_path.push(v.meta.image.clone().unwrap_or_default()),
-                None => continue,
-            }
-
-            let image_reader;
-            match ImageReader::open(image_path) {
-                Ok(v) => image_reader = v,
-                Err(_e) => return false,
-            }
-
-            if let DynamicImage::ImageRgba8(dynamic_image) = image_reader.decode().unwrap() {
-                final_image = Some(dynamic_image);
-            }
-        }
+        add_wearable(
+            &mut final_image,
+            wearable.json_path.clone(),
+            &final_spritesheet,
+        );
     }
 
     let mut output_image_path = PathBuf::new();
@@ -196,33 +185,24 @@ where
     output_image_path.pop();
     output_image_path.push(output_image_name.clone());
 
-    let writer;
+    let writer = match File::create(output_file) {
+        Ok(v) => v,
+        Err(e) => return Err(Box::new(e)),
+    };
 
-    match File::create(output_file) {
-        Ok(v) => writer = v,
-        Err(_e) => return false,
-    }
-
-    let new_image = Some(output_image_name);
-
-    match final_spritesheet.as_mut() {
-        Some(v) => v.meta.image = new_image,
-        None => return false,
-    }
+    final_spritesheet.meta.image = Some(output_image_name);
 
     match serde_json::to_writer(&writer, &final_spritesheet) {
         Ok(_v) => println!("saved player json"),
-        Err(_e) => return false,
+        Err(e) => return Err(Box::new(e)),
     }
 
-    if let Some(dynamic_image) = final_image {
-        match dynamic_image.save(output_image_path) {
-            Ok(_v) => println!("saved player image"),
-            Err(_e) => return false,
-        }
+    match final_image.save(output_image_path) {
+        Ok(_v) => println!("saved player image"),
+        Err(e) => return Err(Box::new(e)),
     }
 
-    true
+    Ok(())
 }
 
 fn add_wearable<P>(
@@ -232,29 +212,24 @@ fn add_wearable<P>(
 ) where
     P: AsRef<Path> + Clone,
 {
-    let wearable_file: File;
-
-    match File::open(wearable_path.clone()) {
-        Ok(v) => wearable_file = v,
+    let wearable_file = match File::open(wearable_path.clone()) {
+        Ok(v) => v,
         Err(_e) => return,
-    }
+    };
 
-    let wearable_spritesheet: aseprite::SpritesheetData;
-
-    match serde_json::from_reader(wearable_file) {
-        Ok(v) => wearable_spritesheet = v,
-        Err(_e) => return,
-    }
+    let wearable_spritesheet: aseprite::SpritesheetData =
+        match serde_json::from_reader(wearable_file) {
+            Ok(v) => v,
+            Err(_e) => return,
+        };
 
     let mut wearable_image_path = PathBuf::new();
     wearable_image_path.push(wearable_path);
     wearable_image_path.pop();
     wearable_image_path.push(&wearable_spritesheet.meta.image.unwrap_or_default());
 
-    let wearable_image;
-
-    match ImageReader::open(wearable_image_path) {
-        Ok(v) => wearable_image = v.decode().unwrap_or_default(),
+    let wearable_image = match ImageReader::open(wearable_image_path) {
+        Ok(v) => v.decode().unwrap_or_default(),
         Err(_e) => return,
     };
 

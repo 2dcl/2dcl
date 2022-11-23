@@ -97,11 +97,11 @@ fn scene_reload(
                     commands.entity(entity).despawn_recursive();
                     let timestamp = scene.timestamp;
                     let scene = scene_loader::read_scene(&scene.bytes);
-                    if scene.is_some() {
+                    if let Some(scene) = scene {
                         scene_loader::spawn_scene(
                             &mut commands,
                             &asset_server,
-                            scene.unwrap(),
+                            scene,
                             "../",
                             &mut collision_map,
                             timestamp,
@@ -112,11 +112,11 @@ fn scene_reload(
             } else {
                 let timestamp = scene.timestamp;
                 let scene = scene_loader::read_scene(&scene.bytes);
-                if scene.is_some() {
+                if let Some(scene) = scene {
                     scene_loader::spawn_scene(
                         &mut commands,
                         &asset_server,
-                        scene.unwrap(),
+                        scene,
                         "../",
                         &mut collision_map,
                         timestamp,
