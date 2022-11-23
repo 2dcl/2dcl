@@ -18,6 +18,9 @@ pub struct PlayerComponent
     pub current_parcel: Parcel,
 }
 
+#[derive(Component)]
+struct InteractIcon{}
+
 #[derive(Debug)]
 struct LevelChangeStackData
 {
@@ -45,55 +48,83 @@ fn spawn_player(
 )
 {   
 
-  let mut current_path = std::env::current_exe().unwrap_or_default();
-  current_path.pop();
-  current_path.push("assets");
-  current_path.push("player.json");
+  let mut player_animator_path = std::env::current_exe().unwrap_or_default();
+  player_animator_path.pop();
+  player_animator_path.push("assets");
+  player_animator_path.push("player.json");
 
-    let animator = get_animator(current_path, &assets,  &mut texture_atlases);
-   
-    if animator.is_err()
-    {
-      println!("{}",animator.unwrap_err());
-      return;
-    }
+  let player_animator = get_animator(player_animator_path, &assets,  &mut texture_atlases);
+  
+  if player_animator.is_err()
+  {
+    println!("{}",player_animator.unwrap_err());
+    return;
+  }
 
-    let animator = animator.unwrap();
-    let mut sprite = TextureAtlasSprite::new(0);
-    sprite.anchor = Anchor::BottomCenter;
+  let mut interact_animator_path = std::env::current_exe().unwrap_or_default();
+  interact_animator_path.pop();
+  interact_animator_path.push("assets");
+  interact_animator_path.push("interact.json");
 
-    //Spawning Entity
-    let player = commands.spawn_bundle(SpriteSheetBundle{
-        sprite,
-        texture_atlas: animator.atlas.clone(),
-        transform: Transform{
-            scale: Vec3::ONE * PLAYER_SCALE * animator.scale,
-            translation: Vec3::new(0.0, 0.0, 0.0),
-            ..default()
-        },
+
+  let interact_animator = get_animator(interact_animator_path, &assets,  &mut texture_atlases);
+  
+  if interact_animator.is_err()
+  {
+    println!("{}",interact_animator.unwrap_err());
+    return;
+  }
+
+  let interact_animator = interact_animator.unwrap();
+  let player_animator = player_animator.unwrap();
+  let mut sprite = TextureAtlasSprite::new(0);
+  sprite.anchor = Anchor::BottomCenter;
+
+  //Spawning Entity
+  let player = commands.spawn_bundle(SpriteSheetBundle{
+    sprite: sprite.clone(),
+    texture_atlas: player_animator.atlas.clone(),
+    transform: Transform{
+        scale: Vec3::ONE * PLAYER_SCALE * player_animator.scale,
+        translation: Vec3::new(0.0, 0.0, 0.0),
         ..default()
+    },
+    ..default()
+    })
+    .insert(player_animator)
+    .insert(Name::new("Player"))
+    .insert(PlayerComponent
+        {
+            speed: PLAYER_SPEED,
+            collider_size: PLAYER_COLLIDER,
+            current_level: 0,
+            current_parcel:Parcel(0,0),
+            level_change_stack: vec![]
         })
-        .insert(animator)
-        .insert(Name::new("Player"))
-        .insert(PlayerComponent
-            {
-                speed: PLAYER_SPEED,
-                collider_size: PLAYER_COLLIDER,
-                current_level: 0,
-                current_parcel:Parcel(0,0),
-                level_change_stack: vec![]
-            })
-        .id();
-    
-        let clear_color = ClearColorConfig::Custom(Color::BLACK);
-        let mut camera_bundle = Camera2dBundle::new_with_far(10000.0);
-        camera_bundle.camera_2d.clear_color = clear_color;
-        camera_bundle.transform = Transform::from_translation(Vec3{x:0.0,y:0.0,z:5000.0});
+    .id();
 
-        camera_bundle.projection.scale = CAMERA_SCALE;
-        let camera_entity = commands.spawn_bundle(camera_bundle).id();
-        
-        commands.entity(player).add_child(camera_entity);
+  let interact_icon = commands.spawn_bundle(SpriteSheetBundle{
+    sprite,
+    texture_atlas: interact_animator.atlas.clone(),
+    transform: Transform::from_translation(Vec3::new(0.0, ITERACT_ICON_HEIGHT, 0.0))
+    ,
+    ..default()
+    })
+    .insert(interact_animator)
+    .insert(Name::new("Interact_icon"))
+    .insert(InteractIcon{})
+    .id();
+ 
+  let clear_color = ClearColorConfig::Custom(Color::BLACK);
+  let mut camera_bundle = Camera2dBundle::new_with_far(10000.0);
+  camera_bundle.camera_2d.clear_color = clear_color;
+  camera_bundle.transform = Transform::from_translation(Vec3{x:0.0,y:0.0,z:5000.0});
+
+  camera_bundle.projection.scale = CAMERA_SCALE;
+  let camera_entity = commands.spawn_bundle(camera_bundle).id();
+  
+  commands.entity(player).add_child(camera_entity);
+  commands.entity(player).add_child(interact_icon);
     
 }
 
@@ -172,7 +203,7 @@ fn player_movement
     {
         texture_atlas.flip_x = false;
     }
-    change_animator_state(animator.as_mut(),animation_state.to_string()); 
+    change_animator_state(animator.as_mut(),texture_atlas.as_mut(),animation_state); 
 
 }
 
@@ -180,6 +211,7 @@ fn player_movement
 
 fn player_interact(
   mut player_query: Query<(&mut PlayerComponent, &mut Transform)>,
+  mut iteract_query: Query<(&InteractIcon, &mut Animator, &mut TextureAtlasSprite)>,
   box_collision_query: Query<(Entity, &GlobalTransform, &BoxCollider)>,
   entities_with_level_change: Query<(Entity, &LevelChange)>,
   keyboard: Res<Input<KeyCode>>,
@@ -212,9 +244,64 @@ fn player_interact(
   {
     exit_level(&mut player,&mut transform);
   }
+
+  let result = iteract_query.get_single_mut();
+    
+  match result
+  {
+    Ok((_,mut animator, mut texture_atlas)) => {
+
+      update_interact_icon_visibility(&collisions,animator.as_mut(),texture_atlas.as_mut());
+    }
+
+    Err(e) => {
+      println!("{}",e);
+      return;
+    }
+  }
+  
+ 
 }
 
 
+fn update_interact_icon_visibility(
+  collisions: &Vec<CollisionResult>,
+  interact_icon_animator: &mut Animator,
+  interact_sprite_atlas: &mut TextureAtlasSprite,
+)
+{
+
+  let mut player_is_in_trigger = false;
+  for collision in collisions
+  {
+    if collision.collision_type == CollisionType::Trigger
+    {
+      player_is_in_trigger = true;
+      break;
+    }
+  }
+
+  if player_is_in_trigger
+  {
+    if interact_icon_animator.current_animation.name == "hidden" ||
+      interact_icon_animator.current_animation.name == "fade_out"
+    {
+      println!("fading in");
+      change_animator_state(interact_icon_animator, interact_sprite_atlas, "fade_in");
+      queue_animation(interact_icon_animator, "idle")
+    }
+  }
+  else
+  {
+    if interact_icon_animator.current_animation.name == "idle" ||
+    interact_icon_animator.current_animation.name == "fade_in"
+    {
+      println!("fading out");
+      change_animator_state(interact_icon_animator, interact_sprite_atlas, "fade_out");
+      queue_animation(interact_icon_animator, "hidden")
+    }
+  }
+}
 fn change_level(
   player: &mut PlayerComponent,
   player_transform: &mut Transform,
