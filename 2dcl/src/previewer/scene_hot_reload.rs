@@ -81,52 +81,49 @@ fn scene_reload(
     mut collision_map: ResMut<CollisionMap>,
     player: Query<&PlayerComponent>,
 ) {
-    let handler = scene_assets.get(&scene_handlers.0);
+    
 
-    let level_id = match player.get_single() {
-        Ok(player) => player.current_level,
-        _ => 0,
-    };
+  let level_id = match player.get_single() {
+    Ok(player) => player.current_level,
+    _ => 0,
+  };
 
-    match handler {
-        Some(scene) => {
-            if scenes.iter().len() > 0 {
-                let (entity, current_scene) = scenes.single_mut();
-
-                if scene.timestamp != current_scene.timestamp {
-                    commands.entity(entity).despawn_recursive();
-                    let timestamp = scene.timestamp;
-                    let scene = scene_loader::read_scene(&scene.bytes);
-                    if let Some(scene) = scene {
-                        scene_loader::spawn_scene(
-                            &mut commands,
-                            &asset_server,
-                            scene,
-                            "../",
-                            &mut collision_map,
-                            timestamp,
-                            level_id,
-                        );
-                    }
-                }
-            } else {
-                let timestamp = scene.timestamp;
-                let scene = scene_loader::read_scene(&scene.bytes);
-                if let Some(scene) = scene {
-                    scene_loader::spawn_scene(
-                        &mut commands,
-                        &asset_server,
-                        scene,
-                        "../",
-                        &mut collision_map,
-                        timestamp,
-                        level_id,
-                    );
-                }
-            }
+  if let Some(scene) = scene_assets.get(&scene_handlers.0) {
+    if let Ok((entity, current_scene)) = scenes.get_single_mut()
+    {
+      if scene.timestamp != current_scene.timestamp {
+        commands.entity(entity).despawn_recursive();
+        let timestamp = scene.timestamp;
+        let scene = scene_loader::read_scene(&scene.bytes);
+        if let Some(scene) = scene {
+          scene_loader::spawn_scene(
+            &mut commands,
+            &asset_server,
+            scene,
+            "../",
+            &mut collision_map,
+            timestamp,
+            level_id,
+          );
         }
-        None => {}
+      }
+    } 
+    else {
+      let timestamp = scene.timestamp;
+      let scene = scene_loader::read_scene(&scene.bytes);
+      if let Some(scene) = scene {
+        scene_loader::spawn_scene(
+          &mut commands,
+          &asset_server,
+          scene,
+          "../",
+          &mut collision_map,
+          timestamp,
+          level_id,
+        );
+      }
     }
+  }
 }
 
 pub fn level_change(

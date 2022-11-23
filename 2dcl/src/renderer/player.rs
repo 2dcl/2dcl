@@ -294,13 +294,10 @@ fn try_change_level(
 }
 
 fn exit_level(player: &mut PlayerComponent, transform: &mut Transform) {
-    match player.level_change_stack.pop() {
-        Some(data) => {
-            transform.translation = data.location;
-            player.current_level = data.level_id;
-        }
-        None => {}
-    }
+  if let Some(data) = player.level_change_stack.pop() {
+    transform.translation = data.location;
+    player.current_level = data.level_id;
+  }
 }
 
 fn check_player_collision(

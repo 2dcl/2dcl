@@ -26,7 +26,7 @@ pub struct Animation {
     direction: Direction,
 }
 
-#[derive(Deserialize, Debug, Clone, PartialEq)]
+#[derive(Deserialize, Debug, Clone, PartialEq, Eq)]
 pub enum Direction {
     Forward,
     Reverse,

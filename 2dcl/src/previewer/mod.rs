@@ -65,7 +65,7 @@ where
         .unwrap();
 
     // compile
-    scene_compiler::compile(&source_path, &destination_path).unwrap();
+    scene_compiler::compile(source_path, destination_path).unwrap();
 
     // run preview
     preview_scene(destination_path.to_path_buf());
