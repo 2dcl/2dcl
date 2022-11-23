@@ -7,7 +7,7 @@ use crate::color::Channel;
 use crate::{Anchor, Component};
 use serde::{Deserialize, Serialize};
 
-#[derive(Deserialize, Serialize, Debug, PartialEq)]
+#[derive(Deserialize, Serialize, Debug, PartialEq, Eq)]
 pub struct MaskCollider {
     pub sprite: String,
     #[serde(default)]
