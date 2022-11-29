@@ -43,10 +43,10 @@ pub struct Communications {
 
 #[derive(Debug, Deserialize, Serialize, Default, Clone)]
 pub struct Policy {
-    pub content_rating: String,
-    pub fly: bool,
-    pub voice_enabled: bool,
-    pub blacklist: Vec<String>,
+    pub content_rating: Option<String>,
+    pub fly: Option<bool>,
+    pub voice_enabled: Option<bool>,
+    pub blacklist: Option<Vec<String>>,
 }
 
 #[derive(Debug, Deserialize, Serialize, Clone)]

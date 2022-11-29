@@ -2,7 +2,7 @@ use bevy::prelude::*;
 use bevy_console::{reply, AddConsoleCommand, ConsoleCommand, ConsolePlugin};
 use dcl_common::Parcel;
 
-use super::player::Player;
+use super::player::PlayerComponent;
 use super::scene_loader;
 
 pub struct MyConsolePlugin;
@@ -26,7 +26,7 @@ struct TeleportCommand {
 }
 
 fn teleport_command(mut tp: ConsoleCommand<TeleportCommand>,
-    mut player_query: Query<(&mut Player, &mut Transform)>) 
+    mut player_query: Query<(&mut PlayerComponent, &mut Transform)>) 
     {
     let (player, mut transform) = player_query.single_mut();
     if let Some(TeleportCommand { parcel_x, parcel_y }) = tp.take() {
@@ -35,7 +35,7 @@ fn teleport_command(mut tp: ConsoleCommand<TeleportCommand>,
         {
             if let Ok(parcel_y) = parcel_y.parse::<i16>()
             {
-                transform.translation = scene_loader::parcel_to_world_location(Parcel(parcel_x,parcel_y));
+                transform.translation = scene_loader::parcel_to_world_location(&Parcel(parcel_x,parcel_y));
                 reply!(tp, "teleporting to parcel {},{}",parcel_x,parcel_y);
             }
             else
