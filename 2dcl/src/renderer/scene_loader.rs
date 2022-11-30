@@ -1,5 +1,5 @@
 use crate::components::*;
-use crate::renderer::road_maker::make_road_scene;
+use crate::renderer::road_maker::{make_road_scene, add_road_at_parcel};
 
 use bevy::prelude::*;
 use bevy::tasks::AsyncComputeTaskPool;
@@ -56,7 +56,7 @@ pub fn scene_handler(
     downloading_scenes_query: Query<&DownloadingScene>,
     mut commands: Commands,
     asset_server: Res<AssetServer>,
-    roads_data: Res<RoadsData>,
+    mut roads_data: ResMut<RoadsData>,
     mut collision_map: ResMut<CollisionMap>,
 ) {
     //Find the player
@@ -159,10 +159,11 @@ pub fn scene_handler(
     let mut parcels_to_download: Vec<Parcel> = Vec::default();
     while itr<parcels_to_spawn.len() {
         //Check if it's already downloaded
-        let result = get_scene(&roads_data,&Parcel(
+        let result = get_scene(&mut roads_data,&Parcel(
             parcels_to_spawn[itr].0,
             parcels_to_spawn[itr].1,
         ));
+
         let path = result.1;
 
         if let Ok(scene) = result.0 {
@@ -173,7 +174,7 @@ pub fn scene_handler(
                     }
                 }
             }
-
+            
             //If it's already downloaded, we spawn the scene.
             spawn_scene(
                 &mut commands,
@@ -448,73 +449,86 @@ where
     None
 }
 
-fn get_scene(roads_data: &RoadsData, parcel: &Parcel) -> (Result<dcl2d_ecs_v1::Scene, String>, PathBuf) {
-    //TODO: map paths to scenes to improve performance.
-    let paths = match fs::read_dir("./assets/scenes")
-    {
-      Ok(v) => v,
-      Err(e) => return (Err(e.to_string()), PathBuf::default())
-    };
+fn get_scene(roads_data: &mut RoadsData, parcel: &Parcel) -> (Result<dcl2d_ecs_v1::Scene, String>, PathBuf) {
+    
+  match roads_data.parcel_map.get(&(parcel.0,parcel.1))
+  {
+    Some(_) => {
+      let result = make_road_scene(roads_data, parcel);
+      match result.0
+      {
+        Ok(scene) => return (Ok(scene),result.1),
+        Err(_) =>{}
+      }
+    },
+    None => {}
+  };
 
-    for path in paths.flatten() {
-        let mut path = path.path();
-        path.push("scene.2dcl");
+  //TODO: map paths to scenes to improve performance.
+  let paths = match fs::read_dir("./assets/scenes")
+  {
+    Ok(v) => v,
+    Err(e) => return (Err(e.to_string()), PathBuf::default())
+  };
 
-        if path.exists() {
-            if let Some(scene) = read_scene_file(&path) {
-                if scene.parcels.contains(&parcel) {
-                    let path = path.parent().unwrap().to_path_buf();
-                    let iter = path.iter().rev();
-                    let mut new_path = PathBuf::default();
-                    for i in iter {
-                        new_path.push(i);
-                    }
-                    new_path.pop();
-                    new_path.pop();
-                    let iter = new_path.iter().rev();
+  for path in paths.flatten() {
+      let mut path = path.path();
+      path.push("scene.2dcl");
 
-                    let mut final_path = PathBuf::default();
-                    final_path.push("scenes");
-                    for i in iter {
-                        final_path.push(i);
-                    }
-                    return (Ok(scene), final_path);
-                }
-            }
-        }
-        else
-        {
-          path.pop();
-          path.push("scene.json");
-          if let Ok(file) = File::open(path) {
-            println!("scene.json found");
-              let reader = BufReader::new(file);
-              let scene: serde_json::Result<dcl_3d_scene::DCL3dScene> =
-                  serde_json::from_reader(reader);
-            
-            if let Ok(scene) = scene {
-                  if scene.display.title.to_lowercase().contains("road")
-                      || scene.display.title.to_lowercase().contains("tram line")
-                  {
-                    println!("deserialization ok");
-                    if scene.scene.parcels.contains(parcel){
-                      println!("has parcel");
-                      match make_road_scene(roads_data, parcel)
-                      {
-                       Ok(scene) => return (Ok(scene),PathBuf::default()),
-                       Err(_) =>{}
-                      }
+      if path.exists() {
+          if let Some(scene) = read_scene_file(&path) {
+              if scene.parcels.contains(&parcel) {
+                  let path = path.parent().unwrap().to_path_buf();
+                  let iter = path.iter().rev();
+                  let mut new_path = PathBuf::default();
+                  for i in iter {
+                      new_path.push(i);
+                  }
+                  new_path.pop();
+                  new_path.pop();
+                  let iter = new_path.iter().rev();
+
+                  let mut final_path = PathBuf::default();
+                  final_path.push("scenes");
+
+                  for i in iter {
+                      final_path.push(i);
+                  }
+
+                  return (Ok(scene), final_path);
+              }
+          }
+      }
+      else
+      {
+        path.pop();
+        path.push("scene.json");
+        if let Ok(file) = File::open(path) {
+            let reader = BufReader::new(file);
+            let scene: serde_json::Result<dcl_3d_scene::DCL3dScene> =
+                serde_json::from_reader(reader);
+          
+          if let Ok(scene) = scene {
+                if scene.display.title.to_lowercase().contains("road")
+                    || scene.display.title.to_lowercase().contains("tram line")
+                {
+                  if scene.scene.parcels.contains(parcel){
+                    add_road_at_parcel(parcel, roads_data);
+                    let result = make_road_scene(roads_data, parcel);
+                    match result.0
+                    {
+                      Ok(scene) => return (Ok(scene),result.1),
+                      Err(_) =>{}
                     }
                   }
-              }else
-              {
-                println!("{:?}",scene.unwrap_err());
-              } 
-          }
+                }
+            }else
+            {
+              println!("{:?}",scene.unwrap_err());
+            } 
         }
-    }
-
-    println!("parcel not downloaded: {:?}",parcel);
+      }
+  }
 
     (Err("Parcel not downloaded".to_string()), PathBuf::default())
 }
@@ -522,7 +536,7 @@ fn get_scene(roads_data: &RoadsData, parcel: &Parcel) -> (Result<dcl2d_ecs_v1::S
 fn handle_tasks(
     mut commands: Commands,
     mut collision_map: ResMut<CollisionMap>,
-    roads_data: Res<RoadsData>,
+    mut roads_data: ResMut<RoadsData>,
     asset_server: Res<AssetServer>,
     mut tasks_downloading_scenes: Query<(Entity, &mut DownloadingScene)>,
     scenes_query: Query<(Entity, &crate::components::Scene)>,
@@ -533,7 +547,7 @@ fn handle_tasks(
         commands.entity(entity).despawn_recursive();
 
       for parcel in &downloading_scene.parcels {
-        let result = get_scene(&roads_data,&parcel);
+        let result = get_scene(&mut roads_data,&parcel);
 
         if result.0.is_ok() {
           spawn_scene(
@@ -623,7 +637,6 @@ pub fn spawn_level<T>(
 where
     T: AsRef<Path>,
 {
-    println!("Spawning: {}", level_id);
     let level_entity = commands.spawn().id();
 
     if scene.levels.len() <= level_id {
@@ -786,6 +799,7 @@ where
 {
     let mut transform = Transform::identity();
     for component in entity.components.iter() {
+      
         if let Some(source_transform) = component
             .as_any()
             .downcast_ref::<dcl2d_ecs_v1::components::Transform>()
@@ -835,35 +849,30 @@ where
             let mut image_path = path.as_ref().to_path_buf();
             image_path.push("assets");
             image_path.push(&sprite_renderer.sprite);
-
             let texture: Handle<Image> = asset_server.load(image_path);
             commands.entity(spawned_entity).insert(texture);
-
-            let renderer = (*sprite_renderer).clone();
             let mut sprite_path = std::fs::canonicalize(PathBuf::from_str(".").unwrap()).unwrap();
             sprite_path.push("assets");
             sprite_path.push(path.as_ref());
             sprite_path.push("assets");
             sprite_path.push(&sprite_renderer.sprite);
-
             let image_size = match size(sprite_path) {
                 Ok(v) => Vec2::new(v.width as f32, v.height as f32),
                 Err(_) => Vec2::new(0.0, 0.0),
             };
-
+            
             let sprite = Sprite {
                 color: Color::Rgba {
-                    red: renderer.color.r,
-                    green: renderer.color.g,
-                    blue: renderer.color.b,
-                    alpha: renderer.color.a,
+                    red: (&sprite_renderer).color.r,
+                    green: (&sprite_renderer).color.g,
+                    blue:(&sprite_renderer).color.b,
+                    alpha: (&sprite_renderer).color.a,
                 },
-                anchor: entity_anchor_to_anchor(renderer.anchor.clone(), image_size),
-                flip_x: renderer.flip.x,
-                flip_y: renderer.flip.y,
+                anchor: entity_anchor_to_anchor((&sprite_renderer).anchor.clone(), image_size),
+                flip_x: (&sprite_renderer).flip.x,
+                flip_y: (&sprite_renderer).flip.y,
                 ..default()
             };
-
             commands.entity(spawned_entity).insert(sprite);
         }
 
@@ -979,6 +988,7 @@ where
     }
 
     for child_entity in entity.children.iter() {
+      
         let spawned_child_entity = spawn_entity(
             commands,
             asset_server,

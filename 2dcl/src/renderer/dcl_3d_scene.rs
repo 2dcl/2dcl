@@ -5,12 +5,12 @@ use serde::{Deserialize, Serialize};
 pub struct DCL3dScene {
     pub display: Display,
     pub contact: Option<Contact>,
-    pub owner: String,
+    pub owner: Option<String>,
     pub scene: Scene,
     pub communications: Option<Communications>,
     pub policy: Option<Policy>,
     pub required_permissions: Option<Vec<String>>,
-    pub main: String,
+    pub main: Option<String>,
     pub tags: Option<Vec<String>>,
     //   pub spawnPoints: Option<Vec<SpawnPoints>>,
 }
@@ -38,7 +38,7 @@ pub struct Scene {
 #[derive(Debug, Deserialize, Serialize, Default, Clone)]
 pub struct Communications {
     //pub _type: String,
-    pub signalling: String,
+    pub signalling: Option<String>,
 }
 
 #[derive(Debug, Deserialize, Serialize, Default, Clone)]
@@ -51,10 +51,10 @@ pub struct Policy {
 
 #[derive(Debug, Deserialize, Serialize, Clone)]
 pub struct SpawnPoints {
-    pub name: String,
-    pub default: bool,
-    pub position: Position,
-    pub camera_target: CameraTarget,
+    pub name: Option<String>,
+    pub default: Option<bool>,
+    pub position: Option<Position>,
+    pub camera_target: Option<CameraTarget>,
 }
 
 #[derive(Debug, Deserialize, Serialize, Clone)]
