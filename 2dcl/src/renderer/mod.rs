@@ -50,7 +50,6 @@ pub fn start() {
 
   let mut app = App::new();
   setup(&mut app);
-  app.run();
   app.add_plugin(SceneLoaderPlugin).run();
 }
 
