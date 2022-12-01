@@ -1,5 +1,5 @@
 use crate::components::*;
-use crate::renderer::road_maker::{make_road_scene, add_road_at_parcel};
+use crate::renderer::road_maker::{make_road_scene, add_road_at_parcel, remove_road_at_parcel, is_road};
 
 use bevy::prelude::*;
 use bevy::tasks::AsyncComputeTaskPool;
@@ -41,7 +41,8 @@ pub struct SceneLoaderPlugin;
 
 impl Plugin for SceneLoaderPlugin {
     fn build(&self, app: &mut App) {
-        app.add_system(scene_handler).add_system(handle_tasks);
+        app.add_system(scene_handler)
+        .add_system(handle_tasks);
     }
 }
 
@@ -451,18 +452,16 @@ where
 
 fn get_scene(roads_data: &mut RoadsData, parcel: &Parcel) -> (Result<dcl2d_ecs_v1::Scene, String>, PathBuf) {
     
-  match roads_data.parcel_map.get(&(parcel.0,parcel.1))
+
+  if is_road(parcel,roads_data)
   {
-    Some(_) => {
-      let result = make_road_scene(roads_data, parcel);
-      match result.0
-      {
-        Ok(scene) => return (Ok(scene),result.1),
-        Err(_) =>{}
-      }
-    },
-    None => {}
-  };
+    let result = make_road_scene(roads_data, parcel);
+    match result.0
+    {
+      Ok(scene) => return (Ok(scene),result.1),
+      Err(_) =>{}
+    }
+  }
 
   //TODO: map paths to scenes to improve performance.
   let paths = match fs::read_dir("./assets/scenes")
@@ -1003,3 +1002,6 @@ where
     }
     spawned_entity
 }
+
+
+

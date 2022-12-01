@@ -1,16 +1,14 @@
-
 use dcl_common::{Result, Parcel};
 use rmp_serde::encode::*;
 use serde::{Deserialize, Serialize};
 use std::collections::HashMap;
-use std::fs;
 use std::fs::File;
 use std::io::{Read, Write, BufReader};
 use std::path::PathBuf;
 use bevy::prelude::*;
 use rmp_serde::*;
+
 use super::config::{PARCEL_SIZE_X, PARCEL_SIZE_Y};
-use super::scene_loader::parcel_to_world_location;
 //pub fn spawn_road(location: Vec3, )
 
 const ROADS_DATA_MP_FILE:&str = "./assets/roads/roads.mp";
@@ -20,10 +18,14 @@ const LEFT_BORDER_PATH:&str = "road-left.png";
 const RIGHT_BORDER_PATH:&str = "road-right.png";
 const TOP_BORDER_PATH:&str = "road-top.png";
 const BOTTOM_BORDER_PATH:&str = "road-bottom.png";
-const TOP_LEFT_CORNER_PATH:&str = "road-background";
-const TOP_RIGHT_CORNER_PATH:&str = "road-background";
-const BOTTOM_LEFT_CORNER_PATH:&str = "road-background";
-const BOTTOM_RIGHT_CORNER_PATH:&str = "road-background";
+const CLOSED_TOP_LEFT_CORNER_PATH:&str = "road-closed-top-left.png";
+const CLOSED_TOP_RIGHT_CORNER_PATH:&str = "road-closed-top-right.png";
+const CLOSED_BOTTOM_LEFT_CORNER_PATH:&str = "road-closed-bottom-left.png";
+const CLOSED_BOTTOM_RIGHT_CORNER_PATH:&str = "road-closed-bottom-right.png";
+const OPEN_TOP_LEFT_CORNER_PATH:&str = "road-open-top-left.png";
+const OPEN_TOP_RIGHT_CORNER_PATH:&str = "road-open-top-right.png";
+const OPEN_BOTTOM_LEFT_CORNER_PATH:&str = "road-open-bottom-left.png";
+const OPEN_BOTTOM_RIGHT_CORNER_PATH:&str = "road-open-bottom-right.png";
 
 const TILE_SIZE:(i32,i32) = (64,64);
 
@@ -47,12 +49,34 @@ enum Border
   BOTTOM
 }
 
-enum Corner
+#[derive(Debug, Default)]
+struct RoadCornersData
+{
+  top_left_corner: CornerType,
+  top_right_corner: CornerType,
+  bottom_left_corner: CornerType,
+  bottom_right_corner: CornerType,
+  corners_entities: Vec<dcl2d_ecs_v1::Entity>
+}
+
+#[derive(Debug, Clone, Default, PartialEq, Eq)]
+enum CornerType
+{
+  #[default]
+  NONE,
+  CLOSED,
+  OPEN,
+  VERTICAL,
+  HORIZONTAL,
+}
+
+#[derive(Debug, Clone)]
+enum CornerPosition
 {
   TOP_LEFT,
   TOP_RIGHT,
   BOTTOM_LEFT,
-  BOTTOM_RIGHT
+  BOTTOM_RIGHT,
 }
 
 pub struct RoadMakerPlugin;
@@ -69,7 +93,9 @@ pub fn setup(
 {
   match read_roads_data()
   {
-    Ok(roads_data) => commands.insert_resource(roads_data),
+    Ok(mut roads_data) => {
+      commands.insert_resource(roads_data);
+    },
     Err(e) => println!("error:{}",e)
   }
 
@@ -81,8 +107,13 @@ pub fn make_road_scene(roads_data: &RoadsData, parcel: &Parcel) ->  (Result<dcl2
 
   let mut entities: Vec<dcl2d_ecs_v1::Entity> = Vec::new();
 
-  entities.push(make_background_entity());
+ 
+  
+
+  let mut roads_corner_data = make_corners(roads_data, parcel);
+  entities.append(&mut make_background_entities(roads_data, parcel,&roads_corner_data));
   entities.append(&mut make_border_entities(roads_data, parcel));
+  entities.append(&mut roads_corner_data.corners_entities);
 
   let level = dcl2d_ecs_v1::Level
   {
@@ -111,34 +142,30 @@ fn make_border_entities(roads_data: &RoadsData, parcel: &Parcel) -> Vec<dcl2d_ec
 {
   
   let mut border = Vec::new();
-  match roads_data.parcel_map.get(&(parcel.0-1,parcel.1))
+  if !is_road(&Parcel(parcel.0-1,parcel.1), roads_data)
   {
-    Some(_)=> {},
-    None => { border.append(&mut make_border(&Border::LEFT))}
+    border.append(&mut make_border_entity(&Border::LEFT));
   }
 
-  match roads_data.parcel_map.get(&(parcel.0+1,parcel.1))
+  if !is_road(&Parcel(parcel.0+1,parcel.1), roads_data)
   {
-    Some(_)=> {},
-    None => { border.append(&mut make_border(&Border::RIGHT))}
+    border.append(&mut make_border_entity(&Border::RIGHT))
   }
 
-  match roads_data.parcel_map.get(&(parcel.0,parcel.1-1))
+  if !is_road(&Parcel(parcel.0,parcel.1-1), roads_data)
   {
-    Some(_)=> {},
-    None => { border.append(&mut make_border(&Border::BOTTOM))}
+    border.append(&mut make_border_entity(&Border::BOTTOM))
   }
 
-  match roads_data.parcel_map.get(&(parcel.0,parcel.1+1))
+  if !is_road(&Parcel(parcel.0,parcel.1+1), roads_data)
   {
-    Some(_)=> {},
-    None => { border.append(&mut make_border(&Border::TOP))}
+    border.append(&mut make_border_entity(&Border::TOP))
   }
   
   border
 }
 
-fn make_border(border: &Border) -> Vec<dcl2d_ecs_v1::Entity>
+fn make_border_entity(border: &Border) -> Vec<dcl2d_ecs_v1::Entity>
 {
 
   let mut entities = Vec::new();
@@ -151,7 +178,7 @@ fn make_border(border: &Border) -> Vec<dcl2d_ecs_v1::Entity>
     Border::BOTTOM=>PARCEL_SIZE_X as i32/TILE_SIZE.0,
   };
 
-  for i in 0..total_tiles
+  for i in 1..total_tiles-1
   {
     let location_x = match border
     {
@@ -163,8 +190,8 @@ fn make_border(border: &Border) -> Vec<dcl2d_ecs_v1::Entity>
 
     let location_y = match border
     {
-      Border::LEFT=> TILE_SIZE.0*i - PARCEL_SIZE_Y as i32/2,
-      Border::RIGHT=> TILE_SIZE.0*i - PARCEL_SIZE_Y as i32/2,
+      Border::LEFT=> TILE_SIZE.1*i - PARCEL_SIZE_Y as i32/2,
+      Border::RIGHT=> TILE_SIZE.1*i - PARCEL_SIZE_Y as i32/2,
       Border::TOP=> PARCEL_SIZE_Y as i32 /2,
       Border::BOTTOM=> PARCEL_SIZE_Y as i32 /-2
     };
@@ -214,28 +241,242 @@ fn make_border(border: &Border) -> Vec<dcl2d_ecs_v1::Entity>
   entities
 }
 
-fn make_background_entity() -> dcl2d_ecs_v1::Entity
+fn make_corners(roads_data: &RoadsData, parcel: &Parcel) -> RoadCornersData
 {
-  let renderer = dcl2d_ecs_v1::components::SpriteRenderer
+  let mut corners_data = RoadCornersData::default();
+
+  corners_data.top_left_corner = get_corner_type(roads_data, parcel, CornerPosition::TOP_LEFT);
+  match make_corner_entity(&corners_data.top_left_corner,&CornerPosition::TOP_LEFT)
   {
-    sprite:BACKGROUND_PATH.to_string(),
-    layer:-3,
-    anchor: dcl2d_ecs_v1::Anchor::Center,
-    ..default()
+    Some(v) => corners_data.corners_entities.push(v),
+    None=>{}
+  }
+  
+  corners_data.top_right_corner = get_corner_type(roads_data, parcel, CornerPosition::TOP_RIGHT);
+  match make_corner_entity(&corners_data.top_right_corner,&CornerPosition::TOP_RIGHT)
+  {
+    Some(v) => corners_data.corners_entities.push(v),
+    None=>{}
+  }
+
+  corners_data.bottom_left_corner = get_corner_type(roads_data, parcel, CornerPosition::BOTTOM_LEFT);
+  match make_corner_entity(&corners_data.bottom_left_corner,&CornerPosition::BOTTOM_LEFT)
+  {
+    Some(v) => corners_data.corners_entities.push(v),
+    None=>{}
+  }
+
+  corners_data.bottom_right_corner = get_corner_type(roads_data, parcel, CornerPosition::BOTTOM_RIGHT);
+  match make_corner_entity(&corners_data.bottom_right_corner,&CornerPosition::BOTTOM_RIGHT)
+  {
+    Some(v) => corners_data.corners_entities.push(v),
+    None=>{}
+  }
+  
+  corners_data
+}
+
+fn get_corner_type(roads_data: &RoadsData, parcel: &Parcel, position: CornerPosition) -> CornerType
+{
+  let mut corner_type = CornerType::default();
+
+  let x_neighbor_is_road;
+  let y_neighbor_is_road;
+  let diagonal_is_road;
+
+  match position
+  {
+    CornerPosition::TOP_LEFT => {
+      x_neighbor_is_road =  is_road(&Parcel(parcel.0-1,parcel.1), &roads_data);
+      y_neighbor_is_road = is_road(&Parcel(parcel.0,parcel.1+1), &roads_data);
+      diagonal_is_road = is_road(&Parcel(parcel.0-1,parcel.1+1), &roads_data);
+    },
+    CornerPosition::TOP_RIGHT => {
+      x_neighbor_is_road =  is_road(&Parcel(parcel.0+1,parcel.1), &roads_data);
+      y_neighbor_is_road = is_road(&Parcel(parcel.0,parcel.1+1), &roads_data);
+      diagonal_is_road = is_road(&Parcel(parcel.0+1,parcel.1+1), &roads_data);
+    },
+    CornerPosition::BOTTOM_LEFT => {
+      x_neighbor_is_road =  is_road(&Parcel(parcel.0-1,parcel.1), &roads_data);
+      y_neighbor_is_road = is_road(&Parcel(parcel.0,parcel.1-1), &roads_data);
+      diagonal_is_road = is_road(&Parcel(parcel.0-1,parcel.1-1), &roads_data);
+    },
+    CornerPosition::BOTTOM_RIGHT =>{      
+      x_neighbor_is_road =  is_road(&Parcel(parcel.0+1,parcel.1), &roads_data);
+      y_neighbor_is_road = is_road(&Parcel(parcel.0,parcel.1-1), &roads_data);
+      diagonal_is_road = is_road(&Parcel(parcel.0+1,parcel.1-1), &roads_data);
+    },
+  }
+
+  
+  if !x_neighbor_is_road && !y_neighbor_is_road
+  {
+    corner_type = CornerType::CLOSED;
+  }
+  else if x_neighbor_is_road && y_neighbor_is_road && !diagonal_is_road
+  {
+    corner_type = CornerType::OPEN;
+  }
+  else if x_neighbor_is_road && !y_neighbor_is_road
+  {
+    corner_type = CornerType::HORIZONTAL;
+  }
+  else if !x_neighbor_is_road && y_neighbor_is_road
+  {
+    corner_type = CornerType::VERTICAL;
+  }
+
+  corner_type
+}
+fn make_corner_entity(corner_type: &CornerType, position: &CornerPosition) -> Option<dcl2d_ecs_v1::Entity>
+{
+
+  let sprite = match position
+  {
+    CornerPosition::TOP_LEFT => {
+      match corner_type
+      {
+        CornerType::NONE => return None,
+        CornerType::CLOSED => CLOSED_TOP_LEFT_CORNER_PATH.to_string(),
+        CornerType::OPEN => OPEN_TOP_LEFT_CORNER_PATH.to_string(),
+        CornerType::VERTICAL => LEFT_BORDER_PATH.to_string(),
+        CornerType::HORIZONTAL => TOP_BORDER_PATH.to_string(),
+      }
+    },
+    CornerPosition::TOP_RIGHT => {
+      match corner_type
+      {
+        CornerType::NONE => return None,
+        CornerType::CLOSED => CLOSED_TOP_RIGHT_CORNER_PATH.to_string(),
+        CornerType::OPEN => OPEN_TOP_RIGHT_CORNER_PATH.to_string(),
+        CornerType::VERTICAL => RIGHT_BORDER_PATH.to_string(),
+        CornerType::HORIZONTAL => TOP_BORDER_PATH.to_string(),
+      }
+    },
+    CornerPosition::BOTTOM_RIGHT => {
+      match corner_type
+      {
+        CornerType::NONE => return None,
+        CornerType::CLOSED => CLOSED_BOTTOM_RIGHT_CORNER_PATH.to_string(),
+        CornerType::OPEN => OPEN_BOTTOM_RIGHT_CORNER_PATH.to_string(),
+        CornerType::VERTICAL => RIGHT_BORDER_PATH.to_string(),
+        CornerType::HORIZONTAL => BOTTOM_BORDER_PATH.to_string(),
+      }
+    },
+    CornerPosition::BOTTOM_LEFT => {
+      match corner_type
+      {
+        CornerType::NONE => return None,
+        CornerType::CLOSED => CLOSED_BOTTOM_LEFT_CORNER_PATH.to_string(),
+        CornerType::OPEN => OPEN_BOTTOM_LEFT_CORNER_PATH.to_string(),
+        CornerType::VERTICAL => LEFT_BORDER_PATH.to_string(),
+        CornerType::HORIZONTAL => BOTTOM_BORDER_PATH.to_string(),
+      }
+    },
+  };
+
+  let location = match position
+  {
+    CornerPosition::TOP_LEFT => dcl2d_ecs_v1::Vec2{x:PARCEL_SIZE_X as i32 /-2,y:PARCEL_SIZE_Y as i32 /2},
+    CornerPosition::TOP_RIGHT => dcl2d_ecs_v1::Vec2{x:PARCEL_SIZE_X as i32 /2,y:PARCEL_SIZE_Y as i32 /2},
+    CornerPosition::BOTTOM_RIGHT => dcl2d_ecs_v1::Vec2{x:PARCEL_SIZE_X as i32 /2,y:PARCEL_SIZE_Y as i32 /-2},
+    CornerPosition::BOTTOM_LEFT => dcl2d_ecs_v1::Vec2{x:PARCEL_SIZE_X as i32 /-2,y:PARCEL_SIZE_Y as i32 /-2},
   };
 
   let transform = dcl2d_ecs_v1::components::Transform
   {
-    location: dcl2d_ecs_v1::Vec2{x:0,y:0},
+    location: location,
     rotation: dcl2d_ecs_v1::Vec3{x:0.0,y:0.0,z:0.0},
     scale: dcl2d_ecs_v1::Vec2{x:1.0,y:1.0},
   };
 
-  dcl2d_ecs_v1::Entity{
-    name:"Background".to_string(),
+  let anchor = match position
+  {
+    CornerPosition::TOP_LEFT => dcl2d_ecs_v1::Anchor::TopLeft,
+    CornerPosition::TOP_RIGHT => dcl2d_ecs_v1::Anchor::TopRight,
+    CornerPosition::BOTTOM_LEFT => dcl2d_ecs_v1::Anchor::BottomLeft,
+    CornerPosition::BOTTOM_RIGHT => dcl2d_ecs_v1::Anchor::BottomRight,
+  };
+
+  let renderer = dcl2d_ecs_v1::components::SpriteRenderer
+  {
+    sprite,
+    layer:-1,
+    anchor,
+    ..default()
+  };
+  
+  Some(dcl2d_ecs_v1::Entity{
+    name:"Corner".to_string(),
     components:vec![Box::new(renderer),Box::new(transform)],
     ..default()
+  })
+
+}
+
+fn make_background_entities(roads_data: &RoadsData, parcel: &Parcel, corners_data: &RoadCornersData) -> Vec<dcl2d_ecs_v1::Entity>
+{
+  let mut entities = Vec::new();
+  let total_tiles_x = PARCEL_SIZE_X as i32/TILE_SIZE.0;
+  let total_tiles_y = PARCEL_SIZE_Y as i32/TILE_SIZE.1;
+
+  let first_x = match is_road(&Parcel(parcel.0-1,parcel.1), roads_data)
+  {
+    true => 0,
+    false => 1,
+  };
+  let first_y = match is_road(&Parcel(parcel.0,parcel.1-1), roads_data)
+  {
+    true => 0,
+    false => 1,
+  };
+  let last_x = match is_road(&Parcel(parcel.0+1,parcel.1), roads_data)
+  {
+    true => total_tiles_x,
+    false => total_tiles_x-1,
+  };
+  let last_y = match is_road(&Parcel(parcel.0,parcel.1+1), roads_data)
+  {
+    true => total_tiles_y,
+    false => total_tiles_y-1,
+  };
+  println!("parcel: {:?}",parcel);
+  for x in first_x..last_x
+  {
+    for y in first_y..last_y
+    {
+      if is_corner_at(&corners_data, x, y)
+      {   
+        continue;
+      }
+
+      let renderer = dcl2d_ecs_v1::components::SpriteRenderer
+      {
+        sprite:BACKGROUND_PATH.to_string(),
+        layer:-3,
+        anchor: dcl2d_ecs_v1::Anchor::BottomLeft,
+        ..default()
+      };
+    
+      let location_x =  TILE_SIZE.0*x - PARCEL_SIZE_X as i32/2;
+      let location_y = TILE_SIZE.1*y - PARCEL_SIZE_Y as i32/2;
+
+      let transform = dcl2d_ecs_v1::components::Transform
+      {
+        location: dcl2d_ecs_v1::Vec2{x:location_x,y:location_y},
+        rotation: dcl2d_ecs_v1::Vec3{x:0.0,y:0.0,z:0.0},
+        scale: dcl2d_ecs_v1::Vec2{x:1.0,y:1.0},
+      };
+    
+      entities.push(dcl2d_ecs_v1::Entity{
+        name:"Background".to_string(),
+        components:vec![Box::new(renderer),Box::new(transform)],
+        ..default()
+      });
+    }
   }
+
+  entities
 }
 
 pub fn read_roads_data() -> Result<RoadsData>
@@ -308,3 +549,41 @@ pub fn add_road_at_parcel(parcel: &Parcel, roads_data: &mut RoadsData)-> Result<
   roads_data.parcel_map.insert((parcel.0,parcel.1),());
   update_roads_data(roads_data)
 }
+
+pub fn is_road(parcel: &Parcel, roads_data: &RoadsData)-> bool
+{
+  roads_data.parcel_map.get(&(parcel.0,parcel.1)).is_some()
+}
+
+fn is_corner_at(corners_data:&RoadCornersData,x:i32,y:i32) -> bool
+{
+  let total_tiles_x = PARCEL_SIZE_X as i32/TILE_SIZE.0 -1;
+  let total_tiles_y = PARCEL_SIZE_Y as i32/TILE_SIZE.1 -1;
+
+  if x==0 && y ==0
+  { 
+    println!("{:?},{:?} {:?}",x,y,corners_data.bottom_left_corner);
+    return corners_data.bottom_left_corner != CornerType::NONE
+  }
+
+  if x==0 && y == total_tiles_y
+  {    
+    println!("{:?},{:?} {:?}",x,y,corners_data.top_left_corner);
+    return corners_data.top_left_corner != CornerType::NONE
+  }
+
+  if x==total_tiles_x && y == 0
+  {    
+    println!("{:?},{:?} {:?}",x,y,corners_data.bottom_right_corner);
+    return corners_data.bottom_right_corner != CornerType::NONE
+  }
+  
+  if x==total_tiles_x && y == total_tiles_y
+  {
+    println!("{:?},{:?} {:?}",x,y,corners_data.top_right_corner);
+    return corners_data.top_right_corner != CornerType::NONE
+  }
+  
+  false
+}
+
