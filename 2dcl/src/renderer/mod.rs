@@ -24,8 +24,8 @@ use collision::CollisionPlugin;
 pub mod scene_loader;
 use scene_loader::SceneLoaderPlugin;
 
-mod road_maker;
-pub use road_maker::RoadMakerPlugin;
+mod scene_maker;
+pub use scene_maker::SceneMakerPlugin;
 
 mod scenes_io;
 pub use scenes_io::ScenesIOPlugin;
@@ -67,7 +67,7 @@ pub fn setup(app: &mut bevy::app::App) {
       },
     })
     .add_plugins(DefaultPlugins)
-    .add_plugin(RoadMakerPlugin)
+    .add_plugin(SceneMakerPlugin)
     //.add_plugin(DebugPlugin)
     .add_plugin(MyConsolePlugin)
     .add_plugin(AnimationsPlugin)

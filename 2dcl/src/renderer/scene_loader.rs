@@ -1,5 +1,5 @@
 use crate::components::*;
-use crate::renderer::road_maker::{make_road_scene, add_road_at_parcel, remove_road_at_parcel, is_road};
+use crate::renderer::scene_maker::*;
 
 use bevy::prelude::*;
 use bevy::tasks::AsyncComputeTaskPool;
@@ -28,7 +28,6 @@ use super::collision::CollisionTile;
 use super::dcl_3d_scene;
 use super::scenes_io::{ParcelMap, get_parcel_file, read_scene_file, add_parcel_file};
 use super::player::PlayerComponent;
-use super::road_maker::RoadsData;
 use futures_lite::future;
 use rmp_serde::*;
 
@@ -549,28 +548,20 @@ fn spawn_default_scene(
     parcel: &Parcel,
     collision_map: &mut CollisionMap,
 ) {
-    let mut scene = dcl2d_ecs_v1::Scene::default();
-    scene.parcels.push(parcel.clone());
-    scene.name = "default_scene".to_string();
-    let mut background = dcl2d_ecs_v1::Entity::new("Background".to_string());
-    let renderer = SpriteRenderer {
-        sprite: "default-parcel.png".to_string(),
-        layer: -1,
-        ..default()
-    };
-    background.components.push(Box::new(renderer));
-
-    let level = dcl2d_ecs_v1::Level {
-        entities: vec![background],
-        ..Default::default()
-    };
-    scene.levels.push(level);
+  let scene_data = make_default_scene(parcel);
+  let scene = match scene_data.0 {
+    Ok(v) => v,
+    Err(e) => {
+      println!("{}",e);
+      return;
+    }
+  };
 
     spawn_scene(
         commands,
         asset_server,
         scene,
-        "../",
+        scene_data.1,
         collision_map,
         SystemTime::now(),
         0,
