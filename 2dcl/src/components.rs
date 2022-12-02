@@ -7,7 +7,7 @@ use std::time::SystemTime;
 
 #[derive(Component)]
 pub struct DownloadingScene {
-    pub task: Task<()>,
+    pub task: Task<Option<Vec<(PathBuf, Vec<Parcel>)>>>,
     pub parcels: Vec<Parcel>,
 }
 

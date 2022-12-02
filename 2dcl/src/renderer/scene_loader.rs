@@ -26,6 +26,7 @@ use std::path::PathBuf;
 use super::collision::CollisionMap;
 use super::collision::CollisionTile;
 use super::dcl_3d_scene;
+use super::scenes_io::{ParcelMap, get_parcel_file, read_scene_file, add_parcel_file};
 use super::player::PlayerComponent;
 use super::road_maker::RoadsData;
 use futures_lite::future;
@@ -34,7 +35,7 @@ use rmp_serde::*;
 use crate::renderer::config::*;
 use image::io::Reader as ImageReader;
 use image::{DynamicImage, ImageFormat};
-
+use std::collections::HashMap;
 use imagesize::size;
 
 pub struct SceneLoaderPlugin;
@@ -58,6 +59,7 @@ pub fn scene_handler(
     mut commands: Commands,
     asset_server: Res<AssetServer>,
     mut roads_data: ResMut<RoadsData>,
+    parcel_map: Res<ParcelMap>,
     mut collision_map: ResMut<CollisionMap>,
 ) {
     //Find the player
@@ -79,6 +81,7 @@ pub fn scene_handler(
         if scene.parcels.contains(&player_parcel) {
             for (level_entity, level, level_parent) in level_query.iter() {
                 if **level_parent == scene_entity {
+                    //If we're in a different level we change it
                     if current_level != level.id {
                         //Despawn level for current parcel
                         commands.entity(level_entity).despawn_recursive();
@@ -160,7 +163,10 @@ pub fn scene_handler(
     let mut parcels_to_download: Vec<Parcel> = Vec::default();
     while itr<parcels_to_spawn.len() {
         //Check if it's already downloaded
-        let result = get_scene(&mut roads_data,&Parcel(
+        let result = get_scene(
+          &mut roads_data,
+          &parcel_map,
+          &Parcel(
             parcels_to_spawn[itr].0,
             parcels_to_spawn[itr].1,
         ));
@@ -220,7 +226,14 @@ pub fn scene_handler(
     let thread_pool = AsyncComputeTaskPool::get();
     let parcels_to_download_clone = parcels_to_download.clone();
     let task_download_parcels = thread_pool.spawn(async move {
-        download_parcels(parcels_to_download_clone).unwrap();
+        match download_parcels(parcels_to_download_clone)
+        {
+          Ok(v) => Some(v),
+          Err(e) => {
+            println!("{:?}",e);
+            None
+          }
+        }
     });
 
     for parcel_to_download in &parcels_to_download {
@@ -311,80 +324,64 @@ pub fn parcel_to_world_location(parcel: &Parcel) -> Vec3 {
 
 
 #[tokio::main]
-pub async fn download_parcels(parcels: Vec<Parcel>) -> dcl_common::Result<()> {
-    let server = Server::production();
+pub async fn download_parcels(parcels: Vec<Parcel>) -> dcl_common::Result<Vec<(PathBuf, Vec<Parcel>)>> {
 
-    let scene_files = ContentClient::scene_files_for_parcels(&server, &parcels).await?;
+  let server = Server::production();
 
-    for scene_file in scene_files {
-        let path_str = "./assets/scenes/".to_string() + &scene_file.id.to_string();
-        let scene_path = Path::new(&path_str);
-        if !scene_path.exists() {
-            let mut file_2dcl_exists = false;
-            let mut file_json: Option<ContentFile> = None;
+  let mut parel_map: Vec<(PathBuf, Vec<Parcel>)> = Vec::new();
 
-            for downloadable in scene_file.clone().content {
-                if downloadable
-                    .filename
-                    .to_str()
-                    .unwrap()
-                    .ends_with("scene.2dcl")
-                {
-                    file_2dcl_exists = true;
-                    break;
-                }
-                if downloadable
-                    .filename
-                    .to_str()
-                    .unwrap()
-                    .ends_with("scene.json")
-                {
-                    file_json = Some(downloadable);
-                }
+  let scene_files = ContentClient::scene_files_for_parcels(&server, &parcels).await?;
+
+
+  for scene_file in scene_files {
+    let path_str = "./assets/scenes/".to_string() + &scene_file.id.to_string();
+    let scene_path = Path::new(&path_str);
+    if !scene_path.exists() {
+      let mut file_2dcl_exists = false;
+      let mut file_json: Option<ContentFile> = None;
+
+      for downloadable in scene_file.clone().content {
+        if downloadable
+            .filename
+            .to_str()
+            .unwrap()
+            .ends_with("scene.2dcl")
+        {
+          fs::create_dir_all(format!("./assets/scenes/{}", scene_file.id))?;
+          let filename = format!(
+            "./assets/scenes/{}/{}",
+            scene_file.id,
+            downloadable.filename.to_str().unwrap()
+          );
+          
+          println!("Downloading {}", filename);
+          ContentClient::download(&server, downloadable.cid, &filename).await?;
+      
+          if let Some(scene) = read_scene_file(&filename) {
+            let mut scene_path = PathBuf::from_str(&format!("./assets/scenes/{}", scene_file.id))?;
+            scene_path.push(downloadable.filename.clone());
+            parel_map.push((scene_path,scene.parcels));
+
+            fs::create_dir_all(format!("./assets/scenes/{}", scene_file.id))?;
+            for downloadable in scene_file.content {
+                let filename = format!(
+                    "./assets/scenes/{}/{}",
+                    scene_file.id,
+                    downloadable.filename.to_str().unwrap()
+                );
+                println!("Downloading {}", filename);
+                ContentClient::download(&server, downloadable.cid, filename).await?;
             }
+          }
+          println!("finished download");
 
-            if !file_2dcl_exists {
-                if let Some(content) = file_json {
-                    let filename = format!(
-                        "./assets/scenes/{}/{}",
-                        scene_file.id,
-                        content.filename.to_str().unwrap()
-                    );
-                    println!("Downloading {}", filename);
-                    ContentClient::download(&server, content.cid, &filename).await?;
-
-                   /*    if let Ok(file) = File::open(filename) {
-                        let reader = BufReader::new(file);
-                        let scene: serde_json::Result<dcl_3d_scene::DCL3dScene> =
-                            serde_json::from_reader(reader);
-
-                     if let Ok(scene) = scene {
-                            if scene.display.title.to_lowercase().contains("road")
-                                || scene.display.title.to_lowercase().contains("tram line")
-                            {
-                                for parcel_in_scene in scene.scene.parcels {
-                                  make_road_scene(roads_data, &parcel_in_scene);
-                                }
-                            }
-                        } 
-                    }*/
-                }
-            } else {
-                fs::create_dir_all(format!("./assets/scenes/{}", scene_file.id))?;
-                for downloadable in scene_file.content {
-                    let filename = format!(
-                        "./assets/scenes/{}/{}",
-                        scene_file.id,
-                        downloadable.filename.to_str().unwrap()
-                    );
-                    println!("Downloading {}", filename);
-                    ContentClient::download(&server, downloadable.cid, filename).await?;
-                }
-            }
+          break;
         }
+      }
     }
+  }
 
-    Ok(())
+  Ok(parel_map)
 }
 
 fn make_road_scene_for_parcel(parcel: &Parcel) {
@@ -429,30 +426,9 @@ pub fn read_scene(content: &[u8]) -> Option<dcl2d_ecs_v1::Scene> {
     }
 }
 
-pub fn read_scene_file<P>(file_path: P) -> Option<dcl2d_ecs_v1::Scene>
-where
-    P: AsRef<Path>,
-{
-    if let Ok(file) = File::open(&file_path) {
-        let reader = BufReader::new(file);
-        let mut de = Deserializer::new(reader);
-        let scene: Result<dcl2d_ecs_v1::Scene, rmp_serde::decode::Error> =
-            Deserialize::deserialize(&mut de);
-
-        match scene {
-            Ok(v) => return Some(v),
-            Err(_) => return None,
-        }
-    } else {
-        println!("no path: {:?}", file_path.as_ref());
-    }
-
-    None
-}
-
-fn get_scene(roads_data: &mut RoadsData, parcel: &Parcel) -> (Result<dcl2d_ecs_v1::Scene, String>, PathBuf) {
+fn get_scene(roads_data: &mut RoadsData, parcel_map: &ParcelMap, parcel: &Parcel) -> (Result<dcl2d_ecs_v1::Scene, String>, PathBuf) {
     
-
+  
   if is_road(parcel,roads_data)
   {
     let result = make_road_scene(roads_data, parcel);
@@ -463,102 +439,79 @@ fn get_scene(roads_data: &mut RoadsData, parcel: &Parcel) -> (Result<dcl2d_ecs_v
     }
   }
 
-  //TODO: map paths to scenes to improve performance.
-  let paths = match fs::read_dir("./assets/scenes")
+  let path = match get_parcel_file(parcel,parcel_map)
   {
-    Ok(v) => v,
-    Err(e) => return (Err(e.to_string()), PathBuf::default())
+    Some(v) => v,
+    None => return (Err("Parcel not downloaded".to_string()), PathBuf::default()),
   };
 
-  for path in paths.flatten() {
-      let mut path = path.path();
-      path.push("scene.2dcl");
-
-      if path.exists() {
-          if let Some(scene) = read_scene_file(&path) {
-              if scene.parcels.contains(&parcel) {
-                  let path = path.parent().unwrap().to_path_buf();
-                  let iter = path.iter().rev();
-                  let mut new_path = PathBuf::default();
-                  for i in iter {
-                      new_path.push(i);
-                  }
-                  new_path.pop();
-                  new_path.pop();
-                  let iter = new_path.iter().rev();
-
-                  let mut final_path = PathBuf::default();
-                  final_path.push("scenes");
-
-                  for i in iter {
-                      final_path.push(i);
-                  }
-
-                  return (Ok(scene), final_path);
-              }
-          }
-      }
-      else
-      {
-        path.pop();
-        path.push("scene.json");
-        if let Ok(file) = File::open(path) {
-            let reader = BufReader::new(file);
-            let scene: serde_json::Result<dcl_3d_scene::DCL3dScene> =
-                serde_json::from_reader(reader);
-          
-          if let Ok(scene) = scene {
-                if scene.display.title.to_lowercase().contains("road")
-                    || scene.display.title.to_lowercase().contains("tram line")
-                {
-                  if scene.scene.parcels.contains(parcel){
-                    add_road_at_parcel(parcel, roads_data);
-                    let result = make_road_scene(roads_data, parcel);
-                    match result.0
-                    {
-                      Ok(scene) => return (Ok(scene),result.1),
-                      Err(_) =>{}
-                    }
-                  }
-                }
-            }else
-            {
-              println!("{:?}",scene.unwrap_err());
-            } 
+  if path.exists() {
+      if let Some(scene) = read_scene_file(&path) {
+        let path = path.parent().unwrap().to_path_buf();
+        let iter = path.iter().rev();
+        let mut new_path = PathBuf::default();
+        for i in iter {
+            new_path.push(i);
         }
+        new_path.pop();
+        new_path.pop();
+        let iter = new_path.iter().rev();
+
+        let mut final_path = PathBuf::default();
+        final_path.push("scenes");
+        for i in iter {
+            final_path.push(i);
+        }
+        return (Ok(scene), final_path);
       }
   }
-
-    (Err("Parcel not downloaded".to_string()), PathBuf::default())
+  
+  (Err("Parcel not downloaded".to_string()), PathBuf::default())
 }
 
 fn handle_tasks(
     mut commands: Commands,
     mut collision_map: ResMut<CollisionMap>,
     mut roads_data: ResMut<RoadsData>,
+    mut parcel_map: ResMut<ParcelMap>,
     asset_server: Res<AssetServer>,
     mut tasks_downloading_scenes: Query<(Entity, &mut DownloadingScene)>,
     scenes_query: Query<(Entity, &crate::components::Scene)>,
 ) {
 
   for (entity, mut downloading_scene) in &mut tasks_downloading_scenes {
-    if let Some(_finished) = future::block_on(future::poll_once(&mut downloading_scene.task)) {
-        commands.entity(entity).despawn_recursive();
+    if let Some(new_parcel_map_data) = future::block_on(future::poll_once(&mut downloading_scene.task)) {
+      commands.entity(entity).despawn_recursive();
 
-      for parcel in &downloading_scene.parcels {
-        let result = get_scene(&mut roads_data,&parcel);
-
-        if result.0.is_ok() {
-          spawn_scene(
-            &mut commands,
-            &asset_server,
-            result.0.unwrap(),
-            result.1,
-            &mut collision_map,
-            SystemTime::now(),
-            0,
-          );
+      if let Some(new_parcel_map_data) = new_parcel_map_data
+      {
+        for new_data in new_parcel_map_data
+        {
+          for parcel in new_data.1
+          {
+            add_parcel_file(parcel,new_data.0.clone(),&mut parcel_map);
+          }
         }
+        
+        for parcel in &downloading_scene.parcels {
+    
+          let result = get_scene(
+            &mut roads_data,
+            &parcel_map,
+            &parcel);
+
+          if result.0.is_ok() {
+            spawn_scene(
+              &mut commands,
+              &asset_server,
+              result.0.unwrap(),
+              result.1,
+              &mut collision_map,
+              SystemTime::now(),
+              0,
+            );
+          }
+        }  
       }
     }
   }

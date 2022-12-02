@@ -93,9 +93,8 @@ pub fn setup(
 {
   match read_roads_data()
   {
-    Ok(mut roads_data) => {
-      commands.insert_resource(roads_data);
-    },
+    Ok(roads_data) => commands.insert_resource(roads_data),
+
     Err(e) => println!("error:{}",e)
   }
 
@@ -440,7 +439,6 @@ fn make_background_entities(roads_data: &RoadsData, parcel: &Parcel, corners_dat
     true => total_tiles_y,
     false => total_tiles_y-1,
   };
-  println!("parcel: {:?}",parcel);
   for x in first_x..last_x
   {
     for y in first_y..last_y
@@ -562,25 +560,21 @@ fn is_corner_at(corners_data:&RoadCornersData,x:i32,y:i32) -> bool
 
   if x==0 && y ==0
   { 
-    println!("{:?},{:?} {:?}",x,y,corners_data.bottom_left_corner);
     return corners_data.bottom_left_corner != CornerType::NONE
   }
 
   if x==0 && y == total_tiles_y
   {    
-    println!("{:?},{:?} {:?}",x,y,corners_data.top_left_corner);
     return corners_data.top_left_corner != CornerType::NONE
   }
 
   if x==total_tiles_x && y == 0
   {    
-    println!("{:?},{:?} {:?}",x,y,corners_data.bottom_right_corner);
     return corners_data.bottom_right_corner != CornerType::NONE
   }
   
   if x==total_tiles_x && y == total_tiles_y
   {
-    println!("{:?},{:?} {:?}",x,y,corners_data.top_right_corner);
     return corners_data.top_right_corner != CornerType::NONE
   }
   

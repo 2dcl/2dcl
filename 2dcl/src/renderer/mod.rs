@@ -26,13 +26,16 @@ use scene_loader::SceneLoaderPlugin;
 
 mod road_maker;
 pub use road_maker::RoadMakerPlugin;
-use road_maker::RoadsData;
+
+mod scenes_io;
+pub use scenes_io::ScenesIOPlugin;
 
 mod debug;
 use debug::DebugPlugin;
 
 mod console;
 use console::MyConsolePlugin;
+
 
 pub fn start() {
   
@@ -50,7 +53,9 @@ pub fn start() {
 
   let mut app = App::new();
   setup(&mut app);
-  app.add_plugin(SceneLoaderPlugin).run();
+  app.add_plugin(SceneLoaderPlugin)
+  .add_plugin(ScenesIOPlugin)
+  .run();
 }
 
 pub fn setup(app: &mut bevy::app::App) {

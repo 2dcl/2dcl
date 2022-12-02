@@ -211,11 +211,11 @@ fn player_interact(
         collision_map.clone(),
     );
 
-    if keyboard.pressed(KeyCode::E) {
+    if keyboard.just_pressed(KeyCode::E) {
         try_change_level(&mut player, &mut transform, &collisions);
     }
 
-    if keyboard.pressed(KeyCode::Escape) {
+    if keyboard.just_pressed(KeyCode::Escape) {
         exit_level(&mut player, &mut transform);
     }
 
