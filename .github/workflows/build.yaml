@@ -23,7 +23,12 @@ jobs:
           profile: minimal
           toolchain: stable
           override: true
-      - uses: actions-rs/cargo@v1
-        with:
-          command: build
-          args: --release
+      - name: Linux Build
+        run: ./bin/build-linux
+        if: runner.os == 'linux'
+      - name: Mac Build
+        run: ./bin/build-mac
+        if: runner.os == 'macos'
+      - name: Win Build
+        run: ./bin/build-windows.bat
+        if: runner.os == 'windows'
