@@ -32,3 +32,18 @@ jobs:
       - name: Win Build
         run: ./bin/build-windows.bat
         if: runner.os == 'windows'
+      - uses: actions/upload-artifact@v1
+        if: runner.os == 'linux'
+        with:
+          name: build
+          path: build/linux/2dcl-linux-0.1.0.tar.gz
+      - uses: actions/upload-artifact@v1
+        if: runner.os == 'macos'
+        with:
+          name: build
+          path: build/macos/2dcl-macos-0.1.0.tar.gz
+      - uses: actions/upload-artifact@v1
+        if: runner.os == 'windows'
+        with:
+          name: build
+          path: build/windows/2dcl-windows-0.1.0.zip
