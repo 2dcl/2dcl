@@ -15,10 +15,10 @@ impl fmt::Display for SpriteMakerError {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         match self {
             SpriteMakerError::NoWearables => {
-              write!(f, "No wearables found in the wearables folder.")
+                write!(f, "No wearables found in the wearables folder.")
             }
             SpriteMakerError::InvalidImageFormat(s) => {
-              write!(f, "File has an invalid image format : {}", s.display())
+                write!(f, "File has an invalid image format : {}", s.display())
             }
         }
     }
