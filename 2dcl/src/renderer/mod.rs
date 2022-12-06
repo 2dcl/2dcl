@@ -27,11 +27,11 @@ use scene_loader::SceneLoaderPlugin;
 mod scene_maker;
 pub use scene_maker::SceneMakerPlugin;
 
-mod scenes_io;
+pub mod scenes_io;
 pub use scenes_io::ScenesIOPlugin;
 
-mod debug;
-use debug::DebugPlugin;
+//mod debug;
+//use debug::DebugPlugin;
 
 mod console;
 use console::MyConsolePlugin;

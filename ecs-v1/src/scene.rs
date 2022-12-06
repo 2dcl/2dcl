@@ -1,14 +1,30 @@
 use crate::Level;
-use dcl_common::Parcel;
 use serde::{Deserialize, Serialize};
+use std::time::SystemTime;
 
-#[derive(Serialize, Deserialize, Debug, Default)]
+#[derive(Serialize, Deserialize, Debug)]
 pub struct Scene {
     #[serde(skip)]
     pub id: usize,
+    #[serde(default = "timestamp_default")]
+    pub timestamp: SystemTime,
     pub name: String,
     pub levels: Vec<Level>,
-    pub parcels: Vec<Parcel>,
+}
+
+impl Default for Scene {
+    fn default() -> Self {
+        Scene {
+            id: usize::default(),
+            timestamp: timestamp_default(),
+            name: String::default(),
+            levels: Vec::default(),
+        }
+    }
+}
+
+fn timestamp_default() -> SystemTime {
+    SystemTime::now()
 }
 
 #[cfg(test)]

@@ -26,7 +26,7 @@ fn teleport_command(
     mut tp: ConsoleCommand<TeleportCommand>,
     mut player_query: Query<(&mut PlayerComponent, &mut Transform)>,
 ) {
-    let (player, mut transform) = player_query.single_mut();
+    let (_player, mut transform) = player_query.single_mut();
     if let Some(TeleportCommand { parcel_x, parcel_y }) = tp.take() {
         if let Ok(parcel_x) = parcel_x.parse::<i16>() {
             if let Ok(parcel_y) = parcel_y.parse::<i16>() {

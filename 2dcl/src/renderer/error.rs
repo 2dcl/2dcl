@@ -1,5 +1,4 @@
 use std::error;
-use std::error::Error;
 use std::fmt;
 use std::path::PathBuf;
 
@@ -19,6 +18,23 @@ impl fmt::Display for SpriteMakerError {
             }
             SpriteMakerError::InvalidImageFormat(s) => {
                 write!(f, "File has an invalid image format : {}", s.display())
+            }
+        }
+    }
+}
+
+#[derive(Debug)]
+pub enum ScenesIOError {
+    InvalidPath(PathBuf),
+}
+
+impl error::Error for ScenesIOError {}
+
+impl fmt::Display for ScenesIOError {
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+        match self {
+            ScenesIOError::InvalidPath(s) => {
+                write!(f, "Invalid path : {}", s.display())
             }
         }
     }

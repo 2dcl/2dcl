@@ -7,7 +7,7 @@ use std::time::SystemTime;
 
 #[derive(Component)]
 pub struct DownloadingScene {
-    pub task: Task<Option<Vec<(PathBuf, Vec<Parcel>)>>>,
+    pub task: Task<Option<Vec<PathBuf>>>,
     pub parcels: Vec<Parcel>,
 }
 
@@ -35,7 +35,7 @@ pub struct Scene {
     pub name: String,
     pub parcels: Vec<Parcel>,
     pub timestamp: SystemTime,
-    pub scene_data: Vec<u8>,
+    pub serialized_data: Vec<u8>,
     pub path: PathBuf,
 }
 

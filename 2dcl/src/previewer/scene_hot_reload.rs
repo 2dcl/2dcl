@@ -1,7 +1,12 @@
+use crate::renderer::scenes_io::read_scene_u8;
+use crate::renderer::scenes_io::SceneData;
 use crate::renderer::CollisionMap;
 use crate::renderer::PlayerComponent;
 use bevy::asset::Handle;
 use bevy::prelude::*;
+use dcl_common::Parcel;
+use std::path::PathBuf;
+use std::str::FromStr;
 use std::time::SystemTime;
 
 use bevy::{
@@ -91,13 +96,17 @@ fn scene_reload(
             if scene.timestamp != current_scene.timestamp {
                 commands.entity(entity).despawn_recursive();
                 let timestamp = scene.timestamp;
-                let scene = scene_loader::read_scene(&scene.bytes);
-                if let Some(scene) = scene {
+                if let Some(scene) = read_scene_u8(&scene.bytes) {
+                    let scene_data = SceneData {
+                        scene,
+                        parcels: vec![Parcel(0, 0)],
+                        path: PathBuf::from_str("../").unwrap(),
+                    };
+
                     scene_loader::spawn_scene(
                         &mut commands,
                         &asset_server,
-                        scene,
-                        "../",
+                        &scene_data,
                         &mut collision_map,
                         timestamp,
                         level_id,
@@ -106,13 +115,17 @@ fn scene_reload(
             }
         } else {
             let timestamp = scene.timestamp;
-            let scene = scene_loader::read_scene(&scene.bytes);
-            if let Some(scene) = scene {
+            if let Some(scene) = read_scene_u8(&scene.bytes) {
+                let scene_data = SceneData {
+                    scene,
+                    parcels: vec![Parcel(0, 0)],
+                    path: PathBuf::from_str("../").unwrap(),
+                };
+
                 scene_loader::spawn_scene(
                     &mut commands,
                     &asset_server,
-                    scene,
-                    "../",
+                    &scene_data,
                     &mut collision_map,
                     timestamp,
                     level_id,
@@ -163,14 +176,19 @@ pub fn level_change(
     }
 
     if should_spawn {
-        let mut de = Deserializer::from_read_ref(&scene.scene_data);
-        let scene_data: dcl2d_ecs_v1::Scene = Deserialize::deserialize(&mut de).unwrap();
+        let mut de = Deserializer::from_read_ref(&scene.serialized_data);
+        let deserialized_scene: dcl2d_ecs_v1::Scene = Deserialize::deserialize(&mut de).unwrap();
+        let scene_data = SceneData {
+            scene: deserialized_scene,
+            parcels: vec![Parcel(0, 0)],
+            path: scene.path.clone(),
+        };
+
         scene_loader::spawn_level(
             &mut commands,
             &asset_server,
             &scene_data,
             current_level,
-            &scene.path,
             &mut collision_map,
             SystemTime::now(),
         );
@@ -179,7 +197,6 @@ pub fn level_change(
             &asset_server,
             &scene_data,
             current_level,
-            &scene.path,
             &mut collision_map,
             SystemTime::now(),
         );

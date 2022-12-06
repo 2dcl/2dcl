@@ -1,30 +1,23 @@
 use bevy::prelude::*;
 use dcl_common::{Parcel, Result};
 use rand::prelude::*;
-use rmp_serde::encode::*;
 use rmp_serde::*;
 use serde::{Deserialize, Serialize};
 use std::collections::HashMap;
 use std::fs::File;
-use std::io::{BufReader, Read, Write};
+use std::io::{BufReader};
 use std::path::PathBuf;
+use std::str::FromStr;
 
 use super::config::{PARCEL_SIZE_X, PARCEL_SIZE_Y};
-//pub fn spawn_road(location: Vec3, )
+use super::scenes_io::SceneData;
 
 const ROADS_DATA_MP_FILE: &str = "./assets/roads/roads.mp";
 
-const DEFAULT_BACKGROUND_PATH: [&str; 6] = [
-    "bg1.png", "bg2.png", "bg3.png", "bg4.png", "bg5.png", "bg6.png",
-];
-const DEFAULT_RANDOM_OBSCATCLE_SIZE_1: [&str; 5] = [
-    "Plant1.png",
-    "Plant2.png",
-    "Rock1.png",
-    "Rock2.png",
-    "Rock3.png",
-];
-const DEFAULT_RANDOM_OBSCATCLE_SIZE_2: [&str; 1] = ["BigRock.png"];
+const DEFAULT_BACKGROUND_PATH:&str = "./background";
+const DEFAULT_RANDOM_NO_COLLISION:&str = "./randomized/no_collision";
+const DEFAULT_RANDOM_OBSTACLE_SIZE_1:&str = "./randomized/small_collision";
+const DEFAULT_RANDOM_OBSTACLE_SIZE_2:&str = "./randomized/big_collision";
 const ROAD_BACKGROUND_PATH: &str = "road-pavement.png";
 const LEFT_BORDER_PATH: &str = "road-left.png";
 const RIGHT_BORDER_PATH: &str = "road-right.png";
@@ -79,10 +72,10 @@ enum CornerType {
 
 #[derive(Debug, Clone)]
 enum CornerPosition {
-    TOP_LEFT,
-    TOP_RIGHT,
-    BOTTOM_LEFT,
-    BOTTOM_RIGHT,
+    TopLeft,
+    TopRight,
+    BottomLeft,
+    BottomRight,
 }
 
 pub struct SceneMakerPlugin;
@@ -101,33 +94,30 @@ pub fn setup(mut commands: Commands) {
     }
 }
 
-pub fn make_default_scene(parcel: &Parcel) -> (Result<dcl2d_ecs_v1::Scene>, PathBuf) {
-    let mut scene = dcl2d_ecs_v1::Scene::default();
-    scene.parcels.push(parcel.clone());
-    scene.name = "default_scene".to_string();
+pub fn make_default_scene(parcel: &Parcel) -> Result<SceneData> {
+    let mut scene_data = SceneData::default();
+    scene_data.parcels.push(parcel.clone());
+    scene_data.scene.name = "default_scene".to_string();
     let mut entities: Vec<dcl2d_ecs_v1::Entity> = Vec::new();
-    entities.append(&mut make_default_background_entities(parcel));
-    entities.append(&mut make_default_random_entities(parcel));
+    entities.append(&mut make_default_background_entities());
+    entities.append(&mut make_default_random_entities());
 
     let level = dcl2d_ecs_v1::Level {
         entities,
         ..Default::default()
     };
-    scene.levels.push(level);
-    let mut path = PathBuf::default();
-    path.push("..");
-    path.push("assets");
-    path.push("default_scene");
+    scene_data.scene.levels.push(level);
 
-    (Ok(scene), path)
+    scene_data.path.push("..");
+    scene_data.path.push("assets");
+    scene_data.path.push("default_scene");
+
+    Ok(scene_data)
 }
-pub fn make_road_scene(
-    roads_data: &RoadsData,
-    parcel: &Parcel,
-) -> (Result<dcl2d_ecs_v1::Scene>, PathBuf) {
+pub fn make_road_scene(roads_data: &RoadsData, parcel: &Parcel) -> Result<SceneData> {
     let mut entities: Vec<dcl2d_ecs_v1::Entity> = Vec::new();
     let mut roads_corner_data = make_corners(roads_data, parcel);
-    entities.append(&mut make_road_background_entities(parcel));
+    entities.append(&mut make_road_background_entities());
     entities.append(&mut make_border_entities(roads_data, parcel));
     entities.append(&mut roads_corner_data.corners_entities);
 
@@ -136,19 +126,22 @@ pub fn make_road_scene(
         entities,
         ..default()
     };
-    let scene = dcl2d_ecs_v1::Scene {
-        id: 0,
+
+    let mut scene_data = SceneData::default();
+
+    scene_data.scene = dcl2d_ecs_v1::Scene {
         name: format!("Road {} - {}", &parcel.0, &parcel.1),
         levels: vec![level],
-        parcels: vec![parcel.clone()],
+        ..default()
     };
 
-    let mut path = PathBuf::default();
-    path.push("..");
-    path.push("assets");
-    path.push("roads");
+    scene_data.parcels.push(parcel.clone());
 
-    (Ok(scene), path)
+    scene_data.path.push("..");
+    scene_data.path.push("assets");
+    scene_data.path.push("roads");
+
+    Ok(scene_data)
 }
 
 fn make_border_entities(roads_data: &RoadsData, parcel: &Parcel) -> Vec<dcl2d_ecs_v1::Entity> {
@@ -246,33 +239,33 @@ fn make_border_entity(border: &Border) -> Vec<dcl2d_ecs_v1::Entity> {
 fn make_corners(roads_data: &RoadsData, parcel: &Parcel) -> RoadCornersData {
     let mut corners_data = RoadCornersData::default();
 
-    corners_data.top_left_corner = get_corner_type(roads_data, parcel, CornerPosition::TOP_LEFT);
-    match make_corner_entity(&corners_data.top_left_corner, &CornerPosition::TOP_LEFT) {
+    corners_data.top_left_corner = get_corner_type(roads_data, parcel, CornerPosition::TopLeft);
+    match make_corner_entity(&corners_data.top_left_corner, &CornerPosition::TopLeft) {
         Some(v) => corners_data.corners_entities.push(v),
         None => {}
     }
 
-    corners_data.top_right_corner = get_corner_type(roads_data, parcel, CornerPosition::TOP_RIGHT);
-    match make_corner_entity(&corners_data.top_right_corner, &CornerPosition::TOP_RIGHT) {
+    corners_data.top_right_corner = get_corner_type(roads_data, parcel, CornerPosition::TopRight);
+    match make_corner_entity(&corners_data.top_right_corner, &CornerPosition::TopRight) {
         Some(v) => corners_data.corners_entities.push(v),
         None => {}
     }
 
     corners_data.bottom_left_corner =
-        get_corner_type(roads_data, parcel, CornerPosition::BOTTOM_LEFT);
+        get_corner_type(roads_data, parcel, CornerPosition::BottomLeft);
     match make_corner_entity(
         &corners_data.bottom_left_corner,
-        &CornerPosition::BOTTOM_LEFT,
+        &CornerPosition::BottomLeft,
     ) {
         Some(v) => corners_data.corners_entities.push(v),
         None => {}
     }
 
     corners_data.bottom_right_corner =
-        get_corner_type(roads_data, parcel, CornerPosition::BOTTOM_RIGHT);
+        get_corner_type(roads_data, parcel, CornerPosition::BottomRight);
     match make_corner_entity(
         &corners_data.bottom_right_corner,
-        &CornerPosition::BOTTOM_RIGHT,
+        &CornerPosition::BottomRight,
     ) {
         Some(v) => corners_data.corners_entities.push(v),
         None => {}
@@ -293,22 +286,22 @@ fn get_corner_type(
     let diagonal_is_road;
 
     match position {
-        CornerPosition::TOP_LEFT => {
+        CornerPosition::TopLeft => {
             x_neighbor_is_road = is_road(&Parcel(parcel.0 - 1, parcel.1), &roads_data);
             y_neighbor_is_road = is_road(&Parcel(parcel.0, parcel.1 + 1), &roads_data);
             diagonal_is_road = is_road(&Parcel(parcel.0 - 1, parcel.1 + 1), &roads_data);
         }
-        CornerPosition::TOP_RIGHT => {
+        CornerPosition::TopRight => {
             x_neighbor_is_road = is_road(&Parcel(parcel.0 + 1, parcel.1), &roads_data);
             y_neighbor_is_road = is_road(&Parcel(parcel.0, parcel.1 + 1), &roads_data);
             diagonal_is_road = is_road(&Parcel(parcel.0 + 1, parcel.1 + 1), &roads_data);
         }
-        CornerPosition::BOTTOM_LEFT => {
+        CornerPosition::BottomLeft => {
             x_neighbor_is_road = is_road(&Parcel(parcel.0 - 1, parcel.1), &roads_data);
             y_neighbor_is_road = is_road(&Parcel(parcel.0, parcel.1 - 1), &roads_data);
             diagonal_is_road = is_road(&Parcel(parcel.0 - 1, parcel.1 - 1), &roads_data);
         }
-        CornerPosition::BOTTOM_RIGHT => {
+        CornerPosition::BottomRight => {
             x_neighbor_is_road = is_road(&Parcel(parcel.0 + 1, parcel.1), &roads_data);
             y_neighbor_is_road = is_road(&Parcel(parcel.0, parcel.1 - 1), &roads_data);
             diagonal_is_road = is_road(&Parcel(parcel.0 + 1, parcel.1 - 1), &roads_data);
@@ -332,28 +325,28 @@ fn make_corner_entity(
     position: &CornerPosition,
 ) -> Option<dcl2d_ecs_v1::Entity> {
     let sprite = match position {
-        CornerPosition::TOP_LEFT => match corner_type {
+        CornerPosition::TopLeft => match corner_type {
             CornerType::NONE => return None,
             CornerType::CLOSED => CLOSED_TOP_LEFT_CORNER_PATH.to_string(),
             CornerType::OPEN => OPEN_TOP_LEFT_CORNER_PATH.to_string(),
             CornerType::VERTICAL => LEFT_BORDER_PATH.to_string(),
             CornerType::HORIZONTAL => TOP_BORDER_PATH.to_string(),
         },
-        CornerPosition::TOP_RIGHT => match corner_type {
+        CornerPosition::TopRight => match corner_type {
             CornerType::NONE => return None,
             CornerType::CLOSED => CLOSED_TOP_RIGHT_CORNER_PATH.to_string(),
             CornerType::OPEN => OPEN_TOP_RIGHT_CORNER_PATH.to_string(),
             CornerType::VERTICAL => RIGHT_BORDER_PATH.to_string(),
             CornerType::HORIZONTAL => TOP_BORDER_PATH.to_string(),
         },
-        CornerPosition::BOTTOM_RIGHT => match corner_type {
+        CornerPosition::BottomRight => match corner_type {
             CornerType::NONE => return None,
             CornerType::CLOSED => CLOSED_BOTTOM_RIGHT_CORNER_PATH.to_string(),
             CornerType::OPEN => OPEN_BOTTOM_RIGHT_CORNER_PATH.to_string(),
             CornerType::VERTICAL => RIGHT_BORDER_PATH.to_string(),
             CornerType::HORIZONTAL => BOTTOM_BORDER_PATH.to_string(),
         },
-        CornerPosition::BOTTOM_LEFT => match corner_type {
+        CornerPosition::BottomLeft => match corner_type {
             CornerType::NONE => return None,
             CornerType::CLOSED => CLOSED_BOTTOM_LEFT_CORNER_PATH.to_string(),
             CornerType::OPEN => OPEN_BOTTOM_LEFT_CORNER_PATH.to_string(),
@@ -363,19 +356,19 @@ fn make_corner_entity(
     };
 
     let location = match position {
-        CornerPosition::TOP_LEFT => dcl2d_ecs_v1::Vec2 {
+        CornerPosition::TopLeft => dcl2d_ecs_v1::Vec2 {
             x: PARCEL_SIZE_X as i32 / -2,
             y: PARCEL_SIZE_Y as i32 / 2,
         },
-        CornerPosition::TOP_RIGHT => dcl2d_ecs_v1::Vec2 {
+        CornerPosition::TopRight => dcl2d_ecs_v1::Vec2 {
             x: PARCEL_SIZE_X as i32 / 2,
             y: PARCEL_SIZE_Y as i32 / 2,
         },
-        CornerPosition::BOTTOM_RIGHT => dcl2d_ecs_v1::Vec2 {
+        CornerPosition::BottomRight => dcl2d_ecs_v1::Vec2 {
             x: PARCEL_SIZE_X as i32 / 2,
             y: PARCEL_SIZE_Y as i32 / -2,
         },
-        CornerPosition::BOTTOM_LEFT => dcl2d_ecs_v1::Vec2 {
+        CornerPosition::BottomLeft => dcl2d_ecs_v1::Vec2 {
             x: PARCEL_SIZE_X as i32 / -2,
             y: PARCEL_SIZE_Y as i32 / -2,
         },
@@ -392,10 +385,10 @@ fn make_corner_entity(
     };
 
     let anchor = match position {
-        CornerPosition::TOP_LEFT => dcl2d_ecs_v1::Anchor::TopLeft,
-        CornerPosition::TOP_RIGHT => dcl2d_ecs_v1::Anchor::TopRight,
-        CornerPosition::BOTTOM_LEFT => dcl2d_ecs_v1::Anchor::BottomLeft,
-        CornerPosition::BOTTOM_RIGHT => dcl2d_ecs_v1::Anchor::BottomRight,
+        CornerPosition::TopLeft => dcl2d_ecs_v1::Anchor::TopLeft,
+        CornerPosition::TopRight => dcl2d_ecs_v1::Anchor::TopRight,
+        CornerPosition::BottomLeft => dcl2d_ecs_v1::Anchor::BottomLeft,
+        CornerPosition::BottomRight => dcl2d_ecs_v1::Anchor::BottomRight,
     };
 
     let renderer = dcl2d_ecs_v1::components::SpriteRenderer {
@@ -412,7 +405,7 @@ fn make_corner_entity(
     })
 }
 
-fn make_road_background_entities(parcel: &Parcel) -> Vec<dcl2d_ecs_v1::Entity> {
+fn make_road_background_entities() -> Vec<dcl2d_ecs_v1::Entity> {
     let mut entities = Vec::new();
     let total_tiles_x = PARCEL_SIZE_X as i32 / (TILE_SIZE.0 * 4);
     let total_tiles_y = PARCEL_SIZE_Y as i32 / (TILE_SIZE.1 * 4);
@@ -452,17 +445,32 @@ fn make_road_background_entities(parcel: &Parcel) -> Vec<dcl2d_ecs_v1::Entity> {
     entities
 }
 
-fn make_default_background_entities(parcel: &Parcel) -> Vec<dcl2d_ecs_v1::Entity> {
+fn make_default_background_entities() -> Vec<dcl2d_ecs_v1::Entity> {
     let mut entities = Vec::new();
     let total_tiles_x = PARCEL_SIZE_X as i32 / TILE_SIZE.0;
     let total_tiles_y = PARCEL_SIZE_Y as i32 / TILE_SIZE.1;
+    let mut rng = rand::thread_rng();
+    let mut bg_files = Vec::default();
+    let bg_path = std::fs::read_dir("./assets/default_scene/assets/".to_string() + DEFAULT_BACKGROUND_PATH ).unwrap();
+
+    for path in bg_path 
+    {
+      if let Ok(path) = path
+      {
+        if let Some(str) = path.file_name().to_str()
+        {
+          bg_files.push(DEFAULT_BACKGROUND_PATH.to_string()+"/"+str);
+        }
+      }
+    }
 
     for x in 0..total_tiles_x {
         for y in 0..total_tiles_y {
-            let mut rng = rand::thread_rng();
-            let random_bg_index: usize = rng.gen_range(0..DEFAULT_BACKGROUND_PATH.len() - 1);
+        
+ 
+            let random_bg_index: usize = rng.gen_range(0..bg_files.len() - 1);
             let renderer = dcl2d_ecs_v1::components::SpriteRenderer {
-                sprite: DEFAULT_BACKGROUND_PATH[random_bg_index].to_string(),
+                sprite: bg_files[random_bg_index].clone(),
                 layer: -3,
                 anchor: dcl2d_ecs_v1::Anchor::BottomLeft,
                 ..default()
@@ -494,40 +502,202 @@ fn make_default_background_entities(parcel: &Parcel) -> Vec<dcl2d_ecs_v1::Entity
     entities
 }
 
-fn make_default_random_entities(parcel: &Parcel) -> Vec<dcl2d_ecs_v1::Entity> {
+fn make_default_random_entities() -> Vec<dcl2d_ecs_v1::Entity> {
     let mut entities = Vec::new();
     let mut rng = rand::thread_rng();
-    for random_stuff in DEFAULT_RANDOM_OBSCATCLE_SIZE_1 {
-        if rng.gen_bool(0.5) {
-            let renderer = dcl2d_ecs_v1::components::SpriteRenderer {
-                sprite: random_stuff.to_string(),
-                ..default()
-            };
+    
+    let no_collision_paths = std::fs::read_dir("./assets/default_scene/assets/".to_string() + DEFAULT_RANDOM_NO_COLLISION ).unwrap();
+    let mut no_collision_obstacles = Vec::default();
+ 
+    let small_collision_paths = std::fs::read_dir("./assets/default_scene/assets/".to_string() + DEFAULT_RANDOM_OBSTACLE_SIZE_1 ).unwrap();
+    let mut small_collision_obstacles = Vec::default();
+ 
+    let big_collision_paths = std::fs::read_dir("./assets/default_scene/assets/".to_string() + DEFAULT_RANDOM_OBSTACLE_SIZE_2 ).unwrap();
+    let mut big_collision_obstacles = Vec::default();
+ 
+    for path in no_collision_paths 
+    {      
+      if let Ok(path) = path
+      {
+        if let Some(str) = path.file_name().to_str()
+        {
+          no_collision_obstacles.push(DEFAULT_RANDOM_NO_COLLISION.to_string()+"/"+str);
+        }
+      }
+    }
 
-            let location_x = rng.gen_range(PARCEL_SIZE_X as i32 / -2..PARCEL_SIZE_X as i32 / 2);
-            let location_y = rng.gen_range(PARCEL_SIZE_Y as i32 / -2..PARCEL_SIZE_Y as i32 / 2);
-            let transform = dcl2d_ecs_v1::components::Transform {
-                location: dcl2d_ecs_v1::Vec2 {
-                    x: location_x,
-                    y: location_y,
-                },
-                rotation: dcl2d_ecs_v1::Vec3 {
-                    x: 0.0,
-                    y: 0.0,
-                    z: 0.0,
-                },
+    for path in small_collision_paths 
+    {
+      if let Ok(path) = path
+      {
+        if let Some(str) = path.file_name().to_str()
+        {
+          small_collision_obstacles.push(DEFAULT_RANDOM_OBSTACLE_SIZE_1.to_string()+"/"+str);
+        }
+      }
+    }
+
+    for path in big_collision_paths 
+    {
+      if let Ok(path) = path
+      {
+        if let Some(str) = path.file_name().to_str()
+        {
+          big_collision_obstacles.push(DEFAULT_RANDOM_OBSTACLE_SIZE_2.to_string()+"/"+str);
+        }
+      }
+    }
+
+
+    for random_stuff in no_collision_obstacles {
+      if rng.gen_bool(0.5) {
+        if let Ok(mut base_path) = PathBuf::from_str("./assets/default_scene/assets/")
+        {
+          base_path.push(&random_stuff);
+          let png_files =  std::fs::read_dir(base_path).unwrap();
+
+          let location_x = rng.gen_range(PARCEL_SIZE_X as i32/ -2..PARCEL_SIZE_X as i32/ 2);
+          let location_y = rng.gen_range(PARCEL_SIZE_Y as i32/ -2..PARCEL_SIZE_Y as i32/ 2);
+          let transform = dcl2d_ecs_v1::components::Transform {
+              location: dcl2d_ecs_v1::Vec2 {
+                  x: location_x,
+                  y: location_y,
+              },
+              rotation: dcl2d_ecs_v1::Vec3 {
+                  x: 0.0,
+                  y: 0.0,
+                  z: 0.0,
+              },
                 scale: dcl2d_ecs_v1::Vec2 { x: 1.0, y: 1.0 },
             };
 
-            entities.push(dcl2d_ecs_v1::Entity {
-                name: "Background".to_string(),
-                components: vec![Box::new(renderer), Box::new(transform)],
-                ..default()
-            });
+          for png_file in png_files
+          {
+            if let Ok(png_file) = png_file
+            {
+              if let Some(png_file_str) = png_file.file_name().to_str()
+              {
+                let renderer = dcl2d_ecs_v1::components::SpriteRenderer {
+                  sprite: random_stuff.clone() + "/" + png_file_str,
+                  ..default()
+                };
+
+                entities.push(dcl2d_ecs_v1::Entity {
+                  name: png_file_str.to_string(),
+                  components: vec![Box::new(renderer), Box::new(transform.clone())],
+                  ..default()
+              });
+              }
+            }
+          }       
         }
+      }
     }
 
-    entities
+    for random_stuff in small_collision_obstacles {
+      if rng.gen_bool(0.5) {
+        if let Ok(mut base_path) = PathBuf::from_str("./assets/default_scene/assets/")
+        {
+          base_path.push(&random_stuff);
+          let png_files =  std::fs::read_dir(base_path).unwrap();
+
+        let location_x = rng.gen_range(PARCEL_SIZE_X as i32/ -2..PARCEL_SIZE_X as i32/ 2);
+        let location_y = rng.gen_range(PARCEL_SIZE_Y as i32/ -2..PARCEL_SIZE_Y as i32/ 2);
+        let transform = dcl2d_ecs_v1::components::Transform {
+            location: dcl2d_ecs_v1::Vec2 {
+                x: location_x,
+                y: location_y,
+            },
+            rotation: dcl2d_ecs_v1::Vec3 {
+                x: 0.0,
+                y: 0.0,
+                z: 0.0,
+            },
+            scale: dcl2d_ecs_v1::Vec2 { x: 1.0, y: 1.0 },
+        };
+        
+        let box_collision = dcl2d_ecs_v1::components::BoxCollider
+        {
+            collision_type: dcl2d_ecs_v1::collision_type::CollisionType::Solid,
+            center: dcl2d_ecs_v1::Vec2 {x:0,y:0},
+            size: dcl2d_ecs_v1::Size {width:50,height:50},
+        };        
+
+        for png_file in png_files
+        {
+          if let Ok(png_file) = png_file
+          {
+            if let Some(png_file_str) = png_file.file_name().to_str()
+            {
+              let renderer = dcl2d_ecs_v1::components::SpriteRenderer {
+                sprite: random_stuff.clone() + "/" + png_file_str,
+                ..default()
+              };
+
+              entities.push(dcl2d_ecs_v1::Entity {
+                name: png_file_str.to_string(),
+                components: vec![Box::new(renderer), Box::new(transform.clone()),Box::new(box_collision.clone())],
+                ..default()
+            });
+            }
+          }
+        }       
+      }
+    } 
+  }
+
+  for random_stuff in big_collision_obstacles {
+    if rng.gen_bool(0.5) {
+      
+      if let Ok(mut base_path) = PathBuf::from_str("./assets/default_scene/assets/")
+      {
+        base_path.push(&random_stuff);
+        let png_files =  std::fs::read_dir(base_path).unwrap();
+        let location_x = rng.gen_range(PARCEL_SIZE_X as i32/ -2..PARCEL_SIZE_X as i32/ 2);
+        let location_y = rng.gen_range(PARCEL_SIZE_Y as i32/ -2..PARCEL_SIZE_Y as i32/ 2);
+        let transform = dcl2d_ecs_v1::components::Transform {
+            location: dcl2d_ecs_v1::Vec2 {
+                x: location_x,
+                y: location_y,
+            },
+            rotation: dcl2d_ecs_v1::Vec3 {
+                x: 0.0,
+                y: 0.0,
+                z: 0.0,
+            },
+            scale: dcl2d_ecs_v1::Vec2 { x: 1.0, y: 1.0 },
+        };
+      
+      let box_collision = dcl2d_ecs_v1::components::BoxCollider
+      {
+          collision_type: dcl2d_ecs_v1::collision_type::CollisionType::Solid,
+          center: dcl2d_ecs_v1::Vec2 {x:0,y:0},
+          size:  dcl2d_ecs_v1::Size {width:100,height:100},
+      };        
+
+      for png_file in png_files
+      {
+        if let Ok(png_file) = png_file
+        {
+          if let Some(png_file_str) = png_file.file_name().to_str()
+          {
+            let renderer = dcl2d_ecs_v1::components::SpriteRenderer {
+              sprite: random_stuff.clone() + "/" + png_file_str,
+              ..default()
+            };
+
+            entities.push(dcl2d_ecs_v1::Entity {
+              name: png_file_str.to_string(),
+              components: vec![Box::new(renderer), Box::new(transform.clone()),Box::new(box_collision.clone())],
+              ..default()
+          });
+          }
+        }
+      }       
+    }
+  }
+  }
+  entities
 }
 
 pub fn read_roads_data() -> Result<RoadsData> {
@@ -551,7 +721,7 @@ pub fn read_roads_data() -> Result<RoadsData> {
 
     Ok(roads_data)
 }
-
+/*
 pub fn update_roads_data(new_roads_data: &RoadsData) -> Result<()> {
     let mut serializable_roads_data = SerializableRoadsData::default();
 
@@ -584,7 +754,7 @@ pub fn remove_road_at_parcel(parcel: &Parcel, roads_data: &mut RoadsData) -> Res
 pub fn add_road_at_parcel(parcel: &Parcel, roads_data: &mut RoadsData) -> Result<()> {
     roads_data.parcel_map.insert((parcel.0, parcel.1), ());
     update_roads_data(roads_data)
-}
+} */
 
 pub fn is_road(parcel: &Parcel, roads_data: &RoadsData) -> bool {
     roads_data.parcel_map.get(&(parcel.0, parcel.1)).is_some()

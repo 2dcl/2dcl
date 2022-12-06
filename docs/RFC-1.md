@@ -10,9 +10,7 @@ For a rich example of a scene with multiple entities and components, check the [
 
 ## `scene.json`
 
-The structure of the `scene.json` file is pretty simple, it includes only three attributes: `name` (name of the scene), `levels` (an array of different levels available in the scene), and `parcels` (the list of all the parcels that this scene contains).
-
-Parcels use the same serialization used for the 3d explorer: a string of comma separated integers (`"0,0"`).
+The structure of the `scene.json` file is pretty simple, it includes only two attributes: `name` (name of the scene)and `levels` (an array of different levels available in the scene)
 
 ```json
 {
@@ -20,10 +18,6 @@ Parcels use the same serialization used for the 3d explorer: a string of comma s
   "levels": [
     // See levels below
     // ... 
-  ],
-  "parcels": [
-    "0,1",
-    "1,1"
   ]
 }
 ```

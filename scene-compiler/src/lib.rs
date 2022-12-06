@@ -33,9 +33,9 @@ where
     let reader = BufReader::new(file);
     let scene: Scene = serde_json::from_reader(reader)?;
 
-    if scene.parcels.is_empty() {
+    /* if scene.parcels.is_empty() {
         return Err(Box::new(SceneCompileError::NoParcels));
-    }
+    } */
 
     let mut buf: Vec<u8> = Vec::new();
     scene.serialize(&mut Serializer::new(&mut buf))?;
