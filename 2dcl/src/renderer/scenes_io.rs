@@ -2,7 +2,7 @@ use bevy::prelude::*;
 use dcl_common::Parcel;
 use glob::glob;
 use rmp_serde::*;
-use serde::{Deserialize};
+use serde::Deserialize;
 use std::collections::HashMap;
 use std::fs::File;
 use std::io::BufReader;
@@ -40,26 +40,25 @@ impl Plugin for ScenesIOPlugin {
 }
 
 fn setup(mut commands: Commands) {
-    match get_parcel_map() {
-        Ok(parcel_map) => commands.insert_resource(parcel_map),
+    match get_scene_files_map() {
+        Ok(scene_files_map) => commands.insert_resource(scene_files_map),
         Err(e) => println!("error:{}", e),
     }
 }
 
-fn get_parcel_map() -> dcl_common::Result<SceneFilesMap> {
-    let mut parcel_map = SceneFilesMap::default();
+fn get_scene_files_map() -> dcl_common::Result<SceneFilesMap> {
+    let mut scene_files_map = SceneFilesMap::default();
 
     let paths = std::fs::read_dir("./assets/scenes").unwrap();
 
     for path in paths {
-        match refresh_path(path.unwrap().path(), &mut parcel_map)
-        {
-          Ok(_)=>{},
-          Err(e)=>println!("{}",e)
+        match refresh_path(path.unwrap().path(), &mut scene_files_map) {
+            Ok(_) => {}
+            Err(e) => println!("{}", e),
         };
     }
 
-    Ok(parcel_map)
+    Ok(scene_files_map)
 }
 
 pub fn read_scene_file<P>(file_path: P) -> Option<dcl2d_ecs_v1::Scene>
@@ -86,26 +85,25 @@ where
     None
 }
 
-pub fn get_parcel_file_data(parcel: &Parcel, parcel_map: &SceneFilesMap) -> Option<SceneFileData> {
-    match parcel_map.map.get(&(parcel.0, parcel.1)) {
-        Some(v) => Some(v.clone()),
-        None => None,
-    }
+pub fn get_parcel_file_data(
+    parcel: &Parcel,
+    scene_files_map: &SceneFilesMap,
+) -> Option<SceneFileData> {
+    scene_files_map.map.get(&(parcel.0, parcel.1)).cloned()
 }
 
 pub fn get_scene(
     roads_data: &mut RoadsData,
-    parcel_map: &SceneFilesMap,
+    scene_files_map: &SceneFilesMap,
     parcel: &Parcel,
 ) -> Option<SceneData> {
     if is_road(parcel, roads_data) {
-        match make_road_scene(roads_data, parcel) {
-            Ok(scene) => return Some(scene),
-            Err(_) => {}
+        if let Ok(scene) = make_road_scene(roads_data, parcel) {
+            return Some(scene);
         }
     }
 
-    let scene_file_data = match get_parcel_file_data(parcel, parcel_map) {
+    let scene_file_data = match get_parcel_file_data(parcel, scene_files_map) {
         Some(v) => v,
         None => return None,
     };
@@ -157,20 +155,19 @@ pub fn refresh_path(path: PathBuf, scene_files_map: &mut SceneFilesMap) -> dcl_c
 
     if let Ok(scene_3dcl) = read_3dcl_scene(json_path) {
         let parcels = scene_3dcl.scene.parcels.clone();
-        for entry in glob(pattern_2dcl.as_str()).expect("Failed to read glob pattern") {
+        if let Some(entry) = glob(pattern_2dcl.as_str())
+            .expect("Failed to read glob pattern")
+            .next()
+        {
             match entry {
                 Ok(path) => {
-                    let scene_file_data = SceneFileData {
-                        path: path.clone(),
-                        parcels: parcels.clone(),
-                    };
+                    let scene_file_data = SceneFileData { path, parcels };
 
                     for parcel in scene_3dcl.scene.parcels {
                         scene_files_map
                             .map
                             .insert((parcel.0, parcel.1), scene_file_data.clone());
                     }
-                    break;
                 }
                 Err(e) => return Err(Box::new(e)),
             }

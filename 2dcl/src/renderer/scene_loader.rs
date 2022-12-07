@@ -1,43 +1,53 @@
-use crate::components::*;
-use crate::renderer::scene_maker::*;
-use crate::renderer::scenes_io::read_3dcl_scene;
-use bevy::prelude::*;
-use bevy::tasks::AsyncComputeTaskPool;
-use std::fs;
-use std::str::FromStr;
-use std::time::SystemTime;
-use catalyst::entity_files::ContentFile;
-use catalyst::{ContentClient, Server};
-use bevy::sprite::Anchor;
-use dcl_common::Parcel;
-use serde::{Deserialize, Serialize};
-use std::path::Path;
-use std::path::PathBuf;
 use super::collision::CollisionMap;
 use super::collision::CollisionTile;
 use super::player::PlayerComponent;
 use super::scenes_io::{
-    get_parcel_file_data, get_scene, read_scene_file, refresh_path,
-    SceneData, SceneFilesMap,
+    get_parcel_file_data, get_scene, read_scene_file, refresh_path, SceneData, SceneFilesMap,
 };
+use crate::components::*;
+use crate::renderer::scene_maker::*;
+use crate::renderer::scenes_io::read_3dcl_scene;
+use bevy::prelude::*;
+use bevy::sprite::Anchor;
+use bevy::tasks::AsyncComputeTaskPool;
+use catalyst::entity_files::ContentFile;
+use catalyst::{ContentClient, Server};
+use dcl_common::Parcel;
 use futures_lite::future;
 use rmp_serde::*;
+use serde::{Deserialize, Serialize};
+use std::fs;
+use std::path::Path;
+use std::path::PathBuf;
+use std::str::FromStr;
+use std::time::SystemTime;
 
 use crate::renderer::config::*;
 use image::io::Reader as ImageReader;
 use image::{DynamicImage, ImageFormat};
 use imagesize::size;
-use std::collections::HashMap;
 
 pub struct SceneLoaderPlugin;
 
+#[derive(Default)]
+pub struct DownloadQueue {
+    parcels: Vec<Parcel>,
+}
+
 impl Plugin for SceneLoaderPlugin {
     fn build(&self, app: &mut App) {
-        app.add_system(scene_handler).add_system(handle_tasks);
+        app.insert_resource(DownloadQueue::default())
+            .add_system(level_changer)
+            .add_system(scene_manager)
+            .add_system(scene_downloader)
+            .add_system(tasks_handler);
     }
 }
 
-pub fn scene_handler(
+pub fn level_changer(
+    mut commands: Commands,
+    mut collision_map: ResMut<CollisionMap>,
+    asset_server: Res<AssetServer>,
     mut player_query: Query<(&mut PlayerComponent, &mut GlobalTransform)>,
     scene_query: Query<(
         Entity,
@@ -45,12 +55,6 @@ pub fn scene_handler(
         Without<PlayerComponent>,
     )>,
     level_query: Query<(Entity, &crate::components::Level, &Parent)>,
-    downloading_scenes_query: Query<&DownloadingScene>,
-    mut commands: Commands,
-    asset_server: Res<AssetServer>,
-    mut roads_data: ResMut<RoadsData>,
-    parcel_map: Res<SceneFilesMap>,
-    mut collision_map: ResMut<CollisionMap>,
 ) {
     //Find the player
     let player_query = player_query.get_single_mut();
@@ -112,6 +116,29 @@ pub fn scene_handler(
             break;
         }
     }
+}
+
+pub fn scene_manager(
+    mut player_query: Query<(&mut PlayerComponent, &mut GlobalTransform)>,
+    scene_query: Query<(
+        Entity,
+        &mut crate::components::Scene,
+        Without<PlayerComponent>,
+    )>,
+    downloading_scenes_query: Query<&DownloadingScene>,
+    mut commands: Commands,
+    mut download_queue: ResMut<DownloadQueue>,
+) {
+    //Find the player
+    let player_query = player_query.get_single_mut();
+
+    if player_query.is_err() {
+        return;
+    }
+
+    let player_query = player_query.unwrap();
+    let player_parcel = player_query.0.current_parcel.clone();
+    let current_level = player_query.0.current_level;
 
     //Only continue if we're in the overworld.
     if current_level != 0 {
@@ -161,16 +188,27 @@ pub fn scene_handler(
         }
     }
 
-    if parcels_to_spawn.is_empty() {
+    download_queue.parcels.append(&mut parcels_to_spawn);
+}
+
+pub fn scene_downloader(
+    mut commands: Commands,
+    asset_server: Res<AssetServer>,
+    mut roads_data: ResMut<RoadsData>,
+    scene_files_map: Res<SceneFilesMap>,
+    mut collision_map: ResMut<CollisionMap>,
+    mut download_queue: ResMut<DownloadQueue>,
+) {
+    if download_queue.parcels.is_empty() {
         return;
     }
 
-    //We download the scenes needed
     let thread_pool = AsyncComputeTaskPool::get();
-    let parcels_to_download = parcels_to_spawn.clone();
-    let parcel_map_clone = parcel_map.clone();
+    let parcels_to_download = download_queue.parcels.clone();
+
+    let scene_files_map_clone = scene_files_map.clone();
     let task_download_parcels = thread_pool.spawn(async move {
-        match download_parcels(parcels_to_download, &parcel_map_clone) {
+        match download_parcels(parcels_to_download, &scene_files_map_clone) {
             Ok(v) => Some(v),
             Err(e) => {
                 println!("{:?}", e);
@@ -178,9 +216,9 @@ pub fn scene_handler(
             }
         }
     });
-    //
-    for parcel_to_download in &parcels_to_spawn {
-        match get_scene(&mut roads_data, &parcel_map, parcel_to_download) {
+
+    for parcel_to_download in &download_queue.parcels {
+        match get_scene(&mut roads_data, &scene_files_map, parcel_to_download) {
             Some(scene_data) => {
                 spawn_scene(
                     &mut commands,
@@ -188,7 +226,7 @@ pub fn scene_handler(
                     &scene_data,
                     &mut collision_map,
                     SystemTime::now(),
-                    current_level,
+                    0,
                 );
             }
             None => {
@@ -204,8 +242,10 @@ pub fn scene_handler(
 
     commands.spawn().insert(DownloadingScene {
         task: task_download_parcels,
-        parcels: parcels_to_spawn,
+        parcels: download_queue.parcels.clone(),
     });
+
+    download_queue.parcels.clear();
 }
 
 fn get_scene_center_location(scene: &SceneData) -> Vec3 {
@@ -284,7 +324,7 @@ pub fn parcel_to_world_location(parcel: &Parcel) -> Vec3 {
 #[tokio::main]
 pub async fn download_parcels(
     parcels: Vec<Parcel>,
-    parcel_map: &SceneFilesMap,
+    scene_files_map: &SceneFilesMap,
 ) -> dcl_common::Result<Vec<PathBuf>> {
     let server = Server::production();
 
@@ -302,7 +342,6 @@ pub async fn download_parcels(
             if downloadable
                 .filename
                 .to_str()
-                .clone()
                 .unwrap()
                 .ends_with("scene.2dcl")
             {
@@ -352,7 +391,7 @@ pub async fn download_parcels(
                 if let Some(scene_2cl) = read_scene_file(&filename) {
                     let mut download_whole_scene = false;
                     for parcel in scene_3d.scene.parcels {
-                        match get_parcel_file_data(&parcel, parcel_map) {
+                        match get_parcel_file_data(&parcel, scene_files_map) {
                             Some(parcel_data) => {
                                 if let Some(previous_2dcl_scene) = read_scene_file(parcel_data.path)
                                 {
@@ -387,10 +426,9 @@ pub async fn download_parcels(
                         scene_paths.push(scene_path.to_path_buf());
                     }
                 }
-                match std::fs::remove_file(filename)
-                {
-                  Ok(_)=>{},
-                  Err(e)=> println!("{}",e)
+                match std::fs::remove_file(filename) {
+                    Ok(_) => {}
+                    Err(e) => println!("{}", e),
                 };
             }
         }
@@ -398,32 +436,31 @@ pub async fn download_parcels(
     Ok(scene_paths)
 }
 
-fn handle_tasks(
+fn tasks_handler(
     mut commands: Commands,
     mut collision_map: ResMut<CollisionMap>,
     mut roads_data: ResMut<RoadsData>,
-    mut parcel_map: ResMut<SceneFilesMap>,
+    mut scene_files_map: ResMut<SceneFilesMap>,
     asset_server: Res<AssetServer>,
     mut tasks_downloading_scenes: Query<(Entity, &mut DownloadingScene)>,
     scenes_query: Query<(Entity, &crate::components::Scene)>,
 ) {
     for (entity, mut downloading_scene) in &mut tasks_downloading_scenes {
-        if let Some(new_parcel_map_data) =
+        if let Some(new_scene_files_map_data) =
             future::block_on(future::poll_once(&mut downloading_scene.task))
         {
             commands.entity(entity).despawn_recursive();
 
-            if let Some(new_parcel_map_data) = new_parcel_map_data {
-                for path in new_parcel_map_data {
-                    match refresh_path(path, &mut parcel_map)
-                    {
-                      Ok(_)=>{},
-                      Err(e)=> println!("{}",e)
+            if let Some(new_scene_files_map_data) = new_scene_files_map_data {
+                for path in new_scene_files_map_data {
+                    match refresh_path(path, &mut scene_files_map) {
+                        Ok(_) => {}
+                        Err(e) => println!("{}", e),
                     }
                 }
 
                 for parcel in &downloading_scene.parcels {
-                    if let Some(scene_data) = get_scene(&mut roads_data, &parcel_map, &parcel) {
+                    if let Some(scene_data) = get_scene(&mut roads_data, &scene_files_map, parcel) {
                         spawn_scene(
                             &mut commands,
                             &asset_server,
@@ -537,7 +574,7 @@ pub fn spawn_scene(
     timestamp: SystemTime,
     level_id: usize,
 ) -> Entity {
-    let scene_location: Vec3 = get_scene_center_location(&scene_data);
+    let scene_location: Vec3 = get_scene_center_location(scene_data);
     let scene = &scene_data.scene;
     let mut scene_u8: Vec<u8> = Vec::new();
     scene
@@ -563,7 +600,7 @@ pub fn spawn_scene(
         let level_entity = spawn_level(
             commands,
             asset_server,
-            &scene_data,
+            scene_data,
             level_id,
             collision_map,
             SystemTime::now(),
@@ -710,14 +747,14 @@ fn spawn_entity(
 
             let sprite = Sprite {
                 color: Color::Rgba {
-                    red: (&sprite_renderer).color.r,
-                    green: (&sprite_renderer).color.g,
-                    blue: (&sprite_renderer).color.b,
-                    alpha: (&sprite_renderer).color.a,
+                    red: (sprite_renderer).color.r,
+                    green: (sprite_renderer).color.g,
+                    blue: (sprite_renderer).color.b,
+                    alpha: (sprite_renderer).color.a,
                 },
-                anchor: entity_anchor_to_anchor((&sprite_renderer).anchor.clone(), image_size),
-                flip_x: (&sprite_renderer).flip.x,
-                flip_y: (&sprite_renderer).flip.y,
+                anchor: entity_anchor_to_anchor((sprite_renderer).anchor.clone(), image_size),
+                flip_x: (sprite_renderer).flip.x,
+                flip_y: (sprite_renderer).flip.y,
                 ..default()
             };
             commands.entity(spawned_entity).insert(sprite);
