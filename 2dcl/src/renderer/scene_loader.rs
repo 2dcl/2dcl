@@ -557,7 +557,7 @@ fn downloading_scenes_task_handler(
 
           if let Some(new_paths) = new_paths {
               for new_path in new_paths {
-                  refresh_path(new_path.clone(), &mut scene_files_map)
+                  refresh_path(new_path.clone(), &mut scene_files_map);
                   }
               }
 
