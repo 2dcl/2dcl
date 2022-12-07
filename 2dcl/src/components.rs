@@ -55,4 +55,5 @@ pub struct Level {
     pub name: String,
     pub timestamp: SystemTime,
     pub id: usize,
+    pub spawn_point: Vec2,
 }

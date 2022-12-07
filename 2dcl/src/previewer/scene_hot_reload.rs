@@ -1,3 +1,4 @@
+use crate::renderer::scene_loader::get_scene_center_location;
 use crate::renderer::scene_loader::loading_sprites_tasks_handler;
 use crate::renderer::scenes_io::read_scene_u8;
 use crate::renderer::scenes_io::SceneData;
@@ -26,8 +27,8 @@ use serde::Deserialize;
 #[derive(Debug, Deserialize, TypeUuid)]
 #[uuid = "1b06c21a-5ecd-11ed-9b6a-0242ac120002"]
 pub struct SceneAsset {
-    bytes: Vec<u8>,
-    timestamp: SystemTime,
+    pub bytes: Vec<u8>,
+    pub timestamp: SystemTime,
 }
 
 #[derive(Default)]
@@ -55,7 +56,7 @@ impl AssetLoader for SceneAssetLoader {
 
 pub struct SceneHotReloadPlugin;
 
-pub struct SceneHandler(Handle<SceneAsset>);
+pub struct SceneHandler(pub Handle<SceneAsset>);
 
 impl Plugin for SceneHotReloadPlugin {
     fn build(&self, app: &mut App) {
@@ -84,21 +85,20 @@ fn scene_reload(
     scene_assets: ResMut<Assets<SceneAsset>>,
     asset_server: Res<AssetServer>,
     scene_handlers: Res<SceneHandler>,
-    mut scenes: Query<(Entity, &mut Scene)>,
+    mut scenes: Query<(Entity, &Scene)>,
     mut collision_map: ResMut<CollisionMap>,
-    player: Query<&PlayerComponent>,
+    mut player_query: Query<(&PlayerComponent, &mut Transform)>,
 ) {
-    let level_id = match player.get_single() {
-        Ok(player) => player.current_level,
-        _ => 0,
-    };
+  if let Ok((player, mut player_transform)) = player_query.get_single_mut()
+  {
 
     if let Some(scene) = scene_assets.get(&scene_handlers.0) {
         if let Ok((entity, current_scene)) = scenes.get_single_mut() {
             if scene.timestamp != current_scene.timestamp {
                 commands.entity(entity).despawn_recursive();
                 let timestamp = scene.timestamp;
-                if let Some(scene) = read_scene_u8(&scene.bytes) {
+                if let Some(mut scene) = read_scene_u8(&scene.bytes) {
+                  scene.timestamp = timestamp;
                     let scene_data = SceneData {
                         scene,
                         parcels: vec![Parcel(0, 0)],
@@ -110,14 +110,24 @@ fn scene_reload(
                         &asset_server,
                         &scene_data,
                         &mut collision_map,
-                        timestamp,
-                        level_id,
+                        player.current_level,
                     );
+                    
+                    let scene_center = get_scene_center_location(&scene_data);
+                    player_transform.translation = match player.current_level < scene_data.scene.levels.len()
+                    {
+                      true => {
+                        let  spawn_point= scene_data.scene.levels[player.current_level].spawn_point.clone();
+                        Vec3{x:spawn_point.x as f32 + scene_center.x,y:spawn_point.y as f32 + scene_center.y,z:(spawn_point.y as f32 + scene_center.y)*-1.0}
+                        },
+                      false => scene_center,
+                    }   
                 }
             }
         } else {
             let timestamp = scene.timestamp;
-            if let Some(scene) = read_scene_u8(&scene.bytes) {
+            if let Some(mut scene) = read_scene_u8(&scene.bytes) {
+              scene.timestamp = timestamp;
                 let scene_data = SceneData {
                     scene,
                     parcels: vec![Parcel(0, 0)],
@@ -129,12 +139,22 @@ fn scene_reload(
                     &asset_server,
                     &scene_data,
                     &mut collision_map,
-                    timestamp,
-                    level_id,
+                    player.current_level,
                 );
+
+                let scene_center = get_scene_center_location(&scene_data);
+                player_transform.translation = match player.current_level < scene_data.scene.levels.len()
+                {
+                  true => {
+                    let  spawn_point= scene_data.scene.levels[player.current_level].spawn_point.clone();
+                    Vec3{x:spawn_point.x as f32 + scene_center.x,y:spawn_point.y as f32 + scene_center.y,z:(spawn_point.y as f32 + scene_center.y)*-1.0}
+                    },
+                  false => scene_center,
+                }  
             }
         }
     }
+  }
 }
 
 pub fn level_change(

@@ -11,6 +11,8 @@ pub struct Level {
     #[serde(default)]
     pub player_layer: i16,
     pub entities: Vec<Entity>,
+    #[serde(default)]
+    pub spawn_point: Vec2<i16>,
 }
 
 #[cfg(test)]

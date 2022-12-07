@@ -2,8 +2,11 @@ use bevy::prelude::*;
 use bevy_console::{reply, AddConsoleCommand, ConsoleCommand, ConsolePlugin};
 use dcl_common::Parcel;
 
+use crate::renderer::scene_loader:: get_parcel_spawn_point;
+
 use super::player::PlayerComponent;
-use super::scene_loader;
+use super::scene_maker::RoadsData;
+use super::scenes_io::SceneFilesMap;
 
 pub struct MyConsolePlugin;
 
@@ -25,13 +28,16 @@ struct TeleportCommand {
 fn teleport_command(
     mut tp: ConsoleCommand<TeleportCommand>,
     mut player_query: Query<(&mut PlayerComponent, &mut Transform)>,
+    mut roads_data: ResMut<RoadsData>,
+    scene_files_map: Res<SceneFilesMap>,
 ) {
-    let (_player, mut transform) = player_query.single_mut();
+    let (mut player, mut transform) = player_query.single_mut();
     if let Some(TeleportCommand { parcel_x, parcel_y }) = tp.take() {
         if let Ok(parcel_x) = parcel_x.parse::<i16>() {
             if let Ok(parcel_y) = parcel_y.parse::<i16>() {
-                transform.translation =
-                    scene_loader::parcel_to_world_location(&Parcel(parcel_x, parcel_y));
+
+              player.current_level = 0;
+              transform.translation = get_parcel_spawn_point(&Parcel(parcel_x, parcel_y),0,&mut roads_data,&scene_files_map);
                 reply!(tp, "teleporting to parcel {},{}", parcel_x, parcel_y);
             } else {
                 reply!(tp, "{} is not a valid value", parcel_y);

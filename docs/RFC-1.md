@@ -24,7 +24,7 @@ The structure of the `scene.json` file is pretty simple, it includes only two at
 
 ## Levels
 
-A single scene can include multilpe levels, each level contains a `name`, `dimensions` (the size in pixels for the level), and `entities` (an array of entities available in that level, see Entities below), and `player_layer` that determines in which z-order layer the player should be rendered in this level.
+A single scene can include multilpe levels, each level contains a `name`, `dimensions` (the size in pixels for the level), `entities` (an array of entities available in that level, see Entities below), a `spawn_point` (the location where a player appears when teleporting to the level) and `player_layer` that determines in which z-order layer the player should be rendered in this level.
 
 The first level in the scene is the one that gets rendered when walking around decentraland, and its dimensions get automatically set by the parcels (each parcel is 500x500) available, so anything outside the boundaries of the parcels will be ignored.
 
@@ -32,7 +32,8 @@ The first level in the scene is the one that gets rendered when walking around d
 {
   "name" : "My Level Name",
   "dimensions" : { "x" : 200, "y" : 200 }, // optional, defaults to the parcel settings in the scene
-  "player_layer" : 5, // optional, defaults to 0
+  "player_layer" : 5, // optional, defaults to 0,
+  "spawn_point": { "x" : 50, "y" : 50 } // optional, defaults to { "x" : 0, "y" : 0 }
   "entities" : [
     // See entities below
     // ...
