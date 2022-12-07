@@ -1,3 +1,4 @@
+use crate::renderer::scene_loader::loading_sprites_tasks_handler;
 use crate::renderer::scenes_io::read_scene_u8;
 use crate::renderer::scenes_io::SceneData;
 use crate::renderer::CollisionMap;
@@ -60,6 +61,7 @@ impl Plugin for SceneHotReloadPlugin {
     fn build(&self, app: &mut App) {
         app.add_system(scene_reload)
             .add_system(level_change)
+            .add_system(loading_sprites_tasks_handler)
             .add_startup_system(setup);
     }
 }

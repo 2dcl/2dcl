@@ -11,6 +11,17 @@ pub struct DownloadingScene {
     pub parcels: Vec<Parcel>,
 }
 
+#[derive(Component)]
+pub struct LoadingSprite {
+    pub task: Task<LoadingSpriteData>,
+}
+
+pub struct LoadingSpriteData
+{
+  pub sprite: Sprite,
+  pub image: Handle<Image>
+}
+
 #[derive(Debug, Component, Clone)]
 pub struct CircleCollider {
     pub center: Vec2,

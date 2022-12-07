@@ -40,7 +40,9 @@ impl Plugin for SceneLoaderPlugin {
             .add_system(level_changer)
             .add_system(scene_manager)
             .add_system(scene_downloader)
-            .add_system(tasks_handler);
+            .add_system(downloading_scenes_task_handler)
+            .add_system(loading_sprites_tasks_handler)
+            .add_system(default_scenes_despawner);
     }
 }
 
@@ -125,7 +127,6 @@ pub fn scene_manager(
         &mut crate::components::Scene,
         Without<PlayerComponent>,
     )>,
-    downloading_scenes_query: Query<&DownloadingScene>,
     mut commands: Commands,
     mut download_queue: ResMut<DownloadQueue>,
 ) {
@@ -173,22 +174,7 @@ pub fn scene_manager(
             }
         }
     }
-
-    if parcels_to_spawn.is_empty() {
-        return;
-    }
-
-    //Spawning scenes
-    for i in (0..parcels_to_spawn.len()).rev() {
-        for downloading_scene in downloading_scenes_query.iter() {
-            if downloading_scene.parcels.contains(&parcels_to_spawn[i]) {
-                parcels_to_spawn.remove(i);
-                break;
-            }
-        }
-    }
-
-    download_queue.parcels.append(&mut parcels_to_spawn);
+    download_queue.parcels = parcels_to_spawn;
 }
 
 pub fn scene_downloader(
@@ -202,7 +188,8 @@ pub fn scene_downloader(
     if download_queue.parcels.is_empty() {
         return;
     }
-
+ 
+    //Download scenes
     let thread_pool = AsyncComputeTaskPool::get();
     let parcels_to_download = download_queue.parcels.clone();
 
@@ -217,6 +204,7 @@ pub fn scene_downloader(
         }
     });
 
+    //Spawm default scene or previous version
     for parcel_to_download in &download_queue.parcels {
         match get_scene(&mut roads_data, &scene_files_map, parcel_to_download) {
             Some(scene_data) => {
@@ -396,16 +384,12 @@ pub async fn download_parcels(
                                 if let Some(previous_2dcl_scene) = read_scene_file(parcel_data.path)
                                 {
                                     if previous_2dcl_scene.timestamp != scene_2cl.timestamp {
-                                        println!("different timestamps:");
-                                        println!("{:?}", previous_2dcl_scene.timestamp);
-                                        println!("{:?}", scene_2cl.timestamp);
                                         download_whole_scene = true;
                                         break;
                                     }
                                 }
                             }
                             None => {
-                                println!("no such file");
                                 download_whole_scene = true;
                                 break;
                             }
@@ -436,64 +420,95 @@ pub async fn download_parcels(
     Ok(scene_paths)
 }
 
-fn tasks_handler(
+
+pub fn loading_sprites_tasks_handler(
+  mut commands: Commands,
+  mut tasks_loading_sprite: Query<(Entity, &mut LoadingSprite)>,
+) {
+  for (entity, mut loading_sprite) in &mut tasks_loading_sprite {
+      if let Some(loading_sprite_data) =
+          future::block_on(future::poll_once(&mut loading_sprite.task))
+      {
+          commands.entity(entity).insert(loading_sprite_data.image);
+          commands.entity(entity).insert(loading_sprite_data.sprite);
+          commands.entity(entity).remove::<LoadingSprite>();
+      }
+  }
+}
+
+fn downloading_scenes_task_handler(
+  mut commands: Commands,
+  mut collision_map: ResMut<CollisionMap>,
+  mut roads_data: ResMut<RoadsData>,
+  mut scene_files_map: ResMut<SceneFilesMap>,
+  asset_server: Res<AssetServer>,
+  mut tasks_downloading_scenes: Query<(Entity, &mut DownloadingScene)>,
+) {
+  for (entity, mut downloading_scene) in &mut tasks_downloading_scenes {
+      if let Some(new_paths) =
+          future::block_on(future::poll_once(&mut downloading_scene.task))
+      {
+          commands.entity(entity).despawn_recursive();
+
+          if let Some(new_paths) = new_paths {
+              for new_path in new_paths {
+                  match refresh_path(new_path.clone(), &mut scene_files_map) {
+                      Ok(_) => {
+                        for parcel in &downloading_scene.parcels {
+                          if let Some(scene_data) = get_scene(&mut roads_data, &scene_files_map, parcel) {
+                            if scene_data.path == new_path
+                            {
+                              spawn_scene(
+                                &mut commands,
+                                &asset_server,
+                                &scene_data,
+                                &mut collision_map,
+                                SystemTime::now(),
+                                0,
+                               );
+                            }  
+                          }
+                        }
+                      }
+                      Err(e) => println!("{}", e),
+                  }
+              }
+          }
+      }
+  }
+}
+
+fn default_scenes_despawner(
     mut commands: Commands,
-    mut collision_map: ResMut<CollisionMap>,
-    mut roads_data: ResMut<RoadsData>,
-    mut scene_files_map: ResMut<SceneFilesMap>,
-    asset_server: Res<AssetServer>,
-    mut tasks_downloading_scenes: Query<(Entity, &mut DownloadingScene)>,
     scenes_query: Query<(Entity, &crate::components::Scene)>,
 ) {
-    for (entity, mut downloading_scene) in &mut tasks_downloading_scenes {
-        if let Some(new_scene_files_map_data) =
-            future::block_on(future::poll_once(&mut downloading_scene.task))
-        {
-            commands.entity(entity).despawn_recursive();
-
-            if let Some(new_scene_files_map_data) = new_scene_files_map_data {
-                for path in new_scene_files_map_data {
-                    match refresh_path(path, &mut scene_files_map) {
-                        Ok(_) => {}
-                        Err(e) => println!("{}", e),
-                    }
-                }
-
-                for parcel in &downloading_scene.parcels {
-                    if let Some(scene_data) = get_scene(&mut roads_data, &scene_files_map, parcel) {
-                        spawn_scene(
-                            &mut commands,
-                            &asset_server,
-                            &scene_data,
-                            &mut collision_map,
-                            SystemTime::now(),
-                            0,
-                        );
-                    }
-                }
-            }
-        }
-    }
-
-    //t>>>>>>>sadsadasdsadsadgsa
+    let mut entities_being_despawned = Vec::new();
+    
     for (entity_1, scene_1) in &scenes_query {
-        for (entity_2, scene_2) in &scenes_query {
+      if entities_being_despawned.contains(&entity_1)
+      {
+        continue;
+      }
+      for (entity_2, scene_2) in &scenes_query {
+        if entities_being_despawned.contains(&entity_2)
+        {
+          continue;
+        }
             if entity_1 != entity_2
                 && (scene_1.name == "default_scene" || scene_2.name == "default_scene")
             {
-                'outer: for parcel_1 in &scene_1.parcels {
+              'outer: for parcel_1 in &scene_1.parcels {
                     for parcel_2 in &scene_2.parcels {
                         if *parcel_1 == *parcel_2 {
                             if scene_1.name == "default_scene" {
-                                println!("Despawning empty_parcel {:?}", parcel_1);
+                                entities_being_despawned.push(entity_1);
                                 commands.entity(entity_1).despawn_recursive();
                                 break 'outer;
-                            }
-
-                            if scene_2.name == "default_scene" {
-                                println!("Despawning empty_parcel {:?}", parcel_2);
+                            } 
+                            else if scene_2.name == "default_scene" {
+                                entities_being_despawned.push(entity_2);
                                 commands.entity(entity_2).despawn_recursive();
-                                break;
+                                break 'outer;
                             }
                         }
                     }
@@ -574,6 +589,7 @@ pub fn spawn_scene(
     timestamp: SystemTime,
     level_id: usize,
 ) -> Entity {
+
     let scene_location: Vec3 = get_scene_center_location(scene_data);
     let scene = &scene_data.scene;
     let mut scene_u8: Vec<u8> = Vec::new();
@@ -730,34 +746,45 @@ fn spawn_entity(
 
             commands.entity(spawned_entity).insert(transform);
 
+
+            let thread_pool = AsyncComputeTaskPool::get();
             let mut image_path = scene_data.path.clone();
             image_path.push("assets");
             image_path.push(&sprite_renderer.sprite);
-            let texture: Handle<Image> = asset_server.load(image_path);
-            commands.entity(spawned_entity).insert(texture);
-            let mut sprite_path = std::fs::canonicalize(PathBuf::from_str(".").unwrap()).unwrap();
-            sprite_path.push("assets");
-            sprite_path.push(&scene_data.path);
-            sprite_path.push("assets");
-            sprite_path.push(&sprite_renderer.sprite);
-            let image_size = match size(sprite_path) {
-                Ok(v) => Vec2::new(v.width as f32, v.height as f32),
-                Err(_) => Vec2::new(0.0, 0.0),
-            };
 
-            let sprite = Sprite {
-                color: Color::Rgba {
-                    red: (sprite_renderer).color.r,
-                    green: (sprite_renderer).color.g,
-                    blue: (sprite_renderer).color.b,
-                    alpha: (sprite_renderer).color.a,
-                },
-                anchor: entity_anchor_to_anchor((sprite_renderer).anchor.clone(), image_size),
-                flip_x: (sprite_renderer).flip.x,
-                flip_y: (sprite_renderer).flip.y,
-                ..default()
-            };
-            commands.entity(spawned_entity).insert(sprite);
+            let asset_server_clone = asset_server.clone();
+            let sprite_renderer_clone = sprite_renderer.clone();
+            let task_load_sprite = thread_pool.spawn(async move {
+             
+            let mut sprite_path = std::fs::canonicalize(PathBuf::from_str(".").unwrap()).unwrap();
+            sprite_path.push(&image_path);
+
+            let image: Handle<Image> = asset_server_clone.load(image_path);
+
+            let image_size = match size(sprite_path) {
+                    Ok(v) => Vec2::new(v.width as f32, v.height as f32),
+                    Err(_) => Vec2::new(0.0, 0.0),
+                };  
+              
+                let sprite = Sprite {
+                    color: Color::Rgba {
+                        red: (sprite_renderer_clone).color.r,
+                        green: (sprite_renderer_clone).color.g,
+                        blue: (sprite_renderer_clone).color.b,
+                        alpha: (sprite_renderer_clone).color.a,
+                    },
+                    anchor: entity_anchor_to_anchor((sprite_renderer_clone).anchor.clone(), image_size),
+                    flip_x: (sprite_renderer_clone).flip.x,
+                    flip_y: (sprite_renderer_clone).flip.y,
+                    ..default()
+                };
+                
+                LoadingSpriteData{sprite,image}
+              });
+              
+              commands.entity(spawned_entity).insert(LoadingSprite {
+                task: task_load_sprite,
+            }); 
         }
 
         if let Some(collider) = component
@@ -883,6 +910,6 @@ fn spawn_entity(
         commands
             .entity(spawned_entity)
             .add_child(spawned_child_entity);
-    }
+    } 
     spawned_entity
 }
