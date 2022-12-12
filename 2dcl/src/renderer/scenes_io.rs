@@ -51,8 +51,8 @@ fn get_scene_files_map() -> dcl_common::Result<SceneFilesMap> {
 
     let paths = std::fs::read_dir("./assets/scenes").unwrap();
 
-    for path in paths {
-        match refresh_path(path.unwrap().path(), &mut scene_files_map) {
+    for path in paths.flatten() {
+        match refresh_path(path.path(), &mut scene_files_map) {
             Ok(_) => {}
             Err(e) => println!("{}", e),
         };
