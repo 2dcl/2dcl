@@ -53,6 +53,7 @@ pub fn start() {
     setup(&mut app);
     app.add_plugin(SceneLoaderPlugin)
         .add_plugin(MyConsolePlugin)
+        .add_plugin(SceneMakerPlugin)
         .add_plugin(ScenesIOPlugin)
         .run();
 }
@@ -66,7 +67,6 @@ pub fn setup(app: &mut bevy::app::App) {
             },
         })
         .add_plugins(DefaultPlugins)
-        .add_plugin(SceneMakerPlugin)
         //.add_plugin(DebugPlugin)
         .add_plugin(AnimationsPlugin)
         .add_plugin(PlayerPlugin)
