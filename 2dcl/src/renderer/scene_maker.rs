@@ -18,21 +18,38 @@ const DEFAULT_BACKGROUND_PATH: &str = "./background";
 const DEFAULT_RANDOM_NO_COLLISION: &str = "./randomized/no_collision";
 const DEFAULT_RANDOM_OBSTACLE_SIZE_1: &str = "./randomized/small_collision";
 const DEFAULT_RANDOM_OBSTACLE_SIZE_2: &str = "./randomized/big_collision";
-const ROAD_BACKGROUND_PATH: &str = "road-pavement.png";
+
+const ROAD_BACKGROUND_PATH: &str = "road-background.png";
 const LEFT_BORDER_PATH: &str = "road-left.png";
 const RIGHT_BORDER_PATH: &str = "road-right.png";
 const TOP_BORDER_PATH: &str = "road-top.png";
 const BOTTOM_BORDER_PATH: &str = "road-bottom.png";
+
 const CLOSED_TOP_LEFT_CORNER_PATH: &str = "road-closed-top-left.png";
 const CLOSED_TOP_RIGHT_CORNER_PATH: &str = "road-closed-top-right.png";
 const CLOSED_BOTTOM_LEFT_CORNER_PATH: &str = "road-closed-bottom-left.png";
 const CLOSED_BOTTOM_RIGHT_CORNER_PATH: &str = "road-closed-bottom-right.png";
+
 const OPEN_TOP_LEFT_CORNER_PATH: &str = "road-open-top-left.png";
 const OPEN_TOP_RIGHT_CORNER_PATH: &str = "road-open-top-right.png";
 const OPEN_BOTTOM_LEFT_CORNER_PATH: &str = "road-open-bottom-left.png";
 const OPEN_BOTTOM_RIGHT_CORNER_PATH: &str = "road-open-bottom-right.png";
 
+const BOULEVARD_BACKGROUND_PATH: &str = "boulevard-background.png";
+const BOULEVARD_TOP_LEFT_PATH: &str = "boulevard-top-left.png";
+const BOULEVARD_TOP_RIGHT_PATH: &str = "boulevard-top-right.png";
+const BOULEVARD_BOTTOM_LEFT_PATH: &str = "boulevard-bottom-left.png";
+const BOULEVARD_BOTTOM_RIGHT_PATH: &str = "boulevard-bottom-right.png";
+const BOULEVARD_TOP_PATH: &str = "boulevard-top.png";
+const BOULEVARD_RIGHT_PATH: &str = "boulevard-right.png";
+const BOULEVARD_LEFT_PATH: &str = "boulevard-left.png";
+const BOULEVARD_BOTTOM_PATH: &str = "boulevard-bottom.png";
+
 const TILE_SIZE: (i32, i32) = (64, 64);
+
+const BOULEVARD_SMALL_SIDE_SIZE: usize = 1;
+const BOULEVARD_LONG_SIDE_SIZE: usize = 3;
+const BOULEVARD_SPACING: i16 = 4;
 
 #[derive(Debug, Clone, Default)]
 pub struct RoadsData {
@@ -63,6 +80,14 @@ enum CornerType {
 
 #[derive(Debug, Clone)]
 enum CornerPosition {
+    TopLeft,
+    TopRight,
+    BottomLeft,
+    BottomRight,
+}
+
+#[derive(Debug, Clone)]
+enum BoulevardType {
     TopLeft,
     TopRight,
     BottomLeft,
@@ -109,7 +134,8 @@ pub fn make_road_scene(roads_data: &RoadsData, parcel: &Parcel) -> Result<SceneD
     let mut entities: Vec<dcl2d_ecs_v1::Entity> = Vec::new();
     let mut corner_entities = make_corners(roads_data, parcel);
     entities.append(&mut make_road_background_entities());
-    entities.append(&mut make_border_entities(roads_data, parcel));
+    entities.append(&mut make_boulevard_entities(roads_data, parcel));
+    entities.append(&mut make_sidewalk_entities(roads_data, parcel));
     entities.append(&mut corner_entities);
 
     let level = dcl2d_ecs_v1::Level {
@@ -138,48 +164,357 @@ pub fn make_road_scene(roads_data: &RoadsData, parcel: &Parcel) -> Result<SceneD
     Ok(scene_data)
 }
 
-fn make_border_entities(roads_data: &RoadsData, parcel: &Parcel) -> Vec<dcl2d_ecs_v1::Entity> {
+fn make_boulevard_entities(roads_data: &RoadsData, parcel: &Parcel) -> Vec<dcl2d_ecs_v1::Entity> {
+    let mut boulevard = Vec::new();
+
+    if (parcel.0 % BOULEVARD_SPACING == 1
+        || parcel.0 % BOULEVARD_SPACING == -(BOULEVARD_SPACING - 1)
+        || parcel.1 % BOULEVARD_SPACING == 0)
+        && is_road(&Parcel(parcel.0 - 1, parcel.1), roads_data)
+        && is_road(&Parcel(parcel.0, parcel.1 + 1), roads_data)
+        && is_road(&Parcel(parcel.0 - 1, parcel.1 + 1), roads_data)
+    {
+        let mut size: dcl2d_ecs_v1::Vec2<usize> = dcl2d_ecs_v1::Vec2 {
+            x: BOULEVARD_SMALL_SIDE_SIZE,
+            y: BOULEVARD_SMALL_SIDE_SIZE,
+        };
+
+        if parcel.0 % BOULEVARD_SPACING == 1
+            || parcel.0 % BOULEVARD_SPACING == -(BOULEVARD_SPACING - 1)
+                && is_road(&Parcel(parcel.0 - 2, parcel.1), roads_data)
+        {
+            size.x = BOULEVARD_LONG_SIDE_SIZE;
+        }
+
+        if parcel.1 % BOULEVARD_SPACING == 0 && is_road(&Parcel(parcel.0, parcel.1 + 2), roads_data)
+        {
+            size.y = BOULEVARD_LONG_SIDE_SIZE;
+        }
+
+        boulevard.append(&mut make_boulevard_entity(BoulevardType::TopLeft, size));
+    }
+
+    if (parcel.0 % BOULEVARD_SPACING == 0 || parcel.1 % BOULEVARD_SPACING == 0)
+        && is_road(&Parcel(parcel.0 + 1, parcel.1), roads_data)
+        && is_road(&Parcel(parcel.0, parcel.1 + 1), roads_data)
+        && is_road(&Parcel(parcel.0 + 1, parcel.1 + 1), roads_data)
+    {
+        let mut size: dcl2d_ecs_v1::Vec2<usize> = dcl2d_ecs_v1::Vec2 {
+            x: BOULEVARD_SMALL_SIDE_SIZE,
+            y: BOULEVARD_SMALL_SIDE_SIZE,
+        };
+
+        if parcel.0 % BOULEVARD_SPACING == 0 && is_road(&Parcel(parcel.0 + 2, parcel.1), roads_data)
+        {
+            size.x = BOULEVARD_LONG_SIDE_SIZE;
+        }
+
+        if parcel.1 % BOULEVARD_SPACING == 0 && is_road(&Parcel(parcel.0, parcel.1 + 2), roads_data)
+        {
+            size.y = BOULEVARD_LONG_SIDE_SIZE;
+        }
+
+        boulevard.append(&mut make_boulevard_entity(BoulevardType::TopRight, size));
+    }
+
+    if (parcel.0 % BOULEVARD_SPACING == 1
+        || parcel.0 % BOULEVARD_SPACING == -(BOULEVARD_SPACING - 1)
+        || parcel.1 % BOULEVARD_SPACING == 1
+        || parcel.1 % BOULEVARD_SPACING == -(BOULEVARD_SPACING - 1))
+        && is_road(&Parcel(parcel.0 - 1, parcel.1), roads_data)
+        && is_road(&Parcel(parcel.0, parcel.1 - 1), roads_data)
+        && is_road(&Parcel(parcel.0 - 1, parcel.1 - 1), roads_data)
+    {
+        let mut size: dcl2d_ecs_v1::Vec2<usize> = dcl2d_ecs_v1::Vec2 {
+            x: BOULEVARD_SMALL_SIDE_SIZE,
+            y: BOULEVARD_SMALL_SIDE_SIZE,
+        };
+
+        if (parcel.0 % BOULEVARD_SPACING == 1
+            || parcel.0 % BOULEVARD_SPACING == -(BOULEVARD_SPACING - 1))
+            && is_road(&Parcel(parcel.0 - 2, parcel.1), roads_data)
+        {
+            size.x = BOULEVARD_LONG_SIDE_SIZE;
+        }
+
+        if (parcel.1 % BOULEVARD_SPACING == 1
+            || parcel.1 % BOULEVARD_SPACING == -(BOULEVARD_SPACING - 1))
+            && is_road(&Parcel(parcel.0, parcel.1 - 2), roads_data)
+        {
+            size.y = BOULEVARD_LONG_SIDE_SIZE;
+        }
+
+        boulevard.append(&mut make_boulevard_entity(BoulevardType::BottomLeft, size));
+    }
+
+    if (parcel.0 % BOULEVARD_SPACING == 0
+        || parcel.1 % BOULEVARD_SPACING == 1
+        || parcel.1 % BOULEVARD_SPACING == -(BOULEVARD_SPACING - 1))
+        && is_road(&Parcel(parcel.0 + 1, parcel.1), roads_data)
+        && is_road(&Parcel(parcel.0, parcel.1 - 1), roads_data)
+        && is_road(&Parcel(parcel.0 + 1, parcel.1 - 1), roads_data)
+    {
+        let mut size: dcl2d_ecs_v1::Vec2<usize> = dcl2d_ecs_v1::Vec2 {
+            x: BOULEVARD_SMALL_SIDE_SIZE,
+            y: BOULEVARD_SMALL_SIDE_SIZE,
+        };
+
+        if parcel.0 % BOULEVARD_SPACING == 0 && is_road(&Parcel(parcel.0 + 2, parcel.1), roads_data)
+        {
+            size.x = BOULEVARD_LONG_SIDE_SIZE;
+        }
+
+        if (parcel.1 % BOULEVARD_SPACING == 1
+            || parcel.1 % BOULEVARD_SPACING == -(BOULEVARD_SPACING - 1))
+            && is_road(&Parcel(parcel.0, parcel.1 - 2), roads_data)
+        {
+            size.y = BOULEVARD_LONG_SIDE_SIZE;
+        }
+
+        boulevard.append(&mut make_boulevard_entity(BoulevardType::BottomRight, size));
+    }
+
+    boulevard
+}
+
+fn make_boulevard_entity(
+    boulevard_type: BoulevardType,
+    size: dcl2d_ecs_v1::Vec2<usize>,
+) -> Vec<dcl2d_ecs_v1::Entity> {
+    let mut boulevard = Vec::new();
+
+    match boulevard_type {
+        BoulevardType::TopLeft => {
+            for x in 0..size.x {
+                for y in 0..size.y {
+                    let transform = dcl2d_ecs_v1::components::Transform {
+                        location: dcl2d_ecs_v1::Vec2 {
+                            x: PARCEL_SIZE_X as i32 / -2 + x as i32 * TILE_SIZE.0 * 2,
+                            y: PARCEL_SIZE_Y as i32 / 2 - y as i32 * TILE_SIZE.0 * 2,
+                        },
+                        rotation: dcl2d_ecs_v1::Vec3 {
+                            x: 0.0,
+                            y: 0.0,
+                            z: 0.0,
+                        },
+                        scale: dcl2d_ecs_v1::Vec2 { x: 1.0, y: 1.0 },
+                    };
+
+                    let sprite = {
+                        if x == size.x - 1 && y == size.y - 1 {
+                            BOULEVARD_BOTTOM_RIGHT_PATH.to_string()
+                        } else if x == size.x - 1 {
+                            BOULEVARD_RIGHT_PATH.to_string()
+                        } else if y == size.y - 1 {
+                            BOULEVARD_BOTTOM_PATH.to_string()
+                        } else {
+                            BOULEVARD_BACKGROUND_PATH.to_string()
+                        }
+                    };
+
+                    let anchor = dcl2d_ecs_v1::Anchor::TopLeft;
+
+                    let renderer = dcl2d_ecs_v1::components::SpriteRenderer {
+                        sprite,
+                        layer: -2,
+                        anchor,
+                        ..default()
+                    };
+
+                    let entity = dcl2d_ecs_v1::Entity {
+                        name: "Boulevard".to_string(),
+                        components: vec![Box::new(renderer), Box::new(transform)],
+                        ..default()
+                    };
+                    boulevard.push(entity);
+                }
+            }
+        }
+        BoulevardType::TopRight => {
+            for x in 0..size.x {
+                for y in 0..size.y {
+                    let transform = dcl2d_ecs_v1::components::Transform {
+                        location: dcl2d_ecs_v1::Vec2 {
+                            x: PARCEL_SIZE_X as i32 / 2 - x as i32 * TILE_SIZE.0 * 2,
+                            y: PARCEL_SIZE_Y as i32 / 2 - y as i32 * TILE_SIZE.0 * 2,
+                        },
+                        rotation: dcl2d_ecs_v1::Vec3 {
+                            x: 0.0,
+                            y: 0.0,
+                            z: 0.0,
+                        },
+                        scale: dcl2d_ecs_v1::Vec2 { x: 1.0, y: 1.0 },
+                    };
+
+                    let sprite = {
+                        if x == size.x - 1 && y == size.y - 1 {
+                            BOULEVARD_BOTTOM_LEFT_PATH.to_string()
+                        } else if x == size.x - 1 {
+                            BOULEVARD_LEFT_PATH.to_string()
+                        } else if y == size.y - 1 {
+                            BOULEVARD_BOTTOM_PATH.to_string()
+                        } else {
+                            BOULEVARD_BACKGROUND_PATH.to_string()
+                        }
+                    };
+
+                    let anchor = dcl2d_ecs_v1::Anchor::TopRight;
+
+                    let renderer = dcl2d_ecs_v1::components::SpriteRenderer {
+                        sprite,
+                        layer: -2,
+                        anchor,
+                        ..default()
+                    };
+
+                    let entity = dcl2d_ecs_v1::Entity {
+                        name: "Boulevard".to_string(),
+                        components: vec![Box::new(renderer), Box::new(transform)],
+                        ..default()
+                    };
+                    boulevard.push(entity);
+                }
+            }
+        }
+        BoulevardType::BottomLeft => {
+            for x in 0..size.x {
+                for y in 0..size.y {
+                    let transform = dcl2d_ecs_v1::components::Transform {
+                        location: dcl2d_ecs_v1::Vec2 {
+                            x: PARCEL_SIZE_X as i32 / -2 + x as i32 * TILE_SIZE.0 * 2,
+                            y: PARCEL_SIZE_Y as i32 / -2 + y as i32 * TILE_SIZE.0 * 2,
+                        },
+                        rotation: dcl2d_ecs_v1::Vec3 {
+                            x: 0.0,
+                            y: 0.0,
+                            z: 0.0,
+                        },
+                        scale: dcl2d_ecs_v1::Vec2 { x: 1.0, y: 1.0 },
+                    };
+
+                    let sprite = {
+                        if x == size.x - 1 && y == size.y - 1 {
+                            BOULEVARD_TOP_RIGHT_PATH.to_string()
+                        } else if x == size.x - 1 {
+                            BOULEVARD_RIGHT_PATH.to_string()
+                        } else if y == size.y - 1 {
+                            BOULEVARD_TOP_PATH.to_string()
+                        } else {
+                            BOULEVARD_BACKGROUND_PATH.to_string()
+                        }
+                    };
+
+                    let anchor = dcl2d_ecs_v1::Anchor::BottomLeft;
+
+                    let renderer = dcl2d_ecs_v1::components::SpriteRenderer {
+                        sprite,
+                        layer: -2,
+                        anchor,
+                        ..default()
+                    };
+
+                    let entity = dcl2d_ecs_v1::Entity {
+                        name: "Boulevard".to_string(),
+                        components: vec![Box::new(renderer), Box::new(transform)],
+                        ..default()
+                    };
+                    boulevard.push(entity);
+                }
+            }
+        }
+        BoulevardType::BottomRight => {
+            for x in 0..size.x {
+                for y in 0..size.y {
+                    let transform = dcl2d_ecs_v1::components::Transform {
+                        location: dcl2d_ecs_v1::Vec2 {
+                            x: PARCEL_SIZE_X as i32 / 2 - x as i32 * TILE_SIZE.0 * 2,
+                            y: PARCEL_SIZE_Y as i32 / -2 + y as i32 * TILE_SIZE.0 * 2,
+                        },
+                        rotation: dcl2d_ecs_v1::Vec3 {
+                            x: 0.0,
+                            y: 0.0,
+                            z: 0.0,
+                        },
+                        scale: dcl2d_ecs_v1::Vec2 { x: 1.0, y: 1.0 },
+                    };
+
+                    let sprite = {
+                        if x == size.x - 1 && y == size.y - 1 {
+                            BOULEVARD_TOP_LEFT_PATH.to_string()
+                        } else if x == size.x - 1 {
+                            BOULEVARD_LEFT_PATH.to_string()
+                        } else if y == size.y - 1 {
+                            BOULEVARD_TOP_PATH.to_string()
+                        } else {
+                            BOULEVARD_BACKGROUND_PATH.to_string()
+                        }
+                    };
+
+                    let anchor = dcl2d_ecs_v1::Anchor::BottomRight;
+
+                    let renderer = dcl2d_ecs_v1::components::SpriteRenderer {
+                        sprite,
+                        layer: -2,
+                        anchor,
+                        ..default()
+                    };
+
+                    let entity = dcl2d_ecs_v1::Entity {
+                        name: "Boulevard".to_string(),
+                        components: vec![Box::new(renderer), Box::new(transform)],
+                        ..default()
+                    };
+                    boulevard.push(entity);
+                }
+            }
+        }
+    }
+
+    boulevard
+}
+
+fn make_sidewalk_entities(roads_data: &RoadsData, parcel: &Parcel) -> Vec<dcl2d_ecs_v1::Entity> {
     let mut border = Vec::new();
     if !is_road(&Parcel(parcel.0 - 1, parcel.1), roads_data) {
-        border.append(&mut make_border_entity(&Border::Left));
+        border.append(&mut make_sidewalk_entity(&Border::Left));
     }
 
     if !is_road(&Parcel(parcel.0 + 1, parcel.1), roads_data) {
-        border.append(&mut make_border_entity(&Border::Right))
+        border.append(&mut make_sidewalk_entity(&Border::Right))
     }
 
     if !is_road(&Parcel(parcel.0, parcel.1 - 1), roads_data) {
-        border.append(&mut make_border_entity(&Border::Bottom))
+        border.append(&mut make_sidewalk_entity(&Border::Bottom))
     }
 
     if !is_road(&Parcel(parcel.0, parcel.1 + 1), roads_data) {
-        border.append(&mut make_border_entity(&Border::Top))
+        border.append(&mut make_sidewalk_entity(&Border::Top))
     }
 
     border
 }
 
-fn make_border_entity(border: &Border) -> Vec<dcl2d_ecs_v1::Entity> {
+fn make_sidewalk_entity(border: &Border) -> Vec<dcl2d_ecs_v1::Entity> {
     let mut entities = Vec::new();
 
     let total_tiles = match border {
-        Border::Left => PARCEL_SIZE_Y as i32 / TILE_SIZE.1,
-        Border::Right => PARCEL_SIZE_Y as i32 / TILE_SIZE.1,
-        Border::Top => PARCEL_SIZE_X as i32 / TILE_SIZE.0,
-        Border::Bottom => PARCEL_SIZE_X as i32 / TILE_SIZE.0,
+        Border::Left => PARCEL_SIZE_Y as i32 / (TILE_SIZE.1 * 2),
+        Border::Right => PARCEL_SIZE_Y as i32 / (TILE_SIZE.1 * 2),
+        Border::Top => PARCEL_SIZE_X as i32 / (TILE_SIZE.0 * 2),
+        Border::Bottom => PARCEL_SIZE_X as i32 / (TILE_SIZE.0 * 2),
     };
 
     for i in 1..total_tiles - 1 {
         let location_x = match border {
             Border::Left => PARCEL_SIZE_X as i32 / -2,
             Border::Right => PARCEL_SIZE_X as i32 / 2,
-            Border::Top => TILE_SIZE.0 * i - PARCEL_SIZE_X as i32 / 2,
-            Border::Bottom => TILE_SIZE.0 * i - PARCEL_SIZE_X as i32 / 2,
+            Border::Top => TILE_SIZE.0 * 2 * i - PARCEL_SIZE_X as i32 / 2,
+            Border::Bottom => TILE_SIZE.0 * 2 * i - PARCEL_SIZE_X as i32 / 2,
         };
 
         let location_y = match border {
-            Border::Left => TILE_SIZE.1 * i - PARCEL_SIZE_Y as i32 / 2,
-            Border::Right => TILE_SIZE.1 * i - PARCEL_SIZE_Y as i32 / 2,
+            Border::Left => TILE_SIZE.1 * 2 * i - PARCEL_SIZE_Y as i32 / 2,
+            Border::Right => TILE_SIZE.1 * 2 * i - PARCEL_SIZE_Y as i32 / 2,
             Border::Top => PARCEL_SIZE_Y as i32 / 2,
             Border::Bottom => PARCEL_SIZE_Y as i32 / -2,
         };
@@ -219,7 +554,7 @@ fn make_border_entity(border: &Border) -> Vec<dcl2d_ecs_v1::Entity> {
         };
 
         let entity = dcl2d_ecs_v1::Entity {
-            name: "Border".to_string(),
+            name: "Sidewalk".to_string(),
             components: vec![Box::new(renderer), Box::new(transform)],
             ..default()
         };
@@ -232,8 +567,8 @@ fn make_border_entity(border: &Border) -> Vec<dcl2d_ecs_v1::Entity> {
 
 fn make_corners(roads_data: &RoadsData, parcel: &Parcel) -> Vec<dcl2d_ecs_v1::Entity> {
     let mut corner_entities = Vec::new();
-    let top_left_corner = get_corner_type(roads_data, parcel, CornerPosition::TopLeft);
 
+    let top_left_corner = get_corner_type(roads_data, parcel, CornerPosition::TopLeft);
     match make_corner_entity(&top_left_corner, &CornerPosition::TopLeft) {
         Some(v) => corner_entities.push(v),
         None => {}

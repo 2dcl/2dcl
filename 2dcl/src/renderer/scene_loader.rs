@@ -38,11 +38,11 @@ impl Plugin for SceneLoaderPlugin {
     fn build(&self, app: &mut App) {
         app.insert_resource(DownloadQueue::default())
             .add_system(level_changer)
-            .add_system(scene_manager)
-            .add_system(scene_downloader)
-            .add_system(downloading_scenes_task_handler)
-            .add_system(loading_sprites_tasks_handler)
-            .add_system(default_scenes_despawner);
+            .add_system(scene_manager.after(level_changer))
+            .add_system(scene_downloader.after(scene_manager))
+            .add_system(downloading_scenes_task_handler.after(scene_downloader))
+            .add_system(default_scenes_despawner.after(downloading_scenes_task_handler))
+            .add_system(loading_sprites_tasks_handler.after(default_scenes_despawner));
     }
 }
 
