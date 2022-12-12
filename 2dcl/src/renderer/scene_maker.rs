@@ -124,15 +124,15 @@ pub fn make_road_scene(roads_data: &RoadsData, parcel: &Parcel) -> Result<SceneD
     path.push("roads");
 
     let scene = dcl2d_ecs_v1::Scene {
-      name: format!("Road {} - {}", &parcel.0, &parcel.1),
-      levels: vec![level],
-      ..default()
+        name: format!("Road {} - {}", &parcel.0, &parcel.1),
+        levels: vec![level],
+        ..default()
     };
 
-    let scene_data = SceneData{ 
-      scene,
-      parcels: vec![parcel.clone()],
-      path
+    let scene_data = SceneData {
+        scene,
+        parcels: vec![parcel.clone()],
+        path,
     };
 
     Ok(scene_data)
@@ -231,16 +231,15 @@ fn make_border_entity(border: &Border) -> Vec<dcl2d_ecs_v1::Entity> {
 }
 
 fn make_corners(roads_data: &RoadsData, parcel: &Parcel) -> Vec<dcl2d_ecs_v1::Entity> {
-    
-  let mut corner_entities = Vec::new();
-  let top_left_corner = get_corner_type(roads_data, parcel, CornerPosition::TopLeft);
-  
-  match make_corner_entity(&top_left_corner, &CornerPosition::TopLeft) {
-      Some(v) => corner_entities.push(v),
-      None => {}
-  }
+    let mut corner_entities = Vec::new();
+    let top_left_corner = get_corner_type(roads_data, parcel, CornerPosition::TopLeft);
 
-  let top_right_corner = get_corner_type(roads_data, parcel, CornerPosition::TopRight);
+    match make_corner_entity(&top_left_corner, &CornerPosition::TopLeft) {
+        Some(v) => corner_entities.push(v),
+        None => {}
+    }
+
+    let top_right_corner = get_corner_type(roads_data, parcel, CornerPosition::TopRight);
     match make_corner_entity(&top_right_corner, &CornerPosition::TopRight) {
         Some(v) => corner_entities.push(v),
         None => {}
@@ -433,241 +432,239 @@ fn make_road_background_entities() -> Vec<dcl2d_ecs_v1::Entity> {
 }
 
 fn make_default_background_entities() -> Vec<dcl2d_ecs_v1::Entity> {
-  let mut entities = Vec::new();
-  let total_tiles_x = PARCEL_SIZE_X as i32 / TILE_SIZE.0;
-  let total_tiles_y = PARCEL_SIZE_Y as i32 / TILE_SIZE.1;
-  let mut rng = rand::thread_rng();
-  let mut bg_files = Vec::default();
-  let bg_path =
-    std::fs::read_dir("./assets/default_scene/assets/".to_string() + DEFAULT_BACKGROUND_PATH)
-      .unwrap();
+    let mut entities = Vec::new();
+    let total_tiles_x = PARCEL_SIZE_X as i32 / TILE_SIZE.0;
+    let total_tiles_y = PARCEL_SIZE_Y as i32 / TILE_SIZE.1;
+    let mut rng = rand::thread_rng();
+    let mut bg_files = Vec::default();
+    let bg_path =
+        std::fs::read_dir("./assets/default_scene/assets/".to_string() + DEFAULT_BACKGROUND_PATH)
+            .unwrap();
 
-  for path in bg_path.flatten() {
-    if let Some(str) = path.file_name().to_str() {
-      bg_files.push(DEFAULT_BACKGROUND_PATH.to_string() + "/" + str);
-  }
-  }
+    for path in bg_path.flatten() {
+        if let Some(str) = path.file_name().to_str() {
+            bg_files.push(DEFAULT_BACKGROUND_PATH.to_string() + "/" + str);
+        }
+    }
 
-  for x in 0..total_tiles_x {
-      for y in 0..total_tiles_y {
-          let random_bg_index: usize = rng.gen_range(0..bg_files.len() - 1);
-          let renderer = dcl2d_ecs_v1::components::SpriteRenderer {
-              sprite: bg_files[random_bg_index].clone(),
-              layer: -3,
-              anchor: dcl2d_ecs_v1::Anchor::BottomLeft,
-              ..default()
-          };
+    for x in 0..total_tiles_x {
+        for y in 0..total_tiles_y {
+            let random_bg_index: usize = rng.gen_range(0..bg_files.len() - 1);
+            let renderer = dcl2d_ecs_v1::components::SpriteRenderer {
+                sprite: bg_files[random_bg_index].clone(),
+                layer: -3,
+                anchor: dcl2d_ecs_v1::Anchor::BottomLeft,
+                ..default()
+            };
 
-          let location_x = TILE_SIZE.0 * x - PARCEL_SIZE_X as i32 / 2;
-          let location_y = TILE_SIZE.1 * y - PARCEL_SIZE_Y as i32 / 2;
-          let transform = dcl2d_ecs_v1::components::Transform {
-              location: dcl2d_ecs_v1::Vec2 {
-                  x: location_x,
-                  y: location_y,
-              },
-              rotation: dcl2d_ecs_v1::Vec3 {
-                  x: 0.0,
-                  y: 0.0,
-                  z: 0.0,
-              },
-              scale: dcl2d_ecs_v1::Vec2 { x: 1.0, y: 1.0 },
-          };
+            let location_x = TILE_SIZE.0 * x - PARCEL_SIZE_X as i32 / 2;
+            let location_y = TILE_SIZE.1 * y - PARCEL_SIZE_Y as i32 / 2;
+            let transform = dcl2d_ecs_v1::components::Transform {
+                location: dcl2d_ecs_v1::Vec2 {
+                    x: location_x,
+                    y: location_y,
+                },
+                rotation: dcl2d_ecs_v1::Vec3 {
+                    x: 0.0,
+                    y: 0.0,
+                    z: 0.0,
+                },
+                scale: dcl2d_ecs_v1::Vec2 { x: 1.0, y: 1.0 },
+            };
 
-          entities.push(dcl2d_ecs_v1::Entity {
-              name: "Background".to_string(),
-              components: vec![Box::new(renderer), Box::new(transform)],
-              ..default()
-          });
-      }
-  }
+            entities.push(dcl2d_ecs_v1::Entity {
+                name: "Background".to_string(),
+                components: vec![Box::new(renderer), Box::new(transform)],
+                ..default()
+            });
+        }
+    }
 
-  entities
+    entities
 }
 
 fn make_default_random_entities() -> Vec<dcl2d_ecs_v1::Entity> {
-  let mut entities = Vec::new();
-  let mut rng = rand::thread_rng();
+    let mut entities = Vec::new();
+    let mut rng = rand::thread_rng();
 
-  let no_collision_paths = std::fs::read_dir(
-      "./assets/default_scene/assets/".to_string() + DEFAULT_RANDOM_NO_COLLISION,
-  )
-  .unwrap();
-  let mut no_collision_obstacles = Vec::default();
+    let no_collision_paths = std::fs::read_dir(
+        "./assets/default_scene/assets/".to_string() + DEFAULT_RANDOM_NO_COLLISION,
+    )
+    .unwrap();
+    let mut no_collision_obstacles = Vec::default();
 
-  let small_collision_paths = std::fs::read_dir(
-      "./assets/default_scene/assets/".to_string() + DEFAULT_RANDOM_OBSTACLE_SIZE_1,
-  )
-  .unwrap();
-  let mut small_collision_obstacles = Vec::default();
+    let small_collision_paths = std::fs::read_dir(
+        "./assets/default_scene/assets/".to_string() + DEFAULT_RANDOM_OBSTACLE_SIZE_1,
+    )
+    .unwrap();
+    let mut small_collision_obstacles = Vec::default();
 
-  let big_collision_paths = std::fs::read_dir(
-      "./assets/default_scene/assets/".to_string() + DEFAULT_RANDOM_OBSTACLE_SIZE_2,
-  )
-  .unwrap();
-  let mut big_collision_obstacles = Vec::default();
+    let big_collision_paths = std::fs::read_dir(
+        "./assets/default_scene/assets/".to_string() + DEFAULT_RANDOM_OBSTACLE_SIZE_2,
+    )
+    .unwrap();
+    let mut big_collision_obstacles = Vec::default();
 
-  for path in no_collision_paths.flatten() {
-    if let Some(str) = path.file_name().to_str() {
-      no_collision_obstacles.push(DEFAULT_RANDOM_NO_COLLISION.to_string() + "/" + str);
-    }
-  }
-
-  for path in small_collision_paths.flatten() {
-    if let Some(str) = path.file_name().to_str() {
-      small_collision_obstacles
-        .push(DEFAULT_RANDOM_OBSTACLE_SIZE_1.to_string() + "/" + str);
-    }
-  }
-
-  for path in big_collision_paths.flatten() {
-    if let Some(str) = path.file_name().to_str() {
-      big_collision_obstacles
-        .push(DEFAULT_RANDOM_OBSTACLE_SIZE_2.to_string() + "/" + str);
-    }
-  }
-
-  for random_stuff in no_collision_obstacles {
-    if rng.gen_bool(0.5) {
-      if let Ok(mut base_path) = PathBuf::from_str("./assets/default_scene/assets/") {
-        base_path.push(&random_stuff);
-        let png_files = std::fs::read_dir(base_path).unwrap();
-
-        let location_x = rng.gen_range(PARCEL_SIZE_X as i32 / -2..PARCEL_SIZE_X as i32 / 2);
-        let location_y = rng.gen_range(PARCEL_SIZE_Y as i32 / -2..PARCEL_SIZE_Y as i32 / 2);
-        let transform = dcl2d_ecs_v1::components::Transform {
-          location: dcl2d_ecs_v1::Vec2 {
-            x: location_x,
-            y: location_y,
-          },
-          rotation: dcl2d_ecs_v1::Vec3 {
-            x: 0.0,
-            y: 0.0,
-            z: 0.0,
-          },
-          scale: dcl2d_ecs_v1::Vec2 { x: 1.0, y: 1.0 },
-        };
-
-        for png_file in png_files.flatten() {
-          if let Some(png_file_str) = png_file.file_name().to_str() {
-            let renderer = dcl2d_ecs_v1::components::SpriteRenderer {
-              sprite: random_stuff.clone() + "/" + png_file_str,
-              ..default()
-            };
-
-            entities.push(dcl2d_ecs_v1::Entity {
-              name: png_file_str.to_string(),
-              components: vec![Box::new(renderer), Box::new(transform.clone())],
-              ..default()
-            });
-          }
+    for path in no_collision_paths.flatten() {
+        if let Some(str) = path.file_name().to_str() {
+            no_collision_obstacles.push(DEFAULT_RANDOM_NO_COLLISION.to_string() + "/" + str);
         }
-      }
     }
-  }
 
-  for random_stuff in small_collision_obstacles {
-    if rng.gen_bool(0.5) {
-      if let Ok(mut base_path) = PathBuf::from_str("./assets/default_scene/assets/") {
-        base_path.push(&random_stuff);
-        let png_files = std::fs::read_dir(base_path).unwrap();
-
-        let location_x = rng.gen_range(PARCEL_SIZE_X as i32 / -2..PARCEL_SIZE_X as i32 / 2);
-        let location_y = rng.gen_range(PARCEL_SIZE_Y as i32 / -2..PARCEL_SIZE_Y as i32 / 2);
-        let transform = dcl2d_ecs_v1::components::Transform {
-          location: dcl2d_ecs_v1::Vec2 {
-            x: location_x,
-            y: location_y,
-          },
-          rotation: dcl2d_ecs_v1::Vec3 {
-            x: 0.0,
-            y: 0.0,
-            z: 0.0,
-          },
-          scale: dcl2d_ecs_v1::Vec2 { x: 1.0, y: 1.0 },
-        };
-
-        let box_collision = dcl2d_ecs_v1::components::BoxCollider {
-          collision_type: dcl2d_ecs_v1::collision_type::CollisionType::Solid,
-          center: dcl2d_ecs_v1::Vec2 { x: 0, y: 0 },
-          size: dcl2d_ecs_v1::Size {
-            width: 50,
-            height: 50,
-          },
-        };
-
-        for png_file in png_files.flatten() {
-          if let Some(png_file_str) = png_file.file_name().to_str() {
-            let renderer = dcl2d_ecs_v1::components::SpriteRenderer {
-              sprite: random_stuff.clone() + "/" + png_file_str,
-              ..default()
-            };
-
-            entities.push(dcl2d_ecs_v1::Entity {
-              name: png_file_str.to_string(),
-              components: vec![
-                Box::new(renderer),
-                Box::new(transform.clone()),
-                Box::new(box_collision.clone()),
-              ],
-              ..default()
-            });
-          } 
+    for path in small_collision_paths.flatten() {
+        if let Some(str) = path.file_name().to_str() {
+            small_collision_obstacles.push(DEFAULT_RANDOM_OBSTACLE_SIZE_1.to_string() + "/" + str);
         }
-      }
     }
-  }
 
-  for random_stuff in big_collision_obstacles {
-      if rng.gen_bool(0.5) {
-          if let Ok(mut base_path) = PathBuf::from_str("./assets/default_scene/assets/") {
-              base_path.push(&random_stuff);
-              let png_files = std::fs::read_dir(base_path).unwrap();
-              let location_x = rng.gen_range(PARCEL_SIZE_X as i32 / -2..PARCEL_SIZE_X as i32 / 2);
-              let location_y = rng.gen_range(PARCEL_SIZE_Y as i32 / -2..PARCEL_SIZE_Y as i32 / 2);
-              let transform = dcl2d_ecs_v1::components::Transform {
-                  location: dcl2d_ecs_v1::Vec2 {
-                      x: location_x,
-                      y: location_y,
-                  },
-                  rotation: dcl2d_ecs_v1::Vec3 {
-                      x: 0.0,
-                      y: 0.0,
-                      z: 0.0,
-                  },
-                  scale: dcl2d_ecs_v1::Vec2 { x: 1.0, y: 1.0 },
-              };
+    for path in big_collision_paths.flatten() {
+        if let Some(str) = path.file_name().to_str() {
+            big_collision_obstacles.push(DEFAULT_RANDOM_OBSTACLE_SIZE_2.to_string() + "/" + str);
+        }
+    }
 
-              let box_collision = dcl2d_ecs_v1::components::BoxCollider {
-                  collision_type: dcl2d_ecs_v1::collision_type::CollisionType::Solid,
-                  center: dcl2d_ecs_v1::Vec2 { x: 0, y: 0 },
-                  size: dcl2d_ecs_v1::Size {
-                      width: 100,
-                      height: 100,
-                  },
-              };
+    for random_stuff in no_collision_obstacles {
+        if rng.gen_bool(0.5) {
+            if let Ok(mut base_path) = PathBuf::from_str("./assets/default_scene/assets/") {
+                base_path.push(&random_stuff);
+                let png_files = std::fs::read_dir(base_path).unwrap();
 
-              for png_file in png_files.flatten() {
-                  if let Some(png_file_str) = png_file.file_name().to_str() {
-                      let renderer = dcl2d_ecs_v1::components::SpriteRenderer {
-                          sprite: random_stuff.clone() + "/" + png_file_str,
-                          ..default()
-                      };
+                let location_x = rng.gen_range(PARCEL_SIZE_X as i32 / -2..PARCEL_SIZE_X as i32 / 2);
+                let location_y = rng.gen_range(PARCEL_SIZE_Y as i32 / -2..PARCEL_SIZE_Y as i32 / 2);
+                let transform = dcl2d_ecs_v1::components::Transform {
+                    location: dcl2d_ecs_v1::Vec2 {
+                        x: location_x,
+                        y: location_y,
+                    },
+                    rotation: dcl2d_ecs_v1::Vec3 {
+                        x: 0.0,
+                        y: 0.0,
+                        z: 0.0,
+                    },
+                    scale: dcl2d_ecs_v1::Vec2 { x: 1.0, y: 1.0 },
+                };
 
-                      entities.push(dcl2d_ecs_v1::Entity {
-                          name: png_file_str.to_string(),
-                          components: vec![
-                              Box::new(renderer),
-                              Box::new(transform.clone()),
-                              Box::new(box_collision.clone()),
-                          ],
-                          ..default()
-                      });
-                  }
-              }
-          }
-      }
-  }
-  entities
+                for png_file in png_files.flatten() {
+                    if let Some(png_file_str) = png_file.file_name().to_str() {
+                        let renderer = dcl2d_ecs_v1::components::SpriteRenderer {
+                            sprite: random_stuff.clone() + "/" + png_file_str,
+                            ..default()
+                        };
+
+                        entities.push(dcl2d_ecs_v1::Entity {
+                            name: png_file_str.to_string(),
+                            components: vec![Box::new(renderer), Box::new(transform.clone())],
+                            ..default()
+                        });
+                    }
+                }
+            }
+        }
+    }
+
+    for random_stuff in small_collision_obstacles {
+        if rng.gen_bool(0.5) {
+            if let Ok(mut base_path) = PathBuf::from_str("./assets/default_scene/assets/") {
+                base_path.push(&random_stuff);
+                let png_files = std::fs::read_dir(base_path).unwrap();
+
+                let location_x = rng.gen_range(PARCEL_SIZE_X as i32 / -2..PARCEL_SIZE_X as i32 / 2);
+                let location_y = rng.gen_range(PARCEL_SIZE_Y as i32 / -2..PARCEL_SIZE_Y as i32 / 2);
+                let transform = dcl2d_ecs_v1::components::Transform {
+                    location: dcl2d_ecs_v1::Vec2 {
+                        x: location_x,
+                        y: location_y,
+                    },
+                    rotation: dcl2d_ecs_v1::Vec3 {
+                        x: 0.0,
+                        y: 0.0,
+                        z: 0.0,
+                    },
+                    scale: dcl2d_ecs_v1::Vec2 { x: 1.0, y: 1.0 },
+                };
+
+                let box_collision = dcl2d_ecs_v1::components::BoxCollider {
+                    collision_type: dcl2d_ecs_v1::collision_type::CollisionType::Solid,
+                    center: dcl2d_ecs_v1::Vec2 { x: 0, y: 0 },
+                    size: dcl2d_ecs_v1::Size {
+                        width: 50,
+                        height: 50,
+                    },
+                };
+
+                for png_file in png_files.flatten() {
+                    if let Some(png_file_str) = png_file.file_name().to_str() {
+                        let renderer = dcl2d_ecs_v1::components::SpriteRenderer {
+                            sprite: random_stuff.clone() + "/" + png_file_str,
+                            ..default()
+                        };
+
+                        entities.push(dcl2d_ecs_v1::Entity {
+                            name: png_file_str.to_string(),
+                            components: vec![
+                                Box::new(renderer),
+                                Box::new(transform.clone()),
+                                Box::new(box_collision.clone()),
+                            ],
+                            ..default()
+                        });
+                    }
+                }
+            }
+        }
+    }
+
+    for random_stuff in big_collision_obstacles {
+        if rng.gen_bool(0.5) {
+            if let Ok(mut base_path) = PathBuf::from_str("./assets/default_scene/assets/") {
+                base_path.push(&random_stuff);
+                let png_files = std::fs::read_dir(base_path).unwrap();
+                let location_x = rng.gen_range(PARCEL_SIZE_X as i32 / -2..PARCEL_SIZE_X as i32 / 2);
+                let location_y = rng.gen_range(PARCEL_SIZE_Y as i32 / -2..PARCEL_SIZE_Y as i32 / 2);
+                let transform = dcl2d_ecs_v1::components::Transform {
+                    location: dcl2d_ecs_v1::Vec2 {
+                        x: location_x,
+                        y: location_y,
+                    },
+                    rotation: dcl2d_ecs_v1::Vec3 {
+                        x: 0.0,
+                        y: 0.0,
+                        z: 0.0,
+                    },
+                    scale: dcl2d_ecs_v1::Vec2 { x: 1.0, y: 1.0 },
+                };
+
+                let box_collision = dcl2d_ecs_v1::components::BoxCollider {
+                    collision_type: dcl2d_ecs_v1::collision_type::CollisionType::Solid,
+                    center: dcl2d_ecs_v1::Vec2 { x: 0, y: 0 },
+                    size: dcl2d_ecs_v1::Size {
+                        width: 100,
+                        height: 100,
+                    },
+                };
+
+                for png_file in png_files.flatten() {
+                    if let Some(png_file_str) = png_file.file_name().to_str() {
+                        let renderer = dcl2d_ecs_v1::components::SpriteRenderer {
+                            sprite: random_stuff.clone() + "/" + png_file_str,
+                            ..default()
+                        };
+
+                        entities.push(dcl2d_ecs_v1::Entity {
+                            name: png_file_str.to_string(),
+                            components: vec![
+                                Box::new(renderer),
+                                Box::new(transform.clone()),
+                                Box::new(box_collision.clone()),
+                            ],
+                            ..default()
+                        });
+                    }
+                }
+            }
+        }
+    }
+    entities
 }
 
 pub fn read_roads_data() -> Result<RoadsData> {

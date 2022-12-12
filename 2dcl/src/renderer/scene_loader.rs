@@ -51,10 +51,7 @@ pub fn level_changer(
     mut collision_map: ResMut<CollisionMap>,
     asset_server: Res<AssetServer>,
     mut player_query: Query<(&mut PlayerComponent, &mut GlobalTransform)>,
-    scene_query: Query<(
-        Entity,
-        &mut crate::components::Scene,
-    )>,
+    scene_query: Query<(Entity, &mut crate::components::Scene)>,
     level_query: Query<(Entity, &crate::components::Level, &Parent)>,
 ) {
     //Find the player
@@ -187,7 +184,7 @@ pub fn scene_downloader(
     if download_queue.parcels.is_empty() {
         return;
     }
- 
+
     //Download scenes
     let thread_pool = AsyncComputeTaskPool::get();
     let parcels_to_download = download_queue.parcels.clone();
@@ -298,7 +295,6 @@ pub fn world_location_to_parcel(location: &Vec3) -> Parcel {
         (location.y / PARCEL_SIZE_Y).round() as i16,
     )
 }
-
 
 #[tokio::main]
 pub async fn download_parcels(
@@ -412,180 +408,181 @@ pub async fn download_parcels(
 }
 
 #[tokio::main]
-pub async fn download_level_spawn_point(
-  parcel: &Parcel,
-  level_id: usize,
-) -> Vec3 {
+pub async fn download_level_spawn_point(parcel: &Parcel, level_id: usize) -> Vec3 {
+    let server = Server::production();
+    let scene_files =
+        match ContentClient::scene_files_for_parcels(&server, &vec![parcel.clone()]).await {
+            Ok(v) => v,
+            Err(_) => {
+                let scene_data = SceneData {
+                    parcels: vec![parcel.clone()],
+                    ..default()
+                };
+                return get_scene_center_location(&scene_data);
+            }
+        };
 
-  let server = Server::production();
-  let scene_files = match ContentClient::scene_files_for_parcels(&server, &vec![parcel.clone()]).await
-  {
-    Ok(v) => v,
-    Err(_) => 
-    {  
-      let scene_data = SceneData{ 
-      parcels: vec![parcel.clone()], 
-      ..default()};
-      return get_scene_center_location(&scene_data);
-    },
-  };
- 
-  for scene_file in scene_files {
-      let path_str = "./assets/scenes/".to_string() + &scene_file.id.to_string();
-      let scene_path = Path::new(&path_str);
-      let mut downloadable_json: Option<ContentFile> = None;
-      let mut downloadable_2dcl: Option<ContentFile> = None;
+    for scene_file in scene_files {
+        let path_str = "./assets/scenes/".to_string() + &scene_file.id.to_string();
+        let scene_path = Path::new(&path_str);
+        let mut downloadable_json: Option<ContentFile> = None;
+        let mut downloadable_2dcl: Option<ContentFile> = None;
 
-      for downloadable in scene_file.clone().content {
-          if downloadable
-              .filename
-              .to_str()
-              .unwrap()
-              .ends_with("scene.2dcl")
-          {
-              downloadable_2dcl = Some(downloadable);
-              if downloadable_json.is_some() {
-                  break;
-              }
-          } else if downloadable
-              .filename
-              .to_str()
-              .unwrap()
-              .ends_with("scene.json")
-          {
-              downloadable_json = Some(downloadable);
-              if downloadable_2dcl.is_some() {
-                  break;
-              }
-          }
-      }
+        for downloadable in scene_file.clone().content {
+            if downloadable
+                .filename
+                .to_str()
+                .unwrap()
+                .ends_with("scene.2dcl")
+            {
+                downloadable_2dcl = Some(downloadable);
+                if downloadable_json.is_some() {
+                    break;
+                }
+            } else if downloadable
+                .filename
+                .to_str()
+                .unwrap()
+                .ends_with("scene.json")
+            {
+                downloadable_json = Some(downloadable);
+                if downloadable_2dcl.is_some() {
+                    break;
+                }
+            }
+        }
 
-      if !scene_path.exists() {
-          if fs::create_dir_all(format!("./assets/scenes/{}", scene_file.id)).is_err()
-          {
+        if !scene_path.exists()
+            && fs::create_dir_all(format!("./assets/scenes/{}", scene_file.id)).is_err()
+        {
             continue;
-          }
-      }
+        }
 
-      if let (Some(downloadable_json), Some(downloadable_2dcl)) =
-          (downloadable_json, downloadable_2dcl)
-      {
-          let filename = format!(
-              "./assets/scenes/{}/{}-temp",
-              scene_file.id,
-              downloadable_json.filename.to_str().unwrap()
-          );
+        if let (Some(downloadable_json), Some(downloadable_2dcl)) =
+            (downloadable_json, downloadable_2dcl)
+        {
+            let filename = format!(
+                "./assets/scenes/{}/{}-temp",
+                scene_file.id,
+                downloadable_json.filename.to_str().unwrap()
+            );
 
-          println!("Downloading {}", filename);
-          if ContentClient::download(&server, downloadable_json.cid, &filename).await.is_err()
-          {
-            continue;
-          }
-
-          if let Ok(scene_3d) = read_3dcl_scene(filename) {
-              let filename = format!(
-                  "./assets/scenes/{}/{}-temp",
-                  scene_file.id,
-                  downloadable_2dcl.filename.to_str().unwrap()
-              );
-
-    
             println!("Downloading {}", filename);
-            if ContentClient::download(&server, downloadable_2dcl.cid, &filename).await.is_err()
+            if ContentClient::download(&server, downloadable_json.cid, &filename)
+                .await
+                .is_err()
             {
-              continue;
+                continue;
             }
 
-            if let Some(scene_2d) = read_scene_file(filename)
-            {
-              let scene_data = SceneData{ 
-                scene: scene_2d, 
-                parcels: scene_3d.scene.parcels, 
-                ..default()};
-             
-              let scene_center = get_scene_center_location(&scene_data);
-              return match level_id < scene_data.scene.levels.len()
-              {
-                true => {
-                  let  spawn_point= scene_data.scene.levels[level_id].spawn_point.clone();
-                  Vec3{x:spawn_point.x as f32 + scene_center.x,y:spawn_point.y as f32 + scene_center.y,z:(spawn_point.y as f32 + scene_center.y)*-1.0}
-                },
-                false => scene_center,
-              };   
-            }
-          }
-      }
-  }
- 
-  let scene_data = SceneData{ 
-    parcels: vec![parcel.clone()], 
-    ..default()};
+            if let Ok(scene_3d) = read_3dcl_scene(filename) {
+                let filename = format!(
+                    "./assets/scenes/{}/{}-temp",
+                    scene_file.id,
+                    downloadable_2dcl.filename.to_str().unwrap()
+                );
 
-  get_scene_center_location(&scene_data)
-  
+                println!("Downloading {}", filename);
+                if ContentClient::download(&server, downloadable_2dcl.cid, &filename)
+                    .await
+                    .is_err()
+                {
+                    continue;
+                }
+
+                if let Some(scene_2d) = read_scene_file(filename) {
+                    let scene_data = SceneData {
+                        scene: scene_2d,
+                        parcels: scene_3d.scene.parcels,
+                        ..default()
+                    };
+
+                    let scene_center = get_scene_center_location(&scene_data);
+                    return match level_id < scene_data.scene.levels.len() {
+                        true => {
+                            let spawn_point = scene_data.scene.levels[level_id].spawn_point.clone();
+                            Vec3 {
+                                x: spawn_point.x as f32 + scene_center.x,
+                                y: spawn_point.y as f32 + scene_center.y,
+                                z: (spawn_point.y as f32 + scene_center.y) * -1.0,
+                            }
+                        }
+                        false => scene_center,
+                    };
+                }
+            }
+        }
+    }
+
+    let scene_data = SceneData {
+        parcels: vec![parcel.clone()],
+        ..default()
+    };
+
+    get_scene_center_location(&scene_data)
 }
 
 pub fn loading_sprites_tasks_handler(
-  mut commands: Commands,
-  mut tasks_loading_sprite: Query<(Entity, &mut LoadingSprite)>,
+    mut commands: Commands,
+    mut tasks_loading_sprite: Query<(Entity, &mut LoadingSprite)>,
 ) {
-  for (entity, mut loading_sprite) in &mut tasks_loading_sprite {
-      if let Some(loading_sprite_data) =
-          future::block_on(future::poll_once(&mut loading_sprite.task))
-      {   
-          commands.entity(entity).insert(loading_sprite_data.image);
-          commands.entity(entity).insert(loading_sprite_data.sprite);
-          commands.entity(entity).remove::<LoadingSprite>();
-      }
-  }
+    for (entity, mut loading_sprite) in &mut tasks_loading_sprite {
+        if let Some(loading_sprite_data) =
+            future::block_on(future::poll_once(&mut loading_sprite.task))
+        {
+            commands.entity(entity).insert(loading_sprite_data.image);
+            commands.entity(entity).insert(loading_sprite_data.sprite);
+            commands.entity(entity).remove::<LoadingSprite>();
+        }
+    }
 }
 
 fn downloading_scenes_task_handler(
-  mut commands: Commands,
-  mut collision_map: ResMut<CollisionMap>,
-  mut roads_data: ResMut<RoadsData>,
-  mut scene_files_map: ResMut<SceneFilesMap>,
-  asset_server: Res<AssetServer>,
-  mut tasks_downloading_scenes: Query<(Entity, &mut DownloadingScene)>,
-  scenes_query: Query<(Entity, &crate::components::Scene)>,
+    mut commands: Commands,
+    mut collision_map: ResMut<CollisionMap>,
+    mut roads_data: ResMut<RoadsData>,
+    mut scene_files_map: ResMut<SceneFilesMap>,
+    asset_server: Res<AssetServer>,
+    mut tasks_downloading_scenes: Query<(Entity, &mut DownloadingScene)>,
+    scenes_query: Query<(Entity, &crate::components::Scene)>,
 ) {
-  for (entity, mut downloading_scene) in &mut tasks_downloading_scenes {
-      if let Some(new_paths) =
-          future::block_on(future::poll_once(&mut downloading_scene.task))
-      {
-          commands.entity(entity).despawn_recursive();
+    for (entity, mut downloading_scene) in &mut tasks_downloading_scenes {
+        if let Some(new_paths) = future::block_on(future::poll_once(&mut downloading_scene.task)) {
+            commands.entity(entity).despawn_recursive();
 
-          if let Some(new_paths) = new_paths {
-              for new_path in new_paths {
-                  refresh_path(new_path.clone(), &mut scene_files_map);
-                  }
-              }
-
-
-          for (entity, scene) in &scenes_query {
-
-            for parcel_1 in &downloading_scene.parcels
-            {
-              for parcel_2 in &scene.parcels
-              {
-                if parcel_1 == parcel_2
-                {
-                  if let Some(scene_data) = get_scene(&mut roads_data, &scene_files_map, parcel_1)
-                  {
-                    if scene.timestamp != scene_data.scene.timestamp
-                    {
-                      commands.entity(entity).despawn_recursive();
-                      spawn_scene(&mut commands,&asset_server,&scene_data,&mut collision_map,0);
+            if let Some(new_paths) = new_paths {
+                for new_path in new_paths {
+                    match refresh_path(new_path.clone(), &mut scene_files_map) {
+                        Ok(_) => {}
+                        Err(e) => println!("{}", e),
                     }
-                  }
                 }
-              }
             }
-          }
-      }
-  }
 
-
+            for (entity, scene) in &scenes_query {
+                for parcel_1 in &downloading_scene.parcels {
+                    for parcel_2 in &scene.parcels {
+                        if parcel_1 == parcel_2 {
+                            if let Some(scene_data) =
+                                get_scene(&mut roads_data, &scene_files_map, parcel_1)
+                            {
+                                if scene.timestamp != scene_data.scene.timestamp {
+                                    commands.entity(entity).despawn_recursive();
+                                    spawn_scene(
+                                        &mut commands,
+                                        &asset_server,
+                                        &scene_data,
+                                        &mut collision_map,
+                                        0,
+                                    );
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
 }
 
 fn default_scenes_despawner(
@@ -593,29 +590,26 @@ fn default_scenes_despawner(
     scenes_query: Query<(Entity, &crate::components::Scene)>,
 ) {
     let mut entities_being_despawned = Vec::new();
-    
+
     for (entity_1, scene_1) in &scenes_query {
-      if entities_being_despawned.contains(&entity_1)
-      {
-        continue;
-      }
-      for (entity_2, scene_2) in &scenes_query {
-        if entities_being_despawned.contains(&entity_2)
-        {
-          continue;
+        if entities_being_despawned.contains(&entity_1) {
+            continue;
         }
+        for (entity_2, scene_2) in &scenes_query {
+            if entities_being_despawned.contains(&entity_2) {
+                continue;
+            }
             if entity_1 != entity_2
                 && (scene_1.name == "default_scene" || scene_2.name == "default_scene")
             {
-              'outer: for parcel_1 in &scene_1.parcels {
+                'outer: for parcel_1 in &scene_1.parcels {
                     for parcel_2 in &scene_2.parcels {
                         if *parcel_1 == *parcel_2 {
                             if scene_1.name == "default_scene" {
                                 entities_being_despawned.push(entity_1);
                                 commands.entity(entity_1).despawn_recursive();
                                 break 'outer;
-                            } 
-                            else if scene_2.name == "default_scene" {
+                            } else if scene_2.name == "default_scene" {
                                 entities_being_despawned.push(entity_2);
                                 commands.entity(entity_2).despawn_recursive();
                                 break 'outer;
@@ -642,13 +636,7 @@ fn spawn_default_scene(
         }
     };
 
-    spawn_scene(
-        commands,
-        asset_server,
-        &scene_data,
-        collision_map,
-        0,
-    );
+    spawn_scene(commands, asset_server, &scene_data, collision_map, 0);
 }
 
 pub fn spawn_level(
@@ -679,7 +667,10 @@ pub fn spawn_level(
             name: level.name.clone(),
             timestamp,
             id: level_id,
-            spawn_point: Vec2{x:level.spawn_point.x as f32,y:level.spawn_point.y as f32} 
+            spawn_point: Vec2 {
+                x: level.spawn_point.x as f32,
+                y: level.spawn_point.y as f32,
+            },
         });
 
     for entity in level.entities.iter() {
@@ -691,32 +682,29 @@ pub fn spawn_level(
     level_entity
 }
 
-
 pub fn get_parcel_spawn_point(
-  parcel: &Parcel,
-  level_id: usize,
-  roads_data: &mut RoadsData,
-  scene_files_map: &SceneFilesMap,
-) -> Vec3
-{
- match get_scene(roads_data, scene_files_map, parcel)
- {
-    Some(scene_data) => {
-      let scene_center = get_scene_center_location(&scene_data);
-      match level_id < scene_data.scene.levels.len()
-      {
-        true => {
-          let  spawn_point= scene_data.scene.levels[level_id].spawn_point.clone();
-          Vec3{x:spawn_point.x as f32 + scene_center.x,y:spawn_point.y as f32 + scene_center.y,z:(spawn_point.y as f32 + scene_center.y)*-1.0}
-          },
-        false => scene_center,
-      }   
-    },
-    None => 
-    {
-      download_level_spawn_point(parcel, level_id)
+    parcel: &Parcel,
+    level_id: usize,
+    roads_data: &mut RoadsData,
+    scene_files_map: &SceneFilesMap,
+) -> Vec3 {
+    match get_scene(roads_data, scene_files_map, parcel) {
+        Some(scene_data) => {
+            let scene_center = get_scene_center_location(&scene_data);
+            match level_id < scene_data.scene.levels.len() {
+                true => {
+                    let spawn_point = scene_data.scene.levels[level_id].spawn_point.clone();
+                    Vec3 {
+                        x: spawn_point.x as f32 + scene_center.x,
+                        y: spawn_point.y as f32 + scene_center.y,
+                        z: (spawn_point.y as f32 + scene_center.y) * -1.0,
+                    }
+                }
+                false => scene_center,
+            }
+        }
+        None => download_level_spawn_point(parcel, level_id),
     }
-  }
 }
 
 pub fn spawn_scene(
@@ -726,7 +714,6 @@ pub fn spawn_scene(
     collision_map: &mut CollisionMap,
     level_id: usize,
 ) -> Entity {
-
     let scene_location: Vec3 = get_scene_center_location(scene_data);
     let scene = &scene_data.scene;
     let mut scene_u8: Vec<u8> = Vec::new();
@@ -883,7 +870,6 @@ fn spawn_entity(
 
             commands.entity(spawned_entity).insert(transform);
 
-
             let thread_pool = AsyncComputeTaskPool::get();
             let mut image_path = scene_data.path.clone();
             image_path.push("assets");
@@ -892,17 +878,17 @@ fn spawn_entity(
             let asset_server_clone = asset_server.clone();
             let sprite_renderer_clone = sprite_renderer.clone();
             let task_load_sprite = thread_pool.spawn(async move {
-             
-            let mut sprite_path = std::fs::canonicalize(PathBuf::from_str(".").unwrap()).unwrap();
-            sprite_path.push(&image_path);
+                let mut sprite_path =
+                    std::fs::canonicalize(PathBuf::from_str(".").unwrap()).unwrap();
+                sprite_path.push(&image_path);
 
-            let image: Handle<Image> = asset_server_clone.load(image_path);
+                let image: Handle<Image> = asset_server_clone.load(image_path);
 
-            let image_size = match size(sprite_path) {
+                let image_size = match size(sprite_path) {
                     Ok(v) => Vec2::new(v.width as f32, v.height as f32),
                     Err(_) => Vec2::new(0.0, 0.0),
-                };  
-              
+                };
+
                 let sprite = Sprite {
                     color: Color::Rgba {
                         red: (sprite_renderer_clone).color.r,
@@ -910,18 +896,21 @@ fn spawn_entity(
                         blue: (sprite_renderer_clone).color.b,
                         alpha: (sprite_renderer_clone).color.a,
                     },
-                    anchor: entity_anchor_to_anchor((sprite_renderer_clone).anchor.clone(), image_size),
+                    anchor: entity_anchor_to_anchor(
+                        (sprite_renderer_clone).anchor.clone(),
+                        image_size,
+                    ),
                     flip_x: (sprite_renderer_clone).flip.x,
                     flip_y: (sprite_renderer_clone).flip.y,
                     ..default()
                 };
-                
-                LoadingSpriteData{sprite,image}
-              });
-              
-              commands.entity(spawned_entity).insert(LoadingSprite {
+
+                LoadingSpriteData { sprite, image }
+            });
+
+            commands.entity(spawned_entity).insert(LoadingSprite {
                 task: task_load_sprite,
-            }); 
+            });
         }
 
         if let Some(collider) = component
@@ -1047,6 +1036,6 @@ fn spawn_entity(
         commands
             .entity(spawned_entity)
             .add_child(spawned_child_entity);
-    } 
+    }
     spawned_entity
 }

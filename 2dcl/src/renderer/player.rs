@@ -36,9 +36,8 @@ impl Plugin for PlayerPlugin {
 fn spawn_player(
     mut commands: Commands,
     assets: Res<AssetServer>,
-    mut texture_atlases: ResMut<Assets<TextureAtlas>>
+    mut texture_atlases: ResMut<Assets<TextureAtlas>>,
 ) {
-
     let mut player_animator_path = std::env::current_exe().unwrap_or_default();
     player_animator_path.pop();
     player_animator_path.push("assets");

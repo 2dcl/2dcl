@@ -16,10 +16,9 @@ pub struct LoadingSprite {
     pub task: Task<LoadingSpriteData>,
 }
 
-pub struct LoadingSpriteData
-{
-  pub sprite: Sprite,
-  pub image: Handle<Image>
+pub struct LoadingSpriteData {
+    pub sprite: Sprite,
+    pub image: Handle<Image>,
 }
 
 #[derive(Debug, Component, Clone)]

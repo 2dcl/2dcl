@@ -89,16 +89,49 @@ fn scene_reload(
     mut collision_map: ResMut<CollisionMap>,
     mut player_query: Query<(&PlayerComponent, &mut Transform)>,
 ) {
-  if let Ok((player, mut player_transform)) = player_query.get_single_mut()
-  {
+    if let Ok((player, mut player_transform)) = player_query.get_single_mut() {
+        if let Some(scene) = scene_assets.get(&scene_handlers.0) {
+            if let Ok((entity, current_scene)) = scenes.get_single_mut() {
+                if scene.timestamp != current_scene.timestamp {
+                    commands.entity(entity).despawn_recursive();
+                    let timestamp = scene.timestamp;
+                    if let Some(mut scene) = read_scene_u8(&scene.bytes) {
+                        scene.timestamp = timestamp;
+                        let scene_data = SceneData {
+                            scene,
+                            parcels: vec![Parcel(0, 0)],
+                            path: PathBuf::from_str("../").unwrap(),
+                        };
 
-    if let Some(scene) = scene_assets.get(&scene_handlers.0) {
-        if let Ok((entity, current_scene)) = scenes.get_single_mut() {
-            if scene.timestamp != current_scene.timestamp {
-                commands.entity(entity).despawn_recursive();
+                        scene_loader::spawn_scene(
+                            &mut commands,
+                            &asset_server,
+                            &scene_data,
+                            &mut collision_map,
+                            player.current_level,
+                        );
+
+                        let scene_center = get_scene_center_location(&scene_data);
+                        player_transform.translation =
+                            match player.current_level < scene_data.scene.levels.len() {
+                                true => {
+                                    let spawn_point = scene_data.scene.levels[player.current_level]
+                                        .spawn_point
+                                        .clone();
+                                    Vec3 {
+                                        x: spawn_point.x as f32 + scene_center.x,
+                                        y: spawn_point.y as f32 + scene_center.y,
+                                        z: (spawn_point.y as f32 + scene_center.y) * -1.0,
+                                    }
+                                }
+                                false => scene_center,
+                            }
+                    }
+                }
+            } else {
                 let timestamp = scene.timestamp;
                 if let Some(mut scene) = read_scene_u8(&scene.bytes) {
-                  scene.timestamp = timestamp;
+                    scene.timestamp = timestamp;
                     let scene_data = SceneData {
                         scene,
                         parcels: vec![Parcel(0, 0)],
@@ -112,49 +145,26 @@ fn scene_reload(
                         &mut collision_map,
                         player.current_level,
                     );
-                    
+
                     let scene_center = get_scene_center_location(&scene_data);
-                    player_transform.translation = match player.current_level < scene_data.scene.levels.len()
-                    {
-                      true => {
-                        let  spawn_point= scene_data.scene.levels[player.current_level].spawn_point.clone();
-                        Vec3{x:spawn_point.x as f32 + scene_center.x,y:spawn_point.y as f32 + scene_center.y,z:(spawn_point.y as f32 + scene_center.y)*-1.0}
-                        },
-                      false => scene_center,
-                    }   
+                    player_transform.translation =
+                        match player.current_level < scene_data.scene.levels.len() {
+                            true => {
+                                let spawn_point = scene_data.scene.levels[player.current_level]
+                                    .spawn_point
+                                    .clone();
+                                Vec3 {
+                                    x: spawn_point.x as f32 + scene_center.x,
+                                    y: spawn_point.y as f32 + scene_center.y,
+                                    z: (spawn_point.y as f32 + scene_center.y) * -1.0,
+                                }
+                            }
+                            false => scene_center,
+                        }
                 }
-            }
-        } else {
-            let timestamp = scene.timestamp;
-            if let Some(mut scene) = read_scene_u8(&scene.bytes) {
-              scene.timestamp = timestamp;
-                let scene_data = SceneData {
-                    scene,
-                    parcels: vec![Parcel(0, 0)],
-                    path: PathBuf::from_str("../").unwrap(),
-                };
-
-                scene_loader::spawn_scene(
-                    &mut commands,
-                    &asset_server,
-                    &scene_data,
-                    &mut collision_map,
-                    player.current_level,
-                );
-
-                let scene_center = get_scene_center_location(&scene_data);
-                player_transform.translation = match player.current_level < scene_data.scene.levels.len()
-                {
-                  true => {
-                    let  spawn_point= scene_data.scene.levels[player.current_level].spawn_point.clone();
-                    Vec3{x:spawn_point.x as f32 + scene_center.x,y:spawn_point.y as f32 + scene_center.y,z:(spawn_point.y as f32 + scene_center.y)*-1.0}
-                    },
-                  false => scene_center,
-                }  
             }
         }
     }
-  }
 }
 
 pub fn level_change(
