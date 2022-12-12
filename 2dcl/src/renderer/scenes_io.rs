@@ -49,9 +49,17 @@ fn setup(mut commands: Commands) {
 fn get_scene_files_map() -> dcl_common::Result<SceneFilesMap> {
     let mut scene_files_map = SceneFilesMap::default();
 
-    let paths = std::fs::read_dir("./assets/scenes").unwrap();
+    let mut scenes_path = PathBuf::new();
+    scenes_path.push("assets");
+    scenes_path.push("scenes");
 
-    for path in paths.flatten() {
+    if !scenes_path.exists() {
+        std::fs::create_dir(&scenes_path)?;
+    }
+
+    let scenes_path = std::fs::read_dir(scenes_path).unwrap();
+
+    for path in scenes_path.flatten() {
         match refresh_path(path.path(), &mut scene_files_map) {
             Ok(_) => {}
             Err(e) => println!("{}", e),
