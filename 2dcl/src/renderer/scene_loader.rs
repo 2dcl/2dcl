@@ -34,25 +34,36 @@ pub struct DownloadQueue {
     parcels: Vec<Parcel>,
 }
 
+#[derive(Default)]
+pub struct DespawnedEntities {
+   pub entities: Vec<Entity>,
+}
+
 impl Plugin for SceneLoaderPlugin {
     fn build(&self, app: &mut App) {
         app.insert_resource(DownloadQueue::default())
+            .insert_resource(DespawnedEntities::default())
             .add_system(level_changer)
-            .add_system(scene_manager.after(level_changer))
-            .add_system(scene_downloader.after(scene_manager))
-            .add_system(downloading_scenes_task_handler.after(scene_downloader))
-            .add_system(default_scenes_despawner.after(downloading_scenes_task_handler))
-            .add_system(loading_sprites_tasks_handler.after(default_scenes_despawner));
+            .add_system(scene_manager)
+            .add_system(scene_downloader)
+            .add_system(downloading_scenes_task_handler)
+            .add_system(default_scenes_despawner)
+            .add_system(loading_sprites_tasks_handler
+              .after(level_changer)
+              .after(scene_manager)
+              .after(downloading_scenes_task_handler)
+              .after(default_scenes_despawner));
     }
 }
 
 pub fn level_changer(
     mut commands: Commands,
     mut collision_map: ResMut<CollisionMap>,
+    mut despawned_entities: ResMut<DespawnedEntities>,
     asset_server: Res<AssetServer>,
     mut player_query: Query<(&mut PlayerComponent, &mut GlobalTransform)>,
     scene_query: Query<(Entity, &mut crate::components::Scene)>,
-    level_query: Query<(Entity, &crate::components::Level, &Parent)>,
+    level_query: Query<(&crate::components::Level, &Parent)>,
 ) {
     //Find the player
     let player_query = player_query.get_single_mut();
@@ -71,18 +82,15 @@ pub fn level_changer(
 
     for (scene_entity, scene) in scene_query.iter() {
         if scene.parcels.contains(&player_parcel) {
-            for (level_entity, level, level_parent) in level_query.iter() {
+            for (level, level_parent) in level_query.iter() {
                 if **level_parent == scene_entity {
                     //If we're in a different level we change it
                     if current_level != level.id {
-                        //Despawn level for current parcel
-                        commands.entity(level_entity).despawn_recursive();
 
-                        //Despawn every other scene and level
+                        //Despawn every scene
                         for (other_scene_entity, _other_scene) in scene_query.iter() {
-                            if other_scene_entity != scene_entity {
-                                commands.entity(other_scene_entity).despawn_recursive();
-                            }
+                            despawned_entities.entities.push(other_scene_entity);
+                            commands.entity(other_scene_entity).despawn_recursive();
                         }
 
                         //Clear collision map
@@ -98,15 +106,13 @@ pub fn level_changer(
                             path: scene.path.clone(),
                         };
 
-                        let level_entity = spawn_level(
+                        spawn_scene(
                             &mut commands,
                             &asset_server,
                             &scene_data,
-                            current_level,
                             &mut collision_map,
-                            SystemTime::now(),
-                        );
-                        commands.entity(scene_entity).add_child(level_entity);
+                            current_level
+                          );
                     }
                     break;
                 }
@@ -124,6 +130,7 @@ pub fn scene_manager(
         Without<PlayerComponent>,
     )>,
     mut commands: Commands,
+    mut despawned_entities: ResMut<DespawnedEntities>,
     mut download_queue: ResMut<DownloadQueue>,
 ) {
     //Find the player
@@ -159,6 +166,7 @@ pub fn scene_manager(
         }
 
         if despawn_scene {
+            despawned_entities.entities.push(entity);
             commands.entity(entity).despawn_recursive();
             continue;
         }
@@ -525,16 +533,24 @@ pub async fn download_level_spawn_point(parcel: &Parcel, level_id: usize) -> Vec
 pub fn loading_sprites_tasks_handler(
     mut commands: Commands,
     mut tasks_loading_sprite: Query<(Entity, &mut LoadingSprite)>,
+    mut despawned_entities: ResMut<DespawnedEntities>,
 ) {
     for (entity, mut loading_sprite) in &mut tasks_loading_sprite {
-        if let Some(loading_sprite_data) =
-            future::block_on(future::poll_once(&mut loading_sprite.task))
-        {
-            commands.entity(entity).insert(loading_sprite_data.image);
-            commands.entity(entity).insert(loading_sprite_data.sprite);
-            commands.entity(entity).remove::<LoadingSprite>();
-        }
+      
+      if despawned_entities.entities.contains(&loading_sprite.scene_entity)
+      {
+        commands.entity(entity).remove::<LoadingSprite>();
+      }
+      else if let Some(loading_sprite_data) =
+          future::block_on(future::poll_once(&mut loading_sprite.task))
+      {
+          commands.entity(entity).insert(loading_sprite_data.image);
+          commands.entity(entity).insert(loading_sprite_data.sprite);
+          commands.entity(entity).remove::<LoadingSprite>();
+      }
     }
+
+    despawned_entities.entities.clear();
 }
 
 fn downloading_scenes_task_handler(
@@ -542,13 +558,15 @@ fn downloading_scenes_task_handler(
     mut collision_map: ResMut<CollisionMap>,
     mut roads_data: ResMut<RoadsData>,
     mut scene_files_map: ResMut<SceneFilesMap>,
+    mut despawned_entities: ResMut<DespawnedEntities>,
     asset_server: Res<AssetServer>,
     mut tasks_downloading_scenes: Query<(Entity, &mut DownloadingScene)>,
     scenes_query: Query<(Entity, &crate::components::Scene)>,
 ) {
     for (entity, mut downloading_scene) in &mut tasks_downloading_scenes {
         if let Some(new_paths) = future::block_on(future::poll_once(&mut downloading_scene.task)) {
-            commands.entity(entity).despawn_recursive();
+            
+          commands.entity(entity).despawn_recursive();
 
             if let Some(new_paths) = new_paths {
                 for new_path in new_paths {
@@ -567,6 +585,7 @@ fn downloading_scenes_task_handler(
                                 get_scene(&mut roads_data, &scene_files_map, parcel_1)
                             {
                                 if scene.timestamp != scene_data.scene.timestamp {
+                                    despawned_entities.entities.push(entity);
                                     commands.entity(entity).despawn_recursive();
                                     spawn_scene(
                                         &mut commands,
@@ -587,16 +606,16 @@ fn downloading_scenes_task_handler(
 
 fn default_scenes_despawner(
     mut commands: Commands,
+    mut despawned_entities: ResMut<DespawnedEntities>,
     scenes_query: Query<(Entity, &crate::components::Scene)>,
 ) {
-    let mut entities_being_despawned = Vec::new();
 
     for (entity_1, scene_1) in &scenes_query {
-        if entities_being_despawned.contains(&entity_1) {
+        if despawned_entities.entities.contains(&entity_1) {
             continue;
         }
         for (entity_2, scene_2) in &scenes_query {
-            if entities_being_despawned.contains(&entity_2) {
+            if despawned_entities.entities.contains(&entity_2) {
                 continue;
             }
             if entity_1 != entity_2
@@ -606,11 +625,11 @@ fn default_scenes_despawner(
                     for parcel_2 in &scene_2.parcels {
                         if *parcel_1 == *parcel_2 {
                             if scene_1.name == "default_scene" {
-                                entities_being_despawned.push(entity_1);
+                                despawned_entities.entities.push(entity_1);
                                 commands.entity(entity_1).despawn_recursive();
                                 break 'outer;
                             } else if scene_2.name == "default_scene" {
-                                entities_being_despawned.push(entity_2);
+                                despawned_entities.entities.push(entity_2);
                                 commands.entity(entity_2).despawn_recursive();
                                 break 'outer;
                             }
@@ -646,18 +665,19 @@ pub fn spawn_level(
     level_id: usize,
     collision_map: &mut CollisionMap,
     timestamp: SystemTime,
-) -> Entity {
-    let level_entity = commands.spawn().id();
+    scene_entity: Entity,
+) -> Option<Entity> {
+
     let scene = &scene_data.scene;
 
     if scene.levels.len() <= level_id {
-        return level_entity;
+        return None;
     }
 
     let level = &scene.levels[level_id];
 
-    commands
-        .entity(level_entity)
+    let level_entity = commands
+        .spawn()
         .insert(Name::new(level.name.clone()))
         .insert(Visibility { is_visible: true })
         .insert(GlobalTransform::default())
@@ -671,15 +691,15 @@ pub fn spawn_level(
                 x: level.spawn_point.x as f32,
                 y: level.spawn_point.y as f32,
             },
-        });
+        }).id();
 
     for entity in level.entities.iter() {
         let spawned_entity =
-            spawn_entity(commands, asset_server, collision_map, entity, scene_data);
+            spawn_entity(commands, asset_server, collision_map, entity, scene_data,scene_entity);
         commands.entity(level_entity).add_child(spawned_entity);
     }
 
-    level_entity
+    Some(level_entity)
 }
 
 pub fn get_parcel_spawn_point(
@@ -713,7 +733,9 @@ pub fn spawn_scene(
     scene_data: &SceneData,
     collision_map: &mut CollisionMap,
     level_id: usize,
-) -> Entity {
+) -> Option<Entity> {
+
+    //
     let scene_location: Vec3 = get_scene_center_location(scene_data);
     let scene = &scene_data.scene;
     let mut scene_u8: Vec<u8> = Vec::new();
@@ -737,18 +759,27 @@ pub fn spawn_scene(
         .id();
 
     if !scene.levels.is_empty() {
-        let level_entity = spawn_level(
+        match spawn_level(
             commands,
             asset_server,
             scene_data,
             level_id,
             collision_map,
             SystemTime::now(),
-        );
-        commands.entity(scene_entity).add_child(level_entity);
+            scene_entity,
+        )
+        {
+            Some(level_entity) =>   {
+              commands.entity(scene_entity).add_child(level_entity);
+            }
+            None =>{
+              commands.entity(scene_entity).despawn_recursive();
+              return None;
+            } 
+        }
     }
 
-    scene_entity
+    Some(scene_entity)
 }
 
 fn entity_anchor_to_anchor(anchor: dcl2d_ecs_v1::Anchor, size: Vec2) -> Anchor {
@@ -820,6 +851,7 @@ fn spawn_entity(
     collision_map: &mut CollisionMap,
     entity: &dcl2d_ecs_v1::Entity,
     scene_data: &SceneData,
+    scene_entity: Entity,
 ) -> Entity {
     let scene = &scene_data.scene;
     let mut transform = Transform::identity();
@@ -910,6 +942,7 @@ fn spawn_entity(
 
             commands.entity(spawned_entity).insert(LoadingSprite {
                 task: task_load_sprite,
+                scene_entity
             });
         }
 
@@ -1032,6 +1065,7 @@ fn spawn_entity(
             collision_map,
             child_entity,
             scene_data,
+            scene_entity,
         );
         commands
             .entity(spawned_entity)

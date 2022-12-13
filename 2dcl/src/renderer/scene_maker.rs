@@ -51,6 +51,8 @@ const BOULEVARD_SMALL_SIDE_SIZE: usize = 1;
 const BOULEVARD_LONG_SIDE_SIZE: usize = 3;
 const BOULEVARD_SPACING: i16 = 4;
 
+const RANDOM_OBSTACLE_SPAWN_CHANCE: f64 = 0.1;
+
 #[derive(Debug, Clone, Default)]
 pub struct RoadsData {
     pub parcel_map: HashMap<(i16, i16), ()>,
@@ -174,24 +176,32 @@ fn make_boulevard_entities(roads_data: &RoadsData, parcel: &Parcel) -> Vec<dcl2d
         && is_road(&Parcel(parcel.0, parcel.1 + 1), roads_data)
         && is_road(&Parcel(parcel.0 - 1, parcel.1 + 1), roads_data)
     {
+        let mut make_boulevard = false;
         let mut size: dcl2d_ecs_v1::Vec2<usize> = dcl2d_ecs_v1::Vec2 {
             x: BOULEVARD_SMALL_SIDE_SIZE,
             y: BOULEVARD_SMALL_SIDE_SIZE,
         };
 
-        if parcel.0 % BOULEVARD_SPACING == 1
-            || parcel.0 % BOULEVARD_SPACING == -(BOULEVARD_SPACING - 1)
-                && is_road(&Parcel(parcel.0 - 2, parcel.1), roads_data)
+        if (parcel.0 % BOULEVARD_SPACING == 1
+            || parcel.0 % BOULEVARD_SPACING == -(BOULEVARD_SPACING - 1))
+            && is_road(&Parcel(parcel.0 - 2, parcel.1), roads_data)
+            && is_road(&Parcel(parcel.0 - 2, parcel.1 + 1), roads_data)
         {
             size.x = BOULEVARD_LONG_SIDE_SIZE;
+            make_boulevard = true;
         }
 
-        if parcel.1 % BOULEVARD_SPACING == 0 && is_road(&Parcel(parcel.0, parcel.1 + 2), roads_data)
+        if parcel.1 % BOULEVARD_SPACING == 0
+            && is_road(&Parcel(parcel.0, parcel.1 + 2), roads_data)
+            && is_road(&Parcel(parcel.0 - 1, parcel.1 + 2), roads_data)
         {
             size.y = BOULEVARD_LONG_SIDE_SIZE;
+            make_boulevard = true;
         }
 
-        boulevard.append(&mut make_boulevard_entity(BoulevardType::TopLeft, size));
+        if make_boulevard {
+            boulevard.append(&mut make_boulevard_entity(BoulevardType::TopLeft, size));
+        }
     }
 
     if (parcel.0 % BOULEVARD_SPACING == 0 || parcel.1 % BOULEVARD_SPACING == 0)
@@ -199,22 +209,31 @@ fn make_boulevard_entities(roads_data: &RoadsData, parcel: &Parcel) -> Vec<dcl2d
         && is_road(&Parcel(parcel.0, parcel.1 + 1), roads_data)
         && is_road(&Parcel(parcel.0 + 1, parcel.1 + 1), roads_data)
     {
+        let mut make_boulevard = false;
+
         let mut size: dcl2d_ecs_v1::Vec2<usize> = dcl2d_ecs_v1::Vec2 {
             x: BOULEVARD_SMALL_SIDE_SIZE,
             y: BOULEVARD_SMALL_SIDE_SIZE,
         };
 
-        if parcel.0 % BOULEVARD_SPACING == 0 && is_road(&Parcel(parcel.0 + 2, parcel.1), roads_data)
+        if parcel.0 % BOULEVARD_SPACING == 0
+            && is_road(&Parcel(parcel.0 + 2, parcel.1), roads_data)
+            && is_road(&Parcel(parcel.0 + 2, parcel.1 + 1), roads_data)
         {
+            make_boulevard = true;
             size.x = BOULEVARD_LONG_SIDE_SIZE;
         }
 
-        if parcel.1 % BOULEVARD_SPACING == 0 && is_road(&Parcel(parcel.0, parcel.1 + 2), roads_data)
+        if parcel.1 % BOULEVARD_SPACING == 0
+            && is_road(&Parcel(parcel.0, parcel.1 + 2), roads_data)
+            && is_road(&Parcel(parcel.0 + 1, parcel.1 + 2), roads_data)
         {
+            make_boulevard = true;
             size.y = BOULEVARD_LONG_SIDE_SIZE;
         }
-
-        boulevard.append(&mut make_boulevard_entity(BoulevardType::TopRight, size));
+        if make_boulevard {
+            boulevard.append(&mut make_boulevard_entity(BoulevardType::TopRight, size));
+        }
     }
 
     if (parcel.0 % BOULEVARD_SPACING == 1
@@ -225,6 +244,7 @@ fn make_boulevard_entities(roads_data: &RoadsData, parcel: &Parcel) -> Vec<dcl2d
         && is_road(&Parcel(parcel.0, parcel.1 - 1), roads_data)
         && is_road(&Parcel(parcel.0 - 1, parcel.1 - 1), roads_data)
     {
+        let mut make_boulevard = false;
         let mut size: dcl2d_ecs_v1::Vec2<usize> = dcl2d_ecs_v1::Vec2 {
             x: BOULEVARD_SMALL_SIDE_SIZE,
             y: BOULEVARD_SMALL_SIDE_SIZE,
@@ -233,45 +253,59 @@ fn make_boulevard_entities(roads_data: &RoadsData, parcel: &Parcel) -> Vec<dcl2d
         if (parcel.0 % BOULEVARD_SPACING == 1
             || parcel.0 % BOULEVARD_SPACING == -(BOULEVARD_SPACING - 1))
             && is_road(&Parcel(parcel.0 - 2, parcel.1), roads_data)
+            && is_road(&Parcel(parcel.0 - 2, parcel.1 - 1), roads_data)
         {
+            make_boulevard = true;
             size.x = BOULEVARD_LONG_SIDE_SIZE;
         }
 
         if (parcel.1 % BOULEVARD_SPACING == 1
             || parcel.1 % BOULEVARD_SPACING == -(BOULEVARD_SPACING - 1))
             && is_road(&Parcel(parcel.0, parcel.1 - 2), roads_data)
+            && is_road(&Parcel(parcel.0 - 1, parcel.1 - 2), roads_data)
         {
+            make_boulevard = true;
             size.y = BOULEVARD_LONG_SIDE_SIZE;
         }
 
-        boulevard.append(&mut make_boulevard_entity(BoulevardType::BottomLeft, size));
+        if make_boulevard {
+            boulevard.append(&mut make_boulevard_entity(BoulevardType::BottomLeft, size));
+        }
     }
 
     if (parcel.0 % BOULEVARD_SPACING == 0
-        || parcel.1 % BOULEVARD_SPACING == 1
-        || parcel.1 % BOULEVARD_SPACING == -(BOULEVARD_SPACING - 1))
-        && is_road(&Parcel(parcel.0 + 1, parcel.1), roads_data)
-        && is_road(&Parcel(parcel.0, parcel.1 - 1), roads_data)
-        && is_road(&Parcel(parcel.0 + 1, parcel.1 - 1), roads_data)
+        && is_road(&Parcel(parcel.0 + 2, parcel.1), roads_data)
+        && is_road(&Parcel(parcel.0 + 2, parcel.1 - 1), roads_data))
+        || ((parcel.1 % BOULEVARD_SPACING == 1
+            || parcel.1 % BOULEVARD_SPACING == -(BOULEVARD_SPACING - 1))
+            && is_road(&Parcel(parcel.0, parcel.1 - 2), roads_data)
+            && is_road(&Parcel(parcel.0 + 1, parcel.1 - 2), roads_data))
     {
+        let mut make_boulevard = false;
         let mut size: dcl2d_ecs_v1::Vec2<usize> = dcl2d_ecs_v1::Vec2 {
             x: BOULEVARD_SMALL_SIDE_SIZE,
             y: BOULEVARD_SMALL_SIDE_SIZE,
         };
 
-        if parcel.0 % BOULEVARD_SPACING == 0 && is_road(&Parcel(parcel.0 + 2, parcel.1), roads_data)
+        if parcel.0 % BOULEVARD_SPACING == 0
+            && is_road(&Parcel(parcel.0 + 2, parcel.1), roads_data)
+            && is_road(&Parcel(parcel.0 + 2, parcel.1 - 1), roads_data)
         {
+            make_boulevard = true;
             size.x = BOULEVARD_LONG_SIDE_SIZE;
         }
 
         if (parcel.1 % BOULEVARD_SPACING == 1
             || parcel.1 % BOULEVARD_SPACING == -(BOULEVARD_SPACING - 1))
             && is_road(&Parcel(parcel.0, parcel.1 - 2), roads_data)
+            && is_road(&Parcel(parcel.0 + 1, parcel.1 - 2), roads_data)
         {
+            make_boulevard = true;
             size.y = BOULEVARD_LONG_SIDE_SIZE;
         }
-
-        boulevard.append(&mut make_boulevard_entity(BoulevardType::BottomRight, size));
+        if make_boulevard {
+            boulevard.append(&mut make_boulevard_entity(BoulevardType::BottomRight, size));
+        }
     }
 
     boulevard
@@ -859,13 +893,13 @@ fn make_default_random_entities() -> Vec<dcl2d_ecs_v1::Entity> {
     }
 
     for random_stuff in no_collision_obstacles {
-        if rng.gen_bool(0.5) {
+        if rng.gen_bool(RANDOM_OBSTACLE_SPAWN_CHANCE) {
             if let Ok(mut base_path) = PathBuf::from_str("./assets/default_scene/assets/") {
                 base_path.push(&random_stuff);
                 let png_files = std::fs::read_dir(base_path).unwrap();
 
-                let location_x = rng.gen_range(PARCEL_SIZE_X as i32 / -2..PARCEL_SIZE_X as i32 / 2);
-                let location_y = rng.gen_range(PARCEL_SIZE_Y as i32 / -2..PARCEL_SIZE_Y as i32 / 2);
+                let location_x = rng.gen_range((PARCEL_SIZE_X * 0.8/ -2.0 )as i32 ..(PARCEL_SIZE_X * 0.8/ 2.0 ) as i32);
+                let location_y = rng.gen_range((PARCEL_SIZE_Y * 0.8/ -2.0 )as i32..(PARCEL_SIZE_Y * 0.8/ 2.0 ) as i32);
                 let transform = dcl2d_ecs_v1::components::Transform {
                     location: dcl2d_ecs_v1::Vec2 {
                         x: location_x,
@@ -881,8 +915,10 @@ fn make_default_random_entities() -> Vec<dcl2d_ecs_v1::Entity> {
 
                 for png_file in png_files.flatten() {
                     if let Some(png_file_str) = png_file.file_name().to_str() {
+                      
                         let renderer = dcl2d_ecs_v1::components::SpriteRenderer {
                             sprite: random_stuff.clone() + "/" + png_file_str,
+                            layer: -1,
                             ..default()
                         };
 
@@ -898,14 +934,13 @@ fn make_default_random_entities() -> Vec<dcl2d_ecs_v1::Entity> {
     }
 
     for random_stuff in small_collision_obstacles {
-        if rng.gen_bool(0.5) {
+        if rng.gen_bool(RANDOM_OBSTACLE_SPAWN_CHANCE) {
             if let Ok(mut base_path) = PathBuf::from_str("./assets/default_scene/assets/") {
                 base_path.push(&random_stuff);
                 let png_files = std::fs::read_dir(base_path).unwrap();
 
-                let location_x = rng.gen_range(PARCEL_SIZE_X as i32 / -2..PARCEL_SIZE_X as i32 / 2);
-                let location_y = rng.gen_range(PARCEL_SIZE_Y as i32 / -2..PARCEL_SIZE_Y as i32 / 2);
-                let transform = dcl2d_ecs_v1::components::Transform {
+                let location_x = rng.gen_range((PARCEL_SIZE_X * 0.8/ -2.0 )as i32 ..(PARCEL_SIZE_X * 0.8/ 2.0 ) as i32);
+                let location_y = rng.gen_range((PARCEL_SIZE_Y * 0.8/ -2.0 )as i32..(PARCEL_SIZE_Y * 0.8/ 2.0 ) as i32);                 let transform = dcl2d_ecs_v1::components::Transform {
                     location: dcl2d_ecs_v1::Vec2 {
                         x: location_x,
                         y: location_y,
@@ -922,8 +957,8 @@ fn make_default_random_entities() -> Vec<dcl2d_ecs_v1::Entity> {
                     collision_type: dcl2d_ecs_v1::collision_type::CollisionType::Solid,
                     center: dcl2d_ecs_v1::Vec2 { x: 0, y: 0 },
                     size: dcl2d_ecs_v1::Size {
-                        width: 50,
-                        height: 50,
+                        width: 25,
+                        height: 25,
                     },
                 };
 
@@ -950,13 +985,13 @@ fn make_default_random_entities() -> Vec<dcl2d_ecs_v1::Entity> {
     }
 
     for random_stuff in big_collision_obstacles {
-        if rng.gen_bool(0.5) {
+        if rng.gen_bool(RANDOM_OBSTACLE_SPAWN_CHANCE) {
             if let Ok(mut base_path) = PathBuf::from_str("./assets/default_scene/assets/") {
                 base_path.push(&random_stuff);
                 let png_files = std::fs::read_dir(base_path).unwrap();
-                let location_x = rng.gen_range(PARCEL_SIZE_X as i32 / -2..PARCEL_SIZE_X as i32 / 2);
-                let location_y = rng.gen_range(PARCEL_SIZE_Y as i32 / -2..PARCEL_SIZE_Y as i32 / 2);
-                let transform = dcl2d_ecs_v1::components::Transform {
+                let location_x = rng.gen_range((PARCEL_SIZE_X * 0.8/ -2.0 )as i32 ..(PARCEL_SIZE_X * 0.8/ 2.0 ) as i32);
+                let location_y = rng.gen_range((PARCEL_SIZE_Y * 0.8/ -2.0 )as i32..(PARCEL_SIZE_Y * 0.8/ 2.0 ) as i32);
+                  let transform = dcl2d_ecs_v1::components::Transform {
                     location: dcl2d_ecs_v1::Vec2 {
                         x: location_x,
                         y: location_y,
@@ -973,8 +1008,8 @@ fn make_default_random_entities() -> Vec<dcl2d_ecs_v1::Entity> {
                     collision_type: dcl2d_ecs_v1::collision_type::CollisionType::Solid,
                     center: dcl2d_ecs_v1::Vec2 { x: 0, y: 0 },
                     size: dcl2d_ecs_v1::Size {
-                        width: 100,
-                        height: 100,
+                        width: 75,
+                        height: 75,
                     },
                 };
 

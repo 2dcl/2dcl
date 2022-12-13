@@ -1,5 +1,6 @@
 use crate::renderer::scene_loader::get_scene_center_location;
 use crate::renderer::scene_loader::loading_sprites_tasks_handler;
+use crate::renderer::scene_loader::DespawnedEntities;
 use crate::renderer::scenes_io::read_scene_u8;
 use crate::renderer::scenes_io::SceneData;
 use crate::renderer::CollisionMap;
@@ -60,9 +61,14 @@ pub struct SceneHandler(pub Handle<SceneAsset>);
 
 impl Plugin for SceneHotReloadPlugin {
     fn build(&self, app: &mut App) {
-        app.add_system(scene_reload)
+        app.insert_resource(DespawnedEntities::default())
+            .add_system(scene_reload)
             .add_system(level_change)
-            .add_system(loading_sprites_tasks_handler)
+            .add_system(
+                loading_sprites_tasks_handler
+                    .after(level_change)
+                    .after(scene_reload),
+            )
             .add_startup_system(setup);
     }
 }
@@ -88,11 +94,13 @@ fn scene_reload(
     mut scenes: Query<(Entity, &Scene)>,
     mut collision_map: ResMut<CollisionMap>,
     mut player_query: Query<(&PlayerComponent, &mut Transform)>,
+    mut despawned_entities: ResMut<DespawnedEntities>,
 ) {
     if let Ok((player, mut player_transform)) = player_query.get_single_mut() {
         if let Some(scene) = scene_assets.get(&scene_handlers.0) {
             if let Ok((entity, current_scene)) = scenes.get_single_mut() {
                 if scene.timestamp != current_scene.timestamp {
+                    despawned_entities.entities.push(entity);
                     commands.entity(entity).despawn_recursive();
                     let timestamp = scene.timestamp;
                     if let Some(mut scene) = read_scene_u8(&scene.bytes) {
@@ -168,15 +176,16 @@ fn scene_reload(
 }
 
 pub fn level_change(
-    mut player_query: Query<&PlayerComponent>,
+    player_query: Query<&PlayerComponent>,
     scene_query: Query<(Entity, &Scene)>,
-    level_query: Query<(Entity, &Level)>,
+    level_query: Query<&Level>,
     mut commands: Commands,
     asset_server: Res<AssetServer>,
     mut collision_map: ResMut<CollisionMap>,
+    mut despawned_entities: ResMut<DespawnedEntities>,
 ) {
     //Find the player
-    let player = player_query.get_single_mut();
+    let player = player_query.get_single();
 
     if player.is_err() {
         return;
@@ -195,11 +204,11 @@ pub fn level_change(
     let mut should_spawn = true;
 
     //We check if we're on the correct level
-    for (level_entity, level) in level_query.iter() {
+    for level in level_query.iter() {
         if current_level != level.id {
             //Despawn level for current parcel
-            commands.entity(level_entity).despawn_recursive();
-
+            despawned_entities.entities.push(scene_entity);
+            commands.entity(scene_entity).despawn_recursive();
             //Clear collision map
             collision_map.tiles.clear();
         } else {
@@ -216,22 +225,12 @@ pub fn level_change(
             path: scene.path.clone(),
         };
 
-        scene_loader::spawn_level(
+        scene_loader::spawn_scene(
             &mut commands,
             &asset_server,
             &scene_data,
-            current_level,
             &mut collision_map,
-            SystemTime::now(),
-        );
-        let level_entity = scene_loader::spawn_level(
-            &mut commands,
-            &asset_server,
-            &scene_data,
             current_level,
-            &mut collision_map,
-            SystemTime::now(),
         );
-        commands.entity(scene_entity).add_child(level_entity);
     }
 }

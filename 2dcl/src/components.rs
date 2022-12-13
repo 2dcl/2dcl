@@ -14,6 +14,7 @@ pub struct DownloadingScene {
 #[derive(Component)]
 pub struct LoadingSprite {
     pub task: Task<LoadingSpriteData>,
+    pub scene_entity: Entity,
 }
 
 pub struct LoadingSpriteData {

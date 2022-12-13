@@ -48,7 +48,6 @@ fn setup(mut commands: Commands) {
 
 fn get_scene_files_map() -> dcl_common::Result<SceneFilesMap> {
     let mut scene_files_map = SceneFilesMap::default();
-
     let mut scenes_path = PathBuf::new();
     scenes_path.push("assets");
     scenes_path.push("scenes");
