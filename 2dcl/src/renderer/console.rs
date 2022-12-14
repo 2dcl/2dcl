@@ -14,6 +14,7 @@ impl Plugin for MyConsolePlugin {
     fn build(&self, app: &mut App) {
         app.add_plugin(ConsolePlugin)
             .add_console_command::<TeleportCommand, _, _>(teleport_command);
+           // .add_console_command::<WhereCommand, _, _>(where_command);
     }
 }
 
@@ -24,6 +25,24 @@ struct TeleportCommand {
     parcel_x: String,
     parcel_y: String,
 }
+
+/*
+/// Teleports the player to a specific parcel
+#[derive(ConsoleCommand)]
+#[console_command(name = "where")]
+struct WhereCommand;
+
+fn where_command(
+  mut where_cmd: ConsoleCommand<WhereCommand>,
+  mut player_query: Query<&PlayerComponent>,
+)
+{
+  let player = player_query.single_mut();
+  if let _ = where_cmd.take() {
+    
+    reply!(where_cmd, "You're in the parcel {},{}", player.current_parcel.0, player.current_parcel.1);
+  }
+} */
 
 fn teleport_command(
     mut tp: ConsoleCommand<TeleportCommand>,

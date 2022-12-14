@@ -11,6 +11,7 @@ use std::path::PathBuf;
 
 use super::dcl_3d_scene;
 use super::error::ScenesIOError;
+use super::scene_maker::make_default_background_entities;
 use super::scene_maker::{is_road, make_road_scene, RoadsData};
 
 #[derive(Debug, Clone, Default)]
@@ -116,12 +117,17 @@ pub fn get_scene(
     };
 
     if scene_file_data.path.exists() {
-        if let Some(scene) = read_scene_file(&scene_file_data.path) {
+        if let Some(mut scene) = read_scene_file(&scene_file_data.path) {
             let mut path: PathBuf = scene_file_data.path.iter().rev().collect();
             path.pop();
             let mut path: PathBuf = path.iter().rev().collect();
             path.pop();
 
+            println!("path: {:?}",path);
+            if !scene.levels.is_empty()
+            {
+              scene.levels[0].entities.append(&mut make_default_background_entities(&path));
+            }
             let scene_data = SceneData {
                 scene,
                 parcels: scene_file_data.parcels,
