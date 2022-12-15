@@ -58,6 +58,6 @@ where
     options.copy_inside = true;
 
     fs_extra::dir::copy(assets_source_path, assets_destination_path, &options)?;
-    println!("compiling ok");
+    println!("scene compilation finished successfully");
     Ok(())
 }

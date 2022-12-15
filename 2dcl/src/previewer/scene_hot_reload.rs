@@ -8,9 +8,13 @@ use crate::renderer::PlayerComponent;
 use bevy::asset::Handle;
 use bevy::prelude::*;
 use dcl_common::Parcel;
+use notify::Event;
+use notify::RecursiveMode;
+use notify::Watcher;
 use std::path::PathBuf;
 use std::str::FromStr;
 use std::time::SystemTime;
+use notify::EventKind::Modify;
 
 use bevy::{
     asset::{AssetLoader, LoadContext, LoadedAsset},
@@ -74,16 +78,54 @@ impl Plugin for SceneHotReloadPlugin {
 }
 
 fn setup(mut commands: Commands, asset_server: Res<AssetServer>) {
-    let result = asset_server.watch_for_changes();
+   /*  let result = asset_server.watch_for_changes();
 
     if result.is_err() {
         println!("{}", result.unwrap_err());
         return;
     }
-
+*/
     let handler: Handle<SceneAsset> = asset_server.load("../scene.2dcl");
-
     commands.insert_resource(SceneHandler(handler));
+
+    let mut watch_path = std::env::current_dir().unwrap_or_default();
+    watch_path.pop();
+
+   println!("watching {:?}",watch_path);
+    let asset_server = asset_server.clone();
+    let mut watcher = notify::recommended_watcher(move |res| match res {
+      Ok(event) => {
+          let Event {
+              kind,
+              paths,
+              attrs: _,
+          } = event;
+
+          println!("event triggered:{:?},{:?}",kind,paths);
+          if let Modify(_) = kind {
+              for path in paths {
+                  if path.ends_with("scene.json")
+                  {
+                      if let Err(error) = scene_compiler::compile(&path, "./build") {
+                          println!("Error compiling: {}", error)
+                      }
+                      else
+                      {
+                        asset_server.reload_asset("../scene.2dcl");
+                      }
+                  }
+              }
+          }
+      }
+      Err(e) => println!("watch error: {:?}", e),
+  })
+  .unwrap();
+
+
+  watcher
+  .watch(&watch_path, RecursiveMode::Recursive)
+  .unwrap();
+
 }
 
 fn scene_reload(

@@ -12,9 +12,11 @@ pub struct RefreshData
 pub fn manual_refresh(
   keyboard: Res<Input<KeyCode>>,
   refresh_data: Res<RefreshData>,
+  asset_server: Res<AssetServer>,
 
 ) {
     if keyboard.just_pressed(KeyCode::R) {
       scene_compiler::compile(&refresh_data.source_path, &refresh_data.destination_path).unwrap();
+      asset_server.reload_asset("../scene.2dcl");
     }
 }

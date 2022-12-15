@@ -283,12 +283,11 @@ fn make_boulevard_entities(roads_data: &RoadsData, parcel: &Parcel) -> Vec<dcl2d
     }
 
     if (parcel.0 % BOULEVARD_SPACING == 0
-        && is_road(&Parcel(parcel.0 + 2, parcel.1), roads_data)
-        && is_road(&Parcel(parcel.0 + 2, parcel.1 - 1), roads_data))
-        || ((parcel.1 % BOULEVARD_SPACING == 1
-            || parcel.1 % BOULEVARD_SPACING == -(BOULEVARD_SPACING - 1))
-            && is_road(&Parcel(parcel.0, parcel.1 - 2), roads_data)
-            && is_road(&Parcel(parcel.0 + 1, parcel.1 - 2), roads_data))
+        || parcel.1 % BOULEVARD_SPACING == 1
+        || parcel.1 % BOULEVARD_SPACING == -(BOULEVARD_SPACING - 1))
+        && is_road(&Parcel(parcel.0 + 1, parcel.1), roads_data)
+        && is_road(&Parcel(parcel.0, parcel.1 - 1), roads_data)
+        && is_road(&Parcel(parcel.0 + 1, parcel.1 - 1), roads_data)
     {
         let mut make_boulevard = false;
         let mut size: dcl2d_ecs_v1::Vec2<usize> = dcl2d_ecs_v1::Vec2 {
