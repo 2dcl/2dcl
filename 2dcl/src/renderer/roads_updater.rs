@@ -30,7 +30,7 @@ pub async fn update_roads_async(
 ) {
 
   println!("updating roads async");
-  for x in -9..152 {
+  for x in -152..152 {
    for y in -152..152 {
     let parcels = vec![Parcel(x,y)];
     println!("checking parcel {:?}",parcels);
@@ -83,3 +83,37 @@ pub async fn update_roads_async(
   }
 }
 }
+
+pub fn update_roads_data(new_roads_data: &RoadsData) -> Result<()> {
+  let mut serializable_roads_data = SerializableRoadsData::default();
+
+  for key in new_roads_data.parcel_map.keys() {
+      serializable_roads_data.parcels.push(Parcel(key.0, key.1));
+  }
+
+  let mut buf: Vec<u8> = Vec::new();
+  match serializable_roads_data.serialize(&mut Serializer::new(&mut buf)) {
+      Ok(_) => {}
+      Err(e) => return Err(Box::new(e)),
+  }
+
+  let mut file = match File::create(&ROADS_DATA_MP_FILE) {
+      Ok(v) => v,
+      Err(e) => return Err(Box::new(e)),
+  };
+
+  match file.write_all(&buf) {
+      Ok(v) => Ok(v),
+      Err(e) => Err(Box::new(e)),
+  }
+}
+
+pub fn remove_road_at_parcel(parcel: &Parcel, roads_data: &mut RoadsData) -> Result<()> {
+  roads_data.parcel_map.remove(&(parcel.0, parcel.1));
+  update_roads_data(roads_data)
+}
+
+pub fn add_road_at_parcel(parcel: &Parcel, roads_data: &mut RoadsData) -> Result<()> {
+  roads_data.parcel_map.insert((parcel.0, parcel.1), ());
+  update_roads_data(roads_data)
+} 

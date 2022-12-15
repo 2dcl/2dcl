@@ -14,7 +14,7 @@ impl Plugin for MyConsolePlugin {
     fn build(&self, app: &mut App) {
         app.add_plugin(ConsolePlugin)
             .add_console_command::<TeleportCommand, _, _>(teleport_command);
-           // .add_console_command::<WhereCommand, _, _>(where_command);
+        // .add_console_command::<WhereCommand, _, _>(where_command);
     }
 }
 
@@ -39,7 +39,7 @@ fn where_command(
 {
   let player = player_query.single_mut();
   if let _ = where_cmd.take() {
-    
+
     reply!(where_cmd, "You're in the parcel {},{}", player.current_parcel.0, player.current_parcel.1);
   }
 } */

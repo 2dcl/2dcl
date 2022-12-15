@@ -5,7 +5,7 @@ use rmp_serde::*;
 use serde::{Deserialize, Serialize};
 use std::collections::HashMap;
 use std::fs::File;
-use std::io::{BufReader, Write};
+use std::io::BufReader;
 use std::path::PathBuf;
 use std::str::FromStr;
 
@@ -45,10 +45,14 @@ const BOULEVARD_RIGHT_PATH: &str = "boulevard-right.png";
 const BOULEVARD_LEFT_PATH: &str = "boulevard-left.png";
 const BOULEVARD_BOTTOM_PATH: &str = "boulevard-bottom.png";
 
-const BENCH_HORIZONTAL_PATH: &str = "Bench_H_Back.png";
-const BENCH_VERTICAL_PATH: &str = "Bench_V_Flip.png";
-const BENCH_SHADOW_HORIZONTAL_PATH: &str = "Bench_H_Back_shadow.png";
-const BENCH_SHADOW_VERTICAL_PATH: &str = "Bench_V_Flip_shadow.png";
+const BENCH_HORIZONTAL_PATH: &str = "Bench_H.png";
+const BENCH_VERTICAL_PATH: &str = "Bench_V.png";
+const BENCH_SHADOW_HORIZONTAL_PATH: &str = "Bench_H_shadow.png";
+const BENCH_SHADOW_VERTICAL_PATH: &str = "Bench_V_shadow.png";
+
+const LAMP_PATH: &str = "Lamp.png";
+const LAMP_LIGHT_PATH: &str = "Lamp_light.png";
+const LAMP_SHADOW_PATH: &str = "Lamp_shadow.png";
 
 const TILE_SIZE: (i32, i32) = (64, 64);
 
@@ -124,7 +128,7 @@ pub fn make_default_scene(parcel: &Parcel) -> Result<SceneData> {
     let mut entities: Vec<dcl2d_ecs_v1::Entity> = Vec::new();
     entities.append(&mut make_default_random_entities());
     entities.append(&mut make_default_background_entities(&PathBuf::default()));
-    
+
     let level = dcl2d_ecs_v1::Level {
         entities,
         ..Default::default()
@@ -322,8 +326,7 @@ fn make_boulevard_entity(
 ) -> Vec<dcl2d_ecs_v1::Entity> {
     let mut boulevard = Vec::new();
 
-    
-    boulevard.append(&mut make_benches(&boulevard_type, &size));
+    boulevard.append(&mut make_boulevard_obstacles(&boulevard_type, &size));
 
     match boulevard_type {
         BoulevardType::TopLeft => {
@@ -515,193 +518,330 @@ fn make_boulevard_entity(
     boulevard
 }
 
-
-fn make_benches(
-  boulevard_type: &BoulevardType,
-  size: &dcl2d_ecs_v1::Vec2<usize>,
+fn make_boulevard_obstacles(
+    boulevard_type: &BoulevardType,
+    size: &dcl2d_ecs_v1::Vec2<usize>,
 ) -> Vec<dcl2d_ecs_v1::Entity> {
+    let mut obstacles = Vec::new();
+    match boulevard_type {
+        BoulevardType::TopLeft => {
+            //Bench
+            let location = match size.x == BOULEVARD_LONG_SIDE_SIZE {
+                true => dcl2d_ecs_v1::Vec2 {
+                    x: (PARCEL_SIZE_X / -2.0 + BOULEVARD_LONG_SIDE_SIZE as f32 * TILE_SIZE.0 as f32)
+                        as i32,
+                    y: (PARCEL_SIZE_Y / 2.0) as i32,
+                },
+                false => dcl2d_ecs_v1::Vec2 {
+                    x: (PARCEL_SIZE_X / -2.0) as i32,
+                    y: (PARCEL_SIZE_Y / 2.0 - BOULEVARD_LONG_SIDE_SIZE as f32 * TILE_SIZE.1 as f32)
+                        as i32,
+                },
+            };
 
-  let mut benches = Vec::new();
-  match boulevard_type {
-      BoulevardType::TopLeft => {
+            let transform = dcl2d_ecs_v1::components::Transform {
+                location,
+                rotation: dcl2d_ecs_v1::Vec3 {
+                    x: 0.0,
+                    y: 0.0,
+                    z: 0.0,
+                },
+                scale: dcl2d_ecs_v1::Vec2 { x: 1.0, y: 1.0 },
+            };
 
-        let transform = dcl2d_ecs_v1::components::Transform {
-          location: dcl2d_ecs_v1::Vec2 {
-              x: PARCEL_SIZE_X as i32 / -2,
-              y: PARCEL_SIZE_Y as i32 / 2,
-          },
-          rotation: dcl2d_ecs_v1::Vec3 {
-              x: 0.0,
-              y: 0.0,
-              z: 0.0,
-          },
-          scale: dcl2d_ecs_v1::Vec2 { x: 1.0, y: 1.0 }};
-   
+            let sprite = match size.x == BOULEVARD_LONG_SIDE_SIZE {
+                true => BENCH_HORIZONTAL_PATH.to_string(),
+                false => BENCH_VERTICAL_PATH.to_string(),
+            };
 
-        let sprite = match size.x == BOULEVARD_LONG_SIDE_SIZE
-        {
-          true=>  BENCH_HORIZONTAL_PATH.to_string(),
-          false=> BENCH_VERTICAL_PATH.to_string()
-        };
+            let renderer = dcl2d_ecs_v1::components::SpriteRenderer {
+                sprite,
+                anchor: dcl2d_ecs_v1::Anchor::Center,
+                ..default()
+            };
 
-        let renderer = dcl2d_ecs_v1::components::SpriteRenderer {
-            sprite,
-            ..default()
-        };
+            let box_collision = match size.x == BOULEVARD_LONG_SIDE_SIZE {
+                true => dcl2d_ecs_v1::components::BoxCollider {
+                    collision_type: dcl2d_ecs_v1::collision_type::CollisionType::Solid,
+                    center: dcl2d_ecs_v1::Vec2 { x: 0, y: -20 },
+                    size: dcl2d_ecs_v1::Size {
+                        width: 110,
+                        height: 40,
+                    },
+                },
+                false => dcl2d_ecs_v1::components::BoxCollider {
+                    collision_type: dcl2d_ecs_v1::collision_type::CollisionType::Solid,
+                    center: dcl2d_ecs_v1::Vec2 { x: 0, y: -40 },
+                    size: dcl2d_ecs_v1::Size {
+                        width: 60,
+                        height: 90,
+                    },
+                },
+            };
 
-        
-        let box_collision = match size.x == BOULEVARD_LONG_SIDE_SIZE
-        
-        {
-          true => dcl2d_ecs_v1::components::BoxCollider {
-          collision_type: dcl2d_ecs_v1::collision_type::CollisionType::Solid,
-          center: dcl2d_ecs_v1::Vec2 { x: 0, y: 0 },
-          size: dcl2d_ecs_v1::Size {
-              width: 75,
-              height: 25,
-            },
-          },
-          false =>dcl2d_ecs_v1::components::BoxCollider {
-            collision_type: dcl2d_ecs_v1::collision_type::CollisionType::Solid,
-            center: dcl2d_ecs_v1::Vec2 { x: 0, y: 0 },
-            size: dcl2d_ecs_v1::Size {
-                width: 25,
-                height: 75,
-              },
-            }
-        };
-      
+            let bench = dcl2d_ecs_v1::Entity {
+                name: "Bench".to_string(),
+                components: vec![
+                    Box::new(renderer),
+                    Box::new(transform),
+                    Box::new(box_collision),
+                ],
+                ..default()
+            };
+            obstacles.push(bench);
 
-        let bench = dcl2d_ecs_v1::Entity {
-            name: "Bench".to_string(),
-            components: vec![Box::new(renderer), Box::new(transform), Box::new(box_collision)],
-            ..default()
-        };
-        benches.push(bench);
+            //Bench shadow
+            let sprite = match size.x == BOULEVARD_LONG_SIDE_SIZE {
+                true => BENCH_SHADOW_HORIZONTAL_PATH.to_string(),
+                false => BENCH_SHADOW_VERTICAL_PATH.to_string(),
+            };
 
-        let sprite = match size.x == BOULEVARD_LONG_SIDE_SIZE
-        {
-          true=>  BENCH_SHADOW_HORIZONTAL_PATH.to_string(),
-          false=> BENCH_SHADOW_VERTICAL_PATH.to_string()
-        };
+            let renderer = dcl2d_ecs_v1::components::SpriteRenderer {
+                sprite,
+                anchor: dcl2d_ecs_v1::Anchor::Center,
+                layer: -1,
+                ..default()
+            };
+            let location = match size.x == BOULEVARD_LONG_SIDE_SIZE {
+                true => dcl2d_ecs_v1::Vec2 {
+                    x: (PARCEL_SIZE_X / -2.0 + BOULEVARD_LONG_SIDE_SIZE as f32 * TILE_SIZE.0 as f32)
+                        as i32,
+                    y: (PARCEL_SIZE_Y / 2.0) as i32,
+                },
+                false => dcl2d_ecs_v1::Vec2 {
+                    x: (PARCEL_SIZE_X / -2.0) as i32,
+                    y: (PARCEL_SIZE_Y / 2.0 - BOULEVARD_LONG_SIDE_SIZE as f32 * TILE_SIZE.1 as f32)
+                        as i32,
+                },
+            };
 
-        let renderer = dcl2d_ecs_v1::components::SpriteRenderer {
-          sprite,
-          layer:-1,
-          ..default()
-        };
+            let transform = dcl2d_ecs_v1::components::Transform {
+                location,
+                rotation: dcl2d_ecs_v1::Vec3 {
+                    x: 0.0,
+                    y: 0.0,
+                    z: 0.0,
+                },
+                scale: dcl2d_ecs_v1::Vec2 { x: 1.0, y: 1.0 },
+            };
 
-        let transform = dcl2d_ecs_v1::components::Transform {
-          location: dcl2d_ecs_v1::Vec2 {
-              x: PARCEL_SIZE_X as i32 / -2,
-              y: PARCEL_SIZE_Y as i32 / 2,
-          },
-          rotation: dcl2d_ecs_v1::Vec3 {
-              x: 0.0,
-              y: 0.0,
-              z: 0.0,
-          },
-          scale: dcl2d_ecs_v1::Vec2 { x: 1.0, y: 1.0 }};
+            let bench_shadow = dcl2d_ecs_v1::Entity {
+                name: "Bench_shadow".to_string(),
+                components: vec![Box::new(renderer), Box::new(transform)],
+                ..default()
+            };
+            obstacles.push(bench_shadow);
 
-        let bench_shadow = dcl2d_ecs_v1::Entity {
-            name: "Bench_shadow".to_string(),
-            components: vec![Box::new(renderer), Box::new(transform)],
-            ..default()
-        };
-        benches.push(bench_shadow);
+            //Lamp
 
-      }
-      BoulevardType::TopRight => {}
-      BoulevardType::BottomLeft => {}
-      BoulevardType::BottomRight => {
-           let transform = dcl2d_ecs_v1::components::Transform {
-          location: dcl2d_ecs_v1::Vec2 {
-              x: PARCEL_SIZE_X as i32 / 2,
-              y: PARCEL_SIZE_Y as i32 / -2,
-          },
-          rotation: dcl2d_ecs_v1::Vec3 {
-              x: 0.0,
-              y: 0.0,
-              z: 0.0,
-          },
-          scale: dcl2d_ecs_v1::Vec2 { x: 1.0, y: 1.0 }};
-   
+            let transform = dcl2d_ecs_v1::components::Transform {
+                location: dcl2d_ecs_v1::Vec2 {
+                    x: (PARCEL_SIZE_X / -2.0) as i32,
+                    y: (PARCEL_SIZE_Y / 2.25) as i32,
+                },
+                rotation: dcl2d_ecs_v1::Vec3 {
+                    x: 0.0,
+                    y: 0.0,
+                    z: 0.0,
+                },
+                scale: dcl2d_ecs_v1::Vec2 { x: 1.0, y: 1.0 },
+            };
 
-        let sprite = match size.x == BOULEVARD_LONG_SIDE_SIZE
-        {
-          true=>  BENCH_HORIZONTAL_PATH.to_string(),
-          false=> BENCH_VERTICAL_PATH.to_string()
-        };
+            let renderer = dcl2d_ecs_v1::components::SpriteRenderer {
+                sprite: LAMP_PATH.to_string(),
+                anchor: dcl2d_ecs_v1::Anchor::BottomCenter,
+                ..default()
+            };
 
-        let renderer = dcl2d_ecs_v1::components::SpriteRenderer {
-            sprite,
-            ..default()
-        };
+            let box_collision = dcl2d_ecs_v1::components::BoxCollider {
+                collision_type: dcl2d_ecs_v1::collision_type::CollisionType::Solid,
+                center: dcl2d_ecs_v1::Vec2 { x: 0, y: 10 },
+                size: dcl2d_ecs_v1::Size {
+                    width: 25,
+                    height: 25,
+                },
+            };
 
-        let box_collision = match size.x == BOULEVARD_LONG_SIDE_SIZE
-        
-        {
-          true => dcl2d_ecs_v1::components::BoxCollider {
-          collision_type: dcl2d_ecs_v1::collision_type::CollisionType::Solid,
-          center: dcl2d_ecs_v1::Vec2 { x: 0, y: 0 },
-          size: dcl2d_ecs_v1::Size {
-              width: 75,
-              height: 25,
-            },
-          },
-          false =>dcl2d_ecs_v1::components::BoxCollider {
-            collision_type: dcl2d_ecs_v1::collision_type::CollisionType::Solid,
-            center: dcl2d_ecs_v1::Vec2 { x: 0, y: 0 },
-            size: dcl2d_ecs_v1::Size {
-                width: 25,
-                height: 75,
-              },
-            }
-        };
-      
+            let lamp = dcl2d_ecs_v1::Entity {
+                name: "Lamp".to_string(),
+                components: vec![
+                    Box::new(renderer),
+                    Box::new(transform),
+                    Box::new(box_collision),
+                ],
+                ..default()
+            };
+            obstacles.push(lamp);
 
-        let bench = dcl2d_ecs_v1::Entity {
-            name: "Bench".to_string(),
-            components: vec![Box::new(renderer), Box::new(transform), Box::new(box_collision)],
-            ..default()
-        };
-        benches.push(bench);
+            //Lamp Light
+            let transform = dcl2d_ecs_v1::components::Transform {
+                location: dcl2d_ecs_v1::Vec2 {
+                    x: (PARCEL_SIZE_X / -2.0) as i32,
+                    y: (PARCEL_SIZE_Y / 2.25) as i32,
+                },
+                rotation: dcl2d_ecs_v1::Vec3 {
+                    x: 0.0,
+                    y: 0.0,
+                    z: 0.0,
+                },
+                scale: dcl2d_ecs_v1::Vec2 { x: 1.0, y: 1.0 },
+            };
 
-        let sprite = match size.x == BOULEVARD_LONG_SIDE_SIZE
-        {
-          true=>  BENCH_SHADOW_HORIZONTAL_PATH.to_string(),
-          false=> BENCH_SHADOW_VERTICAL_PATH.to_string()
-        };
+            let renderer = dcl2d_ecs_v1::components::SpriteRenderer {
+                sprite: LAMP_LIGHT_PATH.to_string(),
+                layer: 1,
+                anchor: dcl2d_ecs_v1::Anchor::BottomCenter,
+                ..default()
+            };
 
-        let renderer = dcl2d_ecs_v1::components::SpriteRenderer {
-          sprite,
-          layer:-1,
-          ..default()
-        };
+            let lamp_light = dcl2d_ecs_v1::Entity {
+                name: "Lamp_light".to_string(),
+                components: vec![Box::new(renderer), Box::new(transform)],
+                ..default()
+            };
+            obstacles.push(lamp_light);
 
-        let transform = dcl2d_ecs_v1::components::Transform {
-          location: dcl2d_ecs_v1::Vec2 {
-              x: PARCEL_SIZE_X as i32 / 2,
-              y: PARCEL_SIZE_Y as i32 / -2,
-          },
-          rotation: dcl2d_ecs_v1::Vec3 {
-              x: 0.0,
-              y: 0.0,
-              z: 0.0,
-          },
-          scale: dcl2d_ecs_v1::Vec2 { x: 1.0, y: 1.0 }};
-          
-        let bench_shadow = dcl2d_ecs_v1::Entity {
-            name: "Bench_shadow".to_string(),
-            components: vec![Box::new(renderer), Box::new(transform)],
-            ..default()
-        };
-        benches.push(bench_shadow);
+            //Lamp Shadow
+            let transform = dcl2d_ecs_v1::components::Transform {
+                location: dcl2d_ecs_v1::Vec2 {
+                    x: (PARCEL_SIZE_X / -2.0) as i32,
+                    y: (PARCEL_SIZE_Y / 2.25) as i32,
+                },
+                rotation: dcl2d_ecs_v1::Vec3 {
+                    x: 0.0,
+                    y: 0.0,
+                    z: 0.0,
+                },
+                scale: dcl2d_ecs_v1::Vec2 { x: 1.0, y: 1.0 },
+            };
+
+            let renderer = dcl2d_ecs_v1::components::SpriteRenderer {
+                sprite: LAMP_SHADOW_PATH.to_string(),
+                layer: -1,
+                anchor: dcl2d_ecs_v1::Anchor::BottomCenter,
+                ..default()
+            };
+
+            let lamp_light = dcl2d_ecs_v1::Entity {
+                name: "Lamp_shadow".to_string(),
+                components: vec![Box::new(renderer), Box::new(transform)],
+                ..default()
+            };
+            obstacles.push(lamp_light);
+        }
+        BoulevardType::TopRight => {}
+        BoulevardType::BottomLeft => {}
+        BoulevardType::BottomRight => {
+            let location = match size.x == BOULEVARD_LONG_SIDE_SIZE {
+                true => dcl2d_ecs_v1::Vec2 {
+                    x: (PARCEL_SIZE_X / 2.0 - BOULEVARD_LONG_SIDE_SIZE as f32 * TILE_SIZE.0 as f32)
+                        as i32,
+                    y: (PARCEL_SIZE_Y / -2.0) as i32,
+                },
+                false => dcl2d_ecs_v1::Vec2 {
+                    x: (PARCEL_SIZE_X / 2.0) as i32,
+                    y: (PARCEL_SIZE_Y / -2.0 + BOULEVARD_LONG_SIDE_SIZE as f32 * TILE_SIZE.1 as f32)
+                        as i32,
+                },
+            };
+
+            let transform = dcl2d_ecs_v1::components::Transform {
+                location,
+                rotation: dcl2d_ecs_v1::Vec3 {
+                    x: 0.0,
+                    y: 0.0,
+                    z: 0.0,
+                },
+                scale: dcl2d_ecs_v1::Vec2 { x: 1.0, y: 1.0 },
+            };
+
+            let sprite = match size.x == BOULEVARD_LONG_SIDE_SIZE {
+                true => BENCH_HORIZONTAL_PATH.to_string(),
+                false => BENCH_VERTICAL_PATH.to_string(),
+            };
+
+            let renderer = dcl2d_ecs_v1::components::SpriteRenderer {
+                sprite,
+                anchor: dcl2d_ecs_v1::Anchor::Center,
+                ..default()
+            };
+
+            let box_collision = match size.x == BOULEVARD_LONG_SIDE_SIZE {
+                true => dcl2d_ecs_v1::components::BoxCollider {
+                    collision_type: dcl2d_ecs_v1::collision_type::CollisionType::Solid,
+                    center: dcl2d_ecs_v1::Vec2 { x: 0, y: -20 },
+                    size: dcl2d_ecs_v1::Size {
+                        width: 110,
+                        height: 40,
+                    },
+                },
+                false => dcl2d_ecs_v1::components::BoxCollider {
+                    collision_type: dcl2d_ecs_v1::collision_type::CollisionType::Solid,
+                    center: dcl2d_ecs_v1::Vec2 { x: 0, y: -40 },
+                    size: dcl2d_ecs_v1::Size {
+                        width: 60,
+                        height: 90,
+                    },
+                },
+            };
+
+            let bench = dcl2d_ecs_v1::Entity {
+                name: "Bench".to_string(),
+                components: vec![
+                    Box::new(renderer),
+                    Box::new(transform),
+                    Box::new(box_collision),
+                ],
+                ..default()
+            };
+            obstacles.push(bench);
+
+            let sprite = match size.x == BOULEVARD_LONG_SIDE_SIZE {
+                true => BENCH_SHADOW_HORIZONTAL_PATH.to_string(),
+                false => BENCH_SHADOW_VERTICAL_PATH.to_string(),
+            };
+
+            let renderer = dcl2d_ecs_v1::components::SpriteRenderer {
+                sprite,
+                anchor: dcl2d_ecs_v1::Anchor::Center,
+                layer: -1,
+                ..default()
+            };
+
+            let location = match size.x == BOULEVARD_LONG_SIDE_SIZE {
+                true => dcl2d_ecs_v1::Vec2 {
+                    x: (PARCEL_SIZE_X / 2.0 - BOULEVARD_LONG_SIDE_SIZE as f32 * TILE_SIZE.0 as f32)
+                        as i32,
+                    y: (PARCEL_SIZE_Y / -2.0) as i32,
+                },
+                false => dcl2d_ecs_v1::Vec2 {
+                    x: (PARCEL_SIZE_X / 2.0) as i32,
+                    y: (PARCEL_SIZE_Y / -2.0 + BOULEVARD_LONG_SIDE_SIZE as f32 * TILE_SIZE.1 as f32)
+                        as i32,
+                },
+            };
+
+            let transform = dcl2d_ecs_v1::components::Transform {
+                location,
+                rotation: dcl2d_ecs_v1::Vec3 {
+                    x: 0.0,
+                    y: 0.0,
+                    z: 0.0,
+                },
+                scale: dcl2d_ecs_v1::Vec2 { x: 1.0, y: 1.0 },
+            };
+
+            let bench_shadow = dcl2d_ecs_v1::Entity {
+                name: "Bench_shadow".to_string(),
+                components: vec![Box::new(renderer), Box::new(transform)],
+                ..default()
+            };
+            obstacles.push(bench_shadow);
         }
     }
 
-  benches
-} 
+    obstacles
+}
 fn make_sidewalk_entities(roads_data: &RoadsData, parcel: &Parcel) -> Vec<dcl2d_ecs_v1::Entity> {
     let mut border = Vec::new();
     if !is_road(&Parcel(parcel.0 - 1, parcel.1), roads_data) {
@@ -798,27 +938,23 @@ fn make_corners(roads_data: &RoadsData, parcel: &Parcel) -> Vec<dcl2d_ecs_v1::En
     let mut corner_entities = Vec::new();
 
     let top_left_corner = get_corner_type(roads_data, parcel, CornerPosition::TopLeft);
-    match make_corner_entity(&top_left_corner, &CornerPosition::TopLeft) {
-        Some(v) => corner_entities.push(v),
-        None => {}
+    if let Some(v) = make_corner_entity(&top_left_corner, &CornerPosition::TopLeft) {
+        corner_entities.push(v)
     }
 
     let top_right_corner = get_corner_type(roads_data, parcel, CornerPosition::TopRight);
-    match make_corner_entity(&top_right_corner, &CornerPosition::TopRight) {
-        Some(v) => corner_entities.push(v),
-        None => {}
+    if let Some(v) = make_corner_entity(&top_right_corner, &CornerPosition::TopRight) {
+        corner_entities.push(v)
     }
 
     let bottom_left_corner = get_corner_type(roads_data, parcel, CornerPosition::BottomLeft);
-    match make_corner_entity(&bottom_left_corner, &CornerPosition::BottomLeft) {
-        Some(v) => corner_entities.push(v),
-        None => {}
+    if let Some(v) = make_corner_entity(&bottom_left_corner, &CornerPosition::BottomLeft) {
+        corner_entities.push(v)
     }
 
     let bottom_right_corner = get_corner_type(roads_data, parcel, CornerPosition::BottomRight);
-    match make_corner_entity(&bottom_right_corner, &CornerPosition::BottomRight) {
-        Some(v) => corner_entities.push(v),
-        None => {}
+    if let Some(v) = make_corner_entity(&bottom_right_corner, &CornerPosition::BottomRight) {
+        corner_entities.push(v)
     }
 
     corner_entities
@@ -996,22 +1132,18 @@ fn make_road_background_entities() -> Vec<dcl2d_ecs_v1::Entity> {
 }
 
 pub fn make_default_background_entities(path: &PathBuf) -> Vec<dcl2d_ecs_v1::Entity> {
-    
     let mut final_path = PathBuf::new();
-    if path.to_owned() != PathBuf::default().to_owned()
-    {
-    let mut path = path.clone();
-    while path.pop()
-    {
-      final_path.push("..");
+    if *path != PathBuf::default() {
+        let mut path = path.clone();
+        while path.pop() {
+            final_path.push("..");
+        }
+
+        final_path.push("..");
+        final_path.push("default_scene");
+        final_path.push("assets");
     }
-  
-    final_path.push("..");
-    final_path.push("default_scene");
-    final_path.push("assets");
-    }
-    let final_path = match final_path.to_str()
-    {
+    let final_path = match final_path.to_str() {
         Some(str) => str.to_string(),
         None => String::default(),
     };
@@ -1027,7 +1159,7 @@ pub fn make_default_background_entities(path: &PathBuf) -> Vec<dcl2d_ecs_v1::Ent
 
     for path in bg_path.flatten() {
         if let Some(str) = path.file_name().to_str() {
-            bg_files.push( final_path.clone() + DEFAULT_BACKGROUND_PATH + "/" + str);
+            bg_files.push(final_path.clone() + DEFAULT_BACKGROUND_PATH + "/" + str);
         }
     }
 
@@ -1113,8 +1245,13 @@ fn make_default_random_entities() -> Vec<dcl2d_ecs_v1::Entity> {
                 base_path.push(&random_stuff);
                 let png_files = std::fs::read_dir(base_path).unwrap();
 
-                let location_x = rng.gen_range((PARCEL_SIZE_X * 0.8/ -2.0 )as i32 ..(PARCEL_SIZE_X * 0.8/ 2.0 ) as i32);
-                let location_y = rng.gen_range((PARCEL_SIZE_Y * 0.8/ -2.0 )as i32..(PARCEL_SIZE_Y * 0.8/ 2.0 ) as i32);
+                let location_x = rng.gen_range(
+                    (PARCEL_SIZE_X * 0.8 / -2.0) as i32..(PARCEL_SIZE_X * 0.8 / 2.0) as i32,
+                );
+                let location_y = rng.gen_range(
+                    (PARCEL_SIZE_Y * 0.8 / -2.0) as i32..(PARCEL_SIZE_Y * 0.8 / 2.0) as i32,
+                );
+
                 let transform = dcl2d_ecs_v1::components::Transform {
                     location: dcl2d_ecs_v1::Vec2 {
                         x: location_x,
@@ -1130,7 +1267,6 @@ fn make_default_random_entities() -> Vec<dcl2d_ecs_v1::Entity> {
 
                 for png_file in png_files.flatten() {
                     if let Some(png_file_str) = png_file.file_name().to_str() {
-                      
                         let renderer = dcl2d_ecs_v1::components::SpriteRenderer {
                             sprite: random_stuff.clone() + "/" + png_file_str,
                             layer: -1,
@@ -1154,8 +1290,17 @@ fn make_default_random_entities() -> Vec<dcl2d_ecs_v1::Entity> {
                 base_path.push(&random_stuff);
                 let png_files = std::fs::read_dir(base_path).unwrap();
 
-                let location_x = rng.gen_range((PARCEL_SIZE_X * 0.8/ -2.0 )as i32 ..(PARCEL_SIZE_X * 0.8/ 2.0 ) as i32);
-                let location_y = rng.gen_range((PARCEL_SIZE_Y * 0.8/ -2.0 )as i32..(PARCEL_SIZE_Y * 0.8/ 2.0 ) as i32);                 let transform = dcl2d_ecs_v1::components::Transform {
+                let mut location_x = rng.gen_range(50..(PARCEL_SIZE_X * 0.8 / 2.0) as i32);
+                let mut location_y = rng.gen_range(50..(PARCEL_SIZE_Y * 0.8 / 2.0) as i32);
+
+                if rng.gen_bool(0.5) {
+                    location_x = -location_x;
+                }
+                if rng.gen_bool(0.5) {
+                    location_y = -location_y;
+                }
+
+                let transform = dcl2d_ecs_v1::components::Transform {
                     location: dcl2d_ecs_v1::Vec2 {
                         x: location_x,
                         y: location_y,
@@ -1204,9 +1349,17 @@ fn make_default_random_entities() -> Vec<dcl2d_ecs_v1::Entity> {
             if let Ok(mut base_path) = PathBuf::from_str("./assets/default_scene/assets/") {
                 base_path.push(&random_stuff);
                 let png_files = std::fs::read_dir(base_path).unwrap();
-                let location_x = rng.gen_range((PARCEL_SIZE_X * 0.8/ -2.0 )as i32 ..(PARCEL_SIZE_X * 0.8/ 2.0 ) as i32);
-                let location_y = rng.gen_range((PARCEL_SIZE_Y * 0.8/ -2.0 )as i32..(PARCEL_SIZE_Y * 0.8/ 2.0 ) as i32);
-                  let transform = dcl2d_ecs_v1::components::Transform {
+                let mut location_x = rng.gen_range(50..(PARCEL_SIZE_X * 0.8 / 2.0) as i32);
+                let mut location_y = rng.gen_range(50..(PARCEL_SIZE_Y * 0.8 / 2.0) as i32);
+
+                if rng.gen_bool(0.5) {
+                    location_x = -location_x;
+                }
+                if rng.gen_bool(0.5) {
+                    location_y = -location_y;
+                }
+
+                let transform = dcl2d_ecs_v1::components::Transform {
                     location: dcl2d_ecs_v1::Vec2 {
                         x: location_x,
                         y: location_y,
@@ -1253,7 +1406,7 @@ fn make_default_random_entities() -> Vec<dcl2d_ecs_v1::Entity> {
 }
 
 pub fn read_roads_data() -> Result<RoadsData> {
-    let file = match File::open(&ROADS_DATA_MP_FILE) {
+    let file = match File::open(ROADS_DATA_MP_FILE) {
         Ok(v) => v,
         Err(e) => return Err(Box::new(e)),
     };
@@ -1273,40 +1426,6 @@ pub fn read_roads_data() -> Result<RoadsData> {
 
     Ok(roads_data)
 }
-
-pub fn update_roads_data(new_roads_data: &RoadsData) -> Result<()> {
-    let mut serializable_roads_data = SerializableRoadsData::default();
-
-    for key in new_roads_data.parcel_map.keys() {
-        serializable_roads_data.parcels.push(Parcel(key.0, key.1));
-    }
-
-    let mut buf: Vec<u8> = Vec::new();
-    match serializable_roads_data.serialize(&mut Serializer::new(&mut buf)) {
-        Ok(_) => {}
-        Err(e) => return Err(Box::new(e)),
-    }
-
-    let mut file = match File::create(&ROADS_DATA_MP_FILE) {
-        Ok(v) => v,
-        Err(e) => return Err(Box::new(e)),
-    };
-
-    match file.write_all(&buf) {
-        Ok(v) => Ok(v),
-        Err(e) => Err(Box::new(e)),
-    }
-}
-
-pub fn remove_road_at_parcel(parcel: &Parcel, roads_data: &mut RoadsData) -> Result<()> {
-    roads_data.parcel_map.remove(&(parcel.0, parcel.1));
-    update_roads_data(roads_data)
-}
-
-pub fn add_road_at_parcel(parcel: &Parcel, roads_data: &mut RoadsData) -> Result<()> {
-    roads_data.parcel_map.insert((parcel.0, parcel.1), ());
-    update_roads_data(roads_data)
-} 
 
 pub fn is_road(parcel: &Parcel, roads_data: &RoadsData) -> bool {
     roads_data.parcel_map.get(&(parcel.0, parcel.1)).is_some()

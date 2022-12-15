@@ -16,14 +16,13 @@ where
     T: AsRef<Path>,
     U: AsRef<Path>,
 {
-
     let mut assets_source_path = source_path.as_ref().to_path_buf();
     assets_source_path.push("assets");
     let mut source_path = source_path.as_ref().to_path_buf();
 
     let assets_destination_path = destination_path.as_ref().to_path_buf();
     let mut destination_path = destination_path.as_ref().to_path_buf();
-    println!("compiling: {:?},{:?}",source_path,destination_path);
+    println!("compiling: {:?},{:?}", source_path, destination_path);
     if !source_path.exists() || !source_path.is_dir() {
         return Err(Box::new(SceneCompileError::SourceNotDirectory));
     }

@@ -123,10 +123,11 @@ pub fn get_scene(
             let mut path: PathBuf = path.iter().rev().collect();
             path.pop();
 
-            println!("path: {:?}",path);
-            if !scene.levels.is_empty()
-            {
-              scene.levels[0].entities.append(&mut make_default_background_entities(&path));
+            println!("path: {:?}", path);
+            if !scene.levels.is_empty() {
+                scene.levels[0]
+                    .entities
+                    .append(&mut make_default_background_entities(&path));
             }
             let scene_data = SceneData {
                 scene,

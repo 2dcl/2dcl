@@ -36,7 +36,7 @@ pub struct DownloadQueue {
 
 #[derive(Default)]
 pub struct DespawnedEntities {
-   pub entities: Vec<Entity>,
+    pub entities: Vec<Entity>,
 }
 
 impl Plugin for SceneLoaderPlugin {
@@ -48,11 +48,13 @@ impl Plugin for SceneLoaderPlugin {
             .add_system(scene_downloader)
             .add_system(downloading_scenes_task_handler)
             .add_system(default_scenes_despawner)
-            .add_system(loading_sprites_tasks_handler
-              .after(level_changer)
-              .after(scene_manager)
-              .after(downloading_scenes_task_handler)
-              .after(default_scenes_despawner));
+            .add_system(
+                loading_sprites_tasks_handler
+                    .after(level_changer)
+                    .after(scene_manager)
+                    .after(downloading_scenes_task_handler)
+                    .after(default_scenes_despawner),
+            );
     }
 }
 
@@ -86,7 +88,6 @@ pub fn level_changer(
                 if **level_parent == scene_entity {
                     //If we're in a different level we change it
                     if current_level != level.id {
-
                         //Despawn every scene
                         for (other_scene_entity, _other_scene) in scene_query.iter() {
                             despawned_entities.entities.push(other_scene_entity);
@@ -111,8 +112,8 @@ pub fn level_changer(
                             &asset_server,
                             &scene_data,
                             &mut collision_map,
-                            current_level
-                          );
+                            current_level,
+                        );
                     }
                     break;
                 }
@@ -411,6 +412,10 @@ pub async fn download_parcels(
                 };
             }
         }
+
+        if scene_path.read_dir()?.next().is_none() {
+            std::fs::remove_dir(scene_path)?;
+        }
     }
     Ok(scene_paths)
 }
@@ -536,18 +541,18 @@ pub fn loading_sprites_tasks_handler(
     mut despawned_entities: ResMut<DespawnedEntities>,
 ) {
     for (entity, mut loading_sprite) in &mut tasks_loading_sprite {
-      
-      if despawned_entities.entities.contains(&loading_sprite.scene_entity)
-      {
-        commands.entity(entity).remove::<LoadingSprite>();
-      }
-      else if let Some(loading_sprite_data) =
-          future::block_on(future::poll_once(&mut loading_sprite.task))
-      {
-          commands.entity(entity).insert(loading_sprite_data.image);
-          commands.entity(entity).insert(loading_sprite_data.sprite);
-          commands.entity(entity).remove::<LoadingSprite>();
-      }
+        if despawned_entities
+            .entities
+            .contains(&loading_sprite.scene_entity)
+        {
+            commands.entity(entity).remove::<LoadingSprite>();
+        } else if let Some(loading_sprite_data) =
+            future::block_on(future::poll_once(&mut loading_sprite.task))
+        {
+            commands.entity(entity).insert(loading_sprite_data.image);
+            commands.entity(entity).insert(loading_sprite_data.sprite);
+            commands.entity(entity).remove::<LoadingSprite>();
+        }
     }
 
     despawned_entities.entities.clear();
@@ -565,8 +570,7 @@ fn downloading_scenes_task_handler(
 ) {
     for (entity, mut downloading_scene) in &mut tasks_downloading_scenes {
         if let Some(new_paths) = future::block_on(future::poll_once(&mut downloading_scene.task)) {
-            
-          commands.entity(entity).despawn_recursive();
+            commands.entity(entity).despawn_recursive();
 
             if let Some(new_paths) = new_paths {
                 for new_path in new_paths {
@@ -609,7 +613,6 @@ fn default_scenes_despawner(
     mut despawned_entities: ResMut<DespawnedEntities>,
     scenes_query: Query<(Entity, &crate::components::Scene)>,
 ) {
-
     for (entity_1, scene_1) in &scenes_query {
         if despawned_entities.entities.contains(&entity_1) {
             continue;
@@ -667,7 +670,6 @@ pub fn spawn_level(
     timestamp: SystemTime,
     scene_entity: Entity,
 ) -> Option<Entity> {
-
     let scene = &scene_data.scene;
 
     if scene.levels.len() <= level_id {
@@ -691,11 +693,18 @@ pub fn spawn_level(
                 x: level.spawn_point.x as f32,
                 y: level.spawn_point.y as f32,
             },
-        }).id();
+        })
+        .id();
 
     for entity in level.entities.iter() {
-        let spawned_entity =
-            spawn_entity(commands, asset_server, collision_map, entity, scene_data,scene_entity);
+        let spawned_entity = spawn_entity(
+            commands,
+            asset_server,
+            collision_map,
+            entity,
+            scene_data,
+            scene_entity,
+        );
         commands.entity(level_entity).add_child(spawned_entity);
     }
 
@@ -734,7 +743,6 @@ pub fn spawn_scene(
     collision_map: &mut CollisionMap,
     level_id: usize,
 ) -> Option<Entity> {
-
     //
     let scene_location: Vec3 = get_scene_center_location(scene_data);
     let scene = &scene_data.scene;
@@ -767,15 +775,14 @@ pub fn spawn_scene(
             collision_map,
             SystemTime::now(),
             scene_entity,
-        )
-        {
-            Some(level_entity) =>   {
-              commands.entity(scene_entity).add_child(level_entity);
+        ) {
+            Some(level_entity) => {
+                commands.entity(scene_entity).add_child(level_entity);
             }
-            None =>{
-              commands.entity(scene_entity).despawn_recursive();
-              return None;
-            } 
+            None => {
+                commands.entity(scene_entity).despawn_recursive();
+                return None;
+            }
         }
     }
 
@@ -942,7 +949,7 @@ fn spawn_entity(
 
             commands.entity(spawned_entity).insert(LoadingSprite {
                 task: task_load_sprite,
-                scene_entity
+                scene_entity,
             });
         }
 

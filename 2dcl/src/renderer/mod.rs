@@ -30,15 +30,14 @@ pub use scene_maker::SceneMakerPlugin;
 pub mod scenes_io;
 pub use scenes_io::ScenesIOPlugin;
 
-
 //mod debug;
 //use debug::DebugPlugin;
 
 mod console;
 use console::MyConsolePlugin;
 
-mod roads_updater;
-use roads_updater::update_roads;
+//mod roads_updater;
+//use roads_updater::update_roads;
 
 pub fn start() {
     let current_path = std::env::current_exe().unwrap();
@@ -55,12 +54,11 @@ pub fn start() {
 
     let mut app = App::new();
     setup(&mut app);
-    app
-    .add_plugin(SceneLoaderPlugin)
+    app.add_plugin(SceneLoaderPlugin)
         .add_plugin(MyConsolePlugin)
         .add_plugin(SceneMakerPlugin)
         .add_plugin(ScenesIOPlugin)
-       // .add_startup_system(update_roads)
+        //.add_startup_system(update_roads)
         .run();
 }
 
