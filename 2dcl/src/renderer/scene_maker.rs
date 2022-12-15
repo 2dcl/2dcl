@@ -1270,6 +1270,7 @@ fn make_default_random_entities() -> Vec<dcl2d_ecs_v1::Entity> {
                         let renderer = dcl2d_ecs_v1::components::SpriteRenderer {
                             sprite: random_stuff.clone() + "/" + png_file_str,
                             layer: -1,
+                            anchor: dcl2d_ecs_v1::Anchor::BottomCenter,
                             ..default()
                         };
 
@@ -1315,10 +1316,10 @@ fn make_default_random_entities() -> Vec<dcl2d_ecs_v1::Entity> {
 
                 let box_collision = dcl2d_ecs_v1::components::BoxCollider {
                     collision_type: dcl2d_ecs_v1::collision_type::CollisionType::Solid,
-                    center: dcl2d_ecs_v1::Vec2 { x: 0, y: 0 },
+                    center: dcl2d_ecs_v1::Vec2 { x: 0, y: 20 },
                     size: dcl2d_ecs_v1::Size {
-                        width: 25,
-                        height: 25,
+                        width: 30,
+                        height: 30,
                     },
                 };
 
@@ -1326,6 +1327,7 @@ fn make_default_random_entities() -> Vec<dcl2d_ecs_v1::Entity> {
                     if let Some(png_file_str) = png_file.file_name().to_str() {
                         let renderer = dcl2d_ecs_v1::components::SpriteRenderer {
                             sprite: random_stuff.clone() + "/" + png_file_str,
+                            anchor: dcl2d_ecs_v1::Anchor::BottomCenter,
                             ..default()
                         };
 
@@ -1374,10 +1376,10 @@ fn make_default_random_entities() -> Vec<dcl2d_ecs_v1::Entity> {
 
                 let box_collision = dcl2d_ecs_v1::components::BoxCollider {
                     collision_type: dcl2d_ecs_v1::collision_type::CollisionType::Solid,
-                    center: dcl2d_ecs_v1::Vec2 { x: 0, y: 0 },
+                    center: dcl2d_ecs_v1::Vec2 { x: 0, y: 40 },
                     size: dcl2d_ecs_v1::Size {
-                        width: 75,
-                        height: 75,
+                        width: 80,
+                        height: 80,
                     },
                 };
 
@@ -1385,6 +1387,7 @@ fn make_default_random_entities() -> Vec<dcl2d_ecs_v1::Entity> {
                     if let Some(png_file_str) = png_file.file_name().to_str() {
                         let renderer = dcl2d_ecs_v1::components::SpriteRenderer {
                             sprite: random_stuff.clone() + "/" + png_file_str,
+                            anchor: dcl2d_ecs_v1::Anchor::BottomCenter,
                             ..default()
                         };
 

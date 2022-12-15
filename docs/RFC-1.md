@@ -102,7 +102,7 @@ The attributes available are:
   "color": { "r": 1.0, "g": 1.0, "b": 1.0, "a": 1.0 }, // optional, defaults to no coloring (white)
   "layer": 0, // optional, defaults to `player_layer` in level
   "flip": { "x": true, "y": false }, // optional, defaults to false
-  "anchor": "Center", // optional, defaults to "BottomCenter"
+  "anchor": "Center", // optional, defaults to "Center"
   "blend_mode" : "Multiply" // optional, defaults to "AlphaBlend"
 }
 ```

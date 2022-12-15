@@ -3,9 +3,9 @@ use serde::{Deserialize, Serialize};
 
 #[derive(Deserialize, Serialize, Debug, Clone, PartialEq, Eq, Default)]
 pub enum Anchor {
+  #[default]
     Center,
     BottomLeft,
-    #[default]
     BottomCenter,
     BottomRight,
     CenterLeft,
