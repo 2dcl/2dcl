@@ -14,7 +14,7 @@ use super::error::ScenesIOError;
 use super::scene_maker::make_default_background_entities;
 use super::scene_maker::{is_road, make_road_scene, RoadsData};
 
-#[derive(Debug, Clone, Default)]
+#[derive(Debug, Clone, Default, Resource)]
 pub struct SceneFilesMap {
     pub map: HashMap<(i16, i16), SceneFileData>,
 }

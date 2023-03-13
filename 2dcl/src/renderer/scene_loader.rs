@@ -29,12 +29,12 @@ use imagesize::size;
 
 pub struct SceneLoaderPlugin;
 
-#[derive(Default)]
+#[derive(Default, Resource)]
 pub struct DownloadQueue {
     parcels: Vec<Parcel>,
 }
 
-#[derive(Default)]
+#[derive(Default, Resource)]
 pub struct DespawnedEntities {
     pub entities: Vec<Entity>,
 }
@@ -232,7 +232,7 @@ pub fn scene_downloader(
         }
     }
 
-    commands.spawn().insert(DownloadingScene {
+    commands.spawn(DownloadingScene {
         task: task_download_parcels,
         parcels: download_queue.parcels.clone(),
     });
@@ -679,9 +679,8 @@ pub fn spawn_level(
     let level = &scene.levels[level_id];
 
     let level_entity = commands
-        .spawn()
-        .insert(Name::new(level.name.clone()))
-        .insert(Visibility { is_visible: true })
+        .spawn(Name::new(level.name.clone()))
+        .insert(VisibilityBundle::default())
         .insert(GlobalTransform::default())
         .insert(ComputedVisibility::default())
         .insert(Transform::default())
@@ -751,8 +750,7 @@ pub fn spawn_scene(
         .serialize(&mut Serializer::new(&mut scene_u8))
         .unwrap();
     let scene_entity = commands
-        .spawn()
-        .insert(Visibility { is_visible: true })
+        .spawn(VisibilityBundle::default())
         .insert(GlobalTransform::default())
         .insert(ComputedVisibility::default())
         .insert(Name::new(scene.name.clone()))
@@ -861,7 +859,7 @@ fn spawn_entity(
     scene_entity: Entity,
 ) -> Entity {
     let scene = &scene_data.scene;
-    let mut transform = Transform::identity();
+    let mut transform = Transform::default();
     for component in entity.components.iter() {
         if let Some(source_transform) = component
             .as_any()
@@ -887,9 +885,8 @@ fn spawn_entity(
 
     //Spawning Entity
     let spawned_entity = commands
-        .spawn()
+        .spawn(VisibilityBundle::default())
         .insert(Name::new(entity.name.clone()))
-        .insert(Visibility { is_visible: true })
         .insert(GlobalTransform::default())
         .insert(ComputedVisibility::default())
         .insert(transform)

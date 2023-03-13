@@ -39,7 +39,7 @@ pub fn collider_debugger(
             };
 
             let entity = commands
-                .spawn_bundle(MaterialMesh2dBundle {
+                .spawn(MaterialMesh2dBundle {
                     mesh: meshes.add(Mesh::from(shape::Quad::default())).into(),
                     transform,
                     material: materials.add(ColorMaterial::from(color)),

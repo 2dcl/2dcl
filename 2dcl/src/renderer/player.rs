@@ -69,7 +69,7 @@ fn spawn_player(
 
     //Spawning Entity
     let player = commands
-        .spawn_bundle(SpriteSheetBundle {
+        .spawn(SpriteSheetBundle {
             sprite: sprite.clone(),
             texture_atlas: player_animator.atlas.clone(),
             transform: Transform {
@@ -90,7 +90,7 @@ fn spawn_player(
         .id();
 
     let interact_icon = commands
-        .spawn_bundle(SpriteSheetBundle {
+        .spawn(SpriteSheetBundle {
             sprite,
             texture_atlas: interact_animator.atlas.clone(),
             transform: Transform::from_translation(Vec3::new(0.0, ITERACT_ICON_HEIGHT, 0.0)),
@@ -111,7 +111,7 @@ fn spawn_player(
     });
 
     camera_bundle.projection.scale = CAMERA_SCALE;
-    let camera_entity = commands.spawn_bundle(camera_bundle).id();
+    let camera_entity = commands.spawn(camera_bundle).id();
 
     commands.entity(player).add_child(camera_entity);
     commands.entity(player).add_child(interact_icon);

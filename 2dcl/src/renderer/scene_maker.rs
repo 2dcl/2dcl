@@ -62,7 +62,7 @@ const BOULEVARD_SPACING: i16 = 4;
 
 const RANDOM_OBSTACLE_SPAWN_CHANCE: f64 = 0.1;
 
-#[derive(Debug, Clone, Default)]
+#[derive(Debug, Clone, Default, Resource)]
 pub struct RoadsData {
     pub parcel_map: HashMap<(i16, i16), ()>,
 }

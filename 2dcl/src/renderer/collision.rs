@@ -12,7 +12,7 @@ pub struct CollisionResult {
     pub level_change: Option<LevelChange>,
 }
 
-#[derive(Default, Clone)]
+#[derive(Default, Clone, Resource)]
 pub struct CollisionMap {
     pub tiles: Vec<CollisionTile>,
     pub tile_size: f32,
@@ -30,7 +30,7 @@ pub struct CollisionPlugin;
 impl Plugin for CollisionPlugin {
     fn build(&self, app: &mut App) {
         app.init_resource::<CollisionMap>()
-            .add_startup_system_to_stage(StartupStage::PreStartup, setup);
+            .add_startup_system(setup.in_base_set(StartupSet::Startup));
     }
 }
 

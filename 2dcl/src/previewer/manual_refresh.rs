@@ -2,7 +2,7 @@ use bevy::prelude::*;
 
 use std::path::PathBuf;
 
-
+#[derive(Default, Resource)]
 pub struct RefreshData
 {
  pub source_path: PathBuf,

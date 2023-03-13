@@ -1,5 +1,4 @@
 use bevy::prelude::*;
-use bevy::sprite::Rect;
 use bevy::utils::Duration;
 use serde::Deserialize;
 use std::f32::EPSILON;
@@ -260,7 +259,7 @@ where
         scale,
         atlas: texture_atlases.add(atlas),
         frame_durations,
-        timer: Timer::from_seconds(current_duration, true),
+        timer: Timer::from_seconds(current_duration, TimerMode::Repeating),
         current_animation,
         animation_queue: Vec::default(),
     };

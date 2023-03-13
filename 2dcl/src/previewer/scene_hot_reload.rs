@@ -60,7 +60,7 @@ impl AssetLoader for SceneAssetLoader {
 }
 
 pub struct SceneHotReloadPlugin;
-
+#[derive(Default, Resource)]
 pub struct SceneHandler(pub Handle<SceneAsset>);
 
 impl Plugin for SceneHotReloadPlugin {
