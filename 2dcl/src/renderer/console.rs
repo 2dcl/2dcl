@@ -12,7 +12,7 @@ pub struct MyConsolePlugin;
 
 impl Plugin for MyConsolePlugin {
     fn build(&self, app: &mut App) {
-        app.add_plugin(ConsolePlugin);
+        app.add_plugin(ConsolePlugin)
             .add_console_command::<TeleportCommand, _, _>(teleport_command)
             .add_console_command::<WhereCommand, _, _>(where_command);
     }
