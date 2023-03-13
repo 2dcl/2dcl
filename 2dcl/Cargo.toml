@@ -9,7 +9,7 @@ name = "2dcl"
 path = "src/main.rs"
 
 [dependencies]
-bevy = "0.8.1"
+bevy = { version = "0.10.0", default-features = false, features = ["bevy_render", "bevy_core_pipeline", "bevy_ui", "bevy_asset", "bevy_text", "png", "vorbis", "bevy_sprite", "bevy_winit", "mp3", "x11"] }
 tokio = { version = "1", features = ["full"] }
 tokio-tungstenite = { version = "*", features = ["native-tls"] }
 futures-util = { version = "0.3", default-features = false, features = ["sink", "std"] }
