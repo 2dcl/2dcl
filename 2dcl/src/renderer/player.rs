@@ -1,4 +1,4 @@
-use super::{animations::*, collision::*};
+use super::{animations::*, collision::*, components, resources};
 use crate::components::{BoxCollider, LevelChange};
 use crate::renderer::config::*;
 use bevy::{core_pipeline::clear_color::ClearColorConfig, prelude::*, sprite::Anchor};
@@ -7,20 +7,8 @@ use dcl_common::Parcel;
 
 pub struct PlayerPlugin;
 
-#[derive(Component, Debug)]
-pub struct PlayerComponent {
-    speed: f32,
-    collider_size: Vec2,
-    level_change_stack: Vec<LevelChangeStackData>,
-    pub current_level: usize,
-    pub current_parcel: Parcel,
-}
-
-#[derive(Component)]
-struct InteractIcon {}
-
 #[derive(Debug)]
-struct LevelChangeStackData {
+pub struct LevelChangeStackData {
     location: Vec3,
     level_id: usize,
 }
@@ -80,7 +68,7 @@ fn spawn_player(
         })
         .insert(player_animator)
         .insert(Name::new("Player"))
-        .insert(PlayerComponent {
+        .insert(components::Player {
             speed: PLAYER_SPEED,
             collider_size: PLAYER_COLLIDER,
             current_level: 0,
@@ -98,7 +86,7 @@ fn spawn_player(
         })
         .insert(interact_animator)
         .insert(Name::new("Interact_icon"))
-        .insert(InteractIcon {})
+        .insert(components::InteractIcon::default())
         .id();
 
     let clear_color = ClearColorConfig::Custom(Color::BLACK);
@@ -119,15 +107,15 @@ fn spawn_player(
 
 fn player_movement(
     mut player_query: Query<(
-        &mut PlayerComponent,
+        &mut components::Player,
         &mut Transform,
-        &mut Animator,
+        &mut components::Animator,
         &mut TextureAtlasSprite,
     )>,
     box_collision_query: Query<(Entity, &GlobalTransform, &BoxCollider)>,
     entities_with_level_change: Query<(Entity, &LevelChange)>,
     keyboard: Res<Input<KeyCode>>,
-    collision_map: Res<CollisionMap>,
+    collision_map: Res<resources::CollisionMap>,
     time: Res<Time>,
 ) {
     let result = player_query.get_single_mut();
@@ -187,12 +175,16 @@ fn player_movement(
 }
 
 fn player_interact(
-    mut player_query: Query<(&mut PlayerComponent, &mut Transform)>,
-    mut iteract_query: Query<(&InteractIcon, &mut Animator, &mut TextureAtlasSprite)>,
+    mut player_query: Query<(&mut components::Player, &mut Transform)>,
+    mut iteract_query: Query<(
+        &components::InteractIcon,
+        &mut components::Animator,
+        &mut TextureAtlasSprite,
+    )>,
     box_collision_query: Query<(Entity, &GlobalTransform, &BoxCollider)>,
     entities_with_level_change: Query<(Entity, &LevelChange)>,
     keyboard: Res<Input<KeyCode>>,
-    collision_map: Res<CollisionMap>,
+    collision_map: Res<resources::CollisionMap>,
 ) {
     let result = player_query.get_single_mut();
 
@@ -234,7 +226,7 @@ fn player_interact(
 
 fn update_interact_icon_visibility(
     collisions: &Vec<CollisionResult>,
-    interact_icon_animator: &mut Animator,
+    interact_icon_animator: &mut components::Animator,
     interact_sprite_atlas: &mut TextureAtlasSprite,
 ) {
     let mut player_is_in_trigger = false;
@@ -260,7 +252,7 @@ fn update_interact_icon_visibility(
     }
 }
 fn change_level(
-    player: &mut PlayerComponent,
+    player: &mut components::Player,
     player_transform: &mut Transform,
     level_change: &LevelChange,
 ) {
@@ -281,7 +273,7 @@ fn change_level(
 }
 
 fn try_change_level(
-    player: &mut PlayerComponent,
+    player: &mut components::Player,
     player_transform: &mut Transform,
     collisions: &Vec<CollisionResult>,
 ) {
@@ -293,7 +285,7 @@ fn try_change_level(
     }
 }
 
-fn exit_level(player: &mut PlayerComponent, transform: &mut Transform) {
+fn exit_level(player: &mut components::Player, transform: &mut Transform) {
     if let Some(data) = player.level_change_stack.pop() {
         transform.translation = data.location;
         player.current_level = data.level_id;
@@ -301,11 +293,11 @@ fn exit_level(player: &mut PlayerComponent, transform: &mut Transform) {
 }
 
 fn check_player_collision(
-    player: &mut PlayerComponent,
+    player: &mut components::Player,
     target_location: &Vec3,
     box_collision_query: &Query<(Entity, &GlobalTransform, &BoxCollider)>,
     entities_with_level_change: &Query<(Entity, &LevelChange)>,
-    collision_map: CollisionMap,
+    collision_map: resources::CollisionMap,
 ) -> bool {
     let collisions = get_collisions(
         target_location,

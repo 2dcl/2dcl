@@ -6,31 +6,22 @@ use std::fs::File;
 use std::path::Path;
 use std::path::PathBuf;
 
-#[derive(Component, Debug)]
-pub struct Animator {
-    pub current_animation: Animation,
-    animations: Vec<Animation>,
-    pub atlas: Handle<TextureAtlas>,
-    pub scale: f32,
-    frame_durations: Vec<f32>,
-    timer: Timer,
-    animation_queue: Vec<Animation>,
+use super::components;
+
+#[derive(Deserialize, Debug, Clone, PartialEq, Eq)]
+pub enum AnimDirection {
+    Forward,
+    Reverse,
+    PingpongForward,
+    PingpongReverse,
 }
 
 #[derive(Debug, Clone)]
 pub struct Animation {
     pub name: String,
-    from: usize,
-    to: usize,
-    direction: Direction,
-}
-
-#[derive(Deserialize, Debug, Clone, PartialEq, Eq)]
-pub enum Direction {
-    Forward,
-    Reverse,
-    PingpongForward,
-    PingpongReverse,
+    pub from: usize,
+    pub to: usize,
+    pub direction: AnimDirection,
 }
 
 pub struct AnimationsPlugin;
@@ -43,7 +34,7 @@ impl Plugin for AnimationsPlugin {
 
 pub fn update_animations(
     time: Res<Time>,
-    mut query: Query<(&mut Animator, &mut TextureAtlasSprite)>,
+    mut query: Query<(&mut components::Animator, &mut TextureAtlasSprite)>,
 ) {
     for (mut animator, mut sprite) in &mut query.iter_mut() {
         animator.timer.tick(time.delta());
@@ -51,7 +42,7 @@ pub fn update_animations(
         if animator.timer.just_finished() {
             let mut new_index = sprite.index;
             match animator.current_animation.direction {
-                Direction::Forward => {
+                AnimDirection::Forward => {
                     new_index += 1;
 
                     if new_index < animator.current_animation.from
@@ -65,7 +56,7 @@ pub fn update_animations(
                     }
                 }
 
-                Direction::Reverse => {
+                AnimDirection::Reverse => {
                     if new_index > animator.current_animation.to
                         || (new_index <= animator.current_animation.from
                             && animator.animation_queue.is_empty())
@@ -79,13 +70,13 @@ pub fn update_animations(
                     }
                 }
 
-                Direction::PingpongForward => {
+                AnimDirection::PingpongForward => {
                     new_index += 1;
                     if new_index < animator.current_animation.from
                         || (new_index > animator.current_animation.to
                             && animator.animation_queue.is_empty())
                     {
-                        animator.current_animation.direction = Direction::PingpongReverse;
+                        animator.current_animation.direction = AnimDirection::PingpongReverse;
                         if animator.current_animation.from < animator.current_animation.to {
                             new_index = animator.current_animation.to - 1;
                         } else {
@@ -97,13 +88,13 @@ pub fn update_animations(
                     }
                 }
 
-                Direction::PingpongReverse => {
+                AnimDirection::PingpongReverse => {
                     if (new_index > animator.current_animation.to
                         && animator.current_animation.from < animator.current_animation.to)
                         || (new_index <= animator.current_animation.from
                             && animator.animation_queue.is_empty())
                     {
-                        animator.current_animation.direction = Direction::PingpongForward;
+                        animator.current_animation.direction = AnimDirection::PingpongForward;
                         new_index = animator.current_animation.from + 1;
                     } else if new_index <= animator.current_animation.from {
                         new_index =
@@ -119,13 +110,17 @@ pub fn update_animations(
     }
 }
 
-fn change_frame(index: usize, sprite: &mut TextureAtlasSprite, animator: &mut Animator) {
+fn change_frame(
+    index: usize,
+    sprite: &mut TextureAtlasSprite,
+    animator: &mut components::Animator,
+) {
     sprite.index = index;
     let new_duration = Duration::from_secs_f32(animator.frame_durations[sprite.index]);
     animator.timer.set_duration(new_duration);
 }
 pub fn change_animator_state<P>(
-    mut animator: &mut Animator,
+    mut animator: &mut components::Animator,
     sprite: &mut TextureAtlasSprite,
     new_state: P,
 ) -> Option<Animation>
@@ -141,8 +136,8 @@ where
     for i in 0..animator.animations.len() {
         if animator.animations[i].name == *new_state.as_ref() {
             animator.current_animation = animator.animations[i].clone();
-            if animator.current_animation.direction == Direction::Forward
-                || animator.current_animation.direction == Direction::PingpongForward
+            if animator.current_animation.direction == AnimDirection::Forward
+                || animator.current_animation.direction == AnimDirection::PingpongForward
             {
                 change_frame(animator.current_animation.from, sprite, animator);
             } else {
@@ -157,7 +152,7 @@ where
 }
 
 pub fn play_next_animation_in_queue(
-    animator: &mut Animator,
+    animator: &mut components::Animator,
     sprite: &mut TextureAtlasSprite,
 ) -> usize {
     let new_state = animator.animation_queue[0].clone().name;
@@ -169,7 +164,7 @@ pub fn play_next_animation_in_queue(
 
     0
 }
-pub fn queue_animation<P>(animator: &mut Animator, new_state: P)
+pub fn queue_animation<P>(animator: &mut components::Animator, new_state: P)
 where
     P: AsRef<str>,
 {
@@ -191,7 +186,7 @@ pub fn get_animator<P>(
     path: P,
     assets: &Res<AssetServer>,
     texture_atlases: &mut ResMut<Assets<TextureAtlas>>,
-) -> Result<Animator, String>
+) -> Result<components::Animator, String>
 where
     P: AsRef<Path>,
 {
@@ -234,9 +229,9 @@ where
 
     for frame_tag in spritesheet.meta.frame_tags.unwrap_or_default() {
         let direction = match frame_tag.direction {
-            aseprite::Direction::Forward => Direction::Forward,
-            aseprite::Direction::Reverse => Direction::Reverse,
-            aseprite::Direction::Pingpong => Direction::PingpongForward,
+            aseprite::Direction::Forward => AnimDirection::Forward,
+            aseprite::Direction::Reverse => AnimDirection::Reverse,
+            aseprite::Direction::Pingpong => AnimDirection::PingpongForward,
         };
 
         animations.push(Animation {
@@ -254,7 +249,7 @@ where
 
     let current_animation = animations[0].clone();
     let current_duration = frame_durations[0];
-    let animator = Animator {
+    let animator = components::Animator {
         animations,
         scale,
         atlas: texture_atlases.add(atlas),

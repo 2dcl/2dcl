@@ -1,6 +1,5 @@
-use super::collision::CollisionMap;
 use super::collision::CollisionTile;
-use super::player::PlayerComponent;
+use super::{resources, components};
 use super::scenes_io::{
     get_parcel_file_data, get_scene, read_scene_file, refresh_path, SceneData, SceneFilesMap,
 };
@@ -60,10 +59,10 @@ impl Plugin for SceneLoaderPlugin {
 
 pub fn level_changer(
     mut commands: Commands,
-    mut collision_map: ResMut<CollisionMap>,
+    mut collision_map: ResMut<resources::CollisionMap>,
     mut despawned_entities: ResMut<DespawnedEntities>,
     asset_server: Res<AssetServer>,
-    mut player_query: Query<(&mut PlayerComponent, &mut GlobalTransform)>,
+    mut player_query: Query<(&mut components::Player, &mut GlobalTransform)>,
     scene_query: Query<(Entity, &mut crate::components::Scene)>,
     level_query: Query<(&crate::components::Level, &Parent)>,
 ) {
@@ -124,11 +123,11 @@ pub fn level_changer(
 }
 
 pub fn scene_manager(
-    mut player_query: Query<(&mut PlayerComponent, &mut GlobalTransform)>,
+    mut player_query: Query<(&mut components::Player, &mut GlobalTransform)>,
     scene_query: Query<(
         Entity,
         &mut crate::components::Scene,
-        Without<PlayerComponent>,
+        Without<components::Player>,
     )>,
     mut commands: Commands,
     mut despawned_entities: ResMut<DespawnedEntities>,
@@ -187,7 +186,7 @@ pub fn scene_downloader(
     asset_server: Res<AssetServer>,
     mut roads_data: ResMut<RoadsData>,
     scene_files_map: Res<SceneFilesMap>,
-    mut collision_map: ResMut<CollisionMap>,
+    mut collision_map: ResMut<resources::CollisionMap>,
     mut download_queue: ResMut<DownloadQueue>,
 ) {
     if download_queue.parcels.is_empty() {
@@ -560,7 +559,7 @@ pub fn loading_sprites_tasks_handler(
 
 fn downloading_scenes_task_handler(
     mut commands: Commands,
-    mut collision_map: ResMut<CollisionMap>,
+    mut collision_map: ResMut<resources::CollisionMap>,
     mut roads_data: ResMut<RoadsData>,
     mut scene_files_map: ResMut<SceneFilesMap>,
     mut despawned_entities: ResMut<DespawnedEntities>,
@@ -648,7 +647,7 @@ fn spawn_default_scene(
     commands: &mut Commands,
     asset_server: &Res<AssetServer>,
     parcel: &Parcel,
-    collision_map: &mut CollisionMap,
+    collision_map: &mut resources::CollisionMap,
 ) {
     let scene_data = match make_default_scene(parcel) {
         Ok(v) => v,
@@ -666,7 +665,7 @@ pub fn spawn_level(
     asset_server: &AssetServer,
     scene_data: &SceneData,
     level_id: usize,
-    collision_map: &mut CollisionMap,
+    collision_map: &mut resources::CollisionMap,
     timestamp: SystemTime,
     scene_entity: Entity,
 ) -> Option<Entity> {
@@ -739,7 +738,7 @@ pub fn spawn_scene(
     commands: &mut Commands,
     asset_server: &AssetServer,
     scene_data: &SceneData,
-    collision_map: &mut CollisionMap,
+    collision_map: &mut resources::CollisionMap,
     level_id: usize,
 ) -> Option<Entity> {
     //
@@ -853,7 +852,7 @@ fn get_fixed_translation_by_anchor(
 fn spawn_entity(
     commands: &mut Commands,
     asset_server: &AssetServer,
-    collision_map: &mut CollisionMap,
+    collision_map: &mut resources::CollisionMap,
     entity: &dcl2d_ecs_v1::Entity,
     scene_data: &SceneData,
     scene_entity: Entity,

@@ -4,18 +4,14 @@ use dcl2d_ecs_v1::collision_type::CollisionType;
 
 use crate::components::{BoxCollider, LevelChange};
 
+use super::resources;
+
 pub const TILE_SIZE: f32 = 1.0;
 
 pub struct CollisionResult {
     pub hit: bool,
     pub collision_type: CollisionType,
     pub level_change: Option<LevelChange>,
-}
-
-#[derive(Default, Clone, Resource)]
-pub struct CollisionMap {
-    pub tiles: Vec<CollisionTile>,
-    pub tile_size: f32,
 }
 
 #[derive(Default, Clone)]
@@ -29,13 +25,13 @@ pub struct CollisionPlugin;
 
 impl Plugin for CollisionPlugin {
     fn build(&self, app: &mut App) {
-        app.init_resource::<CollisionMap>()
+        app.init_resource::<resources::CollisionMap>()
             .add_startup_system(setup.in_base_set(StartupSet::Startup));
     }
 }
 
 fn setup(mut commands: Commands) {
-    commands.insert_resource(CollisionMap {
+    commands.insert_resource(resources::CollisionMap {
         tile_size: TILE_SIZE,
         ..default()
     });
@@ -44,7 +40,7 @@ fn setup(mut commands: Commands) {
 pub fn get_mask_collision(
     position: &Vec3,
     size: &Vec2,
-    collision_map: CollisionMap,
+    collision_map: resources::CollisionMap,
     entities_with_level_change: &Query<(Entity, &LevelChange)>,
 ) -> CollisionResult {
     for tile in collision_map.tiles {
@@ -140,7 +136,7 @@ pub fn get_collisions(
     size: &Vec2,
     box_colliders: &Query<(Entity, &GlobalTransform, &BoxCollider)>,
     entities_with_level_change: &Query<(Entity, &LevelChange)>,
-    collision_map: CollisionMap,
+    collision_map: resources::CollisionMap,
 ) -> Vec<CollisionResult> {
     let mut collision_results =
         get_box_collisions(position, size, box_colliders, entities_with_level_change);

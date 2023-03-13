@@ -1,20 +1,20 @@
+use crate::renderer::resources;
+use crate::renderer::components;
 use crate::renderer::scene_loader::get_scene_center_location;
 use crate::renderer::scene_loader::loading_sprites_tasks_handler;
 use crate::renderer::scene_loader::DespawnedEntities;
 use crate::renderer::scenes_io::read_scene_u8;
 use crate::renderer::scenes_io::SceneData;
-use crate::renderer::CollisionMap;
-use crate::renderer::PlayerComponent;
 use bevy::asset::Handle;
 use bevy::prelude::*;
 use dcl_common::Parcel;
 use notify::Event;
+use notify::EventKind::Modify;
 use notify::RecursiveMode;
 use notify::Watcher;
 use std::path::PathBuf;
 use std::str::FromStr;
 use std::time::SystemTime;
-use notify::EventKind::Modify;
 
 use bevy::{
     asset::{AssetLoader, LoadContext, LoadedAsset},
@@ -78,54 +78,49 @@ impl Plugin for SceneHotReloadPlugin {
 }
 
 fn setup(mut commands: Commands, asset_server: Res<AssetServer>) {
-   /*  let result = asset_server.watch_for_changes();
+    /*  let result = asset_server.watch_for_changes();
 
-    if result.is_err() {
-        println!("{}", result.unwrap_err());
-        return;
-    }
-*/
+        if result.is_err() {
+            println!("{}", result.unwrap_err());
+            return;
+        }
+    */
     let handler: Handle<SceneAsset> = asset_server.load("../scene.2dcl");
     commands.insert_resource(SceneHandler(handler));
 
     let mut watch_path = std::env::current_dir().unwrap_or_default();
     watch_path.pop();
 
-   println!("watching {:?}",watch_path);
+    println!("watching {:?}", watch_path);
     let asset_server = asset_server.clone();
     let mut watcher = notify::recommended_watcher(move |res| match res {
-      Ok(event) => {
-          let Event {
-              kind,
-              paths,
-              attrs: _,
-          } = event;
+        Ok(event) => {
+            let Event {
+                kind,
+                paths,
+                attrs: _,
+            } = event;
 
-          println!("event triggered:{:?},{:?}",kind,paths);
-          if let Modify(_) = kind {
-              for path in paths {
-                  if path.ends_with("scene.json")
-                  {
-                      if let Err(error) = scene_compiler::compile(&path, "./build") {
-                          println!("Error compiling: {}", error)
-                      }
-                      else
-                      {
-                        asset_server.reload_asset("../scene.2dcl");
-                      }
-                  }
-              }
-          }
-      }
-      Err(e) => println!("watch error: {:?}", e),
-  })
-  .unwrap();
+            println!("event triggered:{:?},{:?}", kind, paths);
+            if let Modify(_) = kind {
+                for path in paths {
+                    if path.ends_with("scene.json") {
+                        if let Err(error) = scene_compiler::compile(&path, "./build") {
+                            println!("Error compiling: {}", error)
+                        } else {
+                            asset_server.reload_asset("../scene.2dcl");
+                        }
+                    }
+                }
+            }
+        }
+        Err(e) => println!("watch error: {:?}", e),
+    })
+    .unwrap();
 
-
-  watcher
-  .watch(&watch_path, RecursiveMode::Recursive)
-  .unwrap();
-
+    watcher
+        .watch(&watch_path, RecursiveMode::Recursive)
+        .unwrap();
 }
 
 fn scene_reload(
@@ -134,8 +129,8 @@ fn scene_reload(
     asset_server: Res<AssetServer>,
     scene_handlers: Res<SceneHandler>,
     mut scenes: Query<(Entity, &Scene)>,
-    mut collision_map: ResMut<CollisionMap>,
-    mut player_query: Query<(&PlayerComponent, &mut Transform)>,
+    mut collision_map: ResMut<resources::CollisionMap>,
+    mut player_query: Query<(&components::Player, &mut Transform)>,
     mut despawned_entities: ResMut<DespawnedEntities>,
 ) {
     if let Ok((player, mut player_transform)) = player_query.get_single_mut() {
@@ -218,12 +213,12 @@ fn scene_reload(
 }
 
 pub fn level_change(
-    player_query: Query<&PlayerComponent>,
+    player_query: Query<&components::Player>,
     scene_query: Query<(Entity, &Scene)>,
     level_query: Query<&Level>,
     mut commands: Commands,
     asset_server: Res<AssetServer>,
-    mut collision_map: ResMut<CollisionMap>,
+    mut collision_map: ResMut<resources::CollisionMap>,
     mut despawned_entities: ResMut<DespawnedEntities>,
 ) {
     //Find the player

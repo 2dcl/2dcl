@@ -50,16 +50,5 @@ fn main() -> Result<()> {
             renderer::start();
         }
     }
-
-    //    ws::start().await?;
-
-    // spawn kernel process
-    //  let mut command = std::env::current_exe()?;
-    //  command.pop();
-    //  command.push("kernel");
-    //  Command::new(command).spawn().expect("failed to spawn");
-
-    //
-
     Ok(())
 }

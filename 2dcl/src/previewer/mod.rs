@@ -37,11 +37,10 @@ where
     dst_abs_path.push(destination_path);
 
     // run preview
-    preview_scene(src_abs_path.to_path_buf(),dst_abs_path.to_path_buf());
+    preview_scene(src_abs_path.to_path_buf(), dst_abs_path.to_path_buf());
 }
 
 pub fn preview_scene(source_path: std::path::PathBuf, destination_path: std::path::PathBuf) {
-
     std::env::set_current_dir(&destination_path).unwrap();
     let absolute_base_dir = std::fs::canonicalize(PathBuf::from_str(".").unwrap()).unwrap();
     std::env::set_var("CARGO_MANIFEST_DIR", absolute_base_dir);
@@ -50,7 +49,10 @@ pub fn preview_scene(source_path: std::path::PathBuf, destination_path: std::pat
     crate::renderer::setup(&mut app);
 
     app.add_plugin(SceneHotReloadPlugin)
-        .insert_resource(RefreshData{ source_path, destination_path })
+        .insert_resource(RefreshData {
+            source_path,
+            destination_path,
+        })
         .add_system(level_switch)
         .add_system(collider_debugger)
         .add_system(manual_refresh)

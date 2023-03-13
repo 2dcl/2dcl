@@ -1,9 +1,5 @@
 use bevy::render::render_resource::SamplerDescriptor;
-use bevy::{
-    prelude::*,
-    render::{render_resource::FilterMode},
-};
-
+use bevy::{prelude::*, render::render_resource::FilterMode};
 
 pub mod config;
 mod custom_material;
@@ -11,15 +7,16 @@ mod dcl_3d_scene;
 mod error;
 mod player_sprite_maker;
 
+pub mod components;
+
 mod player;
-pub use player::PlayerComponent;
 use player::PlayerPlugin;
 
 mod animations;
 use animations::AnimationsPlugin;
 
 mod collision;
-pub use collision::CollisionMap;
+pub mod resources;
 use collision::CollisionPlugin;
 
 pub mod scene_loader;
@@ -59,19 +56,18 @@ pub fn start() {
         //.add_plugin(MyConsolePlugin)
         .add_plugin(SceneMakerPlugin)
         .add_plugin(ScenesIOPlugin)
-        //.add_startup_system(update_roads)
         .run();
 }
 
 pub fn setup(app: &mut bevy::app::App) {
     app.insert_resource(Msaa::Off)
         .add_plugins(DefaultPlugins)
-       /*.add_plugin(ImagePlugin{
+        /*.add_plugin(ImagePlugin{
           default_sampler:  SamplerDescriptor{
             mag_filter: FilterMode::Nearest,
             ..default()
           }
-        }) */ 
+        }) */
         //.add_plugin(DebugPlugin)
         .add_plugin(AnimationsPlugin)
         .add_plugin(PlayerPlugin)
