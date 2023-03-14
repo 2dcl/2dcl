@@ -2,9 +2,10 @@ use bevy::prelude::*;
 use bevy::sprite::collide_aabb::collide;
 use dcl2d_ecs_v1::collision_type::CollisionType;
 
-use crate::components::{BoxCollider, LevelChange};
-
-use super::resources;
+use crate::{
+    components::{BoxCollider, LevelChange},
+    resources,
+};
 
 pub const TILE_SIZE: f32 = 1.0;
 

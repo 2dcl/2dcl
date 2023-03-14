@@ -1,6 +1,6 @@
-use super::{animations::*, collision::*, components, resources};
-use crate::components::{BoxCollider, LevelChange};
+use super::{animations::*, collision::*};
 use crate::renderer::config::*;
+use crate::{components, resources};
 use bevy::{core_pipeline::clear_color::ClearColorConfig, prelude::*, sprite::Anchor};
 use dcl2d_ecs_v1::collision_type::CollisionType;
 use dcl_common::Parcel;
@@ -112,8 +112,8 @@ fn player_movement(
         &mut components::Animator,
         &mut TextureAtlasSprite,
     )>,
-    box_collision_query: Query<(Entity, &GlobalTransform, &BoxCollider)>,
-    entities_with_level_change: Query<(Entity, &LevelChange)>,
+    box_collision_query: Query<(Entity, &GlobalTransform, &components::BoxCollider)>,
+    entities_with_level_change: Query<(Entity, &components::LevelChange)>,
     keyboard: Res<Input<KeyCode>>,
     collision_map: Res<resources::CollisionMap>,
     time: Res<Time>,
@@ -181,8 +181,8 @@ fn player_interact(
         &mut components::Animator,
         &mut TextureAtlasSprite,
     )>,
-    box_collision_query: Query<(Entity, &GlobalTransform, &BoxCollider)>,
-    entities_with_level_change: Query<(Entity, &LevelChange)>,
+    box_collision_query: Query<(Entity, &GlobalTransform, &components::BoxCollider)>,
+    entities_with_level_change: Query<(Entity, &components::LevelChange)>,
     keyboard: Res<Input<KeyCode>>,
     collision_map: Res<resources::CollisionMap>,
 ) {
@@ -254,7 +254,7 @@ fn update_interact_icon_visibility(
 fn change_level(
     player: &mut components::Player,
     player_transform: &mut Transform,
-    level_change: &LevelChange,
+    level_change: &components::LevelChange,
 ) {
     let level_change_stack_data = LevelChangeStackData {
         level_id: player.current_level,
@@ -295,8 +295,8 @@ fn exit_level(player: &mut components::Player, transform: &mut Transform) {
 fn check_player_collision(
     player: &mut components::Player,
     target_location: &Vec3,
-    box_collision_query: &Query<(Entity, &GlobalTransform, &BoxCollider)>,
-    entities_with_level_change: &Query<(Entity, &LevelChange)>,
+    box_collision_query: &Query<(Entity, &GlobalTransform, &components::BoxCollider)>,
+    entities_with_level_change: &Query<(Entity, &components::LevelChange)>,
     collision_map: resources::CollisionMap,
 ) -> bool {
     let collisions = get_collisions(

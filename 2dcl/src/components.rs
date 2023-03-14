@@ -5,6 +5,10 @@ use dcl_common::Parcel;
 use std::path::PathBuf;
 use std::time::SystemTime;
 
+use crate::bundles::LoadingSpriteData;
+use crate::renderer::animations::Animation;
+use crate::renderer::player::LevelChangeStackData;
+
 #[derive(Component)]
 pub struct DownloadingScene {
     pub task: Task<Option<Vec<PathBuf>>>,
@@ -15,11 +19,6 @@ pub struct DownloadingScene {
 pub struct LoadingSprite {
     pub task: Task<LoadingSpriteData>,
     pub scene_entity: Entity,
-}
-
-pub struct LoadingSpriteData {
-    pub sprite: Sprite,
-    pub image: Handle<Image>,
 }
 
 #[derive(Debug, Component, Clone)]
@@ -50,6 +49,18 @@ pub struct Scene {
     pub path: PathBuf,
 }
 
+impl Default for Scene {
+    fn default() -> Self {
+        Scene {
+            name: String::default(),
+            parcels: Vec::default(),
+            timestamp: SystemTime::now(),
+            serialized_data: Vec::default(),
+            path: PathBuf::default(),
+        }
+    }
+}
+
 #[derive(Debug, Component, Clone)]
 pub struct Level {
     pub name: String,
@@ -57,3 +68,37 @@ pub struct Level {
     pub id: usize,
     pub spawn_point: Vec2,
 }
+
+impl Default for Level {
+    fn default() -> Self {
+        Level {
+            name: String::default(),
+            timestamp: SystemTime::now(),
+            id: 0,
+            spawn_point: Vec2::default(),
+        }
+    }
+}
+
+#[derive(Component, Debug)]
+pub struct Animator {
+    pub current_animation: Animation,
+    pub animations: Vec<Animation>,
+    pub atlas: Handle<TextureAtlas>,
+    pub scale: f32,
+    pub frame_durations: Vec<f32>,
+    pub timer: Timer,
+    pub animation_queue: Vec<Animation>,
+}
+
+#[derive(Component, Debug)]
+pub struct Player {
+    pub speed: f32,
+    pub collider_size: Vec2,
+    pub level_change_stack: Vec<LevelChangeStackData>,
+    pub current_level: usize,
+    pub current_parcel: Parcel,
+}
+
+#[derive(Component, Default)]
+pub struct InteractIcon;

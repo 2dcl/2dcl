@@ -1,10 +1,10 @@
-use crate::renderer::resources;
-use crate::renderer::components;
-use crate::renderer::scene_loader::get_scene_center_location;
+use crate::bundles::get_scene_center_location;
+use crate::components;
 use crate::renderer::scene_loader::loading_sprites_tasks_handler;
 use crate::renderer::scene_loader::DespawnedEntities;
 use crate::renderer::scenes_io::read_scene_u8;
 use crate::renderer::scenes_io::SceneData;
+use crate::resources;
 use bevy::asset::Handle;
 use bevy::prelude::*;
 use dcl_common::Parcel;

@@ -1,5 +1,4 @@
-use bevy::render::render_resource::SamplerDescriptor;
-use bevy::{prelude::*, render::render_resource::FilterMode};
+use bevy::prelude::*;
 
 pub mod config;
 mod custom_material;
@@ -7,16 +6,13 @@ mod dcl_3d_scene;
 mod error;
 mod player_sprite_maker;
 
-pub mod components;
-
-mod player;
+pub mod player;
 use player::PlayerPlugin;
 
-mod animations;
+pub mod animations;
 use animations::AnimationsPlugin;
 
-mod collision;
-pub mod resources;
+pub mod collision;
 use collision::CollisionPlugin;
 
 pub mod scene_loader;

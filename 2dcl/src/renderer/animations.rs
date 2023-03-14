@@ -6,7 +6,7 @@ use std::fs::File;
 use std::path::Path;
 use std::path::PathBuf;
 
-use super::components;
+use crate::components;
 
 #[derive(Deserialize, Debug, Clone, PartialEq, Eq)]
 pub enum AnimDirection {

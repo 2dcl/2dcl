@@ -3,9 +3,12 @@ use bevy::ecs::system::Res;
 use bevy::input::Input;
 use bevy::prelude::KeyCode;
 
-use crate::renderer::components;
+use crate::components;
 
-pub fn level_switch(keyboard: Res<Input<KeyCode>>, mut player_query: Query<&mut components::Player>) {
+pub fn level_switch(
+    keyboard: Res<Input<KeyCode>>,
+    mut player_query: Query<&mut components::Player>,
+) {
     if let Ok(mut player) = player_query.get_single_mut() {
         for key_pressed in keyboard.get_just_pressed() {
             match key_pressed {

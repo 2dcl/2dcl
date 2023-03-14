@@ -3,7 +3,9 @@ use dcl_common::Result;
 mod previewer;
 mod renderer;
 
+pub mod bundles;
 pub mod components;
+pub mod resources;
 
 use clap::Parser;
 

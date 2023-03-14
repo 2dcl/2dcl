@@ -1,11 +1,14 @@
 use super::collision::CollisionTile;
-use super::{resources, components};
 use super::scenes_io::{
     get_parcel_file_data, get_scene, read_scene_file, refresh_path, SceneData, SceneFilesMap,
 };
-use crate::components::*;
+use crate::bundles::{self, get_scene_center_location};
 use crate::renderer::scene_maker::*;
 use crate::renderer::scenes_io::read_3dcl_scene;
+use crate::{
+    components::{self, *},
+    resources,
+};
 use bevy::prelude::*;
 use bevy::sprite::Anchor;
 use bevy::tasks::AsyncComputeTaskPool;
@@ -14,7 +17,7 @@ use catalyst::{ContentClient, Server};
 use dcl_common::Parcel;
 use futures_lite::future;
 use rmp_serde::*;
-use serde::{Deserialize, Serialize};
+use serde::Deserialize;
 use std::fs;
 use std::path::Path;
 use std::path::PathBuf;
@@ -24,7 +27,6 @@ use std::time::SystemTime;
 use crate::renderer::config::*;
 use image::io::Reader as ImageReader;
 use image::{DynamicImage, ImageFormat};
-use imagesize::size;
 
 pub struct SceneLoaderPlugin;
 
@@ -63,8 +65,8 @@ pub fn level_changer(
     mut despawned_entities: ResMut<DespawnedEntities>,
     asset_server: Res<AssetServer>,
     mut player_query: Query<(&mut components::Player, &mut GlobalTransform)>,
-    scene_query: Query<(Entity, &mut crate::components::Scene)>,
-    level_query: Query<(&crate::components::Level, &Parent)>,
+    scene_query: Query<(Entity, &mut components::Scene)>,
+    level_query: Query<(&components::Level, &Parent)>,
 ) {
     //Find the player
     let player_query = player_query.get_single_mut();
@@ -124,11 +126,7 @@ pub fn level_changer(
 
 pub fn scene_manager(
     mut player_query: Query<(&mut components::Player, &mut GlobalTransform)>,
-    scene_query: Query<(
-        Entity,
-        &mut crate::components::Scene,
-        Without<components::Player>,
-    )>,
+    scene_query: Query<(Entity, &mut components::Scene, Without<components::Player>)>,
     mut commands: Commands,
     mut despawned_entities: ResMut<DespawnedEntities>,
     mut download_queue: ResMut<DownloadQueue>,
@@ -237,41 +235,6 @@ pub fn scene_downloader(
     });
 
     download_queue.parcels.clear();
-}
-
-pub fn get_scene_center_location(scene: &SceneData) -> Vec3 {
-    let mut min: Vec2 = Vec2 {
-        x: f32::MAX,
-        y: f32::MAX,
-    };
-    let mut max: Vec2 = Vec2 {
-        x: f32::MIN,
-        y: f32::MIN,
-    };
-
-    for parcel in &scene.parcels {
-        if (parcel.0 as f32 * PARCEL_SIZE_X) < min.x {
-            min.x = parcel.0 as f32 * PARCEL_SIZE_X;
-        }
-
-        if (parcel.1 as f32 * PARCEL_SIZE_Y) < min.y {
-            min.y = parcel.1 as f32 * PARCEL_SIZE_Y;
-        }
-
-        if (parcel.0 as f32 * PARCEL_SIZE_X) > max.x {
-            max.x = parcel.0 as f32 * PARCEL_SIZE_X;
-        }
-
-        if (parcel.1 as f32 * PARCEL_SIZE_Y) > max.y {
-            max.y = parcel.1 as f32 * PARCEL_SIZE_Y;
-        }
-    }
-
-    Vec3 {
-        x: (min.x + max.x) / 2f32,
-        y: (min.y + max.y) / 2f32,
-        z: (min.y + max.y) / -2f32,
-    }
 }
 
 fn get_all_parcels_around(parcel: &Parcel, distance: i16) -> Vec<Parcel> {
@@ -548,8 +511,11 @@ pub fn loading_sprites_tasks_handler(
         } else if let Some(loading_sprite_data) =
             future::block_on(future::poll_once(&mut loading_sprite.task))
         {
-            commands.entity(entity).insert(loading_sprite_data.image);
-            commands.entity(entity).insert(loading_sprite_data.sprite);
+            commands
+                .entity(entity)
+                .insert(bundles::SpriteRenderer::from_loading_sprite_data(
+                    loading_sprite_data,
+                ));
             commands.entity(entity).remove::<LoadingSprite>();
         }
     }
@@ -565,7 +531,7 @@ fn downloading_scenes_task_handler(
     mut despawned_entities: ResMut<DespawnedEntities>,
     asset_server: Res<AssetServer>,
     mut tasks_downloading_scenes: Query<(Entity, &mut DownloadingScene)>,
-    scenes_query: Query<(Entity, &crate::components::Scene)>,
+    scenes_query: Query<(Entity, &components::Scene)>,
 ) {
     for (entity, mut downloading_scene) in &mut tasks_downloading_scenes {
         if let Some(new_paths) = future::block_on(future::poll_once(&mut downloading_scene.task)) {
@@ -610,7 +576,7 @@ fn downloading_scenes_task_handler(
 fn default_scenes_despawner(
     mut commands: Commands,
     mut despawned_entities: ResMut<DespawnedEntities>,
-    scenes_query: Query<(Entity, &crate::components::Scene)>,
+    scenes_query: Query<(Entity, &components::Scene)>,
 ) {
     for (entity_1, scene_1) in &scenes_query {
         if despawned_entities.entities.contains(&entity_1) {
@@ -678,19 +644,17 @@ pub fn spawn_level(
     let level = &scene.levels[level_id];
 
     let level_entity = commands
-        .spawn(Name::new(level.name.clone()))
-        .insert(VisibilityBundle::default())
-        .insert(GlobalTransform::default())
-        .insert(ComputedVisibility::default())
-        .insert(Transform::default())
-        .insert(Level {
-            name: level.name.clone(),
-            timestamp,
-            id: level_id,
-            spawn_point: Vec2 {
-                x: level.spawn_point.x as f32,
-                y: level.spawn_point.y as f32,
+        .spawn(bundles::Level {
+            level: Level {
+                name: level.name.clone(),
+                timestamp,
+                id: level_id,
+                spawn_point: Vec2 {
+                    x: level.spawn_point.x as f32,
+                    y: level.spawn_point.y as f32,
+                },
             },
+            ..default()
         })
         .id();
 
@@ -741,26 +705,9 @@ pub fn spawn_scene(
     collision_map: &mut resources::CollisionMap,
     level_id: usize,
 ) -> Option<Entity> {
-    //
-    let scene_location: Vec3 = get_scene_center_location(scene_data);
     let scene = &scene_data.scene;
-    let mut scene_u8: Vec<u8> = Vec::new();
-    scene
-        .serialize(&mut Serializer::new(&mut scene_u8))
-        .unwrap();
     let scene_entity = commands
-        .spawn(VisibilityBundle::default())
-        .insert(GlobalTransform::default())
-        .insert(ComputedVisibility::default())
-        .insert(Name::new(scene.name.clone()))
-        .insert(Transform::from_translation(scene_location))
-        .insert(crate::components::Scene {
-            name: scene.name.clone(),
-            parcels: scene_data.parcels.clone(),
-            timestamp: scene_data.scene.timestamp,
-            serialized_data: scene_u8,
-            path: scene_data.path.clone(),
-        })
+        .spawn(bundles::Scene::from_2dcl_scene_data(scene_data))
         .id();
 
     if !scene.levels.is_empty() {
@@ -784,23 +731,6 @@ pub fn spawn_scene(
     }
 
     Some(scene_entity)
-}
-
-fn entity_anchor_to_anchor(anchor: dcl2d_ecs_v1::Anchor, size: Vec2) -> Anchor {
-    match anchor {
-        dcl2d_ecs_v1::Anchor::BottomCenter => Anchor::BottomCenter,
-        dcl2d_ecs_v1::Anchor::BottomLeft => Anchor::BottomLeft,
-        dcl2d_ecs_v1::Anchor::BottomRight => Anchor::BottomRight,
-        dcl2d_ecs_v1::Anchor::Center => Anchor::Center,
-        dcl2d_ecs_v1::Anchor::CenterLeft => Anchor::CenterLeft,
-        dcl2d_ecs_v1::Anchor::CenterRight => Anchor::CenterRight,
-        dcl2d_ecs_v1::Anchor::Custom(vec) => Anchor::Custom(
-            Vec2::new(vec.x as f32 - size.x / 2.0, vec.y as f32 - size.y / 2.0) / size,
-        ),
-        dcl2d_ecs_v1::Anchor::TopCenter => Anchor::TopCenter,
-        dcl2d_ecs_v1::Anchor::TopLeft => Anchor::TopLeft,
-        dcl2d_ecs_v1::Anchor::TopRight => Anchor::TopRight,
-    }
 }
 
 fn get_fixed_translation_by_anchor(
@@ -859,37 +789,24 @@ fn spawn_entity(
 ) -> Entity {
     let scene = &scene_data.scene;
     let mut transform = Transform::default();
+    let spawned_entity = commands.spawn(Name::new(entity.name.clone())).id();
+
+    //Inser transform
     for component in entity.components.iter() {
-        if let Some(source_transform) = component
+        if let Some(transform_component) = component
             .as_any()
             .downcast_ref::<dcl2d_ecs_v1::components::Transform>()
         {
-            let location = Vec2::new(
-                source_transform.location.x as f32,
-                source_transform.location.y as f32,
-            );
-            let scale = Vec2::new(source_transform.scale.x, source_transform.scale.y);
-
-            transform.translation += location.extend(location.y * -1.0);
-            transform.rotation = Quat::from_euler(
-                EulerRot::XYZ,
-                source_transform.rotation.x.to_radians(),
-                source_transform.rotation.y.to_radians(),
-                source_transform.rotation.z.to_radians(),
-            );
-
-            transform.scale = scale.extend(1.0);
+            let transform_bundle = bundles::Transform::from_component(transform_component);
+            transform = transform_bundle.transform.local;
+            commands.entity(spawned_entity).insert(transform_bundle);
         };
     }
 
     //Spawning Entity
-    let spawned_entity = commands
-        .spawn(VisibilityBundle::default())
-        .insert(Name::new(entity.name.clone()))
-        .insert(GlobalTransform::default())
-        .insert(ComputedVisibility::default())
-        .insert(transform)
-        .id();
+    commands
+        .entity(spawned_entity)
+        .insert(VisibilityBundle::default());
 
     // Inserting components
     for component in entity.components.iter() {
@@ -897,54 +814,17 @@ fn spawn_entity(
             .as_any()
             .downcast_ref::<dcl2d_ecs_v1::components::SpriteRenderer>()
         {
-            transform.translation = Vec3 {
-                x: transform.translation.x,
-                y: transform.translation.y,
-                z: transform.translation.z + sprite_renderer.layer as f32 * 500.0,
-            };
-
-            commands.entity(spawned_entity).insert(transform);
-
-            let thread_pool = AsyncComputeTaskPool::get();
             let mut image_path = scene_data.path.clone();
             image_path.push("assets");
             image_path.push(&sprite_renderer.sprite);
 
-            let asset_server_clone = asset_server.clone();
-            let sprite_renderer_clone = sprite_renderer.clone();
-            let task_load_sprite = thread_pool.spawn(async move {
-                let mut sprite_path =
-                    std::fs::canonicalize(PathBuf::from_str(".").unwrap()).unwrap();
-                sprite_path.push(&image_path);
-
-                let image: Handle<Image> = asset_server_clone.load(image_path);
-
-                let image_size = match size(sprite_path) {
-                    Ok(v) => Vec2::new(v.width as f32, v.height as f32),
-                    Err(_) => Vec2::new(0.0, 0.0),
-                };
-
-                let sprite = Sprite {
-                    color: Color::Rgba {
-                        red: (sprite_renderer_clone).color.r,
-                        green: (sprite_renderer_clone).color.g,
-                        blue: (sprite_renderer_clone).color.b,
-                        alpha: (sprite_renderer_clone).color.a,
-                    },
-                    anchor: entity_anchor_to_anchor(
-                        (sprite_renderer_clone).anchor.clone(),
-                        image_size,
-                    ),
-                    flip_x: (sprite_renderer_clone).flip.x,
-                    flip_y: (sprite_renderer_clone).flip.y,
-                    ..default()
-                };
-
-                LoadingSpriteData { sprite, image }
-            });
-
             commands.entity(spawned_entity).insert(LoadingSprite {
-                task: task_load_sprite,
+                task: bundles::SpriteRenderer::async_load(
+                    sprite_renderer,
+                    transform,
+                    image_path,
+                    asset_server,
+                ),
                 scene_entity,
             });
         }
