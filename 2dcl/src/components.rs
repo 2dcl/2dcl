@@ -102,3 +102,8 @@ pub struct Player {
 
 #[derive(Component, Default)]
 pub struct InteractIcon;
+
+#[derive(Component, Default)]
+pub struct SpriteRenderer {
+    pub default_color: Color,
+}

@@ -10,7 +10,6 @@ use crate::{
     resources,
 };
 use bevy::prelude::*;
-use bevy::sprite::Anchor;
 use bevy::tasks::AsyncComputeTaskPool;
 use catalyst::entity_files::ContentFile;
 use catalyst::{ContentClient, Server};
@@ -667,7 +666,7 @@ pub fn spawn_level(
             entity,
             scene_data,
             scene_entity,
-            level_id
+            level_id,
         );
         commands.entity(level_entity).add_child(spawned_entity);
     }
@@ -792,16 +791,19 @@ fn spawn_entity(
 ) -> Entity {
     let scene = &scene_data.scene;
     let mut transform = Transform::default();
-    let spawned_entity = commands.spawn(Name::new(entity.name.clone()))
-    .insert(TransformBundle::default()).id();
- 
+    let spawned_entity = commands
+        .spawn(Name::new(entity.name.clone()))
+        .insert(TransformBundle::default())
+        .id();
+
     //Insert transform
     for component in entity.components.iter() {
         if let Some(transform_component) = component
             .as_any()
             .downcast_ref::<dcl2d_ecs_v1::components::Transform>()
         {
-            let transform_bundle = bundles::Transform::new(transform_component,scene_data, level_id);
+            let transform_bundle =
+                bundles::Transform::new(transform_component, scene_data, level_id);
             transform = transform_bundle.transform.local;
             commands.entity(spawned_entity).insert(transform_bundle);
         };

@@ -10,7 +10,7 @@ use bevy::{
 };
 use imagesize::size;
 
-use crate::renderer::config::LAYERS_DISTANCE;
+use crate::{components, renderer::config::LAYERS_DISTANCE};
 
 pub struct LoadingSpriteData {
     pub sprite_renderer_component: dcl2d_ecs_v1::components::SpriteRenderer,
@@ -22,6 +22,7 @@ pub struct LoadingSpriteData {
 #[derive(Bundle, Default)]
 pub struct SpriteRenderer {
     pub sprite: SpriteBundle,
+    pub renderer: components::SpriteRenderer,
 }
 
 impl SpriteRenderer {
@@ -31,9 +32,9 @@ impl SpriteRenderer {
         texture: Handle<Image>,
         image_size: Vec2,
     ) -> Self {
-      let mut final_transform = transform.clone();
+        let mut final_transform = *transform;
 
-      final_transform.translation = Vec3 {
+        final_transform.translation = Vec3 {
             x: transform.translation.x,
             y: transform.translation.y,
             z: transform.translation.z + sprite_renderer_component.layer as f32 * LAYERS_DISTANCE,
@@ -61,7 +62,12 @@ impl SpriteRenderer {
             ..default()
         };
 
-        SpriteRenderer { sprite }
+        SpriteRenderer {
+            renderer: components::SpriteRenderer {
+                default_color: sprite.sprite.color,
+            },
+            sprite,
+        }
     }
 
     pub fn async_load<P>(
