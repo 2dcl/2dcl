@@ -27,7 +27,6 @@ clap = { version = "4.0.17", features = ["derive"] }
 futures-lite = "1.12.0"
 rmp-serde = "1.1.1"
 rmp = "^0.8"
-bevy_console = "0.6.0"
 notify = "=5.0.0-pre.15"
 scene-compiler = { path = "../scene-compiler" }
 dcl2d-ecs-v1 = { path = "../ecs-v1" }

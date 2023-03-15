@@ -27,6 +27,8 @@ pub use scenes_io::ScenesIOPlugin;
 mod debug;
 use debug::DebugPlugin;
 
+use bevy::render::render_resource::{ SamplerDescriptor, FilterMode};
+
 //mod console;
 //use console::MyConsolePlugin;
 
@@ -57,13 +59,14 @@ pub fn start() {
 
 pub fn setup(app: &mut bevy::app::App) {
     app.insert_resource(Msaa::Off)
-        .add_plugins(DefaultPlugins)
-        /*.add_plugin(ImagePlugin{
-          default_sampler:  SamplerDescriptor{
-            mag_filter: FilterMode::Nearest,
-            ..default()
+        .add_plugins(DefaultPlugins.set(
+          ImagePlugin{
+            default_sampler:  SamplerDescriptor {
+              mag_filter: FilterMode::Nearest,
+              ..default()
+            }
           }
-        }) */
+        ))
         .add_plugin(DebugPlugin)
         .add_plugin(AnimationsPlugin)
         .add_plugin(PlayerPlugin)

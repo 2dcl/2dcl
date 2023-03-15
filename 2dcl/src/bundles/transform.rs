@@ -18,13 +18,10 @@ impl Transform {
             transform_component.location.y as f32,
         )
         .extend(-transform_component.location.y as f32);
-      
         let scale = match scene_data.scene.id == 0 && !is_location_in_bounds(translation, &scene_data.parcels)
         {
-          true=> {println!("false");
-            Vec3::new(0.,0.,0.)},
-          false=> Vec3::new(transform_component.scale.x, transform_component.scale.y,1.)
-
+          true  => todo!("Do no test in levels > 0"),
+          false => Vec3::new(transform_component.scale.x, transform_component.scale.y,1.)
         };
         
 
