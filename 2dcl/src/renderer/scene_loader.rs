@@ -645,6 +645,7 @@ pub fn spawn_level(
 
     let level_entity = commands
         .spawn(bundles::Level {
+            name: Name::new(level.name.clone()),
             level: Level {
                 name: level.name.clone(),
                 timestamp,
@@ -789,15 +790,16 @@ fn spawn_entity(
 ) -> Entity {
     let scene = &scene_data.scene;
     let mut transform = Transform::default();
-    let spawned_entity = commands.spawn(Name::new(entity.name.clone())).id();
-
-    //Inser transform
+    let spawned_entity = commands.spawn(Name::new(entity.name.clone()))
+    .insert(TransformBundle::default()).id();
+ 
+    //Insert transform
     for component in entity.components.iter() {
         if let Some(transform_component) = component
             .as_any()
             .downcast_ref::<dcl2d_ecs_v1::components::Transform>()
         {
-            let transform_bundle = bundles::Transform::from_component(transform_component);
+            let transform_bundle = bundles::Transform::new(transform_component,scene_data);
             transform = transform_bundle.transform.local;
             commands.entity(spawned_entity).insert(transform_bundle);
         };

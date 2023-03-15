@@ -27,17 +27,17 @@ pub struct SpriteRenderer {
 impl SpriteRenderer {
     pub fn new(
         sprite_renderer_component: &dcl2d_ecs_v1::components::SpriteRenderer,
-        transform: Transform,
+        transform: &Transform,
         texture: Handle<Image>,
         image_size: Vec2,
     ) -> Self {
-        let translation = Vec3 {
+      let mut final_transform = transform.clone();
+
+      final_transform.translation = Vec3 {
             x: transform.translation.x,
             y: transform.translation.y,
             z: transform.translation.z + sprite_renderer_component.layer as f32 * LAYERS_DISTANCE,
         };
-
-        let final_transform = Transform::from_translation(translation);
 
         let sprite = SpriteBundle {
             sprite: Sprite {
@@ -98,7 +98,7 @@ impl SpriteRenderer {
     pub fn from_loading_sprite_data(loading_sprite_data: LoadingSpriteData) -> Self {
         Self::new(
             &loading_sprite_data.sprite_renderer_component,
-            loading_sprite_data.transform,
+            &loading_sprite_data.transform,
             loading_sprite_data.texture,
             loading_sprite_data.image_size,
         )
