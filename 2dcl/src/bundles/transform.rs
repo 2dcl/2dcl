@@ -11,16 +11,18 @@ pub struct Transform {
 impl Transform {
     pub fn new(
       transform_component: &dcl2d_ecs_v1::components::Transform,
-      scene_data: &SceneData
+      scene_data: &SceneData,
+      level_id: usize,
     ) -> Self {
         let translation = Vec2::new(
             transform_component.location.x as f32,
             transform_component.location.y as f32,
         )
         .extend(-transform_component.location.y as f32);
-        let scale = match scene_data.scene.id == 0 && !is_location_in_bounds(translation, &scene_data.parcels)
+
+        let scale = match level_id == 0 && !is_location_in_bounds(translation, &scene_data.parcels)
         {
-          true  => todo!("Do no test in levels > 0"),
+          true  =>  Vec3::ZERO,
           false => Vec3::new(transform_component.scale.x, transform_component.scale.y,1.)
         };
         
@@ -83,11 +85,11 @@ fn is_location_in_bounds(location: Vec3, parcels: &Vec<Parcel>) -> bool
       y: (bounds.min.y + bounds.max.y) / 2.,
       z: (bounds.min.y + bounds.max.y) / -2.,
   };
-
-
+  
   let target_location = center + location;
-  target_location.x < bounds.max.x && target_location.x > bounds.min.x &&
-  target_location.y < bounds.max.y && target_location.y > bounds.min.y
+
+  target_location.x <= bounds.max.x && target_location.x >= bounds.min.x &&
+  target_location.y <= bounds.max.y && target_location.y >= bounds.min.y
 
 }
 

@@ -667,6 +667,7 @@ pub fn spawn_level(
             entity,
             scene_data,
             scene_entity,
+            level_id
         );
         commands.entity(level_entity).add_child(spawned_entity);
     }
@@ -787,6 +788,7 @@ fn spawn_entity(
     entity: &dcl2d_ecs_v1::Entity,
     scene_data: &SceneData,
     scene_entity: Entity,
+    level_id: usize,
 ) -> Entity {
     let scene = &scene_data.scene;
     let mut transform = Transform::default();
@@ -799,7 +801,7 @@ fn spawn_entity(
             .as_any()
             .downcast_ref::<dcl2d_ecs_v1::components::Transform>()
         {
-            let transform_bundle = bundles::Transform::new(transform_component,scene_data);
+            let transform_bundle = bundles::Transform::new(transform_component,scene_data, level_id);
             transform = transform_bundle.transform.local;
             commands.entity(spawned_entity).insert(transform_bundle);
         };
@@ -951,6 +953,7 @@ fn spawn_entity(
             child_entity,
             scene_data,
             scene_entity,
+            level_id,
         );
         commands
             .entity(spawned_entity)
