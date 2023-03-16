@@ -11,7 +11,7 @@ use bevy::{
 use dcl_common::Parcel;
 use imagesize::size;
 
-use crate::{components, renderer::{config::LAYERS_DISTANCE, scene_loader::world_location_to_parcel}};
+use crate::{components, renderer::{config::{LAYERS_DISTANCE, PARCEL_SIZE_X, PARCEL_SIZE_Y}, scene_loader::world_location_to_parcel}};
 
 use super::transform::get_parcel_rect;
 
@@ -58,6 +58,15 @@ impl SpriteRenderer {
           alpha: (sprite_renderer_component).color.a,
         };
 
+        let final_texture;
+        if image_size.x > PARCEL_SIZE_X * 1.5 || image_size.y > PARCEL_SIZE_Y * 1.5
+        {
+          final_texture = Handle::default();
+        } else
+        {
+          final_texture = texture;
+        }
+
         let sprite = SpriteBundle {
             sprite: Sprite {
                 color,
@@ -67,7 +76,7 @@ impl SpriteRenderer {
                 ..default()
             },
             transform: final_transform,
-            texture,
+            texture: final_texture,
             ..default()
         };
 

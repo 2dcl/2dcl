@@ -62,7 +62,7 @@ pub fn update_transparency_on_top_of_player(
 }
 
 
-pub fn update_overlapping(
+pub fn update_overlapping_elements(
   player_query: Query<&components::Player>,
   mut sprites_query: Query<
       (
