@@ -267,6 +267,15 @@ pub fn world_location_to_parcel(location: &Vec3) -> Parcel {
     )
 }
 
+pub fn parcel_to_world_location(parcel: Parcel) -> Vec3 {
+  Vec3{
+      x: PARCEL_SIZE_X * parcel.0 as f32,
+      y: PARCEL_SIZE_Y * parcel.1 as f32,
+      z: PARCEL_SIZE_Y * -parcel.1 as f32,
+  }
+}
+
+
 #[tokio::main]
 pub async fn download_parcels(
     parcels: Vec<Parcel>,

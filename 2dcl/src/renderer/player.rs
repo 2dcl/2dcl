@@ -1,3 +1,4 @@
+use super::scene_loader::parcel_to_world_location;
 use super::transparency::{update_transparency_on_top_of_player, update_overlapping_elements};
 use super::{animations::*, collision::*};
 use crate::renderer::config::*;
@@ -57,7 +58,9 @@ fn spawn_player(
     let player_animator = player_animator.unwrap();
     let mut sprite = TextureAtlasSprite::new(0);
     sprite.anchor = Anchor::BottomCenter;
-
+    
+    let translation = parcel_to_world_location(PLAYER_STARTING_PARCEL);
+    
     //Spawning Entity
     let player = commands
         .spawn(SpriteSheetBundle {
@@ -65,6 +68,7 @@ fn spawn_player(
             texture_atlas: player_animator.atlas.clone(),
             transform: Transform {
                 scale: Vec3::ONE * PLAYER_SCALE * player_animator.scale,
+                translation,
                 ..default()
             },
             ..default()
