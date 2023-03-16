@@ -89,7 +89,7 @@ fn is_location_in_bounds(location: Vec3, parcels: &Vec<Parcel>) -> bool {
         && target_location.y >= bounds.min.y
 }
 
-fn get_parcel_rect(parcel: &Parcel) -> Rect {
+pub fn get_parcel_rect(parcel: &Parcel) -> Rect {
     let parcel_center = Vec2 {
         x: parcel.0 as f32 * PARCEL_SIZE_X,
         y: parcel.1 as f32 * PARCEL_SIZE_Y,

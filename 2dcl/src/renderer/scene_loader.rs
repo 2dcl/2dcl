@@ -125,7 +125,7 @@ pub fn level_changer(
 
 pub fn scene_manager(
     mut player_query: Query<(&mut components::Player, &mut GlobalTransform)>,
-    scene_query: Query<(Entity, &mut components::Scene, Without<components::Player>)>,
+    scene_query: Query<(Entity, &mut components::Scene), Without<components::Player>>,
     mut commands: Commands,
     mut despawned_entities: ResMut<DespawnedEntities>,
     mut download_queue: ResMut<DownloadQueue>,
@@ -151,7 +151,7 @@ pub fn scene_manager(
     let parcels_to_keep = get_all_parcels_around(&player_parcel, MAX_RENDERING_DISTANCE_IN_PARCELS);
 
     //Check every scene already spawned
-    for (entity, scene, _player) in scene_query.iter() {
+    for (entity, scene) in scene_query.iter() {
         //Despawning scenes far away
         let mut despawn_scene = true;
 
@@ -175,6 +175,7 @@ pub fn scene_manager(
             }
         }
     }
+
     download_queue.parcels = parcels_to_spawn;
 }
 
@@ -586,8 +587,8 @@ fn default_scenes_despawner(
                 continue;
             }
             if entity_1 != entity_2
-                && (scene_1.name == "default_scene" || scene_2.name == "default_scene")
             {
+              if scene_1.name == "default_scene" || scene_2.name == "default_scene"{
                 'outer: for parcel_1 in &scene_1.parcels {
                     for parcel_2 in &scene_2.parcels {
                         if *parcel_1 == *parcel_2 {
@@ -603,6 +604,11 @@ fn default_scenes_despawner(
                         }
                     }
                 }
+              } else if scene_1.name == scene_2.name && scene_1.name.starts_with("Road ")
+              {
+                despawned_entities.entities.push(entity_2);
+                commands.entity(entity_2).despawn_recursive();
+              }
             }
         }
     }
@@ -632,7 +638,7 @@ pub fn spawn_level(
     level_id: usize,
     collision_map: &mut resources::CollisionMap,
     timestamp: SystemTime,
-    scene_entity: Entity,
+    scene_entity: Entity
 ) -> Option<Entity> {
     let scene = &scene_data.scene;
 
@@ -821,6 +827,7 @@ fn spawn_entity(
             .downcast_ref::<dcl2d_ecs_v1::components::SpriteRenderer>()
         {
             let mut image_path = scene_data.path.clone();
+
             image_path.push("assets");
             image_path.push(&sprite_renderer.sprite);
 
@@ -830,6 +837,7 @@ fn spawn_entity(
                     transform,
                     image_path,
                     asset_server,
+                    scene_data.parcels.clone()
                 ),
                 scene_entity,
             });

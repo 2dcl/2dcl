@@ -3,11 +3,11 @@ use bevy::{
     sprite::{collide_aabb::collide, Anchor},
 };
 
-use crate::components;
+use crate::{components, bundles::get_translation_by_anchor};
 
-use super::config::{PLAYER_VISIBILITY_BOX, TRANSPARENCY_VALUE_FOR_ELEMENTS_ON_TOP_OF_PLAYER};
+use super::config::{PLAYER_VISIBILITY_BOX, TRANSPARENCY_VALUE_FOR_HIDING_ELEMENTS};
 
-pub fn update_transparency(
+pub fn update_transparency_on_top_of_player(
     player_query: Query<&GlobalTransform, With<components::Player>>,
     images: Res<Assets<Image>>,
     mut sprites_query: Query<
@@ -52,7 +52,7 @@ pub fn update_transparency(
         {
             other_sprite
                 .color
-                .set_a(TRANSPARENCY_VALUE_FOR_ELEMENTS_ON_TOP_OF_PLAYER);
+                .set_a(TRANSPARENCY_VALUE_FOR_HIDING_ELEMENTS);
         } else {
             other_sprite
                 .color
@@ -61,53 +61,45 @@ pub fn update_transparency(
     }
 }
 
-fn get_translation_by_anchor(size: &Vec2, translation: &Vec3, anchor: &Anchor) -> Vec3 {
-    match anchor {
-        Anchor::BottomCenter => Vec3 {
-            x: translation.x,
-            y: translation.y + size.y / 2.,
-            z: translation.z,
-        },
-        Anchor::BottomLeft => Vec3 {
-            x: translation.x + size.x / 2.,
-            y: translation.y + size.y / 2.,
-            z: translation.z,
-        },
-        Anchor::BottomRight => Vec3 {
-            x: translation.x - size.x / 2.,
-            y: translation.y + size.y / 2.,
-            z: translation.z,
-        },
-        Anchor::Center => *translation,
-        Anchor::CenterLeft => Vec3 {
-            x: translation.x + size.x / 2.,
-            y: translation.y,
-            z: translation.z,
-        },
-        Anchor::CenterRight => Vec3 {
-            x: translation.x - size.x / 2.,
-            y: translation.y,
-            z: translation.z,
-        },
-        Anchor::Custom(vec) => Vec3 {
-            x: translation.x - size.x * vec.x,
-            y: translation.y - size.y * vec.y,
-            z: translation.z,
-        },
-        Anchor::TopCenter => Vec3 {
-            x: translation.x,
-            y: translation.y - size.y / 2.,
-            z: translation.z,
-        },
-        Anchor::TopLeft => Vec3 {
-            x: translation.x + size.x / 2.,
-            y: translation.y - size.y / 2.,
-            z: translation.z,
-        },
-        Anchor::TopRight => Vec3 {
-            x: translation.x - size.x / 2.,
-            y: translation.y - size.y / 2.,
-            z: translation.z,
-        },
+
+pub fn update_overlapping(
+  player_query: Query<&components::Player>,
+  mut sprites_query: Query<
+      (
+          &mut Sprite,
+          &components::SpriteRenderer,
+      ),
+      Without<components::Player>,
+  >,
+  scenes_query: Query<&components::Scene>,
+) {
+  let player = match player_query.get_single() {
+    Ok(player) => player,
+    Err(e) => {
+        println!("Player not found in world: {}", e);
+        return;
     }
+  };
+
+
+  for (mut sprite, sprite_renderer) in sprites_query.iter_mut()
+  {
+    'outer: for parcel_overlapping in &sprite_renderer.parcels_overlapping
+    {
+      for scene in scenes_query.iter()
+      {
+        if scene.parcels.contains(parcel_overlapping)
+        {
+          if scene.parcels.contains(&player.current_parcel) 
+          {
+            sprite.color.set_a(TRANSPARENCY_VALUE_FOR_HIDING_ELEMENTS);
+          } else
+          {
+            sprite.color.set_a(sprite_renderer.default_color.a());
+          }
+          break 'outer;
+        }
+      }
+    }
+  }
 }

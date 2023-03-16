@@ -1,4 +1,4 @@
-use super::transparency::update_transparency;
+use super::transparency::{update_transparency_on_top_of_player, update_overlapping};
 use super::{animations::*, collision::*};
 use crate::renderer::config::*;
 use crate::{components, resources};
@@ -18,7 +18,8 @@ impl Plugin for PlayerPlugin {
     fn build(&self, app: &mut App) {
         app.add_startup_system(spawn_player)
             .add_system(player_interact)
-            .add_system(update_transparency)
+            .add_system(update_transparency_on_top_of_player)
+            .add_system(update_overlapping)
             .add_system(player_movement);
     }
 }
