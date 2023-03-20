@@ -843,7 +843,8 @@ fn spawn_entity(
                     transform,
                     image_path,
                     asset_server,
-                    scene_data.parcels.clone()
+                    scene_data.parcels.clone(),
+                    level_id
                 ),
                 scene_entity,
             });

@@ -20,7 +20,8 @@ pub struct LoadingSpriteData {
     pub transform: Transform,
     pub texture: Handle<Image>,
     pub image_size: Vec2,
-    pub parcels: Vec<Parcel>
+    pub parcels: Vec<Parcel>,
+    pub level_id: usize,
 }
 
 #[derive(Bundle, Default)]
@@ -35,7 +36,8 @@ impl SpriteRenderer {
         transform: &Transform,
         texture: Handle<Image>,
         image_size: Vec2,
-        parcels: Vec<Parcel>
+        parcels: Vec<Parcel>,
+        level_id: usize,
     ) -> Self {
         let mut final_transform = *transform;
         final_transform.translation = Vec3 {
@@ -49,7 +51,11 @@ impl SpriteRenderer {
           image_size,
         );
 
-        let parcels_overlapping = get_parcels_overlapping(final_transform.translation,image_size,&parcels,&anchor);
+        let parcels_overlapping = match level_id
+        {
+          0=> get_parcels_overlapping(final_transform.translation,image_size,&parcels,&anchor),
+          _=> Vec::default()
+        };
         
         let color = Color::Rgba {
           red: (sprite_renderer_component).color.r,
@@ -59,7 +65,8 @@ impl SpriteRenderer {
         };
 
         let final_texture;
-        if image_size.x > PARCEL_SIZE_X * 1.5 || image_size.y > PARCEL_SIZE_Y * 1.5
+        if level_id ==0 &&
+        (image_size.x > PARCEL_SIZE_X * 1.5 || image_size.y > PARCEL_SIZE_Y * 1.5)
         {
           final_texture = Handle::default();
         } else
@@ -96,6 +103,7 @@ impl SpriteRenderer {
         image_asset_path: P,
         asset_server: &AssetServer,
         parcels: Vec<Parcel>,
+        level_id: usize
     ) -> Task<LoadingSpriteData>
     where
         P: AsRef<Path>,
@@ -120,7 +128,8 @@ impl SpriteRenderer {
                 transform,
                 texture: asset_server_clone.load(image_asset_path),
                 image_size,
-                parcels
+                parcels,
+                level_id
             }
         })
     }
@@ -132,6 +141,7 @@ impl SpriteRenderer {
             loading_sprite_data.texture,
             loading_sprite_data.image_size,
             loading_sprite_data.parcels,
+            loading_sprite_data.level_id
         )
     }
 }
