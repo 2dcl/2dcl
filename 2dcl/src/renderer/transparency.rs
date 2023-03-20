@@ -80,17 +80,21 @@ pub fn update_overlapping_elements(
         return;
     }
   };
+  
+  
 
 
   for (mut sprite, sprite_renderer) in sprites_query.iter_mut()
   {
+    let sprite_is_in_default_parcel = is_sprite_renderer_in_default_parcel(sprite_renderer,&scenes_query);
     'outer: for parcel_overlapping in &sprite_renderer.parcels_overlapping
     {
       for scene in scenes_query.iter()
       {
-        if scene.parcels.contains(parcel_overlapping)
+        if scene.parcels.contains(parcel_overlapping) 
         {
-          if scene.parcels.contains(&player.current_parcel) 
+          if scene.parcels.contains(&player.current_parcel) &&
+          (!sprite_is_in_default_parcel || !scene.is_default)
           {
             sprite.color.set_a(TRANSPARENCY_VALUE_FOR_HIDING_ELEMENTS);
           } else
@@ -102,4 +106,21 @@ pub fn update_overlapping_elements(
       }
     }
   }
+
+  fn is_sprite_renderer_in_default_parcel(sprite_renderer: &components::SpriteRenderer, scenes_query: &Query<&components::Scene>)
+  -> bool
+  {
+    for scene in scenes_query.iter()
+    { 
+      for parcel in sprite_renderer.parent_parcels.iter()
+      {
+        if scene.parcels.contains(&parcel)
+        {
+          return scene.is_default;
+        }
+      }
+    }
+    return false;
+  }
 }
+

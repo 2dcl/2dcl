@@ -24,15 +24,15 @@ pub use scene_maker::SceneMakerPlugin;
 pub mod scenes_io;
 pub use scenes_io::ScenesIOPlugin;
 
-//mod debug;
-//use debug::DebugPlugin;
+mod debug;
+use debug::DebugPlugin;
 
 mod transparency;
 
 use bevy::render::render_resource::{FilterMode, SamplerDescriptor};
 
-mod console;
-use console::MyConsolePlugin;
+//mod console;
+//use console::MyConsolePlugin;
 
 //mod roads_updater;
 //use roads_updater::update_roads;
@@ -53,7 +53,7 @@ pub fn start() {
     let mut app = App::new();
     setup(&mut app);
     app.add_plugin(SceneLoaderPlugin)
-        .add_plugin(MyConsolePlugin)
+       // .add_plugin(MyConsolePlugin)
         .add_plugin(SceneMakerPlugin)
         .add_plugin(ScenesIOPlugin)
         .run();
@@ -67,7 +67,7 @@ pub fn setup(app: &mut bevy::app::App) {
                 ..default()
             },
         }))
-        //.add_plugin(DebugPlugin)
+        .add_plugin(DebugPlugin)
         .add_plugin(AnimationsPlugin)
         .add_plugin(PlayerPlugin)
         .add_plugin(CollisionPlugin);

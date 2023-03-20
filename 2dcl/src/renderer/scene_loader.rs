@@ -105,6 +105,7 @@ pub fn level_changer(
                             scene: deserialized_scene,
                             parcels: scene.parcels.clone(),
                             path: scene.path.clone(),
+                            is_default: false,
                         };
 
                         spawn_scene(
@@ -597,15 +598,15 @@ fn default_scenes_despawner(
             }
             if entity_1 != entity_2
             {
-              if scene_1.name == "default_scene" || scene_2.name == "default_scene"{
+              if scene_1.is_default || scene_2.is_default{
                 'outer: for parcel_1 in &scene_1.parcels {
                     for parcel_2 in &scene_2.parcels {
                         if *parcel_1 == *parcel_2 {
-                            if scene_1.name == "default_scene" {
+                            if scene_1.is_default {
                                 despawned_entities.entities.push(entity_1);
                                 commands.entity(entity_1).despawn_recursive();
                                 break 'outer;
-                            } else if scene_2.name == "default_scene" {
+                            } else if scene_2.is_default {
                                 despawned_entities.entities.push(entity_2);
                                 commands.entity(entity_2).despawn_recursive();
                                 break 'outer;
@@ -613,10 +614,6 @@ fn default_scenes_despawner(
                         }
                     }
                 }
-              } else if scene_1.name == scene_2.name && scene_1.name.starts_with("Road ")
-              {
-                despawned_entities.entities.push(entity_2);
-                commands.entity(entity_2).despawn_recursive();
               }
             }
         }

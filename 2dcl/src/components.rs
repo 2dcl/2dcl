@@ -47,6 +47,7 @@ pub struct Scene {
     pub timestamp: SystemTime,
     pub serialized_data: Vec<u8>,
     pub path: PathBuf,
+    pub is_default: bool,
 }
 
 impl Default for Scene {
@@ -57,6 +58,7 @@ impl Default for Scene {
             timestamp: SystemTime::now(),
             serialized_data: Vec::default(),
             path: PathBuf::default(),
+            is_default: false,
         }
     }
 }

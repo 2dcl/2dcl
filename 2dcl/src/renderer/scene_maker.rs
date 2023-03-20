@@ -123,6 +123,7 @@ pub fn setup(mut commands: Commands) {
 
 pub fn make_default_scene(parcel: &Parcel) -> Result<SceneData> {
     let mut scene_data = SceneData::default();
+    scene_data.is_default = true;
     scene_data.parcels.push(parcel.clone());
     scene_data.scene.name = "default_scene".to_string();
     let mut entities: Vec<dcl2d_ecs_v1::Entity> = Vec::new();
@@ -172,6 +173,7 @@ pub fn make_road_scene(roads_data: &RoadsData, parcel: &Parcel) -> Result<SceneD
         scene,
         parcels: vec![parcel.clone()],
         path,
+        is_default: true,
     };
 
     Ok(scene_data)
@@ -1142,7 +1144,7 @@ pub fn make_default_background_entities(path: &PathBuf) -> Vec<dcl2d_ecs_v1::Ent
 
         final_path.push("..");
         final_path.push("default_scene");
-        final_path.push("assets");
+        final_path.push("assets/");
     }
     let final_path = match final_path.to_str() {
         Some(str) => str.to_string(),
@@ -1167,8 +1169,10 @@ pub fn make_default_background_entities(path: &PathBuf) -> Vec<dcl2d_ecs_v1::Ent
     for x in 0..total_tiles_x {
         for y in 0..total_tiles_y {
             let random_bg_index: usize = rng.gen_range(0..bg_files.len() - 1);
+            let sprite = bg_files[random_bg_index].clone();
+
             let renderer = dcl2d_ecs_v1::components::SpriteRenderer {
-                sprite: bg_files[random_bg_index].clone(),
+                sprite,
                 layer: -5,
                 anchor: dcl2d_ecs_v1::Anchor::BottomLeft,
                 ..default()

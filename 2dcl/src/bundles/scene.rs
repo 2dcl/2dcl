@@ -35,6 +35,7 @@ impl Scene {
                 timestamp: scene_data.scene.timestamp,
                 serialized_data: scene_u8,
                 path: scene_data.path.clone(),
+                is_default: scene_data.is_default
             },
             ..default()
         }

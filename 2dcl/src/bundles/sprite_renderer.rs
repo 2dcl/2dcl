@@ -109,7 +109,7 @@ impl SpriteRenderer {
         absolute_path.push(&image_asset_path);
         let image_size = match size(&absolute_path) {
             Ok(v) => Vec2::new(v.width as f32, v.height as f32),
-            Err(e) => { println!("error getting image size: {:?}", e);
+            Err(e) => { println!("{:} {}", e,absolute_path.display());
               Vec2::new(0.0, 0.0)},
         };
         

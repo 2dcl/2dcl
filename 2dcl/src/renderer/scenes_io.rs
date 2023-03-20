@@ -30,6 +30,7 @@ pub struct SceneData {
     pub scene: dcl2d_ecs_v1::Scene,
     pub parcels: Vec<Parcel>,
     pub path: PathBuf,
+    pub is_default: bool,
 }
 
 pub struct ScenesIOPlugin;
@@ -122,8 +123,6 @@ pub fn get_scene(
             path.pop();
             let mut path: PathBuf = path.iter().rev().collect();
             path.pop();
-
-            println!("path: {:?}", path);
             if !scene.levels.is_empty() {
                 scene.levels[0]
                     .entities
@@ -133,6 +132,7 @@ pub fn get_scene(
                 scene,
                 parcels: scene_file_data.parcels,
                 path,
+                is_default: false
             };
             return Some(scene_data);
         }
