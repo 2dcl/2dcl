@@ -1,9 +1,6 @@
-use bevy::{
-    prelude::*,
-    sprite::{collide_aabb::collide, Anchor},
-};
+use bevy::{prelude::*, sprite::collide_aabb::collide};
 
-use crate::{components, bundles::get_translation_by_anchor};
+use crate::{bundles::get_translation_by_anchor, components};
 
 use super::config::{PLAYER_VISIBILITY_BOX, TRANSPARENCY_VALUE_FOR_HIDING_ELEMENTS};
 
@@ -61,66 +58,53 @@ pub fn update_transparency_on_top_of_player(
     }
 }
 
-
 pub fn update_overlapping_elements(
-  player_query: Query<&components::Player>,
-  mut sprites_query: Query<
-      (
-          &mut Sprite,
-          &components::SpriteRenderer,
-      ),
-      Without<components::Player>,
-  >,
-  scenes_query: Query<&components::Scene>,
+    player_query: Query<&components::Player>,
+    mut sprites_query: Query<
+        (&mut Sprite, &components::SpriteRenderer),
+        Without<components::Player>,
+    >,
+    scenes_query: Query<&components::Scene>,
 ) {
-  let player = match player_query.get_single() {
-    Ok(player) => player,
-    Err(e) => {
-        println!("Player not found in world: {}", e);
-        return;
-    }
-  };
-  
-  
-
-
-  for (mut sprite, sprite_renderer) in sprites_query.iter_mut()
-  {
-    let sprite_is_in_default_parcel = is_sprite_renderer_in_default_parcel(sprite_renderer,&scenes_query);
-    'outer: for parcel_overlapping in &sprite_renderer.parcels_overlapping
-    {
-      for scene in scenes_query.iter()
-      {
-        if scene.parcels.contains(parcel_overlapping) 
-        {
-          if scene.parcels.contains(&player.current_parcel) &&
-          (!sprite_is_in_default_parcel || !scene.is_default)
-          {
-            sprite.color.set_a(TRANSPARENCY_VALUE_FOR_HIDING_ELEMENTS);
-          } else
-          {
-            sprite.color.set_a(sprite_renderer.default_color.a());
-          }
-          break 'outer;
+    let player = match player_query.get_single() {
+        Ok(player) => player,
+        Err(e) => {
+            println!("Player not found in world: {}", e);
+            return;
         }
-      }
-    }
-  }
+    };
 
-  fn is_sprite_renderer_in_default_parcel(sprite_renderer: &components::SpriteRenderer, scenes_query: &Query<&components::Scene>)
-  -> bool
-  {
-    for scene in scenes_query.iter()
-    { 
-      for parcel in sprite_renderer.parent_parcels.iter()
-      {
-        if scene.parcels.contains(&parcel)
-        {
-          return scene.is_default;
+    for (mut sprite, sprite_renderer) in sprites_query.iter_mut() {
+        let sprite_is_in_default_parcel =
+            is_sprite_renderer_in_default_parcel(sprite_renderer, &scenes_query);
+        'outer: for parcel_overlapping in &sprite_renderer.parcels_overlapping {
+            for scene in scenes_query.iter() {
+                if scene.parcels.contains(parcel_overlapping) {
+                    if scene.parcels.contains(&player.current_parcel)
+                        && (!sprite_is_in_default_parcel || !scene.is_default)
+                    {
+                        sprite.color.set_a(TRANSPARENCY_VALUE_FOR_HIDING_ELEMENTS);
+                        break 'outer;
+                    } else {
+                        sprite.color.set_a(sprite_renderer.default_color.a());
+                        break;
+                    }
+                }
+            }
         }
-      }
     }
-    return false;
-  }
+
+    fn is_sprite_renderer_in_default_parcel(
+        sprite_renderer: &components::SpriteRenderer,
+        scenes_query: &Query<&components::Scene>,
+    ) -> bool {
+        for scene in scenes_query.iter() {
+            for parcel in sprite_renderer.parent_parcels.iter() {
+                if scene.parcels.contains(parcel) {
+                    return scene.is_default;
+                }
+            }
+        }
+        false
+    }
 }
-

@@ -5,9 +5,9 @@ use dcl_common::Parcel;
 
 use crate::renderer::scene_loader::get_parcel_spawn_point;
 
-use crate::components;
 use super::scene_maker::RoadsData;
 use super::scenes_io::SceneFilesMap;
+use crate::components;
 
 pub struct MyConsolePlugin;
 
@@ -27,23 +27,25 @@ struct TeleportCommand {
     parcel_y: String,
 }
 
-
 /// Prints the current parcel
 #[derive(Parser, ConsoleCommand)]
 #[command(name = "where")]
 struct WhereCommand;
 
 fn where_command(
-  mut where_cmd: ConsoleCommand<WhereCommand>,
-  mut player_query: Query<&components::Player>,
-)
-{
-  let player = player_query.single_mut();
-  if let Some(_) = where_cmd.take() {
-
-    reply!(where_cmd, "You're in the parcel {},{}", player.current_parcel.0, player.current_parcel.1);
-  }
-} 
+    mut where_cmd: ConsoleCommand<WhereCommand>,
+    mut player_query: Query<&components::Player>,
+) {
+    let player = player_query.single_mut();
+    if where_cmd.take().is_some() {
+        reply!(
+            where_cmd,
+            "You're in the parcel {},{}",
+            player.current_parcel.0,
+            player.current_parcel.1
+        );
+    }
+}
 
 fn teleport_command(
     mut tp: ConsoleCommand<TeleportCommand>,

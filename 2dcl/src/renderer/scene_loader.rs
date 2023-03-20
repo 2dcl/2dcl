@@ -269,13 +269,12 @@ pub fn world_location_to_parcel(location: &Vec3) -> Parcel {
 }
 
 pub fn parcel_to_world_location(parcel: Parcel) -> Vec3 {
-  Vec3{
-      x: PARCEL_SIZE_X * parcel.0 as f32,
-      y: PARCEL_SIZE_Y * parcel.1 as f32,
-      z: PARCEL_SIZE_Y * -parcel.1 as f32,
-  }
+    Vec3 {
+        x: PARCEL_SIZE_X * parcel.0 as f32,
+        y: PARCEL_SIZE_Y * parcel.1 as f32,
+        z: PARCEL_SIZE_Y * -parcel.1 as f32,
+    }
 }
-
 
 #[tokio::main]
 pub async fn download_parcels(
@@ -596,9 +595,7 @@ fn default_scenes_despawner(
             if despawned_entities.entities.contains(&entity_2) {
                 continue;
             }
-            if entity_1 != entity_2
-            {
-              if scene_1.is_default || scene_2.is_default{
+            if entity_1 != entity_2 && (scene_1.is_default || scene_2.is_default) {
                 'outer: for parcel_1 in &scene_1.parcels {
                     for parcel_2 in &scene_2.parcels {
                         if *parcel_1 == *parcel_2 {
@@ -614,7 +611,6 @@ fn default_scenes_despawner(
                         }
                     }
                 }
-              }
             }
         }
     }
@@ -644,7 +640,7 @@ pub fn spawn_level(
     level_id: usize,
     collision_map: &mut resources::CollisionMap,
     timestamp: SystemTime,
-    scene_entity: Entity
+    scene_entity: Entity,
 ) -> Option<Entity> {
     let scene = &scene_data.scene;
 
@@ -844,7 +840,7 @@ fn spawn_entity(
                     image_path,
                     asset_server,
                     scene_data.parcels.clone(),
-                    level_id
+                    level_id,
                 ),
                 scene_entity,
             });

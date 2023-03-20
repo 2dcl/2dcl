@@ -122,9 +122,12 @@ pub fn setup(mut commands: Commands) {
 }
 
 pub fn make_default_scene(parcel: &Parcel) -> Result<SceneData> {
-    let mut scene_data = SceneData::default();
-    scene_data.is_default = true;
-    scene_data.parcels.push(parcel.clone());
+    let mut scene_data = SceneData {
+        parcels: vec![parcel.clone()],
+        is_default: true,
+        ..default()
+    };
+
     scene_data.scene.name = "default_scene".to_string();
     let mut entities: Vec<dcl2d_ecs_v1::Entity> = Vec::new();
     entities.append(&mut make_default_random_entities());
@@ -135,16 +138,11 @@ pub fn make_default_scene(parcel: &Parcel) -> Result<SceneData> {
         ..Default::default()
     };
     scene_data.scene.levels.push(level);
-
-    //scene_data.path.push("..");
-    //scene_data.path.push("assets");
     scene_data.path.push("default_scene");
 
     Ok(scene_data)
 }
 pub fn make_road_scene(roads_data: &RoadsData, parcel: &Parcel) -> Result<SceneData> {
-
-
     let mut entities: Vec<dcl2d_ecs_v1::Entity> = Vec::new();
     let mut corner_entities = make_corners(roads_data, parcel);
     entities.append(&mut make_road_background_entities());

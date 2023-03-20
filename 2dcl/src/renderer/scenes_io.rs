@@ -132,7 +132,7 @@ pub fn get_scene(
                 scene,
                 parcels: scene_file_data.parcels,
                 path,
-                is_default: false
+                is_default: false,
             };
             return Some(scene_data);
         }

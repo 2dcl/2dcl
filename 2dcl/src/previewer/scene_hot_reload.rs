@@ -262,7 +262,7 @@ pub fn level_change(
             scene: deserialized_scene,
             parcels: vec![Parcel(0, 0)],
             path: scene.path.clone(),
-            is_default: false
+            is_default: false,
         };
 
         scene_loader::spawn_scene(

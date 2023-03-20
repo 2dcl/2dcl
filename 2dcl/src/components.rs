@@ -109,5 +109,5 @@ pub struct InteractIcon;
 pub struct SpriteRenderer {
     pub default_color: Color,
     pub parcels_overlapping: Vec<Parcel>,
-    pub parent_parcels: Vec<Parcel>
+    pub parent_parcels: Vec<Parcel>,
 }
