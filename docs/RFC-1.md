@@ -180,7 +180,7 @@ For rotation and z-ordering purposes, we can set the anchor of a sprite. Valid v
  - `TopLeft`,
  - `TopCenter`,
  - `TopRight`,
- - `{ "Custom" : { "x": 0, "y: 0} }` for custom anchor, `x` and `y` are pixels using the center of the asset as the origin coordinate.
+ - `{ "Custom" : { "x": 0, "y": 0} }` for custom anchor, `x` and `y` are pixels using the center of the asset as the origin coordinate.
 
 ### BlendModes
 

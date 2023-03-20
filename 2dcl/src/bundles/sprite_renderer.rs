@@ -44,7 +44,7 @@ impl SpriteRenderer {
             z: transform.translation.z + sprite_renderer_component.layer as f32 * LAYERS_DISTANCE,
         };
 
-        let anchor =  entity_anchor_to_bevy_anchor(
+        let anchor =  dcl_anchor_to_bevy_anchor(
           (sprite_renderer_component).anchor.clone(),
           image_size,
         );
@@ -136,7 +136,7 @@ impl SpriteRenderer {
     }
 }
 
-fn entity_anchor_to_bevy_anchor(anchor: dcl2d_ecs_v1::Anchor, size: Vec2) -> Anchor {
+fn dcl_anchor_to_bevy_anchor(anchor: dcl2d_ecs_v1::Anchor, size: Vec2) -> Anchor {
     match anchor {
         dcl2d_ecs_v1::Anchor::BottomCenter => Anchor::BottomCenter,
         dcl2d_ecs_v1::Anchor::BottomLeft => Anchor::BottomLeft,
@@ -144,9 +144,14 @@ fn entity_anchor_to_bevy_anchor(anchor: dcl2d_ecs_v1::Anchor, size: Vec2) -> Anc
         dcl2d_ecs_v1::Anchor::Center => Anchor::Center,
         dcl2d_ecs_v1::Anchor::CenterLeft => Anchor::CenterLeft,
         dcl2d_ecs_v1::Anchor::CenterRight => Anchor::CenterRight,
-        dcl2d_ecs_v1::Anchor::Custom(vec) => Anchor::Custom(
-            Vec2::new(vec.x as f32 - size.x / 2.0, vec.y as f32 - size.y / 2.0) / size,
-        ),
+        dcl2d_ecs_v1::Anchor::Custom(vec) => {
+          let x = vec.x.min(size.x as i32).max(0);
+          let y = vec.y.min(size.y as i32).max(0);
+          
+          println!("{}-{}",x,y);
+          Anchor::Custom(
+            Vec2::new(x as f32 - size.x / 2.0, y as f32 - size.y / 2.0) / size,
+        )},
         dcl2d_ecs_v1::Anchor::TopCenter => Anchor::TopCenter,
         dcl2d_ecs_v1::Anchor::TopLeft => Anchor::TopLeft,
         dcl2d_ecs_v1::Anchor::TopRight => Anchor::TopRight,
