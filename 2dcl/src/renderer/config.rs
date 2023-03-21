@@ -13,4 +13,4 @@ pub const TRANSPARENCY_VALUE_FOR_HIDING_ELEMENTS: f32 = 0.25;
 pub const CAMERA_SCALE: f32 = 1.0;
 pub const ITERACT_ICON_HEIGHT: f32 = 100.0;
 pub const LAYERS_DISTANCE: f32 = 500.0;
-pub const PLAYER_STARTING_PARCEL: Parcel = Parcel(-25,6);
+pub const PLAYER_STARTING_PARCEL: Parcel = Parcel(0,0);

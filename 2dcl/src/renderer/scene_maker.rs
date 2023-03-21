@@ -127,8 +127,8 @@ pub fn make_default_scene(parcel: &Parcel) -> Result<SceneData> {
         is_default: true,
         ..default()
     };
-
-    scene_data.scene.name = "default_scene".to_string();
+    
+    scene_data.scene.name = format!("Default scene {} , {}",parcel.0,parcel.1);
     let mut entities: Vec<dcl2d_ecs_v1::Entity> = Vec::new();
     entities.append(&mut make_default_random_entities());
     entities.append(&mut make_default_background_entities(&PathBuf::default()));
@@ -151,7 +151,7 @@ pub fn make_road_scene(roads_data: &RoadsData, parcel: &Parcel) -> Result<SceneD
     entities.append(&mut corner_entities);
 
     let level = dcl2d_ecs_v1::Level {
-        name: format!("Road {} - {}", &parcel.0, &parcel.1),
+        name: format!("Road {} , {}", &parcel.0, &parcel.1),
         entities,
         ..default()
     };
@@ -162,7 +162,7 @@ pub fn make_road_scene(roads_data: &RoadsData, parcel: &Parcel) -> Result<SceneD
     path.push("roads");
 
     let scene = dcl2d_ecs_v1::Scene {
-        name: format!("Road {} - {}", &parcel.0, &parcel.1),
+        name: format!("Road {} , {}", &parcel.0, &parcel.1),
         levels: vec![level],
         ..default()
     };

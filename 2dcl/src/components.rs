@@ -1,5 +1,6 @@
 use bevy::prelude::*;
 use bevy::tasks::Task;
+use bevy_inspector_egui::prelude::ReflectInspectorOptions;
 use dcl2d_ecs_v1::collision_type::CollisionType;
 use dcl_common::Parcel;
 use std::path::PathBuf;
@@ -40,11 +41,14 @@ pub struct LevelChange {
     pub level: usize,
 }
 
-#[derive(Debug, Component)]
+#[derive(Debug, Component, Reflect)]
 pub struct Scene {
     pub name: String,
+    #[reflect(ignore)]
     pub parcels: Vec<Parcel>,
+    #[reflect(ignore)]
     pub timestamp: SystemTime,
+    #[reflect(ignore)]
     pub serialized_data: Vec<u8>,
     pub path: PathBuf,
     pub is_default: bool,

@@ -23,8 +23,8 @@ impl Plugin for MyConsolePlugin {
 #[derive(Parser, ConsoleCommand)]
 #[command(name = "jump")]
 struct TeleportCommand {
-    parcel_x: String,
-    parcel_y: String,
+    parcel_x: i16,
+    parcel_y: i16,
 }
 
 /// Prints the current parcel
@@ -55,21 +55,15 @@ fn teleport_command(
 ) {
     let (mut player, mut transform) = player_query.single_mut();
     if let Some(Ok(TeleportCommand { parcel_x, parcel_y })) = tp.take() {
-        if let Ok(parcel_x) = parcel_x.parse::<i16>() {
-            if let Ok(parcel_y) = parcel_y.parse::<i16>() {
-                player.current_level = 0;
-                transform.translation = get_parcel_spawn_point(
-                    &Parcel(parcel_x, parcel_y),
-                    0,
-                    &mut roads_data,
-                    &scene_files_map,
-                );
-                reply!(tp, "teleporting to parcel {},{}", parcel_x, parcel_y);
-            } else {
-                reply!(tp, "{} is not a valid value", parcel_y);
-            }
-        } else {
-            reply!(tp, "{} is not a valid value", parcel_x);
-        }
+
+      player.current_level = 0;
+      transform.translation = get_parcel_spawn_point(
+          &Parcel(parcel_x, parcel_y),
+          0,
+          &mut roads_data,
+          &scene_files_map,
+      );
+      reply!(tp, "teleporting to parcel {},{}", parcel_x, parcel_y);
+           
     }
 }

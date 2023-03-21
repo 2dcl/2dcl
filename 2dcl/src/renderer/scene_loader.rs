@@ -35,6 +35,11 @@ pub struct DownloadQueue {
 }
 
 #[derive(Default, Resource)]
+pub struct SpawningQueue {
+    parcels: Vec<Parcel>,
+}
+
+#[derive(Default, Resource)]
 pub struct DespawnedEntities {
     pub entities: Vec<Entity>,
 }
@@ -43,11 +48,13 @@ impl Plugin for SceneLoaderPlugin {
     fn build(&self, app: &mut App) {
         app.insert_resource(DownloadQueue::default())
             .insert_resource(DespawnedEntities::default())
+            .insert_resource(SpawningQueue::default())
             .add_system(level_changer)
             .add_system(scene_manager)
             .add_system(scene_downloader)
             .add_system(downloading_scenes_task_handler)
             .add_system(default_scenes_despawner)
+            .add_system(spawning_queue_cleaner)
             .add_system(
                 loading_sprites_tasks_handler
                     .after(level_changer)
@@ -58,6 +65,24 @@ impl Plugin for SceneLoaderPlugin {
     }
 }
 
+pub fn spawning_queue_cleaner(
+  mut spawning_queue: ResMut<SpawningQueue>,
+  scene_query: Query<&components::Scene>,
+)
+{
+  for i in (0..spawning_queue.parcels.len()).rev()
+  {
+    let parcel = &spawning_queue.parcels[i];
+    for scene in scene_query.iter()
+    {
+      if scene.parcels.contains(parcel)
+      {
+        spawning_queue.parcels.remove(i);
+        break;
+      }
+    }
+  }
+}
 pub fn level_changer(
     mut commands: Commands,
     mut collision_map: ResMut<resources::CollisionMap>,
@@ -66,6 +91,7 @@ pub fn level_changer(
     mut player_query: Query<(&mut components::Player, &mut GlobalTransform)>,
     scene_query: Query<(Entity, &mut components::Scene)>,
     level_query: Query<(&components::Level, &Parent)>,
+    mut spawning_queue: ResMut<SpawningQueue>
 ) {
     //Find the player
     let player_query = player_query.get_single_mut();
@@ -114,6 +140,7 @@ pub fn level_changer(
                             &scene_data,
                             &mut collision_map,
                             current_level,
+                            &mut spawning_queue
                         );
                     }
                     break;
@@ -130,6 +157,7 @@ pub fn scene_manager(
     mut commands: Commands,
     mut despawned_entities: ResMut<DespawnedEntities>,
     mut download_queue: ResMut<DownloadQueue>,
+    spawning_queue: Res<SpawningQueue>,
 ) {
     //Find the player
     let player_query = player_query.get_single_mut();
@@ -177,7 +205,19 @@ pub fn scene_manager(
         }
     }
 
-    download_queue.parcels = parcels_to_spawn;
+  //We don't need to spawn parcels being spawned
+    for i in (0..parcels_to_spawn.len()).rev() {
+      for spawning_parcel in &spawning_queue.parcels
+      {
+          if parcels_to_spawn[i] == *spawning_parcel
+          {
+            parcels_to_spawn.remove(i);
+            break;
+          }
+      }
+  }
+
+  download_queue.parcels = parcels_to_spawn;
 }
 
 pub fn scene_downloader(
@@ -187,6 +227,7 @@ pub fn scene_downloader(
     scene_files_map: Res<SceneFilesMap>,
     mut collision_map: ResMut<resources::CollisionMap>,
     mut download_queue: ResMut<DownloadQueue>,
+    mut spawning_queue: ResMut<SpawningQueue>
 ) {
     if download_queue.parcels.is_empty() {
         return;
@@ -217,6 +258,7 @@ pub fn scene_downloader(
                     &scene_data,
                     &mut collision_map,
                     0,
+                    &mut spawning_queue
                 );
             }
             None => {
@@ -225,10 +267,12 @@ pub fn scene_downloader(
                     &asset_server,
                     parcel_to_download,
                     &mut collision_map,
+                    &mut spawning_queue
                 );
             }
         }
     }
+
 
     commands.spawn(DownloadingScene {
         task: task_download_parcels,
@@ -541,6 +585,7 @@ fn downloading_scenes_task_handler(
     asset_server: Res<AssetServer>,
     mut tasks_downloading_scenes: Query<(Entity, &mut DownloadingScene)>,
     scenes_query: Query<(Entity, &components::Scene)>,
+    mut spawning_queue: ResMut<SpawningQueue>
 ) {
     for (entity, mut downloading_scene) in &mut tasks_downloading_scenes {
         if let Some(new_paths) = future::block_on(future::poll_once(&mut downloading_scene.task)) {
@@ -562,6 +607,7 @@ fn downloading_scenes_task_handler(
                             if let Some(scene_data) =
                                 get_scene(&mut roads_data, &scene_files_map, parcel_1)
                             {
+                              
                                 if scene.timestamp != scene_data.scene.timestamp {
                                     despawned_entities.entities.push(entity);
                                     commands.entity(entity).despawn_recursive();
@@ -571,6 +617,7 @@ fn downloading_scenes_task_handler(
                                         &scene_data,
                                         &mut collision_map,
                                         0,
+                                        &mut spawning_queue
                                     );
                                 }
                             }
@@ -621,6 +668,7 @@ fn spawn_default_scene(
     asset_server: &Res<AssetServer>,
     parcel: &Parcel,
     collision_map: &mut resources::CollisionMap,
+    mut spawning_queue: &mut ResMut<SpawningQueue>
 ) {
     let scene_data = match make_default_scene(parcel) {
         Ok(v) => v,
@@ -630,7 +678,7 @@ fn spawn_default_scene(
         }
     };
 
-    spawn_scene(commands, asset_server, &scene_data, collision_map, 0);
+    spawn_scene(commands, asset_server, &scene_data, collision_map, 0, spawning_queue);
 }
 
 pub fn spawn_level(
@@ -713,13 +761,16 @@ pub fn spawn_scene(
     scene_data: &SceneData,
     collision_map: &mut resources::CollisionMap,
     level_id: usize,
+    mut spawning_queue: &mut ResMut<SpawningQueue>
 ) -> Option<Entity> {
+  
     let scene = &scene_data.scene;
     let scene_entity = commands
         .spawn(bundles::Scene::from_2dcl_scene_data(scene_data))
         .id();
 
     if !scene.levels.is_empty() {
+      spawning_queue.parcels.append(&mut scene_data.parcels.clone());
         match spawn_level(
             commands,
             asset_server,
