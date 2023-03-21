@@ -24,7 +24,7 @@ pub use scene_maker::SceneMakerPlugin;
 pub mod scenes_io;
 pub use scenes_io::ScenesIOPlugin;
 
- mod debug;
+mod debug;
 use debug::DebugPlugin;
 
 mod transparency;

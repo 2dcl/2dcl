@@ -55,15 +55,13 @@ fn teleport_command(
 ) {
     let (mut player, mut transform) = player_query.single_mut();
     if let Some(Ok(TeleportCommand { parcel_x, parcel_y })) = tp.take() {
-
-      player.current_level = 0;
-      transform.translation = get_parcel_spawn_point(
-          &Parcel(parcel_x, parcel_y),
-          0,
-          &mut roads_data,
-          &scene_files_map,
-      );
-      reply!(tp, "teleporting to parcel {},{}", parcel_x, parcel_y);
-           
+        player.current_level = 0;
+        transform.translation = get_parcel_spawn_point(
+            &Parcel(parcel_x, parcel_y),
+            0,
+            &mut roads_data,
+            &scene_files_map,
+        );
+        reply!(tp, "teleporting to parcel {},{}", parcel_x, parcel_y);
     }
 }

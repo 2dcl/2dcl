@@ -11,5 +11,4 @@ pub use transform::Transform;
 
 mod sprite_renderer;
 pub use sprite_renderer::get_translation_by_anchor;
-pub use sprite_renderer::LoadingSpriteData;
 pub use sprite_renderer::SpriteRenderer;

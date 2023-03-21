@@ -1,8 +1,7 @@
 use crate::bundles::get_scene_center_location;
 use crate::components;
-use crate::renderer::scene_loader::SpawningQueue;
-use crate::renderer::scene_loader::loading_sprites_tasks_handler;
 use crate::renderer::scene_loader::DespawnedEntities;
+use crate::renderer::scene_loader::SpawningQueue;
 use crate::renderer::scenes_io::read_scene_u8;
 use crate::renderer::scenes_io::SceneData;
 use crate::resources;
@@ -70,11 +69,6 @@ impl Plugin for SceneHotReloadPlugin {
             .insert_resource(SpawningQueue::default())
             .add_system(scene_reload)
             .add_system(level_change)
-            .add_system(
-                loading_sprites_tasks_handler
-                    .after(level_change)
-                    .after(scene_reload),
-            )
             .add_startup_system(setup);
     }
 }
@@ -134,7 +128,7 @@ fn scene_reload(
     mut collision_map: ResMut<resources::CollisionMap>,
     mut player_query: Query<(&components::Player, &mut Transform)>,
     mut despawned_entities: ResMut<DespawnedEntities>,
-    mut spawning_queue: ResMut<SpawningQueue>
+    mut spawning_queue: ResMut<SpawningQueue>,
 ) {
     if let Ok((player, mut player_transform)) = player_query.get_single_mut() {
         if let Some(scene) = scene_assets.get(&scene_handlers.0) {
@@ -158,7 +152,7 @@ fn scene_reload(
                             &scene_data,
                             &mut collision_map,
                             player.current_level,
-                            &mut spawning_queue
+                            &mut spawning_queue,
                         );
 
                         let scene_center = get_scene_center_location(&scene_data);
@@ -195,7 +189,7 @@ fn scene_reload(
                         &scene_data,
                         &mut collision_map,
                         player.current_level,
-                        &mut spawning_queue
+                        &mut spawning_queue,
                     );
 
                     let scene_center = get_scene_center_location(&scene_data);
@@ -227,7 +221,7 @@ pub fn level_change(
     asset_server: Res<AssetServer>,
     mut collision_map: ResMut<resources::CollisionMap>,
     mut despawned_entities: ResMut<DespawnedEntities>,
-    mut spawning_queue: ResMut<SpawningQueue>
+    mut spawning_queue: ResMut<SpawningQueue>,
 ) {
     //Find the player
     let player = player_query.get_single();
@@ -277,7 +271,7 @@ pub fn level_change(
             &scene_data,
             &mut collision_map,
             current_level,
-            &mut spawning_queue
+            &mut spawning_queue,
         );
     }
 }

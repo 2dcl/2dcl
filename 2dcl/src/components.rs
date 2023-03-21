@@ -1,12 +1,10 @@
 use bevy::prelude::*;
 use bevy::tasks::Task;
-use bevy_inspector_egui::prelude::ReflectInspectorOptions;
 use dcl2d_ecs_v1::collision_type::CollisionType;
 use dcl_common::Parcel;
 use std::path::PathBuf;
 use std::time::SystemTime;
 
-use crate::bundles::LoadingSpriteData;
 use crate::renderer::animations::Animation;
 use crate::renderer::player::LevelChangeStackData;
 
@@ -14,12 +12,6 @@ use crate::renderer::player::LevelChangeStackData;
 pub struct DownloadingScene {
     pub task: Task<Option<Vec<PathBuf>>>,
     pub parcels: Vec<Parcel>,
-}
-
-#[derive(Component)]
-pub struct LoadingSprite {
-    pub task: Task<LoadingSpriteData>,
-    pub scene_entity: Entity,
 }
 
 #[derive(Debug, Component, Clone)]

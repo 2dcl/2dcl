@@ -127,8 +127,8 @@ pub fn make_default_scene(parcel: &Parcel) -> Result<SceneData> {
         is_default: true,
         ..default()
     };
-    
-    scene_data.scene.name = format!("Default scene {} , {}",parcel.0,parcel.1);
+
+    scene_data.scene.name = format!("Default scene {} , {}", parcel.0, parcel.1);
     let mut entities: Vec<dcl2d_ecs_v1::Entity> = Vec::new();
     entities.append(&mut make_default_random_entities());
     entities.append(&mut make_default_background_entities(&PathBuf::default()));

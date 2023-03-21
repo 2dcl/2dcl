@@ -3,11 +3,7 @@ use std::{
     str::FromStr,
 };
 
-use bevy::{
-    prelude::*,
-    sprite::Anchor,
-    tasks::{AsyncComputeTaskPool, Task},
-};
+use bevy::{prelude::*, sprite::Anchor};
 use dcl_common::Parcel;
 use imagesize::size;
 
@@ -21,15 +17,6 @@ use crate::{
 
 use super::transform::get_parcel_rect;
 
-pub struct LoadingSpriteData {
-    pub sprite_renderer_component: dcl2d_ecs_v1::components::SpriteRenderer,
-    pub transform: Transform,
-    pub texture: Handle<Image>,
-    pub image_size: Vec2,
-    pub parcels: Vec<Parcel>,
-    pub level_id: usize,
-}
-
 #[derive(Bundle, Default)]
 pub struct SpriteRenderer {
     pub sprite: SpriteBundle,
@@ -37,7 +24,7 @@ pub struct SpriteRenderer {
 }
 
 impl SpriteRenderer {
-    pub fn new(
+    pub fn from_texture(
         sprite_renderer_component: &dcl2d_ecs_v1::components::SpriteRenderer,
         transform: &Transform,
         texture: Handle<Image>,
@@ -100,21 +87,19 @@ impl SpriteRenderer {
         }
     }
 
-    pub fn async_load<P>(
+    pub fn from_path<P>(
         sprite_renderer_component: &dcl2d_ecs_v1::components::SpriteRenderer,
-        transform: Transform,
+        transform: &Transform,
         image_asset_path: P,
         asset_server: &AssetServer,
         parcels: Vec<Parcel>,
         level_id: usize,
-    ) -> Task<LoadingSpriteData>
+    ) -> Self
     where
         P: AsRef<Path>,
     {
         let image_asset_path = image_asset_path.as_ref().to_path_buf();
-        let asset_server_clone = asset_server.clone();
 
-        let sprite_renderer_clone = sprite_renderer_component.clone();
         let mut absolute_path = std::fs::canonicalize(PathBuf::from_str(".").unwrap()).unwrap();
         absolute_path.push("assets");
         absolute_path.push(&image_asset_path);
@@ -126,27 +111,15 @@ impl SpriteRenderer {
             }
         };
 
-        let thread_pool = AsyncComputeTaskPool::get();
-        thread_pool.spawn(async move {
-            LoadingSpriteData {
-                sprite_renderer_component: sprite_renderer_clone.clone(),
-                transform,
-                texture: asset_server_clone.load(image_asset_path),
-                image_size,
-                parcels,
-                level_id,
-            }
-        })
-    }
+        let texture = asset_server.load(image_asset_path);
 
-    pub fn from_loading_sprite_data(loading_sprite_data: LoadingSpriteData) -> Self {
-        Self::new(
-            &loading_sprite_data.sprite_renderer_component,
-            &loading_sprite_data.transform,
-            loading_sprite_data.texture,
-            loading_sprite_data.image_size,
-            loading_sprite_data.parcels,
-            loading_sprite_data.level_id,
+        Self::from_texture(
+            sprite_renderer_component,
+            transform,
+            texture,
+            image_size,
+            parcels,
+            level_id,
         )
     }
 }
