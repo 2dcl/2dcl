@@ -1,5 +1,7 @@
 use super::scene_loader::parcel_to_world_location;
-use super::transparency::{update_overlapping_elements, update_transparency_on_top_of_player};
+use super::transparency::{
+    check_elements_on_top_of_player, check_elements_overlapping_parcels, update_transparency,
+};
 use super::{animations::*, collision::*};
 use crate::renderer::config::*;
 use crate::{components, resources};
@@ -19,8 +21,9 @@ impl Plugin for PlayerPlugin {
     fn build(&self, app: &mut App) {
         app.add_startup_system(spawn_player)
             .add_system(player_interact)
-            .add_system(update_transparency_on_top_of_player)
-            .add_system(update_overlapping_elements)
+            .add_system(update_transparency)
+            .add_system(check_elements_on_top_of_player)
+            .add_system(check_elements_overlapping_parcels)
             .add_system(player_movement);
     }
 }
@@ -37,8 +40,8 @@ fn spawn_player(
 
     let player_animator = get_animator(player_animator_path, &assets, &mut texture_atlases);
 
-    if player_animator.is_err() {
-        println!("{}", player_animator.unwrap_err());
+    if let Err(e) = player_animator {
+        println!("{}", e);
         return;
     }
 
@@ -49,8 +52,8 @@ fn spawn_player(
 
     let interact_animator = get_animator(interact_animator_path, &assets, &mut texture_atlases);
 
-    if interact_animator.is_err() {
-        println!("{}", interact_animator.unwrap_err());
+    if let Err(e) = interact_animator {
+        println!("{}", e);
         return;
     }
 
@@ -123,12 +126,13 @@ fn player_movement(
     entities_with_level_change: Query<(Entity, &components::LevelChange)>,
     keyboard: Res<Input<KeyCode>>,
     collision_map: Res<resources::CollisionMap>,
+    scenes_query: Query<&components::Scene>,
     time: Res<Time>,
 ) {
     let result = player_query.get_single_mut();
 
-    if result.is_err() {
-        println!("{}", result.unwrap_err());
+    if let Err(e) = result {
+        println!("{}", e);
         return;
     }
 
@@ -152,10 +156,12 @@ fn player_movement(
 
         if !check_player_collision(
             player.as_mut(),
+            &transform.translation,
             &target,
             &box_collision_query,
             &entities_with_level_change,
-            collision_map.clone(),
+            &scenes_query,
+            &collision_map,
         ) {
             transform.translation = target;
         }
@@ -164,10 +170,12 @@ fn player_movement(
 
         if !check_player_collision(
             player.as_mut(),
+            &transform.translation,
             &target,
             &box_collision_query,
             &entities_with_level_change,
-            collision_map.clone(),
+            &scenes_query,
+            &collision_map,
         ) {
             transform.translation = target;
         }
@@ -192,22 +200,26 @@ fn player_interact(
     entities_with_level_change: Query<(Entity, &components::LevelChange)>,
     keyboard: Res<Input<KeyCode>>,
     collision_map: Res<resources::CollisionMap>,
+    scenes_query: Query<&components::Scene>,
 ) {
     let result = player_query.get_single_mut();
 
-    if result.is_err() {
-        println!("{}", result.unwrap_err());
+    if let Err(e) = result {
+        println!("{}", e);
         return;
     }
 
     let (mut player, mut transform) = result.unwrap();
 
     let collisions = get_collisions(
+        &player.current_parcel,
+        player.current_level,
         &transform.translation,
         &player.collider_size,
         &box_collision_query,
         &entities_with_level_change,
-        collision_map.clone(),
+        &scenes_query,
+        &collision_map,
     );
 
     if keyboard.just_pressed(KeyCode::E) {
@@ -301,16 +313,38 @@ fn exit_level(player: &mut components::Player, transform: &mut Transform) {
 
 fn check_player_collision(
     player: &mut components::Player,
+    current_location: &Vec3,
     target_location: &Vec3,
     box_collision_query: &Query<(Entity, &GlobalTransform, &components::BoxCollider)>,
     entities_with_level_change: &Query<(Entity, &components::LevelChange)>,
-    collision_map: resources::CollisionMap,
+    scenes_query: &Query<&components::Scene>,
+    collision_map: &resources::CollisionMap,
 ) -> bool {
     let collisions = get_collisions(
+        &player.current_parcel,
+        player.current_level,
+        current_location,
+        &player.collider_size,
+        box_collision_query,
+        entities_with_level_change,
+        scenes_query,
+        collision_map,
+    );
+
+    for collision in collisions {
+        if collision.hit && collision.collision_type == CollisionType::Solid {
+            return false;
+        }
+    }
+
+    let collisions = get_collisions(
+        &player.current_parcel,
+        player.current_level,
         target_location,
         &player.collider_size,
         box_collision_query,
         entities_with_level_change,
+        scenes_query,
         collision_map,
     );
 

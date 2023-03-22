@@ -29,11 +29,9 @@ pub async fn update_roads_async(
    roads_data: &mut RoadsData,
 ) {
 
-  println!("updating roads async");
   for x in -152..152 {
    for y in -152..152 {
     let parcels = vec![Parcel(x,y)];
-    println!("checking parcel {:?}",parcels);
     let server = Server::production();
 
     let scene_files = ContentClient::scene_files_for_parcels(&server, &parcels).await.unwrap();
@@ -61,7 +59,6 @@ pub async fn update_roads_async(
                 downloadable.filename.to_str().unwrap()
                 );
 
-              println!("Downloading {}", filename);
               ContentClient::download(&server, downloadable.cid, &filename).await;
               
               if let Ok(scene_3d) = read_3dcl_scene(filename) {
@@ -70,7 +67,6 @@ pub async fn update_roads_async(
                 {
                   for parcel in scene_3d.scene.parcels
                   {
-                    println!("{:?} is road", parcel);
                     add_road_at_parcel(&parcel,roads_data);
                   }
               

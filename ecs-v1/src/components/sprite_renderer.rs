@@ -1,7 +1,12 @@
 use crate::Vec2;
 use crate::{color::RGBA, Anchor, Component};
 use core::any::Any;
+use imagesize::size;
 use serde::{Deserialize, Serialize};
+use std::path::Path;
+
+pub const MAX_SIZE_X: usize = 768;
+pub const MAX_SIZE_Y: usize = 768;
 
 #[derive(Deserialize, Serialize, Debug, Clone, PartialEq, Default)]
 pub struct SpriteRenderer {
@@ -18,21 +23,31 @@ pub struct SpriteRenderer {
 
 #[typetag::serde]
 impl Component for SpriteRenderer {
-    // fn compile(&self, json_path:&Path, build_path: &Path)  -> Result<(),Error> {
+    fn check(&self, level_id: usize, source_path: &Path) -> Result<(), String> {
+        let mut source_path = source_path.to_path_buf();
+        source_path.pop();
+        source_path.push("assets");
+        source_path.push(&self.sprite);
 
-    //     // println!("Moving {}, to {}",&self.sprite,&build_path.display());
+        let image_size = match size(&source_path) {
+            Ok(v) => Vec2 {
+                x: v.width,
+                y: v.height,
+            },
+            Err(e) => {
+                return Err(format!("{} won't be renderer. {}", self.sprite, e));
+            }
+        };
 
-    //     // let mut json_path = json_path.to_path_buf();
-    //     // json_path.push(&self.sprite);
-
-    //     // let mut build_path = build_path.to_path_buf();
-    //     // build_path.push(&self.sprite);
-
-    //     // println!("Test Moving {}, to {}",json_path.display(),build_path.display());
-    //     // copy(json_path, build_path)?;
-    //     Ok(())
-
-    // }
+        if level_id == 0 && (image_size.x > MAX_SIZE_X || image_size.y > MAX_SIZE_Y) {
+            Err(format!(
+                "{} won't be rendered. Images in the overworld can't be bigger than {}x{}",
+                self.sprite, MAX_SIZE_X, MAX_SIZE_Y
+            ))
+        } else {
+            Ok(())
+        }
+    }
 
     fn as_any(&self) -> &dyn Any {
         self

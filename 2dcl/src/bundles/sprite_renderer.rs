@@ -82,6 +82,7 @@ impl SpriteRenderer {
                 default_color: color,
                 parcels_overlapping,
                 parent_parcels: parcels,
+                ..default()
             },
             sprite,
         }
@@ -135,8 +136,6 @@ fn dcl_anchor_to_bevy_anchor(anchor: dcl2d_ecs_v1::Anchor, size: Vec2) -> Anchor
         dcl2d_ecs_v1::Anchor::Custom(vec) => {
             let x = vec.x.min(size.x as i32).max(0);
             let y = vec.y.min(size.y as i32).max(0);
-
-            println!("{}-{}", x, y);
             Anchor::Custom(Vec2::new(x as f32 - size.x / 2.0, y as f32 - size.y / 2.0) / size)
         }
         dcl2d_ecs_v1::Anchor::TopCenter => Anchor::TopCenter,

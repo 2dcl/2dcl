@@ -37,6 +37,8 @@ where
         return Err(Box::new(SceneCompileError::NoParcels));
     } */
 
+    check_components(&scene, &source_path);
+
     let mut buf: Vec<u8> = Vec::new();
     scene.serialize(&mut Serializer::new(&mut buf))?;
 
@@ -60,4 +62,16 @@ where
     fs_extra::dir::copy(assets_source_path, assets_destination_path, &options)?;
     println!("scene compilation finished successfully");
     Ok(())
+}
+
+fn check_components(scene: &Scene, source_path: &Path) {
+    for i in 0..scene.levels.len() {
+        for entity in &scene.levels[i].entities {
+            for component in &entity.components {
+                if let Err(e) = component.check(i, source_path) {
+                    println!("{}", e);
+                }
+            }
+        }
+    }
 }

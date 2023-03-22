@@ -15,22 +15,18 @@ pub struct DownloadingScene {
 }
 
 #[derive(Debug, Component, Clone)]
-pub struct CircleCollider {
-    pub center: Vec2,
-    pub radius: u32,
-}
-
-#[derive(Debug, Component, Clone)]
 pub struct BoxCollider {
     pub center: Vec2,
     pub size: Vec2,
     pub collision_type: CollisionType,
+    pub parcels: Vec<Parcel>,
 }
 
 #[derive(Debug, Component, Clone)]
 pub struct LevelChange {
     pub spawn_point: Vec2,
     pub level: usize,
+    pub parcels: Vec<Parcel>,
 }
 
 #[derive(Debug, Component, Reflect)]
@@ -106,4 +102,6 @@ pub struct SpriteRenderer {
     pub default_color: Color,
     pub parcels_overlapping: Vec<Parcel>,
     pub parent_parcels: Vec<Parcel>,
+    pub is_on_top_of_player: bool,
+    pub is_on_top_of_player_parcel: bool,
 }

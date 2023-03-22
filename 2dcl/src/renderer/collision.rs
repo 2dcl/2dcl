@@ -1,9 +1,10 @@
 use bevy::prelude::*;
 use bevy::sprite::collide_aabb::collide;
 use dcl2d_ecs_v1::collision_type::CollisionType;
+use dcl_common::Parcel;
 
 use crate::{
-    components::{BoxCollider, LevelChange},
+    components::{BoxCollider, LevelChange, Scene},
     resources,
 };
 
@@ -20,6 +21,7 @@ pub struct CollisionTile {
     pub location: Vec2,
     pub colliision_type: CollisionType,
     pub entity: Option<Entity>,
+    pub parcels: Vec<Parcel>,
 }
 
 pub struct CollisionPlugin;
@@ -39,12 +41,23 @@ fn setup(mut commands: Commands) {
 }
 
 pub fn get_mask_collision(
+    current_parcel: &Parcel,
+    current_level: usize,
     position: &Vec3,
     size: &Vec2,
-    collision_map: resources::CollisionMap,
+    collision_map: &resources::CollisionMap,
     entities_with_level_change: &Query<(Entity, &LevelChange)>,
+    scenes_query: &Query<&Scene>,
 ) -> CollisionResult {
-    for tile in collision_map.tiles {
+    for tile in &collision_map.tiles {
+        if !collision_applies_for_current_parcel(
+            current_parcel,
+            current_level,
+            &tile.parcels,
+            scenes_query,
+        ) {
+            continue;
+        }
         let min = Vec2::new(position.x - size.x / 2.0, position.y);
         let max = Vec2::new(position.x + size.x / 2.0, position.y + size.y);
         if tile.location.x > min.x
@@ -58,14 +71,14 @@ pub fn get_mask_collision(
                         get_level_change_of_entity(entity, entities_with_level_change);
                     return CollisionResult {
                         hit: true,
-                        collision_type: tile.colliision_type,
+                        collision_type: tile.colliision_type.clone(),
                         level_change,
                     };
                 }
             } else {
                 return CollisionResult {
                     hit: true,
-                    collision_type: tile.colliision_type,
+                    collision_type: tile.colliision_type.clone(),
                     level_change: None,
                 };
             }
@@ -92,14 +105,26 @@ pub fn get_level_change_of_entity(
 }
 
 pub fn get_box_collisions(
+    current_parcel: &Parcel,
+    current_level: usize,
     position: &Vec3,
     size: &Vec2,
     box_colliders: &Query<(Entity, &GlobalTransform, &BoxCollider)>,
     entities_with_level_change: &Query<(Entity, &LevelChange)>,
+    scenes_query: &Query<&Scene>,
 ) -> Vec<CollisionResult> {
     let mut collisions_result: Vec<CollisionResult> = Vec::new();
 
     for (entity, transform, collider) in box_colliders {
+        if !collision_applies_for_current_parcel(
+            current_parcel,
+            current_level,
+            &collider.parcels,
+            scenes_query,
+        ) {
+            continue;
+        }
+
         let collision = collide(
             Vec3 {
                 x: position.x,
@@ -133,19 +158,61 @@ pub fn get_box_collisions(
 }
 
 pub fn get_collisions(
+    current_parcel: &Parcel,
+    current_level: usize,
     position: &Vec3,
     size: &Vec2,
     box_colliders: &Query<(Entity, &GlobalTransform, &BoxCollider)>,
     entities_with_level_change: &Query<(Entity, &LevelChange)>,
-    collision_map: resources::CollisionMap,
+    scenes_query: &Query<&Scene>,
+    collision_map: &resources::CollisionMap,
 ) -> Vec<CollisionResult> {
-    let mut collision_results =
-        get_box_collisions(position, size, box_colliders, entities_with_level_change);
+    let mut collision_results = get_box_collisions(
+        current_parcel,
+        current_level,
+        position,
+        size,
+        box_colliders,
+        entities_with_level_change,
+        scenes_query,
+    );
     collision_results.push(get_mask_collision(
+        current_parcel,
+        current_level,
         position,
         size,
         collision_map,
         entities_with_level_change,
+        scenes_query,
     ));
     collision_results
+}
+
+fn collision_applies_for_current_parcel(
+    current_parcel: &Parcel,
+    current_level: usize,
+    collider_parcels: &Vec<Parcel>,
+    scenes_query: &Query<&Scene>,
+) -> bool {
+    if current_level > 0 || collider_parcels.contains(current_parcel) {
+        return true;
+    }
+
+    let mut current_parcel_is_default = false;
+    let mut collider_parcel_is_default = false;
+    for scene in scenes_query.iter() {
+        if scene.is_default {
+            if scene.parcels.contains(current_parcel) {
+                current_parcel_is_default = true;
+            } else if scene.parcels == *collider_parcels {
+                collider_parcel_is_default = true;
+            }
+
+            if current_parcel_is_default && collider_parcel_is_default {
+                return true;
+            }
+        }
+    }
+
+    false
 }

@@ -53,8 +53,14 @@ impl Plugin for SceneLoaderPlugin {
             .add_system(scene_manager)
             .add_system(scene_downloader)
             .add_system(downloading_scenes_task_handler)
-            .add_system(default_scenes_despawner)
-            .add_system(spawning_queue_cleaner);
+            .add_system(
+                spawning_queue_cleaner
+                    .before(level_changer)
+                    .before(scene_manager)
+                    .before(scene_downloader)
+                    .before(downloading_scenes_task_handler),
+            )
+            .add_system(default_scenes_despawner.before(scene_manager));
     }
 }
 
@@ -90,10 +96,10 @@ pub fn level_changer(
     }
 
     let mut player_query = player_query.unwrap();
-    let player_parcel = player_query.0.current_parcel.clone();
     let current_level = player_query.0.current_level;
 
-    player_query.0.current_parcel = world_location_to_parcel(&player_query.1.translation());
+    let player_parcel = world_location_to_parcel(&player_query.1.translation());
+    player_query.0.current_parcel = player_parcel.clone();
 
     //We check if we're on the correct level
 
@@ -342,7 +348,6 @@ pub async fn download_parcels(
                 downloadable_json.filename.to_str().unwrap()
             );
 
-            println!("Downloading {}", filename);
             ContentClient::download(&server, downloadable_json.cid, &filename).await?;
 
             if let Ok(scene_3d) = read_3dcl_scene(filename) {
@@ -352,7 +357,6 @@ pub async fn download_parcels(
                     downloadable_2dcl.filename.to_str().unwrap()
                 );
 
-                println!("Downloading {}", filename);
                 ContentClient::download(&server, downloadable_2dcl.cid, &filename).await?;
 
                 if let Some(scene_2cl) = read_scene_file(&filename) {
@@ -383,7 +387,6 @@ pub async fn download_parcels(
                                 downloadable.filename.to_str().unwrap()
                             );
 
-                            println!("Downloading {}", filename);
                             ContentClient::download(&server, downloadable.cid, &filename).await?;
                         }
                         scene_paths.push(scene_path.to_path_buf());
@@ -463,7 +466,6 @@ pub async fn download_level_spawn_point(parcel: &Parcel, level_id: usize) -> Vec
                 downloadable_json.filename.to_str().unwrap()
             );
 
-            println!("Downloading {}", filename);
             if ContentClient::download(&server, downloadable_json.cid, &filename)
                 .await
                 .is_err()
@@ -478,7 +480,6 @@ pub async fn download_level_spawn_point(parcel: &Parcel, level_id: usize) -> Vec
                     downloadable_2dcl.filename.to_str().unwrap()
                 );
 
-                println!("Downloading {}", filename);
                 if ContentClient::download(&server, downloadable_2dcl.cid, &filename)
                     .await
                     .is_err()
@@ -869,30 +870,9 @@ fn spawn_entity(
                 center: Vec2::new(collider.center.x as f32, collider.center.y as f32),
                 size: Vec2::new(collider.size.width as f32, collider.size.height as f32),
                 collision_type: collider.collision_type.clone(),
+                parcels: scene_data.parcels.clone(),
             };
             commands.entity(spawned_entity).insert(box_collider);
-        }
-
-        if let Some(collider) = component
-            .as_any()
-            .downcast_ref::<dcl2d_ecs_v1::components::CircleCollider>()
-        {
-            let circle_collider = CircleCollider {
-                center: Vec2::new(collider.center.x as f32, collider.center.y as f32),
-                radius: collider.radius,
-            };
-            commands.entity(spawned_entity).insert(circle_collider);
-        }
-
-        if let Some(collider) = component
-            .as_any()
-            .downcast_ref::<dcl2d_ecs_v1::components::CircleCollider>()
-        {
-            let circle_collider = CircleCollider {
-                center: Vec2::new(collider.center.x as f32, collider.center.y as f32),
-                radius: collider.radius,
-            };
-            commands.entity(spawned_entity).insert(circle_collider);
         }
 
         if let Some(collider) = component
@@ -937,6 +917,7 @@ fn spawn_entity(
                                 location: tile_location,
                                 colliision_type: collider.collision_type.clone(),
                                 entity: Some(spawned_entity),
+                                parcels: scene_data.parcels.clone(),
                             };
                             collision_map.tiles.push(collision_tile);
                         }
@@ -966,6 +947,7 @@ fn spawn_entity(
                     level_change.spawn_point.x as f32 + scene_center_location.x,
                     level_change.spawn_point.y as f32 + scene_center_location.y,
                 ),
+                parcels: scene_data.parcels.clone(),
             };
             commands
                 .entity(spawned_entity)

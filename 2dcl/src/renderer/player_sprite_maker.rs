@@ -192,14 +192,12 @@ where
 
     final_spritesheet.meta.image = Some(output_image_name);
 
-    match serde_json::to_writer(&writer, &final_spritesheet) {
-        Ok(_v) => println!("saved player json"),
-        Err(e) => return Err(Box::new(e)),
+    if let Err(e) = serde_json::to_writer(&writer, &final_spritesheet) {
+        return Err(Box::new(e));
     }
 
-    match final_image.save(output_image_path) {
-        Ok(_v) => println!("saved player image"),
-        Err(e) => return Err(Box::new(e)),
+    if let Err(e) = final_image.save(output_image_path) {
+        return Err(Box::new(e));
     }
 
     Ok(())
