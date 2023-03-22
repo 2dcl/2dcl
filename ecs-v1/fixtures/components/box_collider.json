@@ -1,0 +1,6 @@
+{
+  "type": "BoxCollider",
+  "collision_type" : "Trigger",
+  "center": { "x" : 1, "y" : 0 },
+  "size": { "width" : 2, "height" : 1 }
+}

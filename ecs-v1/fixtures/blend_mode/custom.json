@@ -1,0 +1,12 @@
+{
+  "Custom": {
+    "color": {
+      "src": "One",
+      "dst": "One"
+    },
+    "alpha": {
+      "src" : "One",
+      "dst" : "One"
+    }
+  }
+}

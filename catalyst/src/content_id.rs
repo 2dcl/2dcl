@@ -12,7 +12,7 @@ use crate::HashId;
 /// let message = format!("content missing: {}", contentId);
 /// assert_eq!(message, "content missing: a-missing-content");
 /// ```
-#[derive(Debug, PartialEq, Eq, Deserialize)]
+#[derive(Debug, PartialEq, Eq, Deserialize, Clone)]
 pub struct ContentId(HashId);
 impl ContentId {
     /// Creates a new instance of ContentId by receiving a string.
