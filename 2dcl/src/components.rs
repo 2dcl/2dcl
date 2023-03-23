@@ -104,4 +104,5 @@ pub struct SpriteRenderer {
     pub parent_parcels: Vec<Parcel>,
     pub is_on_top_of_player: bool,
     pub is_on_top_of_player_parcel: bool,
+    pub transparency_timer: f32,
 }
