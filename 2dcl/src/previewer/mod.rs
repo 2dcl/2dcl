@@ -17,6 +17,8 @@ use collider_debugger::collider_debugger;
 mod manual_refresh;
 use manual_refresh::manual_refresh;
 
+mod ui;
+
 use self::manual_refresh::RefreshData;
 
 pub fn preview<T, U>(source_path: T, destination_path: U)
@@ -56,6 +58,7 @@ pub fn preview_scene(source_path: std::path::PathBuf, destination_path: std::pat
         .add_system(level_switch)
         .add_system(collider_debugger)
         .add_system(manual_refresh)
+        .add_system(ui::setup)
         .add_asset::<SceneAsset>()
         .init_asset_loader::<SceneAssetLoader>()
         .run();

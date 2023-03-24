@@ -28,6 +28,10 @@ mod debug;
 use debug::DebugPlugin;
 
 mod transparency;
+use transparency::TransparencyPlugin;
+
+mod screen_fade;
+use screen_fade::ScreenFadePlugin;
 
 use bevy::render::render_resource::{FilterMode, SamplerDescriptor};
 
@@ -68,7 +72,9 @@ pub fn setup(app: &mut bevy::app::App) {
             },
         }))
         .add_plugin(DebugPlugin)
+        .add_plugin(ScreenFadePlugin)
         .add_plugin(AnimationsPlugin)
         .add_plugin(PlayerPlugin)
+        .add_plugin(TransparencyPlugin)
         .add_plugin(CollisionPlugin);
 }

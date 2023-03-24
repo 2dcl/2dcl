@@ -152,6 +152,20 @@ pub fn read_scene_u8(content: &[u8]) -> Option<dcl2d_ecs_v1::Scene> {
     }
 }
 
+pub fn clear_all_downloaded_scenes() -> std::io::Result<()> {
+    let mut scenes_path = PathBuf::new();
+    scenes_path.push("assets");
+    scenes_path.push("scenes");
+
+    if !scenes_path.exists() {
+        return Ok(());
+    }
+
+    match std::fs::remove_dir_all(&scenes_path) {
+        Ok(_) => Ok(()),
+        Err(e) => Err(e),
+    }
+}
 pub fn refresh_path(path: PathBuf, scene_files_map: &mut SceneFilesMap) -> dcl_common::Result<()> {
     let pattern_2dcl = match path.to_str() {
         Some(v) => format!("{}/**/scene.2dcl", v,),
@@ -160,14 +174,10 @@ pub fn refresh_path(path: PathBuf, scene_files_map: &mut SceneFilesMap) -> dcl_c
         }
     };
 
-    let json_path = match path.to_str() {
-        Some(v) => format!("{}/scene.json", v,),
-        None => {
-            return Err(Box::new(ScenesIOError::InvalidPath(path)));
-        }
-    };
+    let mut json_path = path;
+    json_path.push("scene.json");
 
-    if let Ok(scene_3dcl) = read_3dcl_scene(json_path) {
+    if let Ok(scene_3dcl) = read_3dcl_scene(&json_path) {
         let parcels = scene_3dcl.scene.parcels.clone();
         if let Some(entry) = glob(pattern_2dcl.as_str())
             .expect("Failed to read glob pattern")
@@ -177,10 +187,19 @@ pub fn refresh_path(path: PathBuf, scene_files_map: &mut SceneFilesMap) -> dcl_c
                 Ok(path) => {
                     let scene_file_data = SceneFileData { path, parcels };
 
-                    for parcel in scene_3dcl.scene.parcels {
-                        scene_files_map
-                            .map
-                            .insert((parcel.0, parcel.1), scene_file_data.clone());
+                    if is_latest_version(&scene_file_data, scene_files_map) {
+                        for parcel in scene_3dcl.scene.parcels {
+                            clear_scene_files_for_parcel(&parcel, scene_files_map)
+                                .unwrap_or_default();
+                            scene_files_map
+                                .map
+                                .insert((parcel.0, parcel.1), scene_file_data.clone());
+                        }
+                    } else {
+                        json_path.pop();
+                        if std::fs::remove_dir_all(&json_path).is_err() {
+                            return Err(Box::new(ScenesIOError::InvalidPath(json_path)));
+                        }
                     }
                 }
                 Err(e) => return Err(Box::new(e)),
@@ -191,6 +210,66 @@ pub fn refresh_path(path: PathBuf, scene_files_map: &mut SceneFilesMap) -> dcl_c
     Ok(())
 }
 
+fn clear_scene_files_for_parcel(
+    parcel: &Parcel,
+    scene_files_map: &mut SceneFilesMap,
+) -> dcl_common::Result<()> {
+    let scene_file_data = scene_files_map.map.get(&(parcel.0, parcel.1));
+
+    if scene_file_data.is_none() {
+        return Ok(());
+    }
+
+    let scene_file_data = scene_file_data.unwrap();
+
+    let mut path_to_clear = scene_file_data.path.clone();
+    path_to_clear.pop();
+
+    scene_files_map.map.remove(&(parcel.0, parcel.1));
+
+    if std::fs::remove_dir_all(&path_to_clear).is_err() {
+        return Err(Box::new(ScenesIOError::InvalidPath(path_to_clear)));
+    }
+
+    Ok(())
+}
+
+fn is_latest_version(scene: &SceneFileData, scene_files_map: &mut SceneFilesMap) -> bool {
+    if !scene.path.exists() {
+        println!("{:?} path no existe", scene.path);
+        return false;
+    }
+
+    let scene_file = read_scene_file(&scene.path);
+
+    if scene_file.is_none() {
+        println!("read_scene_file is none para {:?}", scene.path);
+        return false;
+    }
+
+    let scene_file = scene_file.unwrap();
+
+    for parcel in &scene.parcels {
+        let other_file_data = scene_files_map.map.get(&(parcel.0, parcel.1));
+        if other_file_data.is_none() {
+            continue;
+        }
+
+        let other_file_data = other_file_data.unwrap();
+
+        if !other_file_data.path.exists() {
+            continue;
+        }
+
+        if let Some(other_scene) = read_scene_file(&other_file_data.path) {
+            if other_scene.timestamp > scene_file.timestamp {
+                return false;
+            }
+        }
+    }
+
+    true
+}
 pub fn read_3dcl_scene<P>(filename: P) -> dcl_common::Result<dcl_3d_scene::DCL3dScene>
 where
     P: AsRef<Path>,

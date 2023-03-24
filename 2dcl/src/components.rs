@@ -22,7 +22,7 @@ pub struct BoxCollider {
     pub parcels: Vec<Parcel>,
 }
 
-#[derive(Debug, Component, Clone)]
+#[derive(Debug, Component, Clone, PartialEq)]
 pub struct LevelChange {
     pub spawn_point: Vec2,
     pub level: usize,
@@ -90,8 +90,16 @@ pub struct Player {
     pub speed: f32,
     pub collider_size: Vec2,
     pub level_change_stack: Vec<LevelChangeStackData>,
+    pub input_state: PlayerInputState,
     pub current_level: usize,
     pub current_parcel: Parcel,
+}
+
+#[derive(Debug, PartialEq, Clone)]
+pub enum PlayerInputState {
+    Normal,
+    LoadingLevel(LevelChange),
+    ExitingLevel,
 }
 
 #[derive(Component, Default)]
@@ -104,5 +112,5 @@ pub struct SpriteRenderer {
     pub parent_parcels: Vec<Parcel>,
     pub is_on_top_of_player: bool,
     pub is_on_top_of_player_parcel: bool,
-    pub transparency_timer: f32,
+    pub transparency_alpha: f32,
 }

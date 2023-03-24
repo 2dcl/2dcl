@@ -1,8 +1,7 @@
 use super::scene_loader::parcel_to_world_location;
-use super::transparency::{
-    check_elements_on_top_of_player, check_elements_overlapping_parcels, update_transparency,
-};
-use super::{animations::*, collision::*};
+use super::screen_fade::FadeDirection;
+use super::{animations::*, collision::*, screen_fade};
+use crate::components::{LevelChange, PlayerInputState};
 use crate::renderer::config::*;
 use crate::{components, resources};
 use bevy::{core_pipeline::clear_color::ClearColorConfig, prelude::*, sprite::Anchor};
@@ -21,9 +20,7 @@ impl Plugin for PlayerPlugin {
     fn build(&self, app: &mut App) {
         app.add_startup_system(spawn_player)
             .add_system(player_interact)
-            .add_system(update_transparency)
-            .add_system(check_elements_on_top_of_player)
-            .add_system(check_elements_overlapping_parcels)
+            .add_system(player_input_state_update)
             .add_system(player_movement);
     }
 }
@@ -84,6 +81,7 @@ fn spawn_player(
             current_level: 0,
             current_parcel: Parcel(0, 0),
             level_change_stack: vec![],
+            input_state: PlayerInputState::Normal,
         })
         .id();
 
@@ -189,6 +187,46 @@ fn player_movement(
     change_animator_state(animator.as_mut(), texture_atlas.as_mut(), animation_state);
 }
 
+fn player_input_state_update(
+    mut player_query: Query<(&mut components::Player, &mut Transform)>,
+    mut fade_event_reader: EventReader<screen_fade::FadeFinished>,
+    mut fade: ResMut<screen_fade::Fade>,
+) {
+    let result = player_query.get_single_mut();
+
+    if let Err(e) = result {
+        println!("{}", e);
+        return;
+    }
+
+    let (mut player, mut transform) = result.unwrap();
+
+    match player.input_state.clone() {
+        PlayerInputState::Normal => return,
+        PlayerInputState::LoadingLevel(level_to_load) => {
+            if fade_out_finished(&mut fade_event_reader) {
+                player.input_state = PlayerInputState::Normal;
+                change_level(&mut player, &mut transform, &level_to_load, &mut fade);
+            }
+        }
+        PlayerInputState::ExitingLevel => {
+            if fade_out_finished(&mut fade_event_reader) {
+                player.input_state = PlayerInputState::Normal;
+                exit_level(&mut player, &mut transform, &mut fade);
+            }
+        }
+    }
+
+    fn fade_out_finished(fade_event_reader: &mut EventReader<screen_fade::FadeFinished>) -> bool {
+        for new_event in fade_event_reader.iter() {
+            if new_event.0 == FadeDirection::FadeOut {
+                return true;
+            }
+        }
+
+        false
+    }
+}
 fn player_interact(
     mut player_query: Query<(&mut components::Player, &mut Transform)>,
     mut iteract_query: Query<(
@@ -201,6 +239,7 @@ fn player_interact(
     keyboard: Res<Input<KeyCode>>,
     collision_map: Res<resources::CollisionMap>,
     scenes_query: Query<&components::Scene>,
+    mut fade: ResMut<screen_fade::Fade>,
 ) {
     let result = player_query.get_single_mut();
 
@@ -209,7 +248,7 @@ fn player_interact(
         return;
     }
 
-    let (mut player, mut transform) = result.unwrap();
+    let (mut player, transform) = result.unwrap();
 
     let collisions = get_collisions(
         &player.current_parcel,
@@ -223,11 +262,15 @@ fn player_interact(
     );
 
     if keyboard.just_pressed(KeyCode::E) {
-        try_change_level(&mut player, &mut transform, &collisions);
+        if let Some(level_change) = is_in_level_change_trigger(&collisions) {
+            player.input_state = PlayerInputState::LoadingLevel(level_change);
+            fade.direction = FadeDirection::FadeOut;
+        }
     }
 
-    if keyboard.just_pressed(KeyCode::Escape) {
-        exit_level(&mut player, &mut transform);
+    if keyboard.just_pressed(KeyCode::Escape) && player.level_change_stack.len() > 0 {
+        player.input_state = PlayerInputState::ExitingLevel;
+        fade.direction = FadeDirection::FadeOut;
     }
 
     let result = iteract_query.get_single_mut();
@@ -274,6 +317,7 @@ fn change_level(
     player: &mut components::Player,
     player_transform: &mut Transform,
     level_change: &components::LevelChange,
+    fade: &mut ResMut<screen_fade::Fade>,
 ) {
     let level_change_stack_data = LevelChangeStackData {
         level_id: player.current_level,
@@ -289,26 +333,30 @@ fn change_level(
     if level_change.level == 0 {
         player.level_change_stack.clear();
     }
+
+    fade.direction = FadeDirection::FadeIn;
 }
 
-fn try_change_level(
-    player: &mut components::Player,
-    player_transform: &mut Transform,
-    collisions: &Vec<CollisionResult>,
-) {
+fn is_in_level_change_trigger(collisions: &Vec<CollisionResult>) -> Option<LevelChange> {
     for collision in collisions {
         if collision.collision_type == CollisionType::Trigger && collision.level_change.is_some() {
             let level_change = collision.level_change.clone().unwrap();
-            change_level(player, player_transform, &level_change);
+            return Some(level_change);
         }
     }
+    None
 }
 
-fn exit_level(player: &mut components::Player, transform: &mut Transform) {
+fn exit_level(
+    player: &mut components::Player,
+    transform: &mut Transform,
+    fade: &mut ResMut<screen_fade::Fade>,
+) {
     if let Some(data) = player.level_change_stack.pop() {
         transform.translation = data.location;
         player.current_level = data.level_id;
     }
+    fade.direction = FadeDirection::FadeIn;
 }
 
 fn check_player_collision(

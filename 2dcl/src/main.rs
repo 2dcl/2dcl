@@ -30,6 +30,7 @@ enum Action {
         #[clap(default_value = "./build/")]
         destination_path: std::path::PathBuf,
     },
+    Clear,
 }
 
 fn main() -> Result<()> {
@@ -47,6 +48,15 @@ fn main() -> Result<()> {
             destination_path,
         }) => {
             scene_compiler::compile(source_path, destination_path).unwrap();
+        }
+        Some(Action::Clear) => {
+            let current_path = std::env::current_exe().unwrap();
+            let current_path = current_path.parent().unwrap();
+            std::env::set_current_dir(current_path).unwrap();
+
+            if let Err(e) = renderer::scenes_io::clear_all_downloaded_scenes() {
+                println!("{}", e);
+            }
         }
         None => {
             renderer::start();

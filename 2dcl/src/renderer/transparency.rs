@@ -2,36 +2,49 @@ use bevy::{prelude::*, sprite::collide_aabb::collide};
 
 use crate::{bundles::get_translation_by_anchor, components};
 
-use super::config::{
-    PLAYER_VISIBILITY_BOX, PLAYER_VISIBILITY_BOX_OFFSET, TRANSPARENCY_FADE_DURATION_IN_SECONDS,
-    TRANSPARENCY_VALUE_FOR_HIDING_ELEMENTS,
+use super::{
+    config::{
+        PLAYER_VISIBILITY_BOX, PLAYER_VISIBILITY_BOX_OFFSET, TRANSPARENCY_FADE_DURATION_IN_SECONDS,
+        TRANSPARENCY_VALUE_FOR_HIDING_ELEMENTS,
+    },
+    screen_fade,
 };
 
-pub fn update_transparency(
-    mut sprites_query: Query<(&mut Sprite, &mut components::SpriteRenderer)>,
-    time: Res<Time>,
-) {
-    for (mut sprite, mut sprite_renderer) in sprites_query.iter_mut() {
-        if sprite_renderer.is_on_top_of_player || sprite_renderer.is_on_top_of_player_parcel {
-            sprite_renderer.transparency_timer += time.delta_seconds();
-            sprite_renderer.transparency_timer = sprite_renderer
-                .transparency_timer
-                .min(TRANSPARENCY_FADE_DURATION_IN_SECONDS);
-        } else {
-            sprite_renderer.transparency_timer -= time.delta_seconds();
-            sprite_renderer.transparency_timer = sprite_renderer.transparency_timer.max(0.);
-        }
+pub struct TransparencyPlugin;
 
-        let alpha = sprite_renderer.transparency_timer / TRANSPARENCY_FADE_DURATION_IN_SECONDS;
-
-        sprite.color.set_a(
-            TRANSPARENCY_VALUE_FOR_HIDING_ELEMENTS * alpha
-                + sprite_renderer.default_color.a() * (1. - alpha),
-        );
+impl Plugin for TransparencyPlugin {
+    fn build(&self, app: &mut App) {
+        app.add_system(update_transparency.after(screen_fade::update_fade))
+            .add_system(check_elements_overlapping_parcels)
+            .add_system(check_elements_on_top_of_player);
     }
 }
 
-pub fn check_elements_on_top_of_player(
+fn update_transparency(
+    mut sprites_query: Query<(&mut Sprite, &mut components::SpriteRenderer)>,
+    time: Res<Time>,
+    fade: Res<screen_fade::Fade>,
+) {
+    for (mut sprite, mut sprite_renderer) in sprites_query.iter_mut() {
+        if sprite_renderer.is_on_top_of_player || sprite_renderer.is_on_top_of_player_parcel {
+            sprite_renderer.transparency_alpha +=
+                time.delta_seconds() / TRANSPARENCY_FADE_DURATION_IN_SECONDS;
+        } else {
+            sprite_renderer.transparency_alpha -=
+                time.delta_seconds() / TRANSPARENCY_FADE_DURATION_IN_SECONDS;
+        }
+
+        sprite_renderer.transparency_alpha = sprite_renderer.transparency_alpha.clamp(0., 1.);
+
+        let new_alpha = TRANSPARENCY_VALUE_FOR_HIDING_ELEMENTS * sprite_renderer.transparency_alpha
+            + sprite_renderer.default_color.a() * (1. - sprite_renderer.transparency_alpha);
+
+        let new_alpha = new_alpha * fade.alpha;
+        sprite.color.set_a(new_alpha);
+    }
+}
+
+fn check_elements_on_top_of_player(
     player_query: Query<&GlobalTransform, (Changed<GlobalTransform>, With<components::Player>)>,
     images: Res<Assets<Image>>,
     mut sprites_query: Query<
@@ -147,7 +160,7 @@ fn is_object_covering_player(
 
     true
 }
-pub fn check_elements_overlapping_parcels(
+fn check_elements_overlapping_parcels(
     player_query: Query<&components::Player, Changed<components::Player>>,
     mut sprites_query: Query<&mut components::SpriteRenderer, Without<components::Player>>,
     scenes_query: Query<&components::Scene>,
