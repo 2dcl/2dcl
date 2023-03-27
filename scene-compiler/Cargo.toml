@@ -1,8 +1,11 @@
 [package]
 name = "scene-compiler"
-version = "0.0.0"
+version = "0.0.1"
 edition = "2021"
 resolver = "2"
+
+[package.metadata.dist]
+dist = false
 
 [[bin]]
 name = "2dcl-scene-compiler"
