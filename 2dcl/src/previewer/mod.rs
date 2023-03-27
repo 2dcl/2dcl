@@ -58,7 +58,8 @@ pub fn preview_scene(source_path: std::path::PathBuf, destination_path: std::pat
         .add_system(level_switch)
         .add_system(collider_debugger)
         .add_system(manual_refresh)
-        .add_system(ui::setup)
+        .add_startup_system(ui::setup)
+        .add_system(ui::toggle_ui)
         .add_asset::<SceneAsset>()
         .init_asset_loader::<SceneAssetLoader>()
         .run();
