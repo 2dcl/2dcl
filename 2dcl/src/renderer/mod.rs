@@ -55,7 +55,7 @@ pub fn start() {
     };
 
     let mut app = App::new();
-    setup(&mut app);
+    setup(&mut app, format!("2dcl"));
     app.add_plugin(SceneLoaderPlugin)
         .add_plugin(MyConsolePlugin)
         .add_plugin(SceneMakerPlugin)
@@ -63,14 +63,17 @@ pub fn start() {
         .run();
 }
 
-pub fn setup(app: &mut bevy::app::App) {
+pub fn setup(app: &mut bevy::app::App, window_title: String) {
     app.insert_resource(Msaa::Off)
         .add_plugins(DefaultPlugins.set(ImagePlugin {
             default_sampler: SamplerDescriptor {
                 mag_filter: FilterMode::Nearest,
                 ..default()
-            },
-        }))
+            }}).set(WindowPlugin {
+              primary_window: Some(Window {
+                title: window_title,
+                ..default()}),
+              ..default()}))
         .add_plugin(DebugPlugin)
         .add_plugin(ScreenFadePlugin)
         .add_plugin(AnimationsPlugin)

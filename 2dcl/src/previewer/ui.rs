@@ -16,7 +16,7 @@ pub fn setup(mut commands: Commands, asset_server: Res<AssetServer>) {
         .spawn(NodeBundle {
             style: Style {
                 size: Size::new(Val::Percent(100.0), Val::Percent(100.0)),
-                align_items: AlignItems::Start,
+                align_items: AlignItems::End,
                 justify_content: JustifyContent::Start,
                 ..default()
             },
@@ -30,7 +30,7 @@ pub fn setup(mut commands: Commands, asset_server: Res<AssetServer>) {
 
     let mut font_path = asset_path.clone();
     font_path.push("fonts");
-    font_path.push("FiraSans-Bold.ttf");
+    font_path.push("kongtext.ttf");
 
     let mut image_path = asset_path.clone();
     image_path.push("ui");
@@ -43,10 +43,10 @@ pub fn setup(mut commands: Commands, asset_server: Res<AssetServer>) {
                 red: 1.,
                 green: 1.,
                 blue: 1.,
-                alpha: 0.5,
+                alpha: 0.75,
             }),
             style: Style {
-                size: Size::new(Val::Px(260.0), Val::Px(250.0)),
+                size: Size::new(Val::Px(180.0), Val::Px(125.0)),
                 align_items: AlignItems::Start,
                 flex_direction: FlexDirection::Column,
                 justify_content: JustifyContent::Start,
@@ -128,12 +128,11 @@ pub fn setup(mut commands: Commands, asset_server: Res<AssetServer>) {
             .spawn(NodeBundle {
                 style: Style {
                     margin: UiRect {
-                        left: Val::Px(20.),
+                        left: Val::Px(15.),
                         right: Val::Px(0.),
-                        top: Val::Px(20.),
+                        top: Val::Px(9.5),
                         bottom: Val::Px(0.),
                     },
-                    size: Size::new(Val::Percent(100.0), Val::Px(34.0)),
                     align_items: AlignItems::Start,
                     justify_content: JustifyContent::Start,
                     ..default()
@@ -150,11 +149,11 @@ pub fn setup(mut commands: Commands, asset_server: Res<AssetServer>) {
                     style: Style {
                         margin: UiRect {
                             left: Val::Px(0.),
-                            right: Val::Px(5.),
-                            top: Val::Px(5.),
+                            right: Val::Px(2.),
+                            top: Val::Px(2.),
                             bottom: Val::Px(0.),
                         },
-                        size: Size::new(Val::Px(32.0), Val::Px(34.0)),
+                        size: Size::new(Val::Px(16.0), Val::Px(17.0)),
                         ..default()
                     },
                     ..default()
@@ -166,9 +165,9 @@ pub fn setup(mut commands: Commands, asset_server: Res<AssetServer>) {
             .spawn(TextBundle {
                 style: Style {
                     margin: UiRect {
-                        left: Val::Px(5.),
+                        left: Val::Px(0.),
                         right: Val::Px(0.),
-                        top: Val::Px(10.),
+                        top: Val::Px(6.),
                         bottom: Val::Px(0.),
                     },
                     ..default()
@@ -177,7 +176,7 @@ pub fn setup(mut commands: Commands, asset_server: Res<AssetServer>) {
                     display_text,
                     TextStyle {
                         font,
-                        font_size: 20.,
+                        font_size: 8.,
                         color: Color::WHITE,
                     },
                 ),
