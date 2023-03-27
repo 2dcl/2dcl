@@ -1,4 +1,4 @@
-# Scene Creation (v 0.1.0)
+# Scene Creation (v 0.0.1)
 
 This documents explains the process of creating a `2dcl` scene and uploading it to the catalyst network. At the moment the process is very manual and a bit laborious, but our hope is that we can continue working on the client and tools to make the process easier and more powerful.
 
@@ -102,11 +102,7 @@ If you hit a number from `1` to `0` you'll jump to that level.
 
 Once you're happy with your scene, you can run `2dcl build`.
 
-You can now copy the contents of the build folder to a folder called `2dcl` wherever you have the existing code for the 3d version of the scene:
-
-`cp -rf build ../my_decentraland_scene/2dcl`
-
-and then call
+You can now copy the contents of the build folder to a folder called `2dcl` wherever you have the existing code for the 3d version of the scene and then call:
 
 `dcl deploy --skip-build --skip-version-checks`
 
