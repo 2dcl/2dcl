@@ -93,7 +93,6 @@ The attributes available are:
  - `layer`: a z-ordering layer that lets you decide what goes above what. Use the level's `player_layer` to determine which layers are below the player and which ones are above.
  - `flip`: used to determine if the asset should be flipped on the `x` or `y` axes.
  - `anchor`: This is used to determine where the center of the asset lies on. This will affect rotations and, in the case the sprite is in the same layer as the player, where it starts rendering below/above the player using the `y` coordinate. See `Anchor` below for available options.
- - `blend_mode`: Used to decide how the asset is blended with pixels existing below it. See `Blend Modes` below.
 
 ```json
 {
@@ -103,7 +102,6 @@ The attributes available are:
   "layer": 0, // optional, defaults to `player_layer` in level
   "flip": { "x": true, "y": false }, // optional, defaults to false
   "anchor": "Center", // optional, defaults to "Center"
-  "blend_mode" : "Multiply" // optional, defaults to "AlphaBlend"
 }
 ```
 
@@ -182,31 +180,6 @@ For rotation and z-ordering purposes, we can set the anchor of a sprite. Valid v
  - `TopRight`,
  - `{ "Custom" : { "x": 0, "y": 0} }` for custom anchor, `x` and `y` are pixels using the center of the asset as the origin coordinate.
 
-### BlendModes
-
-When rendering a sprite, the graphic card gives us multiple ways of merging existing pixel colors with the ones we're adding.
-
-The options are:
- - `Add`: additive, the existing pixel is added to the new one.
- - `AlphaBlend`: the pixels are added using the alpha channel to reduce the opacity.
- - `Multiply`: bot pixels are multiplied.
- - `{ "Custom" : { "color": { "src": "One", "dst": "One" }, "alpha": { "src": "One", "dst": "One" } } }`: This is a custom blend state for advanced users. You can use this to set custom blend factors.
-
- Options for custom blend factors:
-  - Zero,
-  - One,
-  - Src,
-  - OneMinusSrc,
-  - SrcAlpha,
-  - OneMinusSrcAlpha,
-  - Dst,
-  - OneMinusDst,
-  - DstAlpha,
-  - OneMinusDstAlpha,
-  - SrcAlphaSaturated,
-  - Constant,
-  - OneMinusConstant,
-
 ### Full Example
 
-You can check our [Sample Scene](https://github.com/hiddenpeopleclub/2dcl-sample-scene) for examples of all these components in action.
+You can check our [Sample Scene](https://github.com/2dcl/sample-scene) for examples of all these components in action.
