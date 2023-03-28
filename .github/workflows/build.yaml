@@ -70,8 +70,8 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          tag_name: ${{ github.run_number }}
-          release_name: Release ${{ github.run_number }}
+          tag_name: v0.1.${{ github.run_number }}
+          release_name: Release v0.1.${{ github.run_number }}
 
       - name: Upload windows asset to Github Release
         uses: actions/upload-release-asset@v1
@@ -80,7 +80,7 @@ jobs:
         with: 
           upload_url: ${{ steps.create-new-release.outputs.upload_url }}
           asset_path: 2dcl-windows-0.1.0.zip
-          asset_name: v${{ github.run_number }}.zip
+          asset_name: v0.1.${{ github.run_number }}.zip
           asset_content_type: application/zip
 
       - name: Upload linux asset to Github Release
@@ -90,7 +90,7 @@ jobs:
         with: 
           upload_url: ${{ steps.create-new-release.outputs.upload_url }}
           asset_path: 2dcl-linux-0.1.0.tar.gz
-          asset_name: v${{ github.run_number }}.tar.gz
+          asset_name: v0.1.${{ github.run_number }}.tar.gz
           asset_content_type: application/zip
 
       - name: Upload MacOs asset to Github Release
@@ -99,6 +99,6 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with: 
           upload_url: ${{ steps.create-new-release.outputs.upload_url }}
-          asset_path: build/2dcl-macos-0.1.0.tar.gz
-          asset_name: v${{ github.run_number }}.tar.gz
+          asset_path: 2dcl-macos-0.1.0.tar.gz
+          asset_name: v0.1.${{ github.run_number }}.tar.gz
           asset_content_type: application/zip
