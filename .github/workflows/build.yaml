@@ -6,6 +6,9 @@ on:
 
 name: Build
 
+permissions:
+  contents: write
+
 jobs:
   build:
     name: Release Build
@@ -47,3 +50,55 @@ jobs:
         with:
           name: build
           path: build/2dcl-windows-0.1.0.zip
+
+
+ # Mark the Github Release™ as a non-draft now that everything has succeeded!
+  publish-release:
+    # Only run after build
+    name: Publish build to Github Releases
+    runs-on: ubuntu-latest
+    needs: [build]
+    steps:
+      - name: Download build content
+        uses: actions/download-artifact@v2
+        with:
+          name: build
+
+      - name: Create Github Release
+        id: create-new-release
+        uses: actions/create-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tag_name: ${{ github.run_number }}
+          release_name: Release ${{ github.run_number }}
+
+      - name: Upload windows asset to Github Release
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with: 
+          upload_url: ${{ steps.create-new-release.outputs.upload_url }}
+          asset_path: 2dcl-windows-0.1.0.zip
+          asset_name: v${{ github.run_number }}.zip
+          asset_content_type: application/zip
+
+      - name: Upload linux asset to Github Release
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with: 
+          upload_url: ${{ steps.create-new-release.outputs.upload_url }}
+          asset_path: 2dcl-linux-0.1.0.tar.gz
+          asset_name: v${{ github.run_number }}.tar.gz
+          asset_content_type: application/zip
+
+      - name: Upload MacOs asset to Github Release
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with: 
+          upload_url: ${{ steps.create-new-release.outputs.upload_url }}
+          asset_path: build/2dcl-macos-0.1.0.tar.gz
+          asset_name: v${{ github.run_number }}.tar.gz
+          asset_content_type: application/zip
