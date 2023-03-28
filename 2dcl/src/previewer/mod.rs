@@ -48,7 +48,7 @@ pub fn preview_scene(source_path: std::path::PathBuf, destination_path: std::pat
     std::env::set_var("CARGO_MANIFEST_DIR", absolute_base_dir);
 
     let mut app = App::new();
-    crate::renderer::setup(&mut app,format!("2dcl - Scene Preview"));
+    crate::renderer::setup(&mut app, format!("2dcl - Scene Preview"));
 
     app.add_plugin(SceneHotReloadPlugin)
         .insert_resource(RefreshData {
