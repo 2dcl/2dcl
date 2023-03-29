@@ -10,11 +10,11 @@ use crate::renderer::scenes_io::read_scene_file;
 
 pub fn where_command() -> dcl_common::Result<()> {
 
-  let mut output_string = String::default();
+  let mut output_file = File::create("where.txt")?;
   if let Ok(Some(result)) = print_2dcl_scene(Parcel(0,0))
   { 
     println!("{}",result);
-    output_string = output_string + &result;
+    output_file.write(result.as_bytes())?;
   }
   
   for distance_from_center in 1..76{
@@ -22,12 +22,12 @@ pub fn where_command() -> dcl_common::Result<()> {
     if let Ok(Some(result)) = print_2dcl_scene(Parcel(0,distance_from_center))
     { 
       println!("{}",result);
-      output_string = output_string + &result;
+      output_file.write(result.as_bytes())?;
     }
     if let Ok(Some(result)) = print_2dcl_scene(Parcel(distance_from_center,0))
     { 
       println!("{}",result);
-      output_string = output_string + &result;
+      output_file.write(result.as_bytes())?;
     }
 
     for x in 1..distance_from_center
@@ -35,23 +35,23 @@ pub fn where_command() -> dcl_common::Result<()> {
       if let Ok(Some(result)) = print_2dcl_scene(Parcel(x,distance_from_center))
       { 
         println!("{}",result);
-        output_string = output_string + &result;
+        output_file.write(result.as_bytes())?;
       }
       if let Ok(Some(result)) = print_2dcl_scene(Parcel(-x,distance_from_center))
       { 
         println!("{}",result);
-        output_string = output_string + &result;
+        output_file.write(result.as_bytes())?;
       }
 
       if let Ok(Some(result)) = print_2dcl_scene(Parcel(x,-distance_from_center))
       { 
         println!("{}",result);
-        output_string = output_string + &result;
+        output_file.write(result.as_bytes())?;
       }
       if let Ok(Some(result)) = print_2dcl_scene(Parcel(-x,-distance_from_center))
       { 
         println!("{}",result);
-        output_string = output_string + &result;
+        output_file.write(result.as_bytes())?;
       }
     }
     for y in 1..distance_from_center-1{
@@ -59,30 +59,28 @@ pub fn where_command() -> dcl_common::Result<()> {
       if let Ok(Some(result)) = print_2dcl_scene(Parcel(distance_from_center,y))
       { 
         println!("{}",result);
-        output_string = output_string + &result;
+        output_file.write(result.as_bytes())?;
       }
 
       if let Ok(Some(result)) = print_2dcl_scene(Parcel(distance_from_center,-y))
       { 
         println!("{}",result);
-        output_string = output_string + &result;
+        output_file.write(result.as_bytes())?;
       }
       if let Ok(Some(result)) = print_2dcl_scene(Parcel(-distance_from_center,y))
       { 
         println!("{}",result);
-        output_string = output_string + &result;
+        output_file.write(result.as_bytes())?;
       }
 
       if let Ok(Some(result)) = print_2dcl_scene(Parcel(-distance_from_center,-y))
       { 
         println!("{}",result);
-        output_string = output_string + &result;
+        output_file.write(result.as_bytes())?;
       }
     }
     }
 
-    let mut file = File::create("where.txt")?;
-    file.write_all(output_string.as_bytes())?;
     Ok(())
 }
 
