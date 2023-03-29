@@ -80,7 +80,7 @@ jobs:
         with: 
           upload_url: ${{ steps.create-new-release.outputs.upload_url }}
           asset_path: 2dcl-windows-0.1.0.zip
-          asset_name: 2dcl-v0.1.${{ github.run_number }}.zip
+          asset_name: 2dcl-windows-v0.1.${{ github.run_number }}.zip
           asset_content_type: application/zip
 
       - name: Upload linux asset to Github Release
@@ -90,7 +90,7 @@ jobs:
         with: 
           upload_url: ${{ steps.create-new-release.outputs.upload_url }}
           asset_path: 2dcl-linux-0.1.0.tar.gz
-          asset_name: 2dcl-v0.1.${{ github.run_number }}.tar.gz
+          asset_name: 2dcl-linux-v0.1.${{ github.run_number }}.tar.gz
           asset_content_type: application/zip
 
       - name: Upload MacOs asset to Github Release
@@ -100,5 +100,5 @@ jobs:
         with: 
           upload_url: ${{ steps.create-new-release.outputs.upload_url }}
           asset_path: 2dcl-macos-0.1.0.tar.gz
-          asset_name: 2dcl-v0.1.${{ github.run_number }}.tar.gz
+          asset_name: 2dcl-macos-v0.1.${{ github.run_number }}.tar.gz
           asset_content_type: application/zip
