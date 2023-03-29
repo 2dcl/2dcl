@@ -17,7 +17,7 @@ pub fn where_command() -> dcl_common::Result<()> {
     output_file.write(result.as_bytes())?;
   }
   
-  for distance_from_center in 1..76{
+  for distance_from_center in 1..152{
 
     if let Ok(Some(result)) = print_2dcl_scene(Parcel(0,distance_from_center))
     { 
