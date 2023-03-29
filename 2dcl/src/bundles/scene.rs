@@ -6,6 +6,7 @@ use crate::{
     },
 };
 use bevy::prelude::*;
+use dcl_common::Parcel;
 use rmp_serde::*;
 use serde::Serialize;
 
@@ -19,7 +20,7 @@ pub struct Scene {
 
 impl Scene {
     pub fn from_2dcl_scene_data(scene_data: &SceneData) -> Self {
-        let location: Vec3 = get_scene_center_location(scene_data);
+        let location: Vec3 = get_parcels_center_location(&scene_data.parcels);
         let scene = &scene_data.scene;
         let mut scene_u8: Vec<u8> = Vec::new();
         scene
@@ -42,7 +43,7 @@ impl Scene {
     }
 }
 
-pub fn get_scene_center_location(scene: &SceneData) -> Vec3 {
+pub fn get_parcels_center_location(parcels: &Vec<Parcel>) -> Vec3 {
     let mut min: Vec2 = Vec2 {
         x: f32::MAX,
         y: f32::MAX,
@@ -52,7 +53,7 @@ pub fn get_scene_center_location(scene: &SceneData) -> Vec3 {
         y: f32::MIN,
     };
 
-    for parcel in &scene.parcels {
+    for parcel in parcels {
         if (parcel.0 as f32 * PARCEL_SIZE_X) < min.x {
             min.x = parcel.0 as f32 * PARCEL_SIZE_X;
         }

@@ -2,7 +2,7 @@ mod level;
 pub use level::Level;
 
 mod scene;
-pub use scene::get_scene_center_location;
+pub use scene::get_parcels_center_location;
 pub use scene::Scene;
 
 mod transform;
@@ -12,3 +12,7 @@ pub use transform::Transform;
 mod sprite_renderer;
 pub use sprite_renderer::get_translation_by_anchor;
 pub use sprite_renderer::SpriteRenderer;
+
+mod downloading_scene;
+pub use downloading_scene::downloading_scene_animation;
+pub use downloading_scene::DownloadingScene;

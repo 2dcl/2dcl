@@ -2,7 +2,7 @@ use super::collision::CollisionTile;
 use super::scenes_io::{
     get_parcel_file_data, get_scene, read_scene_file, refresh_path, SceneData, SceneFilesMap,
 };
-use crate::bundles::{self, get_scene_center_location};
+use crate::bundles::{self, downloading_scene_animation, get_parcels_center_location};
 use crate::renderer::scene_maker::*;
 use crate::renderer::scenes_io::read_3dcl_scene;
 use crate::{
@@ -51,13 +51,16 @@ impl Plugin for SceneLoaderPlugin {
             .insert_resource(SpawningQueue::default())
             .add_system(level_changer)
             .add_system(scene_manager)
-            .add_system(scene_downloader)
+            .add_system(scene_version_downloader)
             .add_system(downloading_scenes_task_handler)
+            .add_system(downloading_version_task_handler)
+            .add_system(downloading_scene_animation)
             .add_system(
                 spawning_queue_cleaner
                     .before(level_changer)
                     .before(scene_manager)
-                    .before(scene_downloader)
+                    .before(scene_version_downloader)
+                    .before(downloading_version_task_handler)
                     .before(downloading_scenes_task_handler),
             )
             .add_system(default_scenes_despawner.before(scene_manager));
@@ -195,7 +198,7 @@ pub fn scene_manager(
     download_queue.parcels = parcels_to_spawn;
 }
 
-pub fn scene_downloader(
+pub fn scene_version_downloader(
     mut commands: Commands,
     asset_server: Res<AssetServer>,
     mut roads_data: ResMut<RoadsData>,
@@ -213,8 +216,8 @@ pub fn scene_downloader(
     let parcels_to_download = download_queue.parcels.clone();
 
     let scene_files_map_clone = scene_files_map.clone();
-    let task_download_parcels = thread_pool.spawn(async move {
-        match download_parcels(parcels_to_download, &scene_files_map_clone) {
+    let task_get_scene_files_to_download = thread_pool.spawn(async move {
+        match get_newest_scene_files_for_parcels(parcels_to_download, &scene_files_map_clone) {
             Ok(v) => Some(v),
             Err(e) => {
                 println!("{:?}", e);
@@ -248,9 +251,8 @@ pub fn scene_downloader(
         }
     }
 
-    commands.spawn(DownloadingScene {
-        task: task_download_parcels,
-        parcels: download_queue.parcels.clone(),
+    commands.spawn(GettingNewestScenes {
+        task: task_get_scene_files_to_download,
     });
 
     download_queue.parcels.clear();
@@ -295,14 +297,41 @@ pub fn parcel_to_world_location(parcel: Parcel) -> Vec3 {
 }
 
 #[tokio::main]
-pub async fn download_parcels(
-    parcels: Vec<Parcel>,
-    scene_files_map: &SceneFilesMap,
+pub async fn download_scene_files(
+    scene_files: Vec<catalyst::entity_files::SceneFile>,
 ) -> dcl_common::Result<Vec<PathBuf>> {
     let server = Server::production();
 
     let mut scene_paths: Vec<PathBuf> = Vec::new();
 
+    for scene_file in scene_files {
+        let path_str = "./assets/scenes/".to_string() + &scene_file.id.to_string();
+        let scene_path = Path::new(&path_str);
+
+        for downloadable in scene_file.content {
+            let filename = format!(
+                "./assets/scenes/{}/{}",
+                scene_file.id,
+                downloadable.filename.to_str().unwrap()
+            );
+
+            ContentClient::download(&server, downloadable.cid, &filename).await?;
+        }
+        scene_paths.push(scene_path.to_path_buf());
+    }
+
+    Ok(scene_paths)
+}
+
+#[tokio::main]
+pub async fn get_newest_scene_files_for_parcels(
+    parcels: Vec<Parcel>,
+    scene_files_map: &SceneFilesMap,
+) -> dcl_common::Result<(Vec<catalyst::entity_files::SceneFile>, Vec<Parcel>)> {
+    let mut scene_files_to_download: Vec<catalyst::entity_files::SceneFile> = Vec::new();
+    let mut parcels_to_download: Vec<Parcel> = Vec::new();
+
+    let server = Server::production();
     let scene_files = ContentClient::scene_files_for_parcels(&server, &parcels).await?;
 
     for scene_file in scene_files {
@@ -360,36 +389,29 @@ pub async fn download_parcels(
                 ContentClient::download(&server, downloadable_2dcl.cid, &filename).await?;
 
                 if let Some(scene_2cl) = read_scene_file(&filename) {
-                    let mut download_whole_scene = false;
-                    for parcel in scene_3d.scene.parcels {
-                        match get_parcel_file_data(&parcel, scene_files_map) {
+                    let mut should_download = false;
+                    for parcel in &scene_3d.scene.parcels {
+                        match get_parcel_file_data(parcel, scene_files_map) {
                             Some(parcel_data) => {
                                 if let Some(previous_2dcl_scene) = read_scene_file(parcel_data.path)
                                 {
                                     if previous_2dcl_scene.timestamp != scene_2cl.timestamp {
-                                        download_whole_scene = true;
+                                        scene_files_to_download.push(scene_file);
+                                        should_download = true;
                                         break;
                                     }
                                 }
                             }
                             None => {
-                                download_whole_scene = true;
+                                scene_files_to_download.push(scene_file);
+                                should_download = true;
                                 break;
                             }
                         }
                     }
 
-                    if download_whole_scene {
-                        for downloadable in scene_file.content {
-                            let filename = format!(
-                                "./assets/scenes/{}/{}",
-                                scene_file.id,
-                                downloadable.filename.to_str().unwrap()
-                            );
-
-                            ContentClient::download(&server, downloadable.cid, &filename).await?;
-                        }
-                        scene_paths.push(scene_path.to_path_buf());
+                    if should_download {
+                        parcels_to_download.append(&mut scene_3d.scene.parcels.clone());
                     }
                 }
                 match std::fs::remove_file(filename) {
@@ -403,7 +425,7 @@ pub async fn download_parcels(
             std::fs::remove_dir(scene_path)?;
         }
     }
-    Ok(scene_paths)
+    Ok((scene_files_to_download, parcels_to_download))
 }
 
 #[tokio::main]
@@ -417,7 +439,7 @@ pub async fn download_level_spawn_point(parcel: &Parcel, level_id: usize) -> Vec
                     parcels: vec![parcel.clone()],
                     ..default()
                 };
-                return get_scene_center_location(&scene_data);
+                return get_parcels_center_location(&scene_data.parcels);
             }
         };
 
@@ -494,7 +516,7 @@ pub async fn download_level_spawn_point(parcel: &Parcel, level_id: usize) -> Vec
                         ..default()
                     };
 
-                    let scene_center = get_scene_center_location(&scene_data);
+                    let scene_center = get_parcels_center_location(&scene_data.parcels);
                     return match level_id < scene_data.scene.levels.len() {
                         true => {
                             let spawn_point = scene_data.scene.levels[level_id].spawn_point.clone();
@@ -516,7 +538,7 @@ pub async fn download_level_spawn_point(parcel: &Parcel, level_id: usize) -> Vec
         ..default()
     };
 
-    get_scene_center_location(&scene_data)
+    get_parcels_center_location(&scene_data.parcels)
 }
 
 fn downloading_scenes_task_handler(
@@ -571,6 +593,36 @@ fn downloading_scenes_task_handler(
     }
 }
 
+fn downloading_version_task_handler(
+    mut commands: Commands,
+    mut tasks_check_scene_version: Query<(Entity, &mut GettingNewestScenes)>,
+    asset_server: Res<AssetServer>,
+) {
+    for (entity, mut newest_scenes) in &mut tasks_check_scene_version {
+        if let Some(task_result) = future::block_on(future::poll_once(&mut newest_scenes.task)) {
+            commands.entity(entity).despawn_recursive();
+
+            if let Some((scene_files, parcels)) = task_result {
+                let thread_pool = AsyncComputeTaskPool::get();
+                let task_download_scene_files = thread_pool.spawn(async move {
+                    match download_scene_files(scene_files) {
+                        Ok(v) => Some(v),
+                        Err(e) => {
+                            println!("{:?}", e);
+                            None
+                        }
+                    }
+                });
+
+                commands.spawn(bundles::DownloadingScene::from_task_and_parcels(
+                    task_download_scene_files,
+                    parcels,
+                    &asset_server,
+                ));
+            }
+        }
+    }
+}
 fn default_scenes_despawner(
     mut commands: Commands,
     mut despawned_entities: ResMut<DespawnedEntities>,
@@ -705,7 +757,7 @@ pub fn get_parcel_spawn_point(
 ) -> Vec3 {
     match get_scene(roads_data, scene_files_map, parcel) {
         Some(scene_data) => {
-            let scene_center = get_scene_center_location(&scene_data);
+            let scene_center = get_parcels_center_location(&scene_data.parcels);
             match level_id < scene_data.scene.levels.len() {
                 true => {
                     let spawn_point = scene_data.scene.levels[level_id].spawn_point.clone();
@@ -892,7 +944,7 @@ fn spawn_entity(
                     let rows = image.rows().len();
                     let columns = pixels.len() / rows;
                     let world_transform =
-                        transform.translation + get_scene_center_location(scene_data);
+                        transform.translation + get_parcels_center_location(&scene_data.parcels);
 
                     let fixed_translation = get_fixed_translation_by_anchor(
                         &Vec2 {
@@ -940,7 +992,7 @@ fn spawn_entity(
                 }
             }
 
-            let scene_center_location = get_scene_center_location(scene_data);
+            let scene_center_location = get_parcels_center_location(&scene_data.parcels);
             let level_change_component = LevelChange {
                 level: new_level_id,
                 spawn_point: Vec2::new(

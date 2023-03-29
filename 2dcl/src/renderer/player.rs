@@ -268,7 +268,7 @@ fn player_interact(
         }
     }
 
-    if keyboard.just_pressed(KeyCode::Escape) && player.level_change_stack.len() > 0 {
+    if keyboard.just_pressed(KeyCode::Escape) && !player.level_change_stack.is_empty() {
         player.input_state = PlayerInputState::ExitingLevel;
         fade.direction = FadeDirection::FadeOut;
     }

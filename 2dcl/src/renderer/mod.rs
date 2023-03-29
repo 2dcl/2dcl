@@ -55,7 +55,7 @@ pub fn start() {
     };
 
     let mut app = App::new();
-    setup(&mut app, format!("2dcl"));
+    setup(&mut app, "2dcl".to_string());
     app.add_plugin(SceneLoaderPlugin)
         .add_plugin(MyConsolePlugin)
         .add_plugin(SceneMakerPlugin)

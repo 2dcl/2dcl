@@ -84,7 +84,7 @@ pub fn setup(mut commands: Commands, asset_server: Res<AssetServer>) {
 
     let mut image_path_1 = asset_path.clone();
     image_path_1.push("ui");
-    image_path_1.push("button_0.png");
+    image_path_1.push("button_1.png");
 
     let mut image_path_2 = asset_path.clone();
     image_path_2.push("ui");

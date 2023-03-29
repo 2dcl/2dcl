@@ -1,4 +1,4 @@
-use crate::bundles::get_scene_center_location;
+use crate::bundles::get_parcels_center_location;
 use crate::components;
 use crate::renderer::scene_loader::DespawnedEntities;
 use crate::renderer::scene_loader::SpawningQueue;
@@ -155,7 +155,7 @@ fn scene_reload(
                             &mut spawning_queue,
                         );
 
-                        let scene_center = get_scene_center_location(&scene_data);
+                        let scene_center = get_parcels_center_location(&scene_data.parcels);
                         player_transform.translation =
                             match player.current_level < scene_data.scene.levels.len() {
                                 true => {
@@ -192,7 +192,7 @@ fn scene_reload(
                         &mut spawning_queue,
                     );
 
-                    let scene_center = get_scene_center_location(&scene_data);
+                    let scene_center = get_parcels_center_location(&scene_data.parcels);
                     player_transform.translation =
                         match player.current_level < scene_data.scene.levels.len() {
                             true => {

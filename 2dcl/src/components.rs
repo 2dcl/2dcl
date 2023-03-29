@@ -12,6 +12,13 @@ use crate::renderer::player::LevelChangeStackData;
 pub struct DownloadingScene {
     pub task: Task<Option<Vec<PathBuf>>>,
     pub parcels: Vec<Parcel>,
+    pub animation_alpha: f32,
+    pub animation_forward: bool,
+}
+
+#[derive(Component)]
+pub struct GettingNewestScenes {
+    pub task: Task<Option<(Vec<catalyst::entity_files::SceneFile>, Vec<Parcel>)>>,
 }
 
 #[derive(Debug, Component, Clone)]
