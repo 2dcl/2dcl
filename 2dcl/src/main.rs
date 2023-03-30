@@ -61,7 +61,7 @@ fn main() -> Result<()> {
             }
         }
         Some(Action::Where) => {
-          where_command::where_command().unwrap();
+            where_command::where_command().unwrap();
         }
         None => {
             renderer::start();

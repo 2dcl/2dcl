@@ -1,137 +1,109 @@
 use catalyst::entity_files::ContentFile;
 use catalyst::{ContentClient, Server};
 use dcl_common::Parcel;
+use tempdir::TempDir;
 
-use std::fs::{self, File};
-use std::io::Write;
-use std::path::Path;
-
-use crate::renderer::scenes_io::read_scene_file;
+use crate::renderer::scenes_io::{read_3dcl_scene, read_scene_file};
 
 pub fn where_command() -> dcl_common::Result<()> {
-
-  let mut output_file = File::create("where.txt")?;
-  if let Ok(Some(result)) = print_2dcl_scene(Parcel(0,0))
-  { 
-    println!("{}",result);
-    output_file.write(result.as_bytes())?;
-  }
-  
-  for distance_from_center in 1..152{
-
-    if let Ok(Some(result)) = print_2dcl_scene(Parcel(0,distance_from_center))
-    { 
-      println!("{}",result);
-      output_file.write(result.as_bytes())?;
-    }
-    if let Ok(Some(result)) = print_2dcl_scene(Parcel(distance_from_center,0))
-    { 
-      println!("{}",result);
-      output_file.write(result.as_bytes())?;
+    let mut parcels = Vec::default();
+    for x in -152..152 {
+        for y in -152..152 {
+            parcels.push(Parcel(x, y));
+        }
     }
 
-    for x in 1..distance_from_center
-    {
-      if let Ok(Some(result)) = print_2dcl_scene(Parcel(x,distance_from_center))
-      { 
-        println!("{}",result);
-        output_file.write(result.as_bytes())?;
-      }
-      if let Ok(Some(result)) = print_2dcl_scene(Parcel(-x,distance_from_center))
-      { 
-        println!("{}",result);
-        output_file.write(result.as_bytes())?;
-      }
-
-      if let Ok(Some(result)) = print_2dcl_scene(Parcel(x,-distance_from_center))
-      { 
-        println!("{}",result);
-        output_file.write(result.as_bytes())?;
-      }
-      if let Ok(Some(result)) = print_2dcl_scene(Parcel(-x,-distance_from_center))
-      { 
-        println!("{}",result);
-        output_file.write(result.as_bytes())?;
-      }
-    }
-    for y in 1..distance_from_center-1{
-
-      if let Ok(Some(result)) = print_2dcl_scene(Parcel(distance_from_center,y))
-      { 
-        println!("{}",result);
-        output_file.write(result.as_bytes())?;
-      }
-
-      if let Ok(Some(result)) = print_2dcl_scene(Parcel(distance_from_center,-y))
-      { 
-        println!("{}",result);
-        output_file.write(result.as_bytes())?;
-      }
-      if let Ok(Some(result)) = print_2dcl_scene(Parcel(-distance_from_center,y))
-      { 
-        println!("{}",result);
-        output_file.write(result.as_bytes())?;
-      }
-
-      if let Ok(Some(result)) = print_2dcl_scene(Parcel(-distance_from_center,-y))
-      { 
-        println!("{}",result);
-        output_file.write(result.as_bytes())?;
-      }
-    }
-    }
+    println!("Finding 2dcl scenes...");
+    print_2dcl_scenes(parcels)?;
+    println!("Finished");
 
     Ok(())
 }
 
 #[tokio::main]
-async fn print_2dcl_scene(parcel: Parcel) -> dcl_common::Result<Option<String>>{
+async fn print_2dcl_scenes(parcels: Vec<Parcel>) -> dcl_common::Result<()> {
+    let server = Server::production();
+    let scene_files = ContentClient::scene_files_for_parcels(&server, &parcels).await?;
+    let tmp_dir = TempDir::new("where_downloads").unwrap();
 
-  println!("checking parcel ({}, {})",parcel.0,parcel.1);
-  let server = Server::production();
-  let scene_files = ContentClient::scene_files_for_parcels(&server, &vec![parcel.clone()]).await?;
+    for scene_file in scene_files {
+       
+        let scene_path = tmp_dir.path().join(scene_file.id.to_string());
+        let mut downloadable_json: Option<ContentFile> = None;
+        let mut downloadable_2dcl: Option<ContentFile> = None;
 
-  let mut output_string = None;
-  for scene_file in scene_files {
-      let path_str = "./assets/scenes/".to_string() + &scene_file.id.to_string();
-      let scene_path = Path::new(&path_str);
-      let mut downloadable_2dcl: Option<ContentFile> = None;
+        for downloadable in scene_file.clone().content {
+            if downloadable
+                .filename
+                .to_str()
+                .unwrap()
+                .ends_with("scene.2dcl")
+            {
+                downloadable_2dcl = Some(downloadable);
+                if downloadable_json.is_some() {
+                    break;
+                }
+            } else if downloadable
+                .filename
+                .to_str()
+                .unwrap()
+                .ends_with("scene.json")
+            {
+                downloadable_json = Some(downloadable);
+                if downloadable_2dcl.is_some() {
+                    break;
+                }
+            }
+        }
 
-      for downloadable in scene_file.clone().content {
-          if downloadable
-              .filename
-              .to_str()
-              .unwrap()
-              .ends_with("scene.2dcl")
-          {
-              downloadable_2dcl = Some(downloadable);
-          }
-      }
+        if let (Some(downloadable_json), Some(downloadable_2dcl)) =
+            (downloadable_json, downloadable_2dcl)
+        {      
 
-      if !scene_path.exists() {
-          fs::create_dir_all(format!("./assets/scenes/{}", scene_file.id))?;
-      }
+            if !scene_path.exists() {
+                std::fs::create_dir_all(&scene_path)?;
+            }
 
-      if let Some(downloadable_2dcl) = downloadable_2dcl
-      {
-          let filename = format!(
-            "./assets/scenes/{}/{}-temp",
-            scene_file.id,
-            downloadable_2dcl.filename.to_str().unwrap()
-          );
+            let file_3d = scene_path.clone().join(scene_file.id.to_string()).join(downloadable_json.filename.to_str().unwrap());
 
-          ContentClient::download(&server, downloadable_2dcl.cid, &filename).await?;
-          if let Some(scene_2cl) = read_scene_file(&filename) {
-            let scene_name = scene_2cl.name;
-            output_string = Some(format!("({}, {}) -> {}",&parcel.0,&parcel.1,scene_name));
-          }
+            ContentClient::download(&server, downloadable_json.cid, &file_3d).await?;
 
-          match std::fs::remove_file(filename) {
-              Ok(_) => {}
-              Err(e) => println!("{}", e),
-          };
-      }
-  }
-  
-  Ok(output_string)
+            if let Ok(scene_3d) = read_3dcl_scene(file_3d) {
+                
+              let file_2d = scene_path.clone().join(scene_file.id.to_string()).join(downloadable_2dcl.filename.to_str().unwrap());
+
+              ContentClient::download(&server, downloadable_2dcl.cid, &file_2d).await?;
+
+              if let Some(scene_2d) = read_scene_file(&file_2d) {
+                  println!(
+                      "{} -> {}",
+                      parcels_to_string(&scene_3d.scene.parcels),
+                      scene_2d.name
+                  );
+              }
+            }
+        }
+    }
+    Ok(())
+}
+
+fn parcels_to_string(parcels: &Vec<Parcel>) -> String {
+    if parcels.is_empty() {
+        return String::default();
+    }
+
+    if parcels.len() == 1 {
+        return format!("({}, {})", parcels[0].0, parcels[0].1);
+    }
+
+    let mut output_string = "[".to_string();
+    for parcel in parcels {
+        output_string += &format!(" ({}, {}),", parcel.0, parcel.1);
+    }
+
+    output_string.pop();
+
+    output_string += " ]";
+
+    output_string
 }
