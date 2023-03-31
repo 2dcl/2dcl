@@ -32,7 +32,7 @@ enum Action {
         destination_path: std::path::PathBuf,
     },
     Where,
-    Clear,
+    Clean,
 }
 
 fn main() -> Result<()> {
@@ -51,7 +51,7 @@ fn main() -> Result<()> {
         }) => {
             scene_compiler::compile(source_path, destination_path).unwrap();
         }
-        Some(Action::Clear) => {
+        Some(Action::Clean) => {
             let current_path = std::env::current_exe().unwrap();
             let current_path = current_path.parent().unwrap();
             std::env::set_current_dir(current_path).unwrap();

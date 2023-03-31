@@ -1,11 +1,12 @@
+use crate::renderer::scenes_io::{read_3dcl_scene, read_scene_file};
 use catalyst::entity_files::ContentFile;
 use catalyst::{ContentClient, Server};
 use dcl_common::Parcel;
+use std::time::Instant;
 use tempdir::TempDir;
 
-use crate::renderer::scenes_io::{read_3dcl_scene, read_scene_file};
-
 pub fn where_command() -> dcl_common::Result<()> {
+    let before = Instant::now();
     let mut parcels = Vec::default();
     for x in -152..152 {
         for y in -152..152 {
@@ -16,7 +17,7 @@ pub fn where_command() -> dcl_common::Result<()> {
     println!("Finding 2dcl scenes...");
     print_2dcl_scenes(parcels)?;
     println!("Finished");
-
+    println!("Elapsed time: {:.2?}", before.elapsed());
     Ok(())
 }
 
@@ -27,7 +28,6 @@ async fn print_2dcl_scenes(parcels: Vec<Parcel>) -> dcl_common::Result<()> {
     let tmp_dir = TempDir::new("where_downloads").unwrap();
 
     for scene_file in scene_files {
-       
         let scene_path = tmp_dir.path().join(scene_file.id.to_string());
         let mut downloadable_json: Option<ContentFile> = None;
         let mut downloadable_2dcl: Option<ContentFile> = None;
@@ -58,29 +58,33 @@ async fn print_2dcl_scenes(parcels: Vec<Parcel>) -> dcl_common::Result<()> {
 
         if let (Some(downloadable_json), Some(downloadable_2dcl)) =
             (downloadable_json, downloadable_2dcl)
-        {      
-
+        {
             if !scene_path.exists() {
                 std::fs::create_dir_all(&scene_path)?;
             }
 
-            let file_3d = scene_path.clone().join(scene_file.id.to_string()).join(downloadable_json.filename.to_str().unwrap());
+            let file_3d = scene_path
+                .clone()
+                .join(scene_file.id.to_string())
+                .join(downloadable_json.filename.to_str().unwrap());
 
             ContentClient::download(&server, downloadable_json.cid, &file_3d).await?;
 
             if let Ok(scene_3d) = read_3dcl_scene(file_3d) {
-                
-              let file_2d = scene_path.clone().join(scene_file.id.to_string()).join(downloadable_2dcl.filename.to_str().unwrap());
+                let file_2d = scene_path
+                    .clone()
+                    .join(scene_file.id.to_string())
+                    .join(downloadable_2dcl.filename.to_str().unwrap());
 
-              ContentClient::download(&server, downloadable_2dcl.cid, &file_2d).await?;
+                ContentClient::download(&server, downloadable_2dcl.cid, &file_2d).await?;
 
-              if let Some(scene_2d) = read_scene_file(&file_2d) {
-                  println!(
-                      "{} -> {}",
-                      parcels_to_string(&scene_3d.scene.parcels),
-                      scene_2d.name
-                  );
-              }
+                if let Some(scene_2d) = read_scene_file(&file_2d) {
+                    println!(
+                        "{} -> {}",
+                        parcels_to_string(&scene_3d.scene.parcels),
+                        scene_2d.name
+                    );
+                }
             }
         }
     }

@@ -17,6 +17,15 @@ pub struct DownloadingScene {
 }
 
 #[derive(Component)]
+pub struct LoadingSpriteRenderer {
+    pub task: Task<(Handle<Image>, Vec2)>,
+    pub sprite_renderer_component: dcl2d_ecs_v1::components::SpriteRenderer,
+    pub transform: Transform,
+    pub parcels: Vec<Parcel>,
+    pub level_id: usize,
+}
+
+#[derive(Component)]
 pub struct GettingNewestScenes {
     pub task: Task<Option<(Vec<catalyst::entity_files::SceneFile>, Vec<Parcel>)>>,
 }
