@@ -2,7 +2,7 @@ use super::collision::CollisionTile;
 use super::scenes_io::{
     get_parcel_file_data, get_scene, read_scene_file, refresh_path, SceneData, SceneFilesMap,
 };
-use crate::bundles::{self, downloading_scene_animation, get_parcels_center_location};
+use crate::bundles::{self, loading_animation, get_parcels_center_location};
 use crate::renderer::scene_maker::*;
 use crate::renderer::scenes_io::read_3dcl_scene;
 use crate::{
@@ -55,7 +55,7 @@ impl Plugin for SceneLoaderPlugin {
             .add_system(downloading_scenes_task_handler)
             .add_system(downloading_version_task_handler)
             .add_system(loading_sprites_task_handler)
-            .add_system(downloading_scene_animation)
+            .add_system(loading_animation)
             .add_system(
                 spawning_queue_cleaner
                     .before(level_changer)
@@ -543,7 +543,7 @@ pub async fn download_level_spawn_point(parcel: &Parcel, level_id: usize) -> Vec
     get_parcels_center_location(&scene_data.parcels)
 }
 
-fn loading_sprites_task_handler(
+pub fn loading_sprites_task_handler(
     mut commands: Commands,
     mut tasks_loading_sprites: Query<(Entity, &mut LoadingSpriteRenderer)>,
 ) {

@@ -14,5 +14,5 @@ pub use sprite_renderer::get_translation_by_anchor;
 pub use sprite_renderer::SpriteRenderer;
 
 mod downloading_scene;
-pub use downloading_scene::downloading_scene_animation;
+pub use downloading_scene::loading_animation;
 pub use downloading_scene::DownloadingScene;

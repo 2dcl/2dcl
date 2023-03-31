@@ -19,6 +19,8 @@ use manual_refresh::manual_refresh;
 
 mod ui;
 
+use crate::{bundles::loading_animation, renderer::scene_loader::loading_sprites_task_handler};
+
 use self::manual_refresh::RefreshData;
 
 pub fn preview<T, U>(source_path: T, destination_path: U)
@@ -60,6 +62,8 @@ pub fn preview_scene(source_path: std::path::PathBuf, destination_path: std::pat
         .add_system(manual_refresh)
         .add_startup_system(ui::setup)
         .add_system(ui::toggle_ui)
+        .add_system(loading_animation)
+        .add_system(loading_sprites_task_handler)
         .add_asset::<SceneAsset>()
         .init_asset_loader::<SceneAssetLoader>()
         .run();
