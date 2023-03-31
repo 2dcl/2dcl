@@ -2,6 +2,7 @@ use dcl_common::Result;
 
 mod previewer;
 mod renderer;
+mod where_command;
 
 pub mod bundles;
 pub mod components;
@@ -30,7 +31,8 @@ enum Action {
         #[clap(default_value = "./build/")]
         destination_path: std::path::PathBuf,
     },
-    Clear,
+    Where,
+    Clean,
 }
 
 fn main() -> Result<()> {
@@ -49,7 +51,7 @@ fn main() -> Result<()> {
         }) => {
             scene_compiler::compile(source_path, destination_path).unwrap();
         }
-        Some(Action::Clear) => {
+        Some(Action::Clean) => {
             let current_path = std::env::current_exe().unwrap();
             let current_path = current_path.parent().unwrap();
             std::env::set_current_dir(current_path).unwrap();
@@ -57,6 +59,9 @@ fn main() -> Result<()> {
             if let Err(e) = renderer::scenes_io::clear_all_downloaded_scenes() {
                 println!("{}", e);
             }
+        }
+        Some(Action::Where) => {
+            where_command::where_command().unwrap();
         }
         None => {
             renderer::start();

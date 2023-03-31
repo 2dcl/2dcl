@@ -12,8 +12,22 @@ use crate::renderer::player::LevelChangeStackData;
 pub struct DownloadingScene {
     pub task: Task<Option<Vec<PathBuf>>>,
     pub parcels: Vec<Parcel>,
+}
+
+#[derive(Component)]
+pub struct Loading {
     pub animation_alpha: f32,
     pub animation_forward: bool,
+    pub parcels: Vec<Parcel>,
+}
+
+#[derive(Component)]
+pub struct LoadingSpriteRenderer {
+    pub task: Task<(Handle<Image>, Vec2)>,
+    pub sprite_renderer_component: dcl2d_ecs_v1::components::SpriteRenderer,
+    pub transform: Transform,
+    pub parcels: Vec<Parcel>,
+    pub level_id: usize,
 }
 
 #[derive(Component)]

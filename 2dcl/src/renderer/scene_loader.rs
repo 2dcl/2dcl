@@ -2,7 +2,7 @@ use super::collision::CollisionTile;
 use super::scenes_io::{
     get_parcel_file_data, get_scene, read_scene_file, refresh_path, SceneData, SceneFilesMap,
 };
-use crate::bundles::{self, downloading_scene_animation, get_parcels_center_location};
+use crate::bundles::{self, loading_animation, get_parcels_center_location};
 use crate::renderer::scene_maker::*;
 use crate::renderer::scenes_io::read_3dcl_scene;
 use crate::{
@@ -54,13 +54,15 @@ impl Plugin for SceneLoaderPlugin {
             .add_system(scene_version_downloader)
             .add_system(downloading_scenes_task_handler)
             .add_system(downloading_version_task_handler)
-            .add_system(downloading_scene_animation)
+            .add_system(loading_sprites_task_handler)
+            .add_system(loading_animation)
             .add_system(
                 spawning_queue_cleaner
                     .before(level_changer)
                     .before(scene_manager)
                     .before(scene_version_downloader)
                     .before(downloading_version_task_handler)
+                    .before(loading_sprites_task_handler)
                     .before(downloading_scenes_task_handler),
             )
             .add_system(default_scenes_despawner.before(scene_manager));
@@ -541,6 +543,26 @@ pub async fn download_level_spawn_point(parcel: &Parcel, level_id: usize) -> Vec
     get_parcels_center_location(&scene_data.parcels)
 }
 
+pub fn loading_sprites_task_handler(
+    mut commands: Commands,
+    mut tasks_loading_sprites: Query<(Entity, &mut LoadingSpriteRenderer)>,
+) {
+    for (entity, mut sprite) in &mut tasks_loading_sprites {
+        if let Some((texture, image_size)) = future::block_on(future::poll_once(&mut sprite.task)) {
+            commands.entity(entity).remove::<LoadingSpriteRenderer>();
+            commands
+                .entity(entity)
+                .insert(bundles::SpriteRenderer::from_texture(
+                    &sprite.sprite_renderer_component,
+                    &sprite.transform,
+                    texture,
+                    image_size,
+                    &sprite.parcels,
+                    sprite.level_id,
+                ));
+        }
+    }
+}
 fn downloading_scenes_task_handler(
     mut commands: Commands,
     mut collision_map: ResMut<resources::CollisionMap>,
@@ -614,11 +636,13 @@ fn downloading_version_task_handler(
                     }
                 });
 
-                commands.spawn(bundles::DownloadingScene::from_task_and_parcels(
-                    task_download_scene_files,
-                    parcels,
-                    &asset_server,
-                ));
+                if !parcels.is_empty() {
+                    commands.spawn(bundles::DownloadingScene::from_task_and_parcels(
+                        task_download_scene_files,
+                        parcels,
+                        &asset_server,
+                    ));
+                }
             }
         }
     }
@@ -904,7 +928,7 @@ fn spawn_entity(
 
             commands
                 .entity(spawned_entity)
-                .insert(bundles::SpriteRenderer::from_path(
+                .insert(bundles::SpriteRenderer::load_async(
                     sprite_renderer,
                     &transform,
                     image_path,
