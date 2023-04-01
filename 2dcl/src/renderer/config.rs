@@ -1,7 +1,7 @@
 use bevy::prelude::Vec2;
 use dcl_common::Parcel;
 
-pub const MIN_RENDERING_DISTANCE_IN_PARCELS: i16 = 5;
+pub const MIN_RENDERING_DISTANCE_IN_PARCELS: i16 = 4;
 pub const MAX_RENDERING_DISTANCE_IN_PARCELS: i16 = 7;
 pub const PARCEL_SIZE_X: f32 = 512.0;
 pub const PARCEL_SIZE_Y: f32 = 512.0;

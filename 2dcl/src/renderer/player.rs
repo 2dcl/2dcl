@@ -1,4 +1,4 @@
-use super::scene_loader::parcel_to_world_location;
+use super::scene_loader::{level_changer, parcel_to_world_location};
 use super::screen_fade::FadeDirection;
 use super::{animations::*, collision::*, screen_fade};
 use crate::components::{LevelChange, PlayerInputState};
@@ -20,7 +20,7 @@ impl Plugin for PlayerPlugin {
     fn build(&self, app: &mut App) {
         app.add_startup_system(spawn_player)
             .add_system(player_interact)
-            .add_system(player_input_state_update)
+            .add_system(player_input_state_update.before(level_changer))
             .add_system(player_movement);
     }
 }
@@ -324,11 +324,11 @@ fn change_level(
         location: player_transform.translation,
     };
 
-    player.current_level = level_change.level;
-    player.level_change_stack.push(level_change_stack_data);
     player_transform.translation = level_change
         .spawn_point
         .extend(level_change.spawn_point.y * -1f32);
+    player.current_level = level_change.level;
+    player.level_change_stack.push(level_change_stack_data);
 
     if level_change.level == 0 {
         player.level_change_stack.clear();
