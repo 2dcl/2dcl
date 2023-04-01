@@ -2,7 +2,7 @@ use super::collision::CollisionTile;
 use super::scenes_io::{
     get_parcel_file_data, get_scene, read_scene_file, refresh_path, SceneData, SceneFilesMap,
 };
-use crate::bundles::{self, loading_animation, get_parcels_center_location};
+use crate::bundles::{self, get_parcels_center_location, loading_animation};
 use crate::renderer::scene_maker::*;
 use crate::renderer::scenes_io::read_3dcl_scene;
 use crate::{
@@ -49,8 +49,8 @@ impl Plugin for SceneLoaderPlugin {
         app.insert_resource(DownloadQueue::default())
             .insert_resource(DespawnedEntities::default())
             .insert_resource(SpawningQueue::default())
-            .add_system(level_changer)
-            .add_system(scene_manager)
+            .add_system(level_changer.before(scene_manager))
+            .add_system(scene_manager.after(level_changer))
             .add_system(scene_version_downloader)
             .add_system(downloading_scenes_task_handler)
             .add_system(downloading_version_task_handler)
@@ -103,13 +103,10 @@ pub fn level_changer(
     let mut player_query = player_query.unwrap();
     let current_level = player_query.0.current_level;
 
-    let player_parcel = world_location_to_parcel(&player_query.1.translation());
-    player_query.0.current_parcel = player_parcel.clone();
-
     //We check if we're on the correct level
 
     for (scene_entity, scene) in scene_query.iter() {
-        if scene.parcels.contains(&player_parcel) {
+        if scene.parcels.contains(&player_query.0.current_parcel) {
             for (level, level_parent) in level_query.iter() {
                 if **level_parent == scene_entity {
                     //If we're in a different level we change it
@@ -148,6 +145,10 @@ pub fn level_changer(
             }
             break;
         }
+    }
+
+    if current_level == 0 {
+        player_query.0.current_parcel = world_location_to_parcel(&player_query.1.translation());
     }
 }
 
@@ -735,7 +736,6 @@ pub fn spawn_level(
     timestamp: SystemTime,
 ) -> Option<Entity> {
     let scene = &scene_data.scene;
-
     if scene.levels.len() <= level_id {
         return None;
     }

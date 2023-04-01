@@ -40,21 +40,17 @@ impl DownloadingScene {
                 task,
                 parcels: parcels.clone(),
             },
-            loading: components::Loading{
-              animation_alpha: 0.,
-              animation_forward: true,
-              parcels,
-            }
+            loading: components::Loading {
+                animation_alpha: 0.,
+                animation_forward: true,
+                parcels,
+            },
         }
     }
 }
 
 pub fn loading_animation(
-    mut downloading_scene_query: Query<(
-        &mut Sprite,
-        &mut components::Loading,
-        &mut Visibility,
-    )>,
+    mut downloading_scene_query: Query<(&mut Sprite, &mut components::Loading, &mut Visibility)>,
     player_query: Query<&components::Player>,
     time: Res<Time>,
 ) {
@@ -66,30 +62,27 @@ pub fn loading_animation(
     };
 
     for (mut sprite, mut loading, mut visibility) in downloading_scene_query.iter_mut() {
-        if player.current_level != 0 && !loading.parcels.contains(&player.current_parcel)
-        {
+        if player.current_level != 0 && !loading.parcels.contains(&player.current_parcel) {
             *visibility = Visibility::Hidden;
         } else {
             *visibility = Visibility::Visible;
 
             if loading.animation_forward {
-              loading.animation_alpha -=
-                    time.delta_seconds() / ANIMATION_LENGTH_IN_SECONDS;
+                loading.animation_alpha -= time.delta_seconds() / ANIMATION_LENGTH_IN_SECONDS;
             } else {
-              loading.animation_alpha +=
-                    time.delta_seconds() / ANIMATION_LENGTH_IN_SECONDS;
+                loading.animation_alpha += time.delta_seconds() / ANIMATION_LENGTH_IN_SECONDS;
             }
 
             loading.animation_alpha = loading.animation_alpha.clamp(0., 1.);
 
             if loading.animation_alpha == 0. {
-              loading.animation_forward = false;
+                loading.animation_forward = false;
             } else if loading.animation_alpha == 1. {
-              loading.animation_forward = true;
+                loading.animation_forward = true;
             }
 
-            let new_alpha = MIN_ALPHA * loading.animation_alpha
-                + MAX_ALPHA * (1. - loading.animation_alpha);
+            let new_alpha =
+                MIN_ALPHA * loading.animation_alpha + MAX_ALPHA * (1. - loading.animation_alpha);
             sprite.color.set_a(new_alpha);
         }
     }
