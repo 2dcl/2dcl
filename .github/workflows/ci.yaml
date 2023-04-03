@@ -93,7 +93,7 @@ jobs:
           override: true
       - name: run coverage
         uses: actions-rs/tarpaulin@v0.1
-          with:
+        with:
           version: '0.22.0'
 
       - name: upload to codecov.io
