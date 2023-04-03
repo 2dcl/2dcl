@@ -2,11 +2,9 @@ use crate::renderer::scenes_io::{read_3dcl_scene, read_scene_file};
 use catalyst::entity_files::ContentFile;
 use catalyst::{ContentClient, Server};
 use dcl_common::Parcel;
-use std::time::Instant;
 use tempdir::TempDir;
 
 pub fn where_command() -> dcl_common::Result<()> {
-    let before = Instant::now();
     let mut parcels = Vec::default();
     for x in -152..152 {
         for y in -152..152 {
@@ -17,7 +15,6 @@ pub fn where_command() -> dcl_common::Result<()> {
     println!("Finding 2dcl scenes...");
     print_2dcl_scenes(parcels)?;
     println!("Finished");
-    println!("Elapsed time: {:.2?}", before.elapsed());
     Ok(())
 }
 
