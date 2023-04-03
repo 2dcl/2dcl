@@ -2,5 +2,6 @@
       "name": "main_plaza",
       "dimensions": {"x": 500, "y": 500},
       "player_layer": 0,
-      "entities": []
+      "entities": [],
+      "spawn_point":{"x": 0, "y": 0}
 }
