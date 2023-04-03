@@ -3,7 +3,7 @@ use std::{
     str::FromStr,
 };
 
-use bevy::{prelude::*, sprite::Anchor};
+use bevy::{prelude::*, sprite::Anchor, tasks::AsyncComputeTaskPool};
 use dcl_common::Parcel;
 use imagesize::size;
 
@@ -29,7 +29,7 @@ impl SpriteRenderer {
         transform: &Transform,
         texture: Handle<Image>,
         image_size: Vec2,
-        parcels: Vec<Parcel>,
+        parcels: &Vec<Parcel>,
         level_id: usize,
     ) -> Self {
         let mut final_transform = *transform;
@@ -43,13 +43,18 @@ impl SpriteRenderer {
             dcl_anchor_to_bevy_anchor((sprite_renderer_component).anchor.clone(), image_size);
 
         let parcels_overlapping = match level_id {
-            0 => {
-                get_parcels_overlapping(final_transform.translation, image_size, &parcels, &anchor)
-            }
+            0 => get_parcels_overlapping(final_transform.translation, image_size, parcels, &anchor),
             _ => Vec::default(),
         };
 
         let color = Color::Rgba {
+            red: (sprite_renderer_component).color.r,
+            green: (sprite_renderer_component).color.g,
+            blue: (sprite_renderer_component).color.b,
+            alpha: 0.,
+        };
+
+        let default_color = Color::Rgba {
             red: (sprite_renderer_component).color.r,
             green: (sprite_renderer_component).color.g,
             blue: (sprite_renderer_component).color.b,
@@ -79,49 +84,56 @@ impl SpriteRenderer {
 
         SpriteRenderer {
             renderer: components::SpriteRenderer {
-                default_color: color,
+                default_color,
                 parcels_overlapping,
-                parent_parcels: parcels,
+                parent_parcels: parcels.clone(),
+                transparency_alpha: 1.,
                 ..default()
             },
             sprite,
         }
     }
 
-    pub fn from_path<P>(
+    pub fn load_async<P>(
         sprite_renderer_component: &dcl2d_ecs_v1::components::SpriteRenderer,
         transform: &Transform,
         image_asset_path: P,
         asset_server: &AssetServer,
         parcels: Vec<Parcel>,
         level_id: usize,
-    ) -> Self
+    ) -> components::LoadingSpriteRenderer
     where
         P: AsRef<Path>,
     {
+        //Download scenes
+        let thread_pool = AsyncComputeTaskPool::get();
+
         let image_asset_path = image_asset_path.as_ref().to_path_buf();
+        let asset_server = asset_server.clone();
+        let task = thread_pool.spawn(async move {
+            let mut absolute_path = std::fs::canonicalize(PathBuf::from_str(".").unwrap()).unwrap();
+            absolute_path.push("assets");
+            absolute_path.push(&image_asset_path);
 
-        let mut absolute_path = std::fs::canonicalize(PathBuf::from_str(".").unwrap()).unwrap();
-        absolute_path.push("assets");
-        absolute_path.push(&image_asset_path);
-        let image_size = match size(&absolute_path) {
-            Ok(v) => Vec2::new(v.width as f32, v.height as f32),
-            Err(e) => {
-                println!("{:} {}", e, absolute_path.display());
-                Vec2::new(0.0, 0.0)
-            }
-        };
+            let image_size = match size(&absolute_path) {
+                Ok(v) => Vec2::new(v.width as f32, v.height as f32),
+                Err(e) => {
+                    println!("{:} {}", e, absolute_path.display());
+                    Vec2::new(0.0, 0.0)
+                }
+            };
 
-        let texture = asset_server.load(image_asset_path);
+            let texture = asset_server.load(image_asset_path);
+            (texture, image_size)
+        });
 
-        Self::from_texture(
-            sprite_renderer_component,
-            transform,
-            texture,
-            image_size,
+        components::LoadingSpriteRenderer {
+            task,
+            sprite_renderer_component: sprite_renderer_component.clone(),
+            transform: *transform,
             parcels,
             level_id,
-        )
+        }
     }
 }
 

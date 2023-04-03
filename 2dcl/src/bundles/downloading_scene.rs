@@ -13,6 +13,7 @@ pub const ANIMATION_LENGTH_IN_SECONDS: f32 = 1.;
 #[derive(Bundle)]
 pub struct DownloadingScene {
     pub downloading_scene_component: components::DownloadingScene,
+    pub loading: components::Loading,
     pub sprite: SpriteBundle,
 }
 impl DownloadingScene {
@@ -37,20 +38,19 @@ impl DownloadingScene {
             },
             downloading_scene_component: components::DownloadingScene {
                 task,
-                parcels,
+                parcels: parcels.clone(),
+            },
+            loading: components::Loading {
                 animation_alpha: 0.,
                 animation_forward: true,
+                parcels,
             },
         }
     }
 }
 
-pub fn downloading_scene_animation(
-    mut downloading_scene_query: Query<(
-        &mut Sprite,
-        &mut components::DownloadingScene,
-        &mut Visibility,
-    )>,
+pub fn loading_animation(
+    mut downloading_scene_query: Query<(&mut Sprite, &mut components::Loading, &mut Visibility)>,
     player_query: Query<&components::Player>,
     time: Res<Time>,
 ) {
@@ -61,31 +61,28 @@ pub fn downloading_scene_animation(
         }
     };
 
-    for (mut sprite, mut downloading_scene, mut visibility) in downloading_scene_query.iter_mut() {
-        if player.current_level != 0 && !downloading_scene.parcels.contains(&player.current_parcel)
-        {
+    for (mut sprite, mut loading, mut visibility) in downloading_scene_query.iter_mut() {
+        if player.current_level != 0 && !loading.parcels.contains(&player.current_parcel) {
             *visibility = Visibility::Hidden;
         } else {
             *visibility = Visibility::Visible;
 
-            if downloading_scene.animation_forward {
-                downloading_scene.animation_alpha -=
-                    time.delta_seconds() / ANIMATION_LENGTH_IN_SECONDS;
+            if loading.animation_forward {
+                loading.animation_alpha -= time.delta_seconds() / ANIMATION_LENGTH_IN_SECONDS;
             } else {
-                downloading_scene.animation_alpha +=
-                    time.delta_seconds() / ANIMATION_LENGTH_IN_SECONDS;
+                loading.animation_alpha += time.delta_seconds() / ANIMATION_LENGTH_IN_SECONDS;
             }
 
-            downloading_scene.animation_alpha = downloading_scene.animation_alpha.clamp(0., 1.);
+            loading.animation_alpha = loading.animation_alpha.clamp(0., 1.);
 
-            if downloading_scene.animation_alpha == 0. {
-                downloading_scene.animation_forward = false;
-            } else if downloading_scene.animation_alpha == 1. {
-                downloading_scene.animation_forward = true;
+            if loading.animation_alpha == 0. {
+                loading.animation_forward = false;
+            } else if loading.animation_alpha == 1. {
+                loading.animation_forward = true;
             }
 
-            let new_alpha = MIN_ALPHA * downloading_scene.animation_alpha
-                + MAX_ALPHA * (1. - downloading_scene.animation_alpha);
+            let new_alpha =
+                MIN_ALPHA * loading.animation_alpha + MAX_ALPHA * (1. - loading.animation_alpha);
             sprite.color.set_a(new_alpha);
         }
     }

@@ -2,7 +2,7 @@ use super::collision::CollisionTile;
 use super::scenes_io::{
     get_parcel_file_data, get_scene, read_scene_file, refresh_path, SceneData, SceneFilesMap,
 };
-use crate::bundles::{self, downloading_scene_animation, get_parcels_center_location};
+use crate::bundles::{self, get_parcels_center_location, loading_animation};
 use crate::renderer::scene_maker::*;
 use crate::renderer::scenes_io::read_3dcl_scene;
 use crate::{
@@ -49,18 +49,20 @@ impl Plugin for SceneLoaderPlugin {
         app.insert_resource(DownloadQueue::default())
             .insert_resource(DespawnedEntities::default())
             .insert_resource(SpawningQueue::default())
-            .add_system(level_changer)
-            .add_system(scene_manager)
+            .add_system(level_changer.before(scene_manager))
+            .add_system(scene_manager.after(level_changer))
             .add_system(scene_version_downloader)
             .add_system(downloading_scenes_task_handler)
             .add_system(downloading_version_task_handler)
-            .add_system(downloading_scene_animation)
+            .add_system(loading_sprites_task_handler)
+            .add_system(loading_animation)
             .add_system(
                 spawning_queue_cleaner
                     .before(level_changer)
                     .before(scene_manager)
                     .before(scene_version_downloader)
                     .before(downloading_version_task_handler)
+                    .before(loading_sprites_task_handler)
                     .before(downloading_scenes_task_handler),
             )
             .add_system(default_scenes_despawner.before(scene_manager));
@@ -101,13 +103,10 @@ pub fn level_changer(
     let mut player_query = player_query.unwrap();
     let current_level = player_query.0.current_level;
 
-    let player_parcel = world_location_to_parcel(&player_query.1.translation());
-    player_query.0.current_parcel = player_parcel.clone();
-
     //We check if we're on the correct level
 
     for (scene_entity, scene) in scene_query.iter() {
-        if scene.parcels.contains(&player_parcel) {
+        if scene.parcels.contains(&player_query.0.current_parcel) {
             for (level, level_parent) in level_query.iter() {
                 if **level_parent == scene_entity {
                     //If we're in a different level we change it
@@ -146,6 +145,10 @@ pub fn level_changer(
             }
             break;
         }
+    }
+
+    if current_level == 0 {
+        player_query.0.current_parcel = world_location_to_parcel(&player_query.1.translation());
     }
 }
 
@@ -261,22 +264,31 @@ pub fn scene_version_downloader(
 fn get_all_parcels_around(parcel: &Parcel, distance: i16) -> Vec<Parcel> {
     let mut parcels: Vec<Parcel> = Vec::new();
 
-    for x in 0..distance {
-        for y in 0..distance {
-            parcels.push(Parcel(parcel.0 + x, parcel.1 + y));
+    for i in 0..distance
+    {
+      if i > 1
+      { 
 
-            if x != 0 {
-                parcels.push(Parcel(parcel.0 - x, parcel.1 + y));
-            }
+        parcels.push(Parcel(parcel.0 + i, parcel.1 - i + 1));
+        parcels.push(Parcel(parcel.0 - i + 1, parcel.1 + i));
+        parcels.push(Parcel(parcel.0 - i, parcel.1 - i + 1));
+        parcels.push(Parcel(parcel.0 - i + 1, parcel.1 - i));
 
-            if y != 0 {
-                parcels.push(Parcel(parcel.0 + x, parcel.1 - y));
-            }
+      }
 
-            if (x != 0) && (y != 0) {
-                parcels.push(Parcel(parcel.0 - x, parcel.1 - y));
-            }
-        }
+      if i != 0
+      {
+        parcels.push(Parcel(parcel.0 + i, parcel.1 + i - 1));
+        parcels.push(Parcel(parcel.0 + i - 1, parcel.1 + i));
+        parcels.push(Parcel(parcel.0 - i, parcel.1 + i - 1));
+        parcels.push(Parcel(parcel.0 + i - 1, parcel.1 - i));
+
+        parcels.push(Parcel(parcel.0 - i, parcel.1 + i));
+        parcels.push(Parcel(parcel.0 + i, parcel.1 - i));
+        parcels.push(Parcel(parcel.0 - i, parcel.1 - i));
+      }
+
+      parcels.push(Parcel(parcel.0 + i, parcel.1 + i));
     }
 
     parcels
@@ -541,6 +553,26 @@ pub async fn download_level_spawn_point(parcel: &Parcel, level_id: usize) -> Vec
     get_parcels_center_location(&scene_data.parcels)
 }
 
+pub fn loading_sprites_task_handler(
+    mut commands: Commands,
+    mut tasks_loading_sprites: Query<(Entity, &mut LoadingSpriteRenderer)>,
+) {
+    for (entity, mut sprite) in &mut tasks_loading_sprites {
+        if let Some((texture, image_size)) = future::block_on(future::poll_once(&mut sprite.task)) {
+            commands.entity(entity).remove::<LoadingSpriteRenderer>();
+            commands
+                .entity(entity)
+                .insert(bundles::SpriteRenderer::from_texture(
+                    &sprite.sprite_renderer_component,
+                    &sprite.transform,
+                    texture,
+                    image_size,
+                    &sprite.parcels,
+                    sprite.level_id,
+                ));
+        }
+    }
+}
 fn downloading_scenes_task_handler(
     mut commands: Commands,
     mut collision_map: ResMut<resources::CollisionMap>,
@@ -614,11 +646,13 @@ fn downloading_version_task_handler(
                     }
                 });
 
-                commands.spawn(bundles::DownloadingScene::from_task_and_parcels(
-                    task_download_scene_files,
-                    parcels,
-                    &asset_server,
-                ));
+                if !parcels.is_empty() {
+                    commands.spawn(bundles::DownloadingScene::from_task_and_parcels(
+                        task_download_scene_files,
+                        parcels,
+                        &asset_server,
+                    ));
+                }
             }
         }
     }
@@ -711,7 +745,6 @@ pub fn spawn_level(
     timestamp: SystemTime,
 ) -> Option<Entity> {
     let scene = &scene_data.scene;
-
     if scene.levels.len() <= level_id {
         return None;
     }
@@ -904,7 +937,7 @@ fn spawn_entity(
 
             commands
                 .entity(spawned_entity)
-                .insert(bundles::SpriteRenderer::from_path(
+                .insert(bundles::SpriteRenderer::load_async(
                     sprite_renderer,
                     &transform,
                     image_path,
