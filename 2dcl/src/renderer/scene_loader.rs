@@ -264,31 +264,26 @@ pub fn scene_version_downloader(
 fn get_all_parcels_around(parcel: &Parcel, distance: i16) -> Vec<Parcel> {
     let mut parcels: Vec<Parcel> = Vec::new();
 
-    for i in 0..distance
-    {
-      if i > 1
-      { 
+    for i in 0..distance {
+        if i > 1 {
+            parcels.push(Parcel(parcel.0 + i, parcel.1 - i + 1));
+            parcels.push(Parcel(parcel.0 - i + 1, parcel.1 + i));
+            parcels.push(Parcel(parcel.0 - i, parcel.1 - i + 1));
+            parcels.push(Parcel(parcel.0 - i + 1, parcel.1 - i));
+        }
 
-        parcels.push(Parcel(parcel.0 + i, parcel.1 - i + 1));
-        parcels.push(Parcel(parcel.0 - i + 1, parcel.1 + i));
-        parcels.push(Parcel(parcel.0 - i, parcel.1 - i + 1));
-        parcels.push(Parcel(parcel.0 - i + 1, parcel.1 - i));
+        if i != 0 {
+            parcels.push(Parcel(parcel.0 + i, parcel.1 + i - 1));
+            parcels.push(Parcel(parcel.0 + i - 1, parcel.1 + i));
+            parcels.push(Parcel(parcel.0 - i, parcel.1 + i - 1));
+            parcels.push(Parcel(parcel.0 + i - 1, parcel.1 - i));
 
-      }
+            parcels.push(Parcel(parcel.0 - i, parcel.1 + i));
+            parcels.push(Parcel(parcel.0 + i, parcel.1 - i));
+            parcels.push(Parcel(parcel.0 - i, parcel.1 - i));
+        }
 
-      if i != 0
-      {
-        parcels.push(Parcel(parcel.0 + i, parcel.1 + i - 1));
-        parcels.push(Parcel(parcel.0 + i - 1, parcel.1 + i));
-        parcels.push(Parcel(parcel.0 - i, parcel.1 + i - 1));
-        parcels.push(Parcel(parcel.0 + i - 1, parcel.1 - i));
-
-        parcels.push(Parcel(parcel.0 - i, parcel.1 + i));
-        parcels.push(Parcel(parcel.0 + i, parcel.1 - i));
-        parcels.push(Parcel(parcel.0 - i, parcel.1 - i));
-      }
-
-      parcels.push(Parcel(parcel.0 + i, parcel.1 + i));
+        parcels.push(Parcel(parcel.0 + i, parcel.1 + i));
     }
 
     parcels
