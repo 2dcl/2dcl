@@ -361,9 +361,9 @@ if config.spawned && !config.centered
   
 
   let camera_translation: Vec3 = Vec3::new(
-    (min_limit.x+max_limit.x)/2.0, 
-    max_limit.y+5.0, 
-    (min_limit.z+max_limit.z)/2.0
+    5., 
+    10., 
+    5.
     );
 
     println!("min_limit: {:?} max_limit: {:?} camera_translation: {:?}",min_limit,max_limit,camera_translation); 
@@ -414,19 +414,16 @@ if config.spawned && !config.centered
     let rotation_angle: f32 = -30.0;
 
     let mut orthographic_camera = OrthographicCameraBundle::new_3d();
-    orthographic_camera.transform = Transform { 
-        translation: camera_translation, 
-        rotation: Quat::from_axis_angle(Vec3::X,rotation_angle.to_radians() ), //Quat::from_vec4(Vec4::new(-0.18687499, -0.4096998, -0.086150594, 0.88870704)), 
-        scale: Vec3::new(1.0, 1.0, 1.0) };
+    orthographic_camera.transform = Transform::from_translation(camera_translation).looking_at(Vec3::ZERO, Vec3::Y);
         orthographic_camera.camera = Camera {
-           target: RenderTarget::Image(image_handle.clone()),
+          target: RenderTarget::Image(image_handle.clone()),
             ..default()
         };
         orthographic_camera.orthographic_projection = OrthographicProjection{
-            scale: 0.25,
+            scale: 0.005,
             ..default()
         };
-
+    
     // Main camera, first to render
     commands.spawn_bundle(orthographic_camera);
 
@@ -524,7 +521,7 @@ config.centered = true;
       mut commands: Commands,
       ass: Res<AssetServer>,
   ) {
-      let gltf = ass.load("agora.glb");
+      let gltf = ass.load("avatar/BaseMale.glb");
       commands.insert_resource(MyAssetPack(gltf));
       commands.insert_resource(GltfSpawnCheck {spawned:false, centered: false});
   }
