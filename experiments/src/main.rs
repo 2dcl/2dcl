@@ -298,7 +298,7 @@ use bevy::{
   
   struct GltfSpawnCheck {
       spawned: bool,
-      centered: bool
+      centered: bool,
   }
   
 
@@ -361,9 +361,9 @@ if config.spawned && !config.centered
   
 
   let camera_translation: Vec3 = Vec3::new(
+    0., 
     5., 
-    10., 
-    5.
+    10.
     );
 
     println!("min_limit: {:?} max_limit: {:?} camera_translation: {:?}",min_limit,max_limit,camera_translation); 
@@ -414,14 +414,17 @@ if config.spawned && !config.centered
     let rotation_angle: f32 = -30.0;
 
     let mut orthographic_camera = OrthographicCameraBundle::new_3d();
-    orthographic_camera.transform = Transform::from_translation(camera_translation).looking_at(Vec3::ZERO, Vec3::Y);
+    orthographic_camera.transform = Transform::from_translation(camera_translation).looking_at(Vec3::new(0., 1., 0.), Vec3::Y);
         orthographic_camera.camera = Camera {
           target: RenderTarget::Image(image_handle.clone()),
             ..default()
         };
         orthographic_camera.orthographic_projection = OrthographicProjection{
             scale: 0.005,
+            near: 0.001,
+            far: 100.,
             ..default()
+           
         };
     
     // Main camera, first to render
@@ -497,32 +500,65 @@ config.centered = true;
 
   fn gltf_manual_entity(
       mut commands: Commands,
-      my: Res<MyAssetPack>,
+      mut my: ResMut<MyAssetPack>,
       assets_gltf: Res<Assets<Gltf>>,
       mut config: ResMut<GltfSpawnCheck>,
+      mut assets_mats: ResMut<Assets<StandardMaterial>>
   ) {
       if !config.spawned
       {
-          
-          if  let Some(gltf) = assets_gltf.get(&my.0) {
+        for i in (0..my.0.len()).rev(){
+          if  let Some(gltf) = assets_gltf.get(&my.0[i]) {
 
-          println!("Finished spawning"); 
-          commands.spawn_scene(gltf.scenes[0].clone());
+            for material in &gltf.named_materials
+            {
+              if material.0.starts_with("AvatarSkin")
+              {
+                let a = assets_mats.get(material.1).unwrap().base_color;
 
-          config.spawned =true; 
+                println!("{:?} Skin color:{:?}", material.0, a);
+                assets_mats.get_mut(material.1).unwrap().base_color = Color::rgba(0.94921875, 0.76171875, 0.6484375, 1.);
+
+              } else if material.0.starts_with("Hair_MAT")
+              {
+                let a = assets_mats.get(material.1).unwrap().base_color;
+
+                println!("{:?} Skin color:{:?}", material.0, a);
+                assets_mats.get_mut(material.1).unwrap().base_color = Color::rgba(0.98046875, 0.82421875, 0.5078125, 1.);
+
+              }
+            }
+            commands.spawn_scene(gltf.scenes[0].clone());
+            my.0.remove(i);
+          }
         }
+
+        if my.0.is_empty()
+        {
+          config.spawned = true;
+        }
+   
       }
       
   }
   
-  struct MyAssetPack(Handle<Gltf>);
+  struct MyAssetPack(Vec<Handle<Gltf>>);
   
   fn load_gltf(
       mut commands: Commands,
       ass: Res<AssetServer>,
   ) {
-      let gltf = ass.load("avatar/BaseMale.glb");
-      commands.insert_resource(MyAssetPack(gltf));
+
+      let mut vec: Vec<Handle<Gltf>> = Vec::default();
+     // vec.push(ass.load("avatar/BaseMale.glb"));
+      vec.push(ass.load("avatar/Festival_hat_02.glb"));
+      vec.push(ass.load("avatar/Hair_ShortHair_01.glb"));
+      vec.push(ass.load("avatar/M_Beard.glb"));
+      vec.push(ass.load("avatar/M_lBody_FWPants.glb"));
+      vec.push(ass.load("avatar/M_uBody_FWShirt.glb"));
+      vec.push(ass.load("avatar/shoes.glb"));
+      vec.push(ass.load("avatar/xmas_2021_santa_xray.glb"));
+      commands.insert_resource(MyAssetPack(vec));
       commands.insert_resource(GltfSpawnCheck {spawned:false, centered: false});
   }
   
