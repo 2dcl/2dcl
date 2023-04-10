@@ -4,5 +4,6 @@ version = "0.1.0"
 edition = "2021"
 
 [dependencies]
-bevy = { version = "0.7.0",  features = ["jpeg"] }
+bevy = "0.10.1"
 image = { version = "0.24.2"}
+bevy-inspector-egui = "0.18.3"
