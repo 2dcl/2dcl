@@ -3,9 +3,10 @@
 //! This example is useful to implement your own post-processing effect such as
 //! edge detection, blur, pixelization, vignette... and countless others.
 
+
 use bevy::{
     //  core_pipeline::clear_color::ClearColorConfig,
-      ecs::system::{lifetimeless::SRes, SystemParamItem},
+      ecs::{system::{lifetimeless::SRes, SystemParamItem}, archetype::Archetypes, component::{ComponentId, Components}},
       prelude::*,
       reflect::TypeUuid,
       render::{
@@ -299,6 +300,7 @@ use bevy::{
   struct GltfSpawnCheck {
       spawned: bool,
       centered: bool,
+      anim: bool,
   }
   
 
@@ -308,9 +310,9 @@ fn center_boundig_box(
     mut config: ResMut<GltfSpawnCheck>,
     mut commands: Commands,
     mut meshes: ResMut<Assets<Mesh>>,
-    mut post_processing_materials: ResMut<Assets<PostProcessingMaterial>>,
-    mut images: ResMut<Assets<Image>>,
-    mut materials: ResMut<Assets<StandardMaterial>>,
+  //  mut post_processing_materials: ResMut<Assets<PostProcessingMaterial>>,
+  //  mut images: ResMut<Assets<Image>>,
+   // mut materials: ResMut<Assets<StandardMaterial>>,
 )
 {
 
@@ -393,7 +395,7 @@ if config.spawned && !config.centered
     // fill image.data with zeroes
     image.resize(size);
 
-    let image_handle = images.add(image);
+    //let image_handle = images.add(image);
 
     // Light
     // NOTE: Currently lights are ignoring render layers - see https://github.com/bevyengine/bevy/issues/3462
@@ -413,14 +415,13 @@ if config.spawned && !config.centered
 
     let rotation_angle: f32 = -30.0;
 
-    let mut orthographic_camera = OrthographicCameraBundle::new_3d();
+    let mut orthographic_camera = PerspectiveCameraBundle::new_3d();
     orthographic_camera.transform = Transform::from_translation(camera_translation).looking_at(Vec3::new(0., 1., 0.), Vec3::Y);
         orthographic_camera.camera = Camera {
-          target: RenderTarget::Image(image_handle.clone()),
+         // target: RenderTarget::Image(image_handle.clone()),
             ..default()
         };
-        orthographic_camera.orthographic_projection = OrthographicProjection{
-            scale: 0.005,
+        orthographic_camera.perspective_projection = PerspectiveProjection{
             near: 0.001,
             far: 100.,
             ..default()
@@ -428,8 +429,12 @@ if config.spawned && !config.centered
         };
     
     // Main camera, first to render
-    commands.spawn_bundle(orthographic_camera);
-
+    commands.spawn_bundle(orthographic_camera).insert(PanOrbitCamera {
+      radius: 50.,
+      focus: Vec3::new(0.0, 1.0, 0.0),
+      ..default()}) 
+      .insert(Name::new("Camera"));;
+/*
     // This specifies the layer used for the post processing camera, which will be attached to the post processing camera and 2d quad.
     let post_processing_pass_layer = RenderLayers::layer((RenderLayers::TOTAL_LAYERS - 1) as u8);
 
@@ -477,7 +482,7 @@ if config.spawned && !config.centered
  */
 
 
-        
+         */
 config.centered = true;
 }
 
@@ -503,31 +508,59 @@ config.centered = true;
       mut my: ResMut<MyAssetPack>,
       assets_gltf: Res<Assets<Gltf>>,
       mut config: ResMut<GltfSpawnCheck>,
-      mut assets_mats: ResMut<Assets<StandardMaterial>>
+      mut animations: ResMut<Assets<AnimationClip>>,
+      mut assets_mats: ResMut<Assets<StandardMaterial>>,
+      mut animation_players: Query<&mut AnimationPlayer>,
+      archetypes: &Archetypes, components: &Components, 
+      mut entities: Query<(&Name, Entity), (With<Children>, Without<Parent>)>,
   ) {
+
+
+    if !config.anim
+    {
+      for animation in animations.ids()  {
+        let animation = animations.get_handle(animation);
+        for (name, entity) in entities.iter()
+        {
+          let mut player = AnimationPlayer::default();
+          player.play(animation.clone()).repeat();
+          player.set_speed(10.);
+          config.anim = true;
+          commands.entity(entity).insert(player);
+      
+        }
+    
+        break;
+      }   
+    }
+
+    for player in animation_players.iter()
+    {
+      println!("{:?}",!player.is_paused());
+    }
+ 
       if !config.spawned
       {
         for i in (0..my.0.len()).rev(){
           if  let Some(gltf) = assets_gltf.get(&my.0[i]) {
+     
 
             for material in &gltf.named_materials
             {
               if material.0.starts_with("AvatarSkin")
               {
                 let a = assets_mats.get(material.1).unwrap().base_color;
-
-                println!("{:?} Skin color:{:?}", material.0, a);
                 assets_mats.get_mut(material.1).unwrap().base_color = Color::rgba(0.94921875, 0.76171875, 0.6484375, 1.);
 
               } else if material.0.starts_with("Hair_MAT")
               {
                 let a = assets_mats.get(material.1).unwrap().base_color;
-
-                println!("{:?} Skin color:{:?}", material.0, a);
                 assets_mats.get_mut(material.1).unwrap().base_color = Color::rgba(0.98046875, 0.82421875, 0.5078125, 1.);
+
 
               }
             }
+
             commands.spawn_scene(gltf.scenes[0].clone());
             my.0.remove(i);
           }
@@ -536,6 +569,7 @@ config.centered = true;
         if my.0.is_empty()
         {
           config.spawned = true;
+    
         }
    
       }
@@ -544,22 +578,36 @@ config.centered = true;
   
   struct MyAssetPack(Vec<Handle<Gltf>>);
   
+  pub fn get_components_for_entity<'a>(
+    entity: &Entity,
+    archetypes: &'a Archetypes,
+) -> Option<impl Iterator<Item = ComponentId> + 'a> {
+    for archetype in archetypes.iter() {
+        if archetype.entities().contains(entity) {
+            return Some(archetype.components());
+        }
+    }
+    None
+}
+
   fn load_gltf(
       mut commands: Commands,
       ass: Res<AssetServer>,
   ) {
 
       let mut vec: Vec<Handle<Gltf>> = Vec::default();
-     // vec.push(ass.load("avatar/BaseMale.glb"));
-      vec.push(ass.load("avatar/Festival_hat_02.glb"));
-      vec.push(ass.load("avatar/Hair_ShortHair_01.glb"));
-      vec.push(ass.load("avatar/M_Beard.glb"));
-      vec.push(ass.load("avatar/M_lBody_FWPants.glb"));
-      vec.push(ass.load("avatar/M_uBody_FWShirt.glb"));
-      vec.push(ass.load("avatar/shoes.glb"));
-      vec.push(ass.load("avatar/xmas_2021_santa_xray.glb"));
+      vec.push(ass.load("avatar/BaseMale.glb"));
+    //  vec.push(ass.load("avatar/Festival_hat_02.glb"));
+    //  vec.push(ass.load("avatar/Attack_emote_v3.glb"));
+    //  vec.push(ass.load("avatar/dc_halloween_bat.glb"));
+    //  vec.push(ass.load("avatar/Hair_ShortHair_01.glb"));
+    //  vec.push(ass.load("avatar/M_Beard.glb"));
+    //  vec.push(ass.load("avatar/M_lBody_FWPants.glb"));
+    //  vec.push(ass.load("avatar/M_uBody_FWShirt.glb"));
+    //  vec.push(ass.load("avatar/shoes.glb"));
+    //  vec.push(ass.load("avatar/xmas_2021_santa_xray.glb"));
       commands.insert_resource(MyAssetPack(vec));
-      commands.insert_resource(GltfSpawnCheck {spawned:false, centered: false});
+      commands.insert_resource(GltfSpawnCheck {spawned:false, centered: false, anim: false});
   }
   
   
@@ -664,7 +712,7 @@ config.centered = true;
               // child = z-offset
               let rot_matrix = Mat3::from_quat(transform.rotation);
               transform.translation = pan_orbit.focus + rot_matrix.mul_vec3(Vec3::new(0.0, 0.0, pan_orbit.radius));
-              println!("Camera transform: {:?} ", transform);
+             // println!("Camera transform: {:?} ", transform);
           }
       }
   }
