@@ -12,8 +12,6 @@ fn fragment(
     @builtin(position) position: vec4<f32>,
     #import bevy_sprite::mesh2d_vertex_output
 ) -> @location(0) vec4<f32> {
-    // Get screen position with coordinates from 0 to 1
-
 
     var ROUNDING_PREC = 0.99;
     var PIXELSIZE = 4.0;

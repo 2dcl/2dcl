@@ -6,7 +6,20 @@ use bevy::gltf::Gltf;
 use bevy_inspector_egui::quick::WorldInspectorPlugin;
 use bevy::pbr::CascadeShadowConfigBuilder;
 use bevy::prelude::*;
-
+use bevy::{
+  core_pipeline::clear_color::ClearColorConfig,
+  reflect::TypeUuid,
+  render::{
+      camera::RenderTarget,
+      render_resource::{
+          AsBindGroup, Extent3d, ShaderRef, TextureDescriptor, TextureDimension, TextureFormat,
+          TextureUsages,
+      },
+      texture::BevyDefault,
+      view::RenderLayers,
+  },
+  sprite::{Material2d, Material2dPlugin, MaterialMesh2dBundle},
+};
 
 
 fn main() {
@@ -16,6 +29,7 @@ fn main() {
             color: Color::WHITE,
             brightness: 1.0,
         })
+        .add_plugin(Material2dPlugin::<PostProcessingMaterial>::default())
         .add_startup_system(setup)
         .add_plugin(WorldInspectorPlugin::new())
         .add_system(material_update)
@@ -31,90 +45,6 @@ struct Animations(Vec<Handle<AnimationClip>>);
 
 #[derive(Component)]
 struct LoadingGLTF(bool);
-
-fn setup(
-    mut commands: Commands,
-    asset_server: Res<AssetServer>,
-    mut meshes: ResMut<Assets<Mesh>>,
-    mut materials: ResMut<Assets<StandardMaterial>>,
-) {
-    // Insert a resource with the current scene information
-    commands.insert_resource(Animations(vec![
-        asset_server.load("avatar/Attack_emote_v3.glb#Animation0"),
-    ]));
-
-    // Camera
-    commands.spawn(Camera3dBundle {
-        transform: Transform::from_xyz(5.0, 5.0, 7.5)
-            .looking_at(Vec3::new(0.0, 1.0, 0.0), Vec3::Y),
-        ..default()
-    });
-
-    // Plane
-    commands.spawn(PbrBundle {
-        mesh: meshes.add(shape::Plane::from_size(500000.0).into()),
-        material: materials.add(Color::rgb(0.3, 0.5, 0.3).into()),
-        ..default()
-    });
-
-    // Light
-    commands.spawn(DirectionalLightBundle {
-        transform: Transform::from_rotation(Quat::from_euler(EulerRot::ZYX, 0.0, 1.0, -PI / 4.)),
-        directional_light: DirectionalLight {
-            shadows_enabled: true,
-            ..default()
-        },
-        cascade_shadow_config: CascadeShadowConfigBuilder {
-            first_cascade_far_bound: 200.0,
-            maximum_distance: 400.0,
-            ..default()
-        }
-        .into(),
-        ..default()
-    });
-
-    // Fox
-
-
-    commands.spawn(SceneBundle {
-      scene: asset_server.load("avatar/Festival_hat_02.glb#Scene0"),
-      ..default()
-    }).insert(LoadingGLTF(false));
-    commands.spawn(SceneBundle {
-      scene: asset_server.load("avatar/dc_halloween_bat.glb#Scene0"),
-      ..default()
-    }).insert(LoadingGLTF(false));
-    commands.spawn(SceneBundle {
-      scene: asset_server.load("avatar/Hair_ShortHair_01.glb#Scene0"),
-      ..default()
-    }).insert(LoadingGLTF(false));
-    commands.spawn(SceneBundle {
-      scene: asset_server.load("avatar/M_Beard.glb#Scene0"),
-      ..default()
-    }).insert(LoadingGLTF(false));
-    commands.spawn(SceneBundle {
-      scene: asset_server.load("avatar/xmas_2021_santa_xray.glb#Scene0"),
-      ..default()
-    }).insert(LoadingGLTF(false));
-    commands.spawn(SceneBundle {
-      scene: asset_server.load("avatar/shoes.glb#Scene0"),
-      ..default()
-    }).insert(LoadingGLTF(false));
-    commands.spawn(SceneBundle {
-      scene: asset_server.load("avatar/M_uBody_FWShirt.glb#Scene0"),
-      ..default()
-    }).insert(LoadingGLTF(false));
-    commands.spawn(SceneBundle {
-      scene: asset_server.load("avatar/M_lBody_FWPants.glb#Scene0"),
-      ..default()
-    }).insert(LoadingGLTF(false));
-
-    println!("Animation controls:");
-    println!("  - spacebar: play / pause");
-    println!("  - arrow up / down: speed up / slow down animation playback");
-    println!("  - arrow left / right: seek backward / forward");
-    println!("  - return: change animation");
-}
 
 
 // Once the scene is loaded, start the animation
@@ -245,4 +175,199 @@ fn keyboard_animation_control(
                 .repeat();
         }
     }
+}
+
+
+
+
+
+fn setup(
+  mut commands: Commands,
+  windows: Query<&Window>,
+  mut post_processing_materials: ResMut<Assets<PostProcessingMaterial>>,
+  mut images: ResMut<Assets<Image>>,
+  asset_server: Res<AssetServer>,
+  mut meshes: ResMut<Assets<Mesh>>,
+  mut materials: ResMut<Assets<StandardMaterial>>,
+) {
+
+  
+  // This assumes we only have a single window
+  let window = windows.single();
+
+  let size = Extent3d {
+      width: window.resolution.physical_width(),
+      height: window.resolution.physical_height(),
+      ..default()
+  };
+
+  // This is the texture that will be rendered to.
+  let mut image = Image {
+      texture_descriptor: TextureDescriptor {
+          label: None,
+          size,
+          dimension: TextureDimension::D2,
+          format: TextureFormat::bevy_default(),
+          mip_level_count: 1,
+          sample_count: 1,
+          usage: TextureUsages::TEXTURE_BINDING
+              | TextureUsages::COPY_DST
+              | TextureUsages::RENDER_ATTACHMENT,
+          view_formats: &[],
+      },
+      ..default()
+  };
+
+  // fill image.data with zeroes
+  image.resize(size);
+
+  let image_handle = images.add(image);
+
+  // Main camera, first to render
+  commands.spawn((
+      Camera3dBundle {
+          camera_3d: Camera3d {
+              clear_color: ClearColorConfig::Custom(Color::WHITE),
+              ..default()
+          },
+          camera: Camera {
+              target: RenderTarget::Image(image_handle.clone()),
+              ..default()
+          },
+          transform: Transform::from_translation(Vec3::new(0.0, 0.0, 15.0))
+              .looking_at(Vec3::default(), Vec3::Y),
+          ..default()
+      },
+      // Disable UI rendering for the first pass camera. This prevents double rendering of UI at
+      // the cost of rendering the UI without any post processing effects.
+      UiCameraConfig { show_ui: false },
+  ));
+
+  // This specifies the layer used for the post processing camera, which will be attached to the post processing camera and 2d quad.
+  let post_processing_pass_layer = RenderLayers::layer((RenderLayers::TOTAL_LAYERS - 1) as u8);
+
+  let quad_handle = meshes.add(Mesh::from(shape::Quad::new(Vec2::new(
+      size.width as f32,
+      size.height as f32,
+  ))));
+
+  // This material has the texture that has been rendered.
+  let material_handle = post_processing_materials.add(PostProcessingMaterial {
+      source_image: image_handle,
+  });
+
+  // Post processing 2d quad, with material using the render texture done by the main camera, with a custom shader.
+  commands.spawn((
+      MaterialMesh2dBundle {
+          mesh: quad_handle.into(),
+          material: material_handle,
+          transform: Transform {
+              translation: Vec3::new(0.0, 0.0, 1.5),
+              ..default()
+          },
+          ..default()
+      },
+      post_processing_pass_layer,
+  ));
+
+  // The post-processing pass camera.
+  commands.spawn((
+      Camera2dBundle {
+          camera: Camera {
+              // renders after the first main camera which has default value: 0.
+              order: 1,
+              ..default()
+          },
+          ..Camera2dBundle::default()
+      },
+      post_processing_pass_layer,
+  ));
+
+  // Insert a resource with the current scene information
+  commands.insert_resource(Animations(vec![
+      asset_server.load("avatar/Attack_emote_v3.glb#Animation0"),
+  ]));
+
+  // Plane
+  commands.spawn(PbrBundle {
+      mesh: meshes.add(shape::Plane::from_size(500000.0).into()),
+      material: materials.add(Color::rgb(0.3, 0.5, 0.3).into()),
+      ..default()
+  });
+
+  // Light
+  commands.spawn(DirectionalLightBundle {
+      transform: Transform::from_rotation(Quat::from_euler(EulerRot::ZYX, 0.0, 1.0, -PI / 4.)),
+      directional_light: DirectionalLight {
+          shadows_enabled: true,
+          ..default()
+      },
+      cascade_shadow_config: CascadeShadowConfigBuilder {
+          first_cascade_far_bound: 200.0,
+          maximum_distance: 400.0,
+          ..default()
+      }
+      .into(),
+      ..default()
+  });
+
+  commands.spawn(SceneBundle {
+    scene: asset_server.load("avatar/Festival_hat_02.glb#Scene0"),
+    ..default()
+  }).insert(LoadingGLTF(false));
+  commands.spawn(SceneBundle {
+    scene: asset_server.load("avatar/dc_halloween_bat.glb#Scene0"),
+    ..default()
+  }).insert(LoadingGLTF(false));
+  commands.spawn(SceneBundle {
+    scene: asset_server.load("avatar/Hair_ShortHair_01.glb#Scene0"),
+    ..default()
+  }).insert(LoadingGLTF(false));
+  commands.spawn(SceneBundle {
+    scene: asset_server.load("avatar/M_Beard.glb#Scene0"),
+    ..default()
+  }).insert(LoadingGLTF(false));
+  commands.spawn(SceneBundle {
+    scene: asset_server.load("avatar/xmas_2021_santa_xray.glb#Scene0"),
+    ..default()
+  }).insert(LoadingGLTF(false));
+  commands.spawn(SceneBundle {
+    scene: asset_server.load("avatar/shoes.glb#Scene0"),
+    ..default()
+  }).insert(LoadingGLTF(false));
+  commands.spawn(SceneBundle {
+    scene: asset_server.load("avatar/M_uBody_FWShirt.glb#Scene0"),
+    ..default()
+  }).insert(LoadingGLTF(false));
+  commands.spawn(SceneBundle {
+    scene: asset_server.load("avatar/M_lBody_FWPants.glb#Scene0"),
+    ..default()
+  }).insert(LoadingGLTF(false));
+
+  println!("Animation controls:");
+  println!("  - spacebar: play / pause");
+  println!("  - arrow up / down: speed up / slow down animation playback");
+  println!("  - arrow left / right: seek backward / forward");
+  println!("  - return: change animation");
+
+}
+
+
+
+// Region below declares of the custom material handling post processing effect
+
+/// Our custom post processing material
+#[derive(AsBindGroup, TypeUuid, Clone)]
+#[uuid = "bc2f08eb-a0fb-43f1-a908-54871ea597d5"]
+struct PostProcessingMaterial {
+  /// In this example, this image will be the result of the main camera.
+  #[texture(0)]
+  #[sampler(1)]
+  source_image: Handle<Image>,
+}
+
+impl Material2d for PostProcessingMaterial {
+  fn fragment_shader() -> ShaderRef {
+      "PostProcess.wgsl".into()
+  }
 }
