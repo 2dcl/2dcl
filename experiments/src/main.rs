@@ -234,8 +234,8 @@ fn setup(
               target: RenderTarget::Image(image_handle.clone()),
               ..default()
           },
-          transform: Transform::from_translation(Vec3::new(0.0, 0.0, 15.0))
-              .looking_at(Vec3::default(), Vec3::Y),
+          transform: Transform::from_translation(Vec3::new(3., 4.0, 0.))
+              .looking_at(Vec3::new(0.,1.5,0.), Vec3::Y),
           ..default()
       },
       // Disable UI rendering for the first pass camera. This prevents double rendering of UI at
@@ -285,15 +285,9 @@ fn setup(
 
   // Insert a resource with the current scene information
   commands.insert_resource(Animations(vec![
-      asset_server.load("avatar/Attack_emote_v3.glb#Animation0"),
+      asset_server.load("avatar/run.glb#Animation0"),
   ]));
 
-  // Plane
-  commands.spawn(PbrBundle {
-      mesh: meshes.add(shape::Plane::from_size(500000.0).into()),
-      material: materials.add(Color::rgb(0.3, 0.5, 0.3).into()),
-      ..default()
-  });
 
   // Light
   commands.spawn(DirectionalLightBundle {
