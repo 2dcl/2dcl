@@ -7,3 +7,4 @@ edition = "2021"
 bevy = "0.10.1"
 image = { version = "0.24.2"}
 bevy-inspector-egui = "0.18.3"
+bevy_capture_media = {path= "../bevy_capture_media-trunk"}

@@ -20,7 +20,7 @@ use bevy::{
   },
   sprite::{Material2d, Material2dPlugin, MaterialMesh2dBundle},
 };
-
+use bevy_capture_media::{MediaCapture, BevyCapturePlugin};
 
 fn main() {
     App::new()
@@ -29,12 +29,16 @@ fn main() {
             color: Color::WHITE,
             brightness: 1.0,
         })
+        .add_plugin(bevy_capture_media::BevyCapturePlugin)
         .add_plugin(Material2dPlugin::<PostProcessingMaterial>::default())
+        .insert_resource(State::LoadingGltf)
         .add_startup_system(setup)
         .add_plugin(WorldInspectorPlugin::new())
         .add_system(material_update)
+        .add_system(state_updater.after(setup_stuff))
         //.add_system(setup_scene_once_loaded)
         .add_system(setup_stuff)
+        .add_system(take_screenshot)
         .add_system(keyboard_animation_control)
         .run();
 }
@@ -43,10 +47,54 @@ fn main() {
 struct Animations(Vec<Handle<AnimationClip>>);
 
 
+#[derive(Resource)]
+enum State{
+  LoadingGltf,
+  Idle(u8),
+  Running(u8),
+}
+
 #[derive(Component)]
 struct LoadingGLTF(bool);
 
 
+fn state_updater(
+  mut state: ResMut<State>,
+  mut capture: MediaCapture,
+  mut players: Query<&mut AnimationPlayer>,
+  animations: Res<Animations>,
+)
+{
+  match state.as_mut()
+  {
+    State::LoadingGltf => {},
+    State::Idle(frames_passed) => {
+      let frames_passed = *frames_passed+1;
+      if frames_passed > 20
+      {
+        *state = State::Running(0);
+        for mut player in players.iter_mut()
+        {
+          player.play(animations.0[1].clone_weak()).repeat();
+        }
+      } else
+      {
+        *state = State::Idle(frames_passed);
+      }
+    },
+    State::Running(frames_passed) => {
+      let frames_passed = *frames_passed+1;
+      if frames_passed > 9
+      {
+        capture.capture_png(1357);
+        *state = State::LoadingGltf;
+      } else
+      {
+        *state = State::Running(frames_passed);
+      }
+    },
+  }
+}
 // Once the scene is loaded, start the animation
 fn setup_stuff(
   mut commands: Commands,
@@ -55,6 +103,7 @@ fn setup_stuff(
   mut players: Query<&mut AnimationPlayer>,
   animations: Res<Animations>,
   mut done: Local<bool>,
+  mut state: ResMut<State>
 ) {
 
   if !*done{
@@ -76,6 +125,7 @@ fn setup_stuff(
           let armature = other_entity_children.iter().next().unwrap();
           let mut player =AnimationPlayer::default();
           player.play(animations.0[0].clone_weak()).repeat();
+         // player.set_speed(0.25);
           player.pause();
           commands.entity(*armature).insert(player);
           break;
@@ -91,6 +141,8 @@ fn setup_stuff(
         player.resume();
       }
       *done = true;
+
+      *state = State::Idle(0);
     }
   }
 }
@@ -115,19 +167,6 @@ fn material_update (
     }
   }
 
-}
-// Once the scene is loaded, start the animation
-fn setup_scene_once_loaded(
-    animations: Res<Animations>,
-    mut player: Query<&mut AnimationPlayer>,
-    mut done: Local<bool>,
-) {
-    if !*done {
-        if let Ok(mut player) = player.get_single_mut() {
-            player.play(animations.0[0].clone_weak()).repeat();
-            *done = true;
-        }
-    }
 }
 
 fn keyboard_animation_control(
@@ -188,10 +227,9 @@ fn setup(
   mut images: ResMut<Assets<Image>>,
   asset_server: Res<AssetServer>,
   mut meshes: ResMut<Assets<Mesh>>,
-  mut materials: ResMut<Assets<StandardMaterial>>,
+  mut capture: MediaCapture,
 ) {
 
-  
   // This assumes we only have a single window
   let window = windows.single();
 
@@ -227,7 +265,7 @@ fn setup(
   commands.spawn((
       Camera3dBundle {
           camera_3d: Camera3d {
-              clear_color: ClearColorConfig::Custom(Color::WHITE),
+              clear_color: ClearColorConfig::Custom(Color::rgba(1., 1., 1., 0.)),
               ..default()
           },
           camera: Camera {
@@ -271,9 +309,12 @@ fn setup(
   ));
 
   // The post-processing pass camera.
-  commands.spawn((
+  let camera_entity =commands.spawn((
       Camera2dBundle {
-          camera: Camera {
+        camera_2d: Camera2d{
+          clear_color: ClearColorConfig::Custom(Color::BLUE)
+        },
+        camera: Camera {
               // renders after the first main camera which has default value: 0.
               order: 1,
               ..default()
@@ -281,10 +322,13 @@ fn setup(
           ..Camera2dBundle::default()
       },
       post_processing_pass_layer,
-  ));
+  )).id();
+
+  capture.start_tracking_camera(1357, camera_entity, Duration::from_secs(5));
 
   // Insert a resource with the current scene information
   commands.insert_resource(Animations(vec![
+      asset_server.load("avatar/idle.glb#Animation0"),
       asset_server.load("avatar/run.glb#Animation0"),
   ]));
 
@@ -363,5 +407,17 @@ struct PostProcessingMaterial {
 impl Material2d for PostProcessingMaterial {
   fn fragment_shader() -> ShaderRef {
       "PostProcess.wgsl".into()
+  }
+}
+
+pub fn take_screenshot(
+  input: Res<Input<KeyCode>>,
+  mut capture: MediaCapture,
+) {
+  if input.just_released(KeyCode::RShift) {
+      // If you have many cameras, consider storing their IDs
+      // in a resource
+      println!("taking screenshot");
+      capture.capture_png(1357);
   }
 }
