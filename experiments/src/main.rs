@@ -21,10 +21,19 @@ use bevy::{
   sprite::{Material2d, Material2dPlugin, MaterialMesh2dBundle},
 };
 use bevy_capture_media::{MediaCapture, BevyCapturePlugin};
+use bevy::window::WindowResolution;
 
 fn main() {
     App::new()
-        .add_plugins(DefaultPlugins)
+        .add_plugins(DefaultPlugins.set(WindowPlugin {
+          primary_window: Some(Window {
+            resolution: WindowResolution::new(
+              640., 360.
+            ),
+            ..default()
+          }),
+          ..default()
+        }))
         .insert_resource(AmbientLight {
             color: Color::WHITE,
             brightness: 1.0,
@@ -76,20 +85,33 @@ fn state_updater(
         for mut player in players.iter_mut()
         {
           player.play(animations.0[1].clone_weak()).repeat();
+          player.set_speed(4.);
+          player.pause();
+          player.set_elapsed(0.);
         }
       } else
       {
+        for mut player in players.iter_mut()
+        {
+          let elapsed  = frames_passed as f32 * &player.speed() * 1./60.;
+          player.set_elapsed(elapsed);
+        }
         *state = State::Idle(frames_passed);
       }
     },
     State::Running(frames_passed) => {
       let frames_passed = *frames_passed+1;
-      if frames_passed > 9
+      if frames_passed > 11
       {
         capture.capture_png(1357);
         *state = State::LoadingGltf;
       } else
       {
+        for mut player in players.iter_mut()
+        {
+          let elapsed  = frames_passed as f32 * &player.speed() * 1./60.;
+          player.set_elapsed(elapsed);
+        }
         *state = State::Running(frames_passed);
       }
     },
@@ -125,8 +147,8 @@ fn setup_stuff(
           let armature = other_entity_children.iter().next().unwrap();
           let mut player =AnimationPlayer::default();
           player.play(animations.0[0].clone_weak()).repeat();
-         // player.set_speed(0.25);
           player.pause();
+          player.set_speed(16.);
           commands.entity(*armature).insert(player);
           break;
         }
@@ -135,13 +157,8 @@ fn setup_stuff(
 
     if loading_count>=8
     {
-      println!("all loaded");
-      for mut player in players.iter_mut()
-      {
-        player.resume();
-      }
-      *done = true;
 
+      *done = true;
       *state = State::Idle(0);
     }
   }

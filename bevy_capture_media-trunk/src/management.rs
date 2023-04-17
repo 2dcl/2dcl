@@ -13,6 +13,8 @@ use bevy::render::texture::Image;
 use bevy::render::view::RenderLayers;
 use bevy::time::Time;
 use bevy::transform::components::Transform;
+use bevy::render::camera::Viewport;
+use bevy::math::UVec2;
 
 use crate::data::ProjectToImage;
 use crate::data::{
@@ -118,10 +120,10 @@ pub fn start_tracking_orthographic_camera(
 
 	for event in events.drain() {
 		if let Ok((camera, transform, ortho)) = query.get(event.cam_entity) {
-			let target_image = ortho.project_to_image();
+      let target_image = ortho.project_to_image();
+      println!("spawn: {:?}",&target_image.size());
 			let target_handle = images.add(target_image);
 			let new_id = event.tracking_id;
-      println!("spawn");
 			let tracker_entity = commands
 				.spawn((Camera2dBundle {
 					transform: transform.clone(),

@@ -17,7 +17,7 @@ use crate::image_utils::frame_data_to_rgba_image;
 #[cfg(target_arch = "wasm32")]
 use crate::web_utils;
 
-const TOTAL_FRAMES: usize = 13;
+const TOTAL_FRAMES: usize = 15;
 
 #[derive(Debug, Clone, Ord, PartialOrd, Eq, PartialEq, Default)]
 pub enum SavePng {
