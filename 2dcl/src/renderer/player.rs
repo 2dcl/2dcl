@@ -67,7 +67,7 @@ fn spawn_player(
             sprite: sprite.clone(),
             texture_atlas: player_animator.atlas.clone(),
             transform: Transform {
-                scale: Vec3::ONE * PLAYER_SCALE * player_animator.scale,
+                scale: (Vec2::ONE * PLAYER_SCALE * player_animator.scale).extend(1.),
                 translation,
                 ..default()
             },
@@ -106,7 +106,7 @@ fn spawn_player(
         z: 5000.0,
     });
 
-    camera_bundle.projection.scale = CAMERA_SCALE;
+    camera_bundle.projection.scale = CAMERA_SCALE*1./PLAYER_SCALE;
     let camera_entity = commands.spawn(camera_bundle).id();
 
     commands.entity(player).add_child(camera_entity);
