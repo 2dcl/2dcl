@@ -106,7 +106,7 @@ fn spawn_player(
         z: 5000.0,
     });
 
-    camera_bundle.projection.scale = CAMERA_SCALE*1./PLAYER_SCALE;
+    camera_bundle.projection.scale = CAMERA_SCALE * 1. / PLAYER_SCALE;
     let camera_entity = commands.spawn(camera_bundle).id();
 
     commands.entity(player).add_child(camera_entity);
