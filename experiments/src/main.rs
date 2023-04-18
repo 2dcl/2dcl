@@ -1,6 +1,7 @@
 //! Plays animations from a skinned glTF.
 
 use std::f32::consts::PI;
+use std::path::{PathBuf, Path};
 use std::time::Duration;
 use bevy::gltf::Gltf;
 use bevy_inspector_egui::quick::WorldInspectorPlugin;
@@ -20,8 +21,12 @@ use bevy::{
   },
   sprite::{Material2d, Material2dPlugin, MaterialMesh2dBundle},
 };
-use bevy_capture_media::{MediaCapture, BevyCapturePlugin};
+use bevy_capture_media::MediaCapture;
 use bevy::window::WindowResolution;
+use glob::glob;
+use catalyst::{entity_files::SceneFile, ContentClient};
+
+use serde::{Serialize, Deserialize};
 
 fn main() {
     App::new()
@@ -47,15 +52,101 @@ fn main() {
         .add_system(state_updater.after(setup_stuff))
         //.add_system(setup_scene_once_loaded)
         .add_system(setup_stuff)
-        .add_system(take_screenshot)
-        .add_system(keyboard_animation_control)
         .run();
+}
+
+
+#[derive(Serialize, Deserialize, Debug)]
+struct CatalystColor {
+  r: f32,
+  g: f32,
+  b: f32
+}
+#[derive(Serialize, Deserialize, Debug)]
+struct ColoredAvatarPart{
+  color: CatalystColor
+}
+
+#[derive(Serialize)]
+struct CatalystId {
+    ids:  Vec<String>,
+}
+
+#[derive(Serialize, Deserialize, Debug)]
+struct AvatarSnapshots{
+  face: Option<String>,
+  face128: Option<String>,
+  face256: Option<String>,
+  body: Option<String>
+}
+
+
+#[derive(Serialize, Deserialize, Debug)]
+struct Avatar{
+  bodyShape: String,
+  snapshots: AvatarSnapshots,
+  eyes: ColoredAvatarPart,
+  hair: ColoredAvatarPart,
+  skin: ColoredAvatarPart,
+  wearables: Vec<String>,
+}
+
+#[derive(Serialize, Deserialize, Debug)]
+struct AvatarList{
+  avatars: AvatarList2
+}
+
+
+#[derive(Serialize, Deserialize, Debug)]
+struct AvatarList2{
+  avatars: AvatarList3
+}
+
+#[derive(Serialize, Deserialize, Debug)]
+struct AvatarList3{
+  avatar: AvatarInfo
+}
+
+
+#[derive(Serialize, Deserialize, Debug)]
+struct AvatarInfo{
+  userId: String,
+  email: String,
+  name: String,
+  hasClaimedName: bool,
+  description: String,
+  ethAddress: String,
+  version: i16,
+  avatar: Avatar,
+  tutorialStep: i32,
+  interests: Vec<String>,
+  unclaimedName: String
+}
+
+
+#[derive(Serialize, Deserialize, Debug)]
+struct Request{
+  pointers: Vec<String>
 }
 
 #[derive(Resource)]
 struct Animations(Vec<Handle<AnimationClip>>);
 
 
+#[derive(Resource)]
+struct AvatarProperties{
+  eth_address: String,
+  body_shape: BodyShape,
+  eyes_color: CatalystColor,
+  hair_color: CatalystColor,
+  skin_color: CatalystColor,
+  glb_loading_count: usize,
+}
+
+enum BodyShape{
+  Male,
+  Female
+}
 #[derive(Resource)]
 enum State{
   LoadingGltf,
@@ -125,16 +216,19 @@ fn setup_stuff(
   mut players: Query<&mut AnimationPlayer>,
   animations: Res<Animations>,
   mut done: Local<bool>,
-  mut state: ResMut<State>
+  mut state: ResMut<State>,
+  avatar_properties: Res<AvatarProperties>
 ) {
 
   if !*done{
     let mut loading_count = 0;
     for (scene_children, mut loading) in scene.iter_mut() {
 
+      println!("loading stuff?");
+      loading_count+=1;
+
       if loading.0 == true
       {
-        loading_count+=1;
         continue;
       }
       loading.0 = true;
@@ -155,18 +249,19 @@ fn setup_stuff(
       }
     }
 
-    if loading_count>=8
-    {
-
+    if loading_count>=avatar_properties.glb_loading_count
+    { 
+      println!("done?");
       *done = true;
       *state = State::Idle(0);
-    }
+    } 
   }
 }
 
 fn material_update (
   assets_gltf: Res<Assets<Gltf>>,
   mut assets_mats: ResMut<Assets<StandardMaterial>>,
+  avatar_properties: Res<AvatarProperties>
 )
 {
   for (_, gltf) in assets_gltf.iter()
@@ -175,66 +270,24 @@ fn material_update (
     {
       if material_name.starts_with("AvatarSkin")
       {
-        assets_mats.get_mut(material).unwrap().base_color = Color::rgba(0.94921875, 0.76171875, 0.6484375, 1.);
+        assets_mats.get_mut(material).unwrap().base_color = Color::rgba(
+          avatar_properties.skin_color.r, 
+          avatar_properties.skin_color.g, 
+          avatar_properties.skin_color.b,
+           1.);
       }
       else if material_name.starts_with("Hair_MAT")
       {
-        assets_mats.get_mut(material).unwrap().base_color = Color::rgba(0.98046875, 0.82421875, 0.5078125, 1.);
+        assets_mats.get_mut(material).unwrap().base_color = Color::rgba(
+          avatar_properties.hair_color.r, 
+          avatar_properties.hair_color.g, 
+          avatar_properties.hair_color.b,
+           1.);
       }
     }
   }
 
 }
-
-fn keyboard_animation_control(
-    keyboard_input: Res<Input<KeyCode>>,
-    mut animation_player: Query<&mut AnimationPlayer>,
-    animations: Res<Animations>,
-    mut current_animation: Local<usize>,
-) {
-    if let Ok(mut player) = animation_player.get_single_mut() {
-        if keyboard_input.just_pressed(KeyCode::Space) {
-            if player.is_paused() {
-                player.resume();
-            } else {
-                player.pause();
-            }
-        }
-
-        if keyboard_input.just_pressed(KeyCode::Up) {
-            let speed = player.speed();
-            player.set_speed(speed * 1.2);
-        }
-
-        if keyboard_input.just_pressed(KeyCode::Down) {
-            let speed = player.speed();
-            player.set_speed(speed * 0.8);
-        }
-
-        if keyboard_input.just_pressed(KeyCode::Left) {
-            let elapsed = player.elapsed();
-            player.set_elapsed(elapsed - 0.1);
-        }
-
-        if keyboard_input.just_pressed(KeyCode::Right) {
-            let elapsed = player.elapsed();
-            player.set_elapsed(elapsed + 0.1);
-        }
-
-        if keyboard_input.just_pressed(KeyCode::Return) {
-            *current_animation = (*current_animation + 1) % animations.0.len();
-            player
-                .play_with_transition(
-                    animations.0[*current_animation].clone_weak(),
-                    Duration::from_millis(250),
-                )
-                .repeat();
-        }
-    }
-}
-
-
-
 
 
 fn setup(
@@ -246,6 +299,8 @@ fn setup(
   mut meshes: ResMut<Assets<Mesh>>,
   mut capture: MediaCapture,
 ) {
+
+  let mut avatar_properties = download_avatar("0x5e5d9d1dfd87e9b8b069b8e5d708db92be5ade99").unwrap();
 
   // This assumes we only have a single window
   let window = windows.single();
@@ -366,45 +421,65 @@ fn setup(
       ..default()
   });
 
-  commands.spawn(SceneBundle {
-    scene: asset_server.load("avatar/cap.glb#Scene0"),
-    ..default()
-  }).insert(LoadingGLTF(false));
-  commands.spawn(SceneBundle {
-    scene: asset_server.load("avatar/dc_halloween_bat.glb#Scene0"),
-    ..default()
-  }).insert(LoadingGLTF(false));
-  commands.spawn(SceneBundle {
-    scene: asset_server.load("avatar/Hair_ShortHair_01.glb#Scene0"),
-    ..default()
-  }).insert(LoadingGLTF(false));
-  commands.spawn(SceneBundle {
-    scene: asset_server.load("avatar/M_Beard.glb#Scene0"),
-    ..default()
-  }).insert(LoadingGLTF(false));
-  commands.spawn(SceneBundle {
-    scene: asset_server.load("avatar/xmas_2021_santa_xray.glb#Scene0"),
-    ..default()
-  }).insert(LoadingGLTF(false));
-  commands.spawn(SceneBundle {
-    scene: asset_server.load("avatar/shoes.glb#Scene0"),
-    ..default()
-  }).insert(LoadingGLTF(false));
-  commands.spawn(SceneBundle {
-    scene: asset_server.load("avatar/DCL_KO_X_STEPHY_JACKET.glb#Scene0"),
-    ..default()
-  }).insert(LoadingGLTF(false));
-  commands.spawn(SceneBundle {
-    scene: asset_server.load("avatar/M_lBody_FWPants.glb#Scene0"),
-    ..default()
-  }).insert(LoadingGLTF(false));
+  let pattern = format!("{}/assets/avatar/{}/**/*.glb",  
+  std::env::var("CARGO_MANIFEST_DIR").unwrap(),
+  avatar_properties.eth_address);
 
-  println!("Animation controls:");
-  println!("  - spacebar: play / pause");
-  println!("  - arrow up / down: speed up / slow down animation playback");
-  println!("  - arrow left / right: seek backward / forward");
-  println!("  - return: change animation");
 
+  let mut loading_count = 0;
+  for entry in glob(pattern.as_str())
+      .expect("Failed to read glob pattern")
+     
+  { 
+    let mut entry = entry.unwrap();
+    let mut base_dir =  Path::new(&std::env::var("CARGO_MANIFEST_DIR").unwrap()).to_path_buf();
+    let mut rev_entry = PathBuf::new();
+    while entry.parent().is_some()
+    {
+      rev_entry.push(entry.file_name().unwrap());
+      entry.pop();
+    }
+
+    while base_dir.pop()
+    {
+      rev_entry.pop();
+    }
+
+    rev_entry.pop();
+
+    let mut entry = PathBuf::new();
+    while rev_entry.parent().is_some()
+    {
+      entry.push(rev_entry.file_name().unwrap());
+      rev_entry.pop();
+    }
+
+    match avatar_properties.body_shape{
+        BodyShape::Male =>  
+        if !entry.to_str().unwrap().to_lowercase().contains("female"){
+          println!("spawning glb: {:?}", entry);
+          commands.spawn(SceneBundle {
+            scene: asset_server.load(entry),
+            ..default()
+          }).insert(LoadingGLTF(false));
+       
+          loading_count+=1;
+        },
+        BodyShape::Female =>  
+        if !entry.to_str().unwrap().to_lowercase().contains("male") ||
+          entry.to_str().unwrap().to_lowercase().contains("female") {
+          
+          println!("spawning glb: {:?}", entry);
+          commands.spawn(SceneBundle {
+            scene: asset_server.load(entry),
+            ..default()
+          }).insert(LoadingGLTF(false));
+          loading_count+=1;
+        },
+    }
+  }
+  avatar_properties.glb_loading_count = loading_count;
+  commands.insert_resource(avatar_properties);
 }
 
 
@@ -427,14 +502,52 @@ impl Material2d for PostProcessingMaterial {
   }
 }
 
-pub fn take_screenshot(
-  input: Res<Input<KeyCode>>,
-  mut capture: MediaCapture,
-) {
-  if input.just_released(KeyCode::RShift) {
-      // If you have many cameras, consider storing their IDs
-      // in a resource
-      println!("taking screenshot");
-      capture.capture_png(1357);
-  }
+#[tokio::main]
+async fn download_avatar(eth_address: &str) -> dcl_common::Result<AvatarProperties> {
+
+
+
+    let server = catalyst::Server::production();
+    let ids= vec![eth_address.to_string()];
+    
+    let catalyst_id = CatalystId{ids};
+    let avatar_list: AvatarList = server.post("/lambdas/profiles", &catalyst_id).await?;
+
+    for urn in avatar_list.avatars.avatars.avatar.avatar.wearables
+    {
+      let request = Request{pointers: vec![urn.to_string()]};
+      let result: Vec<SceneFile> = server.post("/content/entities/active", &request).await?;
+      for scene_file in result {
+
+        for downloadable in scene_file.content {
+            let filename = format!(
+                "{}/assets/avatar/{}/{}/{}",
+                std::env::var("CARGO_MANIFEST_DIR").unwrap(),
+                eth_address,
+                scene_file.id,
+                downloadable.filename.to_str().unwrap()
+            );
+            println!("downloading {:?}", downloadable);
+            ContentClient::download(&server, downloadable.cid, &filename).await?;
+        }
+
+      }  
+    }
+
+    let body_shape = match avatar_list.avatars.avatars.avatar.avatar.bodyShape.contains("Female")
+    {
+      true => BodyShape::Female,
+      false => BodyShape::Male,
+    };
+
+    let new_avatar = AvatarProperties{
+      eth_address: eth_address.to_string(),
+      body_shape,
+      eyes_color: avatar_list.avatars.avatars.avatar.avatar.eyes.color,
+      hair_color: avatar_list.avatars.avatars.avatar.avatar.hair.color,
+      skin_color:  avatar_list.avatars.avatars.avatar.avatar.skin.color,
+      glb_loading_count: 0,
+    };
+
+    Ok(new_avatar)
 }
