@@ -14,7 +14,7 @@ fn fragment(
 ) -> @location(0) vec4<f32> {
 
     var ROUNDING_PREC = 0.99;
-    var PIXELSIZE = 4.0;
+    var PIXELSIZE = 2.0;
     var Slices = floor(512.0/PIXELSIZE);
     
     let uv = floor(coords_to_viewport_uv(position.xy, view.viewport)*Slices)/Slices;
