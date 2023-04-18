@@ -102,7 +102,7 @@ fn spawn_player(
     camera_bundle.camera_2d.clear_color = clear_color;
     camera_bundle.transform = Transform::from_translation(Vec3 {
         x: 0.0,
-        y: 0.0,
+        y: PLAYER_COLLIDER.y,
         z: 5000.0,
     });
 
