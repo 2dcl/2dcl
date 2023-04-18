@@ -367,7 +367,7 @@ fn setup(
   });
 
   commands.spawn(SceneBundle {
-    scene: asset_server.load("avatar/Festival_hat_02.glb#Scene0"),
+    scene: asset_server.load("avatar/cap.glb#Scene0"),
     ..default()
   }).insert(LoadingGLTF(false));
   commands.spawn(SceneBundle {
@@ -391,7 +391,7 @@ fn setup(
     ..default()
   }).insert(LoadingGLTF(false));
   commands.spawn(SceneBundle {
-    scene: asset_server.load("avatar/M_uBody_FWShirt.glb#Scene0"),
+    scene: asset_server.load("avatar/DCL_KO_X_STEPHY_JACKET.glb#Scene0"),
     ..default()
   }).insert(LoadingGLTF(false));
   commands.spawn(SceneBundle {
