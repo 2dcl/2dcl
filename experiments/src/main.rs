@@ -223,8 +223,7 @@ fn setup_stuff(
   if !*done{
     let mut loading_count = 0;
     for (scene_children, mut loading) in scene.iter_mut() {
-
-      println!("loading stuff?");
+      
       loading_count+=1;
 
       if loading.0 == true
@@ -251,7 +250,6 @@ fn setup_stuff(
 
     if loading_count>=avatar_properties.glb_loading_count
     { 
-      println!("done?");
       *done = true;
       *state = State::Idle(0);
     } 
@@ -421,18 +419,20 @@ fn setup(
       ..default()
   });
 
+  let mut base_path =  std::env::current_exe().unwrap();
+  base_path.pop();
   let pattern = format!("{}/assets/avatar/{}/**/*.glb",  
-  std::env::var("CARGO_MANIFEST_DIR").unwrap(),
+  base_path.to_str().unwrap(),
   avatar_properties.eth_address);
 
 
   let mut loading_count = 0;
-  for entry in glob(pattern.as_str())
+ for entry in glob(pattern.as_str())
       .expect("Failed to read glob pattern")
      
   { 
     let mut entry = entry.unwrap();
-    let mut base_dir =  Path::new(&std::env::var("CARGO_MANIFEST_DIR").unwrap()).to_path_buf();
+    let mut base_dir = std::env::current_exe().unwrap();
     let mut rev_entry = PathBuf::new();
     while entry.parent().is_some()
     {
@@ -445,8 +445,6 @@ fn setup(
       rev_entry.pop();
     }
 
-    rev_entry.pop();
-
     let mut entry = PathBuf::new();
     while rev_entry.parent().is_some()
     {
@@ -456,28 +454,32 @@ fn setup(
 
     match avatar_properties.body_shape{
         BodyShape::Male =>  
-        if !entry.to_str().unwrap().to_lowercase().contains("female"){
-          println!("spawning glb: {:?}", entry);
+        if !entry.to_str().unwrap().to_lowercase().contains("female") && 
+          !entry.to_str().unwrap().to_lowercase().contains("/f_") &&
+          !entry.to_str().unwrap().to_lowercase().contains("\\f_"){
+
           commands.spawn(SceneBundle {
-            scene: asset_server.load(entry),
+            scene: asset_server.load(format!("{}#Scene0",entry.to_str().unwrap())),
             ..default()
           }).insert(LoadingGLTF(false));
        
           loading_count+=1;
         },
         BodyShape::Female =>  
-        if !entry.to_str().unwrap().to_lowercase().contains("male") ||
-          entry.to_str().unwrap().to_lowercase().contains("female") {
+        if !(entry.to_str().unwrap().to_lowercase().contains("male") ||
+              entry.to_str().unwrap().to_lowercase().contains("/m_") ||
+              entry.to_str().unwrap().to_lowercase().contains("\\m_")) ||
+            entry.to_str().unwrap().to_lowercase().contains("female")  {
           
-          println!("spawning glb: {:?}", entry);
           commands.spawn(SceneBundle {
-            scene: asset_server.load(entry),
+            scene: asset_server.load(format!("{}#Scene0",entry.to_str().unwrap())),
             ..default()
           }).insert(LoadingGLTF(false));
           loading_count+=1;
         },
     }
   }
+
   avatar_properties.glb_loading_count = loading_count;
   commands.insert_resource(avatar_properties);
 }
@@ -505,8 +507,6 @@ impl Material2d for PostProcessingMaterial {
 #[tokio::main]
 async fn download_avatar(eth_address: &str) -> dcl_common::Result<AvatarProperties> {
 
-
-
     let server = catalyst::Server::production();
     let ids= vec![eth_address.to_string()];
     
@@ -520,15 +520,15 @@ async fn download_avatar(eth_address: &str) -> dcl_common::Result<AvatarProperti
       for scene_file in result {
 
         for downloadable in scene_file.content {
-            let filename = format!(
-                "{}/assets/avatar/{}/{}/{}",
-                std::env::var("CARGO_MANIFEST_DIR").unwrap(),
-                eth_address,
-                scene_file.id,
-                downloadable.filename.to_str().unwrap()
-            );
-            println!("downloading {:?}", downloadable);
-            ContentClient::download(&server, downloadable.cid, &filename).await?;
+
+          let mut download_path = std::env::current_exe().unwrap();
+          download_path.pop();
+          download_path.push("assets");
+          download_path.push("avatar");
+          download_path.push(eth_address);
+          download_path.push(scene_file.id.to_string());
+          download_path.push(downloadable.filename.to_str().unwrap());
+            ContentClient::download(&server, downloadable.cid, &download_path).await?;
         }
 
       }  
