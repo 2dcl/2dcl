@@ -113,6 +113,7 @@ impl ContentClient {
             EntityType::Scene => &snapshot.entities.scene.hash,
             EntityType::Profile => &snapshot.entities.profile.hash,
             EntityType::Wearable => &snapshot.entities.wearable.hash,
+            EntityType::Emote => &snapshot.entities.emote.hash,
         };
 
         let response = server

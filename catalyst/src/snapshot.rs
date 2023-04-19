@@ -16,6 +16,7 @@ pub struct EntitySnapshots {
     pub profile: EntityTypeSnapshot,
     pub wearable: EntityTypeSnapshot,
     pub store: EntityTypeSnapshot,
+    pub emote: EntityTypeSnapshot,
 }
 
 #[derive(Debug, Deserialize, Eq, PartialEq)]
