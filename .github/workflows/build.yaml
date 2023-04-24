@@ -1,0 +1,103 @@
+on: 
+  push:
+    branches:
+      - main
+
+name: Build
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    name: Release Build
+    strategy:
+      matrix:
+        os: [windows-latest, ubuntu-22.04, macos-latest]
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@v2
+      - name: Install dependencies
+        run: sudo apt-get update; sudo apt-get install --no-install-recommends libasound2-dev libudev-dev libgtk-3-dev libjavascriptcoregtk-4.0-dev libsoup2.4-dev libjavascriptcoregtk-4.0-dev libgdk3.0-cil-dev libgdk-pixbuf-2.0-dev libpango1.0-dev libwebkit2gtk-4.0-dev
+        if: runner.os == 'linux'
+      - uses: actions-rs/toolchain@v1
+        with:
+          profile: minimal
+          toolchain: stable
+          override: true
+      - name: Linux Build
+        run: ./bin/build-linux
+        if: runner.os == 'linux'
+      - name: Mac Build
+        run: ./bin/build-mac
+        if: runner.os == 'macos'
+      - name: Win Build
+        run: ./bin/build-windows.bat
+        if: runner.os == 'windows'
+      - uses: actions/upload-artifact@v1
+        if: runner.os == 'linux'
+        with:
+          name: build
+          path: build/2dcl-linux-0.1.0.tar.gz
+      - uses: actions/upload-artifact@v1
+        if: runner.os == 'macos'
+        with:
+          name: build
+          path: build/2dcl-macos-0.1.0.tar.gz
+      - uses: actions/upload-artifact@v1
+        if: runner.os == 'windows'
+        with:
+          name: build
+          path: build/2dcl-windows-0.1.0.zip
+
+
+ # Mark the Github Release™ as a non-draft now that everything has succeeded!
+  publish-release:
+    # Only run after build
+    name: Publish build to Github Releases
+    runs-on: ubuntu-latest
+    needs: [build]
+    steps:
+      - name: Download build content
+        uses: actions/download-artifact@v2
+        with:
+          name: build
+
+      - name: Create Github Release
+        id: create-new-release
+        uses: actions/create-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tag_name: v0.1.${{ github.run_number }}
+          release_name: Release v0.1.${{ github.run_number }}
+
+      - name: Upload windows asset to Github Release
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with: 
+          upload_url: ${{ steps.create-new-release.outputs.upload_url }}
+          asset_path: 2dcl-windows-0.1.0.zip
+          asset_name: 2dcl-windows-v0.1.${{ github.run_number }}.zip
+          asset_content_type: application/zip
+
+      - name: Upload linux asset to Github Release
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with: 
+          upload_url: ${{ steps.create-new-release.outputs.upload_url }}
+          asset_path: 2dcl-linux-0.1.0.tar.gz
+          asset_name: 2dcl-linux-v0.1.${{ github.run_number }}.tar.gz
+          asset_content_type: application/zip
+
+      - name: Upload MacOs asset to Github Release
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with: 
+          upload_url: ${{ steps.create-new-release.outputs.upload_url }}
+          asset_path: 2dcl-macos-0.1.0.tar.gz
+          asset_name: 2dcl-macos-v0.1.${{ github.run_number }}.tar.gz
+          asset_content_type: application/zip

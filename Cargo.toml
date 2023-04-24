@@ -1,7 +1,9 @@
 [workspace]
 resolver = "2"
 members = [
+  "2dcl",  
   "dcl-common",
   "catalyst",
-  "experiments"
+  "scene-compiler",
+  "ecs-v1"
 ]
