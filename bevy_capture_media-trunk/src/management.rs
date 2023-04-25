@@ -43,7 +43,6 @@ pub fn clean_cameras(
 ) {
 	for (entity, Recorder(id), Track(target)) in &trackers {
 		if tracked.get(*target).is_err() {
-      println!("clean_camera");
 			commands.entity(entity).despawn();
 			smugglers.0.lock().unwrap().remove(id);
 			recorders.remove(id);
@@ -57,7 +56,8 @@ pub fn clean_unmonitored_tasks<T: HasTaskStatus>(
 ) {
 	for (entity, mut task) in &mut tasks {
 		if task.is_done() {
-      println!("clean_unmonitored_task");
+      println!("finished");
+      std::process::exit(1);
 			commands.entity(entity).despawn();
 		}
 	}
@@ -121,8 +121,7 @@ pub fn start_tracking_orthographic_camera(
 	for event in events.drain() {
 		if let Ok((camera, transform, ortho)) = query.get(event.cam_entity) {
       let target_image = ortho.project_to_image();
-      println!("spawn: {:?}",&target_image.size());
-			let target_handle = images.add(target_image);
+     	let target_handle = images.add(target_image);
 			let new_id = event.tracking_id;
 			let tracker_entity = commands
 				.spawn((Camera2dBundle {

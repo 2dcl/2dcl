@@ -110,13 +110,14 @@ pub fn save_single_frame(
 
 				#[cfg(not(target_arch = "wasm32"))]
 				{
-					let file_name = event.path.unwrap_or_else(|| {
-						PathBuf::from(format!(
-							"{}.png",
-							std::time::UNIX_EPOCH.elapsed().unwrap().as_secs()
-						))
-					});
 
+          let mut file_name =  std::env::current_exe().unwrap();
+          file_name.pop();
+          file_name.push("assets");
+          file_name.push("wearables");
+          file_name.push("PH-spritesheet.png");
+
+          println!("saving: {:?}",file_name);
 					if let Err(e) = image.save_with_format(file_name, ImageFormat::Png) {
 						log::error!("Failed to write screenshot: {}", e);
 					}

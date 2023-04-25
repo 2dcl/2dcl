@@ -28,7 +28,10 @@ use catalyst::{entity_files::SceneFile, ContentClient};
 
 use serde::{Serialize, Deserialize};
 
-fn main() {
+pub fn start(eth_adress: &str) {
+
+  let avatar_properties = download_avatar(eth_adress).unwrap();
+
     App::new()
         .add_plugins(DefaultPlugins.set(WindowPlugin {
           primary_window: Some(Window {
@@ -46,6 +49,7 @@ fn main() {
         .add_plugin(bevy_capture_media::BevyCapturePlugin)
         .add_plugin(Material2dPlugin::<PostProcessingMaterial>::default())
         .insert_resource(State::LoadingGltf)
+        .insert_resource(avatar_properties)
         .add_startup_system(setup)
         .add_plugin(WorldInspectorPlugin::new())
         .add_system(material_update)
@@ -194,6 +198,7 @@ fn state_updater(
       let frames_passed = *frames_passed+1;
       if frames_passed > 11
       {
+        println!("taking screenshot");
         capture.capture_png(1357);
         *state = State::LoadingGltf;
       } else
@@ -218,7 +223,7 @@ fn setup_stuff(
   animations: Res<Animations>,
   mut done: Local<bool>,
   mut state: ResMut<State>,
-  avatar_properties: Res<AvatarProperties>
+  mut avatar_properties: ResMut<AvatarProperties>
 ) {
 
   if !*done{
@@ -262,12 +267,7 @@ fn setup_stuff(
             {
               if name.to_lowercase().starts_with("armature")
               {
-                println!("{:?}, is skeleton", name);
                 is_skeleton = true;
-              }
-              else
-              {
-                println!("{:?}, not skeleton", name);
               }
               break;
             }
@@ -276,6 +276,7 @@ fn setup_stuff(
           if !is_skeleton
           { 
             commands.entity(scene_entity).despawn_recursive();
+            avatar_properties.glb_loading_count-=1;
             break;
           }
           
@@ -293,7 +294,7 @@ fn setup_stuff(
     { 
       *done = true;
       *state = State::Idle(0);
-    } 
+    }
   }
 }
 
@@ -337,10 +338,8 @@ fn setup(
   asset_server: Res<AssetServer>,
   mut meshes: ResMut<Assets<Mesh>>,
   mut capture: MediaCapture,
+  mut avatar_properties: ResMut<AvatarProperties>
 ) {
-
-
-  let mut avatar_properties = download_avatar("0x5e5d9d1dfd87e9b8b069b8e5d708db92be5ade99").unwrap();
 
   // This assumes we only have a single window
   let window = windows.single();
@@ -436,18 +435,6 @@ fn setup(
 
   capture.start_tracking_camera(1357, camera_entity, Duration::from_secs(5));
 
-  commands.spawn(Camera2dBundle {
-      camera_2d: Camera2d{
-        clear_color: ClearColorConfig::Custom(Color::BLUE)
-      },
-      camera: Camera {
-            // renders after the first main camera which has default value: 0.
-            order: 2,
-            ..default()
-        },
-        ..Camera2dBundle::default()
-    });
-
   // Insert a resource with the current scene information
   commands.insert_resource(Animations(vec![
       asset_server.load("avatar/idle.glb#Animation0"),
@@ -536,7 +523,6 @@ fn setup(
   }
 
   avatar_properties.glb_loading_count = loading_count;
-  commands.insert_resource(avatar_properties);
 }
 
 

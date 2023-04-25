@@ -5,286 +5,330 @@
       "frame": {
         "x": 0,
         "y": 0,
-        "w": 96,
-        "h": 96
+        "w": 640,
+        "h": 360
       },
       "rotated": false,
       "trimmed": false,
       "spriteSourceSize": {
         "x": 0,
         "y": 0,
-        "w": 96,
-        "h": 96
+        "w": 640,
+        "h": 360
       },
       "sourceSize": {
-        "w": 96,
-        "h": 96
+        "w": 640,
+        "h": 360
       },
-      "duration": 125
+      "duration": 250
     },
     {
       "filename": "PH-spritesheet 1.aseprite",
       "frame": {
-        "x": 96,
-        "y": 0,
-        "w": 96,
-        "h": 96
+        "x": 0,
+        "y": 360,
+        "w": 640,
+        "h": 360
       },
       "rotated": false,
       "trimmed": false,
       "spriteSourceSize": {
         "x": 0,
         "y": 0,
-        "w": 96,
-        "h": 96
+        "w": 640,
+        "h": 360
       },
       "sourceSize": {
-        "w": 96,
-        "h": 96
+        "w": 640,
+        "h": 360
       },
-      "duration": 125
+      "duration": 250
     },
     {
       "filename": "PH-spritesheet 2.aseprite",
       "frame": {
-        "x": 192,
-        "y": 0,
-        "w": 96,
-        "h": 96
+        "x": 0,
+        "y": 720,
+        "w": 640,
+        "h": 360
       },
       "rotated": false,
       "trimmed": false,
       "spriteSourceSize": {
         "x": 0,
         "y": 0,
-        "w": 96,
-        "h": 96
+        "w": 640,
+        "h": 360
       },
       "sourceSize": {
-        "w": 96,
-        "h": 96
+        "w": 640,
+        "h": 360
       },
-      "duration": 125
+      "duration": 250
     },
     {
       "filename": "PH-spritesheet 3.aseprite",
       "frame": {
-        "x": 288,
-        "y": 0,
-        "w": 96,
-        "h": 96
+        "x": 0,
+        "y": 1080,
+        "w": 640,
+        "h": 360
       },
       "rotated": false,
       "trimmed": false,
       "spriteSourceSize": {
         "x": 0,
         "y": 0,
-        "w": 96,
-        "h": 96
+        "w": 640,
+        "h": 360
       },
       "sourceSize": {
-        "w": 96,
-        "h": 96
+        "w": 640,
+        "h": 360
       },
-      "duration": 125
+      "duration": 250
     },
     {
       "filename": "PH-spritesheet 4.aseprite",
       "frame": {
-        "x": 384,
-        "y": 0,
-        "w": 96,
-        "h": 96
+        "x": 0,
+        "y": 1440,
+        "w": 640,
+        "h": 360
       },
       "rotated": false,
       "trimmed": false,
       "spriteSourceSize": {
         "x": 0,
         "y": 0,
-        "w": 96,
-        "h": 96
+        "w": 640,
+        "h": 360
       },
       "sourceSize": {
-        "w": 96,
-        "h": 96
+        "w": 640,
+        "h": 360
       },
-      "duration": 125
+      "duration": 250
     },
     {
       "filename": "PH-spritesheet 5.aseprite",
       "frame": {
-        "x": 480,
-        "y": 0,
-        "w": 96,
-        "h": 96
+        "x": 0,
+        "y": 1800,
+        "w": 640,
+        "h": 360
       },
       "rotated": false,
       "trimmed": false,
       "spriteSourceSize": {
         "x": 0,
         "y": 0,
-        "w": 96,
-        "h": 96
+        "w": 640,
+        "h": 360
       },
       "sourceSize": {
-        "w": 96,
-        "h": 96
+        "w": 640,
+        "h": 360
       },
-      "duration": 125
+      "duration": 60
     },
     {
       "filename": "PH-spritesheet 6.aseprite",
       "frame": {
-        "x": 576,
-        "y": 0,
-        "w": 96,
-        "h": 96
+        "x": 0,
+        "y": 2160,
+        "w": 640,
+        "h": 360
       },
       "rotated": false,
       "trimmed": false,
       "spriteSourceSize": {
         "x": 0,
         "y": 0,
-        "w": 96,
-        "h": 96
+        "w": 640,
+        "h": 360
       },
       "sourceSize": {
-        "w": 96,
-        "h": 96
+        "w": 640,
+        "h": 360
       },
-      "duration": 125
+      "duration": 60
     },
     {
       "filename": "PH-spritesheet 7.aseprite",
       "frame": {
-        "x": 672,
-        "y": 0,
-        "w": 96,
-        "h": 96
+        "x": 0,
+        "y": 2520,
+        "w": 640,
+        "h": 360
       },
       "rotated": false,
       "trimmed": false,
       "spriteSourceSize": {
         "x": 0,
         "y": 0,
-        "w": 96,
-        "h": 96
+        "w": 640,
+        "h": 360
       },
       "sourceSize": {
-        "w": 96,
-        "h": 96
+        "w": 640,
+        "h": 360
       },
-      "duration": 125
+      "duration": 60
     },
     {
       "filename": "PH-spritesheet 8.aseprite",
       "frame": {
-        "x": 768,
-        "y": 0,
-        "w": 96,
-        "h": 96
+        "x": 0,
+        "y": 2880,
+        "w": 640,
+        "h": 360
       },
       "rotated": false,
       "trimmed": false,
       "spriteSourceSize": {
         "x": 0,
         "y": 0,
-        "w": 96,
-        "h": 96
+        "w": 640,
+        "h": 360
       },
       "sourceSize": {
-        "w": 96,
-        "h": 96
+        "w": 640,
+        "h": 360
       },
-      "duration": 125
+      "duration": 60
     },
     {
       "filename": "PH-spritesheet 9.aseprite",
       "frame": {
-        "x": 864,
-        "y": 0,
-        "w": 96,
-        "h": 96
+        "x": 0,
+        "y": 3240,
+        "w": 640,
+        "h": 360
       },
       "rotated": false,
       "trimmed": false,
       "spriteSourceSize": {
         "x": 0,
         "y": 0,
-        "w": 96,
-        "h": 96
+        "w": 640,
+        "h": 360
       },
       "sourceSize": {
-        "w": 96,
-        "h": 96
+        "w": 640,
+        "h": 360
       },
-      "duration": 125
+      "duration": 60
     },
     {
       "filename": "PH-spritesheet 10.aseprite",
       "frame": {
-        "x": 960,
-        "y": 0,
-        "w": 96,
-        "h": 96
+        "x": 0,
+        "y": 3600,
+        "w": 640,
+        "h": 360
       },
       "rotated": false,
       "trimmed": false,
       "spriteSourceSize": {
         "x": 0,
         "y": 0,
-        "w": 96,
-        "h": 96
+        "w": 640,
+        "h": 360
       },
       "sourceSize": {
-        "w": 96,
-        "h": 96
+        "w": 640,
+        "h": 360
       },
-      "duration": 125
+      "duration": 60
     },
     {
       "filename": "PH-spritesheet 11.aseprite",
       "frame": {
-        "x": 1056,
-        "y": 0,
-        "w": 96,
-        "h": 96
+        "x": 0,
+        "y": 3960,
+        "w": 640,
+        "h": 360
       },
       "rotated": false,
       "trimmed": false,
       "spriteSourceSize": {
         "x": 0,
         "y": 0,
-        "w": 96,
-        "h": 96
+        "w": 640,
+        "h": 360
       },
       "sourceSize": {
-        "w": 96,
-        "h": 96
+        "w": 640,
+        "h": 360
       },
-      "duration": 125
+      "duration": 60
     },
     {
       "filename": "PH-spritesheet 12.aseprite",
       "frame": {
-        "x": 1152,
-        "y": 0,
-        "w": 96,
-        "h": 96
+        "x": 0,
+        "y": 4320,
+        "w": 640,
+        "h": 360
       },
       "rotated": false,
       "trimmed": false,
       "spriteSourceSize": {
         "x": 0,
         "y": 0,
-        "w": 96,
-        "h": 96
+        "w": 640,
+        "h": 360
       },
       "sourceSize": {
-        "w": 96,
-        "h": 96
+        "w": 640,
+        "h": 360
       },
-      "duration": 125
+      "duration": 60
+    },
+    {
+      "filename": "PH-spritesheet 13.aseprite",
+      "frame": {
+        "x": 0,
+        "y": 4680,
+        "w": 640,
+        "h": 360
+      },
+      "rotated": false,
+      "trimmed": false,
+      "spriteSourceSize": {
+        "x": 0,
+        "y": 0,
+        "w": 640,
+        "h": 360
+      },
+      "sourceSize": {
+        "w": 640,
+        "h": 360
+      },
+      "duration": 60
+    },
+    {
+      "filename": "PH-spritesheet 14.aseprite",
+      "frame": {
+        "x": 0,
+        "y": 5040,
+        "w": 640,
+        "h": 360
+      },
+      "rotated": false,
+      "trimmed": false,
+      "spriteSourceSize": {
+        "x": 0,
+        "y": 0,
+        "w": 640,
+        "h": 360
+      },
+      "sourceSize": {
+        "w": 640,
+        "h": 360
+      },
+      "duration": 60
     }
   ],
   "meta": {
@@ -294,7 +338,7 @@
     "format": "RGBA8888",
     "size": {
       "w": 1248,
-      "h": 96
+      "h": 360
     },
     "scale": "1",
     "frameTags": [
@@ -302,12 +346,12 @@
         "name": "Idle",
         "from": 0,
         "to": 4,
-        "direction": "forward"
+        "direction": "pingpong"
       },
       {
         "name": "Run",
         "from": 5,
-        "to": 12,
+        "to": 14,
         "direction": "forward"
       }
     ],
