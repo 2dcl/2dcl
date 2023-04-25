@@ -30,7 +30,16 @@ use serde::{Serialize, Deserialize};
 
 pub fn start(eth_adress: &str) {
 
-  let avatar_properties = download_avatar(eth_adress).unwrap();
+println!("making avatar for :{:?}",eth_adress );
+  let avatar_properties = match download_avatar(eth_adress)
+  {
+    Ok(properties) => properties,
+    Err(e) => 
+    {
+      println!("Could not find a decentraland avatar for the given ethereum address");
+      return;
+    },
+  };
 
     App::new()
         .add_plugins(DefaultPlugins.set(WindowPlugin {
@@ -56,8 +65,10 @@ pub fn start(eth_adress: &str) {
         .add_system(state_updater.after(setup_stuff))
         //.add_system(setup_scene_once_loaded)
         .add_system(setup_stuff)
+        .add_system(loading_text)
         .add_system(exit)
         .run();
+      
 }
 
 
@@ -163,7 +174,7 @@ enum State{
 struct LoadingGLTF(bool);
 
 fn exit(
-  mut capture_media_state: ResMut<CaptureState>,
+  capture_media_state: Res<CaptureState>,
   mut app_exit_events: ResMut<Events<bevy::app::AppExit>>
 
 ){
@@ -341,6 +352,25 @@ fn material_update (
 
 }
 
+fn loading_text( 
+  mut texts: Query<&mut Text>,
+  time: Res<Time>
+  )
+{
+  for mut text in texts.iter_mut()
+  {
+    for mut section in text.sections.iter_mut()
+    {
+      match time.elapsed().as_secs() % 3
+      {
+        0 => section.value = "Importing avatar .".to_string(),
+        1 => section.value = "Importing avatar ..".to_string(),
+        2 => section.value = "Importing avatar ...".to_string(),
+        _ =>  section.value = "Importing avatar".to_string(),
+      };
+    }
+  }
+}
 
 fn setup(
   mut commands: Commands,
@@ -454,7 +484,48 @@ fn setup(
   ]));
 
 
+  commands.spawn((
+    Camera2dBundle {
+      camera_2d: Camera2d{
+        ..default()
+      },
+      camera: Camera {
+            // renders after the first main camera which has default value: 0.
+            order: 2,
+            ..default()
+        },
+        ..Camera2dBundle::default()
+    },
+    post_processing_pass_layer,
+    UiCameraConfig { show_ui: true },
+  ));
 
+  commands
+		.spawn(NodeBundle {
+			style: Style {
+				size: Size::new(Val::Percent(100.), Val::Percent(100.)),
+				justify_content: JustifyContent::Center,
+				align_items: AlignItems::Center,
+				padding: UiRect::new(Val::Auto, Val::Auto, Val::Auto, Val::Px(50.)),
+				..Default::default()
+			},
+			background_color: BackgroundColor(Color::rgba(0., 0., 0., 1.)),
+			..Default::default()
+		})
+		.with_children(|children| {
+			children.spawn(TextBundle {
+				text: Text::from_section(
+					"Importing avatar",
+					TextStyle {
+						color: Color::WHITE,
+						font_size: 25.0,
+						font: asset_server.load("fonts/kongtext.ttf"),
+					},
+				),
+				..Default::default()
+			});
+		});
+    
   // Light
   commands.spawn(DirectionalLightBundle {
       transform: Transform::from_rotation(Quat::from_euler(EulerRot::ZYX, 0.0, 1.0, -PI / 4.)),
@@ -559,8 +630,6 @@ impl Material2d for PostProcessingMaterial {
 
 #[tokio::main]
 async fn download_avatar(eth_address: &str) -> dcl_common::Result<AvatarProperties> {
-
-
 
     let server = catalyst::Server::production();
     let ids= vec![eth_address.to_string()];

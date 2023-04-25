@@ -7,7 +7,7 @@ use bevy::ecs::entity::Entity;
 use bevy::ecs::event::Events;
 use bevy::ecs::query::{With, Without};
 use bevy::ecs::system::{Commands, Query, Res, ResMut};
-use bevy::prelude::{PerspectiveProjection, Camera2d, Color, Resource};
+use bevy::prelude::{PerspectiveProjection, Camera2d, Color, Resource, UiCameraConfig};
 use bevy::render::camera::{Camera, OrthographicProjection, RenderTarget};
 use bevy::render::texture::Image;
 use bevy::render::view::RenderLayers;
@@ -138,7 +138,9 @@ pub fn start_tracking_orthographic_camera(
             clear_color: ClearColorConfig::Custom(Color::CYAN)
           },
 					..Default::default()
-				}, post_processing_pass_layer,))
+				},
+         post_processing_pass_layer,
+         UiCameraConfig { show_ui: false },))
 				.insert(Recorder(event.tracking_id))
 				.insert(Track(event.cam_entity))
 				.id();
