@@ -30,6 +30,7 @@ fn spawn_player(
     assets: Res<AssetServer>,
     mut texture_atlases: ResMut<Assets<TextureAtlas>>,
 ) {
+    assets.reload_asset("wearables/PH-spritesheet.png");
     let mut player_animator_path = std::env::current_exe().unwrap_or_default();
     player_animator_path.pop();
     player_animator_path.push("assets");
