@@ -7,7 +7,7 @@ use bevy::ecs::entity::Entity;
 use bevy::ecs::event::Events;
 use bevy::ecs::query::{With, Without};
 use bevy::ecs::system::{Commands, Query, Res, ResMut};
-use bevy::prelude::{PerspectiveProjection, Camera2d, Color};
+use bevy::prelude::{PerspectiveProjection, Camera2d, Color, Resource};
 use bevy::render::camera::{Camera, OrthographicProjection, RenderTarget};
 use bevy::render::texture::Image;
 use bevy::render::view::RenderLayers;
@@ -21,13 +21,15 @@ use crate::data::{
 	ActiveRecorder, ActiveRecorders, HasTaskStatus, Recorder, RenderData, SharedDataSmuggler,
 	StartTrackingCamera, TextureFrame, Track,
 };
+use crate::plugin::CaptureState;
+
 
 pub fn sync_tracking_cameras(
 	mut trackers: Query<(&mut Transform, &mut OrthographicProjection, &Track), With<Recorder>>,
 	tracked: Query<(&Transform, &OrthographicProjection), (With<Camera>, Without<Recorder>)>,
 ) {
-	for (mut transform, mut ortho, Track(camera)) in &mut trackers {
-		if let Ok((target_transform, target_ortho)) = tracked.get(*camera) {
+  for (mut transform, mut ortho, Track(camera)) in &mut trackers {
+    if let Ok((target_transform, target_ortho)) = tracked.get(*camera) {
 			*transform = *target_transform;
 			*ortho = target_ortho.clone();
 		}
@@ -41,8 +43,8 @@ pub fn clean_cameras(
 	trackers: Query<(Entity, &Recorder, &Track)>,
 	tracked: Query<(), With<Camera>>,
 ) {
-	for (entity, Recorder(id), Track(target)) in &trackers {
-		if tracked.get(*target).is_err() {
+  for (entity, Recorder(id), Track(target)) in &trackers {
+    if tracked.get(*target).is_err() {
 			commands.entity(entity).despawn();
 			smugglers.0.lock().unwrap().remove(id);
 			recorders.remove(id);
@@ -53,11 +55,12 @@ pub fn clean_cameras(
 pub fn clean_unmonitored_tasks<T: HasTaskStatus>(
 	mut commands: Commands,
 	mut tasks: Query<(Entity, &mut T)>,
+  mut state: ResMut<CaptureState>
 ) {
+
 	for (entity, mut task) in &mut tasks {
 		if task.is_done() {
-      println!("finished");
-      std::process::exit(1);
+      *state = CaptureState::Finished;
 			commands.entity(entity).despawn();
 		}
 	}
@@ -74,18 +77,17 @@ pub fn move_camera_buffers(
 		if data.last_frame.is_none() {
 			continue;
 		}
-
 		recorders.entry(*id).and_modify(|mut recorder| {
-			let current_duration = recorder
-				.frames
-				.iter()
-				.fold(Duration::ZERO, |total, frame| total + frame.frame_time);
-
-			let mut next_duration = current_duration + dt;
-
-			// If we're over budget, drop frames until we're under our target
-			while next_duration > recorder.target_duration {
-				if let Some(frame) = recorder.frames.pop_front() {
+      let current_duration = recorder
+      .frames
+      .iter()
+      .fold(Duration::ZERO, |total, frame| total + frame.frame_time);
+    
+    let mut next_duration = current_duration + dt;
+    
+    // If we're over budget, drop frames until we're under our target
+    while next_duration > recorder.target_duration {
+      if let Some(frame) = recorder.frames.pop_front() {
 					next_duration -= frame.frame_time;
 					drop(frame);
 				} else {

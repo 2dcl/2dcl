@@ -17,6 +17,13 @@ mod plugin {
 
 	use super::*;
 
+  #[derive(Resource, PartialEq, Eq)]
+  pub enum CaptureState{
+    Idle,
+    TakingScreenshot,
+    Finished
+  }
+
 	pub struct BevyCapturePlugin;
 	impl Plugin for BevyCapturePlugin {
 		fn build(&self, app: &mut App) {
@@ -27,6 +34,7 @@ mod plugin {
 				.add_event::<data::StopTrackingCamera>()
 				.insert_resource(tracking_tracker)
 				.insert_resource(data_smuggler.clone())
+        .insert_resource(CaptureState::Idle)
 				.add_system(management::clean_cameras.in_base_set(CoreSet::First))
 				.add_system(management::move_camera_buffers.in_base_set(CoreSet::First))
 				.add_system(management::sync_tracking_cameras.in_base_set(CoreSet::PostUpdate))
@@ -68,3 +76,4 @@ mod plugin {
 
 pub use data::MediaCapture;
 pub use plugin::BevyCapturePlugin;
+pub use plugin::CaptureState;

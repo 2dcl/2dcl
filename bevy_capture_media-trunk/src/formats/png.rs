@@ -14,6 +14,7 @@ use wgpu::TextureFormat;
 
 use crate::data::{ActiveRecorders, Alignment, CaptureFrame, HasTaskStatus};
 use crate::image_utils::frame_data_to_rgba_image;
+use crate::plugin::CaptureState;
 #[cfg(target_arch = "wasm32")]
 use crate::web_utils;
 
@@ -48,7 +49,9 @@ pub fn save_single_frame(
 	mut events: ResMut<Events<SavePngFile>>,
 	recorders: ResMut<ActiveRecorders>,
 	images: Res<Assets<Image>>,
+  mut state: ResMut<CaptureState>
 ) {
+
 	let thread_pool = AsyncComputeTaskPool::get();
 	'event_drain: for event in events.drain() {
 		if let Some(recorder) = recorders.get(&event.tracking_id) {
@@ -78,7 +81,7 @@ pub fn save_single_frame(
          
          }
          else {
-             //blank
+          todo!();// blank
          }
       }
 
@@ -92,6 +95,7 @@ pub fn save_single_frame(
 				None => continue 'event_drain,
 			};
 
+      *state = CaptureState::TakingScreenshot;
 			let task = thread_pool.spawn(async move {
 				let data = data;
 				let format = target_format;
@@ -102,6 +106,7 @@ pub fn save_single_frame(
 					return;
 				}
 
+        
 				let image = frame_data_to_rgba_image(width, height, data, format);
 
 				// if let SavePng::Watermarked { watermark } = event {

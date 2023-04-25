@@ -21,7 +21,7 @@ use bevy::{
   },
   sprite::{Material2d, Material2dPlugin, MaterialMesh2dBundle},
 };
-use bevy_capture_media::MediaCapture;
+use bevy_capture_media::{MediaCapture, CaptureState};
 use bevy::window::WindowResolution;
 use glob::glob;
 use catalyst::{entity_files::SceneFile, ContentClient};
@@ -56,6 +56,7 @@ pub fn start(eth_adress: &str) {
         .add_system(state_updater.after(setup_stuff))
         //.add_system(setup_scene_once_loaded)
         .add_system(setup_stuff)
+        .add_system(exit)
         .run();
 }
 
@@ -161,6 +162,18 @@ enum State{
 #[derive(Component)]
 struct LoadingGLTF(bool);
 
+fn exit(
+  mut capture_media_state: ResMut<CaptureState>,
+  mut app_exit_events: ResMut<Events<bevy::app::AppExit>>
+
+){
+
+  if *capture_media_state == CaptureState::Finished
+  {
+    app_exit_events.send(bevy::app::AppExit);
+  }
+}
+
 
 fn state_updater(
   mut state: ResMut<State>,
@@ -198,7 +211,6 @@ fn state_updater(
       let frames_passed = *frames_passed+1;
       if frames_passed > 11
       {
-        println!("taking screenshot");
         capture.capture_png(1357);
         *state = State::LoadingGltf;
       } else

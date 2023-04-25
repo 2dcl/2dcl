@@ -23,7 +23,7 @@ pub fn get_aligned_size(width: u32, height: u32, pixel_size: u32) -> u32 {
 }
 
 pub fn layout_data(width: u32, height: u32, format: TextureFormat) -> ImageDataLayout {
-	ImageDataLayout {
+  ImageDataLayout {
 		bytes_per_row: if height > 1 {
 			// 1 = 1 row
 			NonZeroU32::new(get_aligned_size(width, 1, format.pixel_size() as u32))
@@ -41,10 +41,10 @@ pub fn smuggle_frame(
 	render_device: Res<RenderDevice>,
 	render_queue: Res<RenderQueue>,
 ) {
-	let mut smugglers = smugglers.0.lock().unwrap();
+  let mut smugglers = smugglers.0.lock().unwrap();
 	for (_id, mut recorder) in smugglers.0.iter_mut() {
-		if let Some(image) = images.get(&recorder.target_handle) {
-			let width = image.size.x as u32;
+    if let Some(image) = images.get(&recorder.target_handle) {
+      let width = image.size.x as u32;
 			let height = image.size.y as u32;
       
 			let device = render_device.wgpu_device();
