@@ -1,6 +1,3 @@
-use std::io::Cursor;
-use std::path::{Path, PathBuf};
-
 use bevy::asset::{Assets, Handle};
 use bevy::ecs::component::Component;
 use bevy::ecs::prelude::Events;
@@ -9,8 +6,7 @@ use bevy::render::texture::Image;
 use bevy::render::texture::TextureFormatPixelInfo;
 use bevy::tasks::{AsyncComputeTaskPool, Task};
 use futures_lite::future;
-use image::{EncodableLayout, ImageBuffer, ImageFormat};
-use wgpu::TextureFormat;
+use image::ImageFormat;
 
 use crate::data::{ActiveRecorders, Alignment, CaptureFrame, HasTaskStatus};
 use crate::image_utils::frame_data_to_rgba_image;
@@ -49,42 +45,30 @@ pub fn save_single_frame(
 	mut events: ResMut<Events<SavePngFile>>,
 	recorders: ResMut<ActiveRecorders>,
 	images: Res<Assets<Image>>,
-  mut state: ResMut<CaptureState>
+	mut state: ResMut<CaptureState>,
 ) {
-
 	let thread_pool = AsyncComputeTaskPool::get();
 	'event_drain: for event in events.drain() {
 		if let Some(recorder) = recorders.get(&event.tracking_id) {
-      
-      let mut data: Vec<u8> = Vec::default();
+			let mut data: Vec<u8> = Vec::default();
 
-      for i in recorder.frames.len()-TOTAL_FRAMES..recorder.frames.len()
-      {
-         if i < recorder.frames.len()
-         {  
-
-          for e in 0..recorder.frames[i].texture.len()
-          {
-            if (e+1) % 4 == 0
-            {
-       
-              if recorder.frames[i].texture[e-1] == 255 
-              && recorder.frames[i].texture[e-2] == 255 
-              && recorder.frames[i].texture[e-3] == 0
-              {
-                data.push(0);
-                continue;
-              }
-            }
-            data.push(recorder.frames[i].texture[e]);
-          }
-         
-         }
-         else {
-          todo!();// blank
-         }
-      }
-
+			for i in recorder.frames.len() - TOTAL_FRAMES..recorder.frames.len() {
+				if i < recorder.frames.len() {
+					for e in 0..recorder.frames[i].texture.len() {
+						if (e + 1) % 4 == 0
+							&& recorder.frames[i].texture[e - 1] == 255
+							&& recorder.frames[i].texture[e - 2] == 255
+							&& recorder.frames[i].texture[e - 3] == 0
+						{
+							data.push(0);
+							continue;
+						}
+						data.push(recorder.frames[i].texture[e]);
+					}
+				} else {
+					todo!(); // blank
+				}
+			}
 
 			let (width, height, target_format) = match images.get(&recorder.target_handle) {
 				Some(image) => (
@@ -95,7 +79,7 @@ pub fn save_single_frame(
 				None => continue 'event_drain,
 			};
 
-      *state = CaptureState::TakingScreenshot;
+			*state = CaptureState::TakingScreenshot;
 			let task = thread_pool.spawn(async move {
 				let data = data;
 				let format = target_format;
@@ -106,7 +90,6 @@ pub fn save_single_frame(
 					return;
 				}
 
-        
 				let image = frame_data_to_rgba_image(width, height, data, format);
 
 				// if let SavePng::Watermarked { watermark } = event {
@@ -115,14 +98,13 @@ pub fn save_single_frame(
 
 				#[cfg(not(target_arch = "wasm32"))]
 				{
+					let mut file_name = std::env::current_exe().unwrap();
+					file_name.pop();
+					file_name.push("assets");
+					file_name.push("wearables");
+					file_name.push("PH-spritesheet.png");
 
-          let mut file_name =  std::env::current_exe().unwrap();
-          file_name.pop();
-          file_name.push("assets");
-          file_name.push("wearables");
-          file_name.push("PH-spritesheet.png");
-
-          println!("saving: {:?}",file_name);
+					println!("saving: {:?}", file_name);
 					if let Err(e) = image.save_with_format(file_name, ImageFormat::Png) {
 						log::error!("Failed to write screenshot: {}", e);
 					}

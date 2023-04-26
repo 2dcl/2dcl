@@ -1,4 +1,3 @@
-use std::io::Read;
 use std::num::NonZeroU32;
 use std::ops::Deref;
 
@@ -6,10 +5,10 @@ use bevy::ecs::system::{Res, ResMut};
 use bevy::render::render_asset::RenderAssets;
 use bevy::render::render_resource::TextureFormat;
 use bevy::render::renderer::{RenderDevice, RenderQueue};
-use bevy::render::texture::{Image, ImageFormat, TextureFormatPixelInfo};
+use bevy::render::texture::{Image, TextureFormatPixelInfo};
 use wgpu::{
 	BufferDescriptor, BufferUsages, CommandEncoderDescriptor, Extent3d, ImageCopyBuffer,
-	ImageDataLayout, Maintain, TextureDescriptor, COPY_BYTES_PER_ROW_ALIGNMENT,
+	ImageDataLayout, Maintain, COPY_BYTES_PER_ROW_ALIGNMENT,
 };
 
 use crate::data::SharedDataSmuggler;
@@ -23,7 +22,7 @@ pub fn get_aligned_size(width: u32, height: u32, pixel_size: u32) -> u32 {
 }
 
 pub fn layout_data(width: u32, height: u32, format: TextureFormat) -> ImageDataLayout {
-  ImageDataLayout {
+	ImageDataLayout {
 		bytes_per_row: if height > 1 {
 			// 1 = 1 row
 			NonZeroU32::new(get_aligned_size(width, 1, format.pixel_size() as u32))
@@ -36,17 +35,17 @@ pub fn layout_data(width: u32, height: u32, format: TextureFormat) -> ImageDataL
 }
 
 pub fn smuggle_frame(
-	mut smugglers: ResMut<SharedDataSmuggler>,
+	smugglers: ResMut<SharedDataSmuggler>,
 	images: Res<RenderAssets<Image>>,
 	render_device: Res<RenderDevice>,
 	render_queue: Res<RenderQueue>,
 ) {
-  let mut smugglers = smugglers.0.lock().unwrap();
+	let mut smugglers = smugglers.0.lock().unwrap();
 	for (_id, mut recorder) in smugglers.0.iter_mut() {
-    if let Some(image) = images.get(&recorder.target_handle) {
-      let width = image.size.x as u32;
+		if let Some(image) = images.get(&recorder.target_handle) {
+			let width = image.size.x as u32;
 			let height = image.size.y as u32;
-      
+
 			let device = render_device.wgpu_device();
 			let destination = device.create_buffer(&BufferDescriptor {
 				label: None,
@@ -56,7 +55,6 @@ pub fn smuggle_frame(
 				mapped_at_creation: false,
 			});
 
-
 			let texture = image.texture.clone();
 			let mut encoder =
 				render_device.create_command_encoder(&CommandEncoderDescriptor { label: None });
@@ -65,11 +63,7 @@ pub fn smuggle_frame(
 				texture.as_image_copy(),
 				ImageCopyBuffer {
 					buffer: &destination,
-					layout: layout_data(
-						width,
-						height,
-						image.texture_format,
-					),
+					layout: layout_data(width, height, image.texture_format),
 				},
 				Extent3d {
 					width,
@@ -78,7 +72,6 @@ pub fn smuggle_frame(
 				},
 			);
 
- 
 			render_queue.submit([encoder.finish()]);
 			let slice = destination.slice(..);
 			slice.map_async(wgpu::MapMode::Read, move |result| {

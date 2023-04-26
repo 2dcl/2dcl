@@ -42,7 +42,6 @@ fn process_frame(
 	format: TextureFormat,
 	frame: TextureFrame,
 ) -> Frame<'static> {
-
 	let formatted = to_rgba(frame.texture, format);
 	let quant = NeuQuant::new(20, 256, formatted.as_slice());
 	let mut index_cache = fnv::FnvHashMap::default();
@@ -120,18 +119,18 @@ pub fn capture_gif_recording(
 				let target_format = target_format;
 				let frames = frames;
 
-        println!("frame count: {:?}", frames.len());
+				println!("frame count: {:?}", frames.len());
 				let out_buffer = std::fs::File::create("test.gif").unwrap();
 				let mut writer = BufWriter::new(out_buffer);
 
 				log::info!("Create encoder");
-        let frames = quantize_frames(
-          target_size.x as u16,
-          target_size.y as u16,
-          frames,
-          target_format,
-        );
-        
+				let frames = quantize_frames(
+					target_size.x as u16,
+					target_size.y as u16,
+					frames,
+					target_format,
+				);
+
 				match gif::Encoder::new(writer, target_size.x as u16, target_size.y as u16, &[]) {
 					Ok(mut encoder) => {
 						log::info!("Got encoder");

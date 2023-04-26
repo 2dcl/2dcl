@@ -1,4 +1,4 @@
-use bevy::{prelude::*, math::vec2};
+use bevy::prelude::*;
 
 pub mod config;
 mod custom_material;
@@ -57,12 +57,20 @@ pub fn start() {
     let mut avatar_info_file = std::env::current_exe().unwrap();
     avatar_info_file.pop();
     avatar_info_file.push("avatar_info");
-    if avatar_info_file.exists()
-    {
-      let eth_address = std::fs::read_to_string(avatar_info_file).unwrap();
-      let args = vec!["import-avatar".to_string(), eth_address];
-      println!("starting sprite maker");
-      std::process::Command::new(std::env::current_exe().unwrap()).args(args).spawn().unwrap().wait().unwrap();
+    if avatar_info_file.exists() {
+        let eth_address = std::fs::read_to_string(avatar_info_file).unwrap();
+
+        let args = vec![
+            "import-avatar".to_string(),
+            eth_address.trim().trim_matches('\n').to_string(),
+        ];
+        println!("starting sprite maker");
+        std::process::Command::new(std::env::current_exe().unwrap())
+            .args(args)
+            .spawn()
+            .unwrap()
+            .wait()
+            .unwrap();
     }
 
     println!("finished, running 2dcl");

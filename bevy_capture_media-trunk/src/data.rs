@@ -157,7 +157,7 @@ impl ProjectToImage for &OrthographicProjection {
 			height: self.area.height() as u32,
 			..Default::default()
 		};
-    
+
 		let mut img = Image {
 			texture_descriptor: TextureDescriptor {
 				label: None,
@@ -170,7 +170,7 @@ impl ProjectToImage for &OrthographicProjection {
 					| TextureUsages::COPY_SRC,
 				sample_count: 1,
 				mip_level_count: 1,
-        view_formats: &[]
+				view_formats: &[],
 			},
 			..Default::default()
 		};
@@ -269,13 +269,13 @@ pub struct CaptureRecording<CaptureType> {
 ///
 /// ```rust
 /// pub fn my_screenshot_system(
-/// 	input: Res<Input<KeyCode>>,
-/// 	mut media: MediaCapture
+///    input: Res<Input<KeyCode>>,
+///    mut media: MediaCapture
 /// ) {
-/// 	if input.just_released(KeyCode::Escape) {
-/// 		// Typically you would store the recorder ID in a resource
-/// 		media.capture_png_with_path(1, "screenshots/achievement_123.png");
-/// 	}
+///    if input.just_released(KeyCode::Escape) {
+///    // Typically you would store the recorder ID in a resource
+///    media.capture_png_with_path(1, "screenshots/achievement_123.png");
+///    }
 /// }
 /// ```
 #[derive(SystemParam)]
@@ -289,7 +289,7 @@ pub struct MediaCapture<'w> {
 	stop_tracking: EventWriter<'w, StopTrackingCamera>,
 }
 
-impl<'w, 's> MediaCapture<'w> {
+impl<'w> MediaCapture<'w> {
 	/// Start to capture frames for the given camera. The number of frames captured
 	/// is determined by the given `Duration`, and will vary based on the framerate
 	/// of the application
@@ -350,7 +350,7 @@ impl<'w, 's> MediaCapture<'w> {
 	/// default name
 	#[cfg(feature = "png")]
 	pub fn capture_png(&mut self, tracking_id: RecorderID) {
-    println!("taking screenshot");
+		println!("taking screenshot");
 		self.capture_png.send(CaptureFrame {
 			tracking_id,
 			and_then: PostCaptureAction::Continue,

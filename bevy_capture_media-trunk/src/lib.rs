@@ -12,17 +12,17 @@ mod web_utils;
 
 mod plugin {
 	use bevy::app::{App, CoreSet, Plugin};
+	use bevy::prelude::*;
 	use bevy::render::{RenderApp, RenderSet};
-  use bevy::prelude::*;
 
 	use super::*;
 
-  #[derive(Resource, PartialEq, Eq)]
-  pub enum CaptureState{
-    Idle,
-    TakingScreenshot,
-    Finished
-  }
+	#[derive(Resource, PartialEq, Eq)]
+	pub enum CaptureState {
+		Idle,
+		TakingScreenshot,
+		Finished,
+	}
 
 	pub struct BevyCapturePlugin;
 	impl Plugin for BevyCapturePlugin {
@@ -34,23 +34,25 @@ mod plugin {
 				.add_event::<data::StopTrackingCamera>()
 				.insert_resource(tracking_tracker)
 				.insert_resource(data_smuggler.clone())
-        .insert_resource(CaptureState::Idle)
+				.insert_resource(CaptureState::Idle)
 				.add_system(management::clean_cameras.in_base_set(CoreSet::First))
 				.add_system(management::move_camera_buffers.in_base_set(CoreSet::First))
 				.add_system(management::sync_tracking_cameras.in_base_set(CoreSet::PostUpdate))
-				.add_system(management::start_tracking_orthographic_camera.in_base_set(CoreSet::PostUpdate));
+				.add_system(
+					management::start_tracking_orthographic_camera.in_base_set(CoreSet::PostUpdate),
+				);
 
 			#[cfg(feature = "gif")]
 			{
 				app.add_event::<formats::gif::CaptureGifRecording>()
 					.add_system(
-						formats::gif::capture_gif_recording.in_base_set(CoreSet::PostUpdate)
+						formats::gif::capture_gif_recording.in_base_set(CoreSet::PostUpdate),
 					);
 
 				#[cfg(not(target_arch = "wasm32"))]
 				app.add_system(
-          management::clean_unmonitored_tasks::<formats::gif::SaveGifRecording>
-          .in_base_set(CoreSet::Last)
+					management::clean_unmonitored_tasks::<formats::gif::SaveGifRecording>
+						.in_base_set(CoreSet::Last),
 				);
 			}
 			#[cfg(feature = "png")]
@@ -59,8 +61,9 @@ mod plugin {
 					.add_system(formats::png::save_single_frame.in_base_set(CoreSet::PostUpdate));
 
 				#[cfg(not(target_arch = "wasm32"))]
-				app.add_system(management::clean_unmonitored_tasks::<formats::png::SaveFrameTask>
-        .in_base_set(CoreSet::Last)
+				app.add_system(
+					management::clean_unmonitored_tasks::<formats::png::SaveFrameTask>
+						.in_base_set(CoreSet::Last),
 				);
 			}
 

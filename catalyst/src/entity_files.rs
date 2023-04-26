@@ -1,7 +1,6 @@
 use crate::entity::EntityType;
 use crate::ContentId;
 use crate::EntityId;
-use dcl_common::Parcel;
 use serde::Deserialize;
 use std::path::PathBuf;
 

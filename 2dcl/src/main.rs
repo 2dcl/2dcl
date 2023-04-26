@@ -2,10 +2,10 @@
 
 use dcl_common::Result;
 
+mod avatar_sprite_maker;
 mod previewer;
 mod renderer;
 mod where_command;
-mod avatar_sprite_maker;
 
 pub mod bundles;
 pub mod components;
@@ -35,8 +35,8 @@ enum Action {
         destination_path: std::path::PathBuf,
     },
     Where,
-    ImportAvatar{
-      eth_address: String,
+    ImportAvatar {
+        eth_address: String,
     },
     Clean,
 }
@@ -69,10 +69,8 @@ fn main() -> Result<()> {
         Some(Action::Where) => {
             where_command::where_command().unwrap();
         }
-        Some(Action::ImportAvatar {
-          eth_address
-        }) => {
-          avatar_sprite_maker::start(&eth_address);
+        Some(Action::ImportAvatar { eth_address }) => {
+            avatar_sprite_maker::start(&eth_address);
         }
         None => {
             renderer::start();
