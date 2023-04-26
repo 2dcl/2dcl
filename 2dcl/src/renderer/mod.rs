@@ -46,14 +46,6 @@ pub fn start() {
     let current_path = current_path.parent().unwrap();
     std::env::set_current_dir(current_path).unwrap();
 
-    match player_sprite_maker::make_player_spritesheet(
-        "./assets/wearables/".to_owned(),
-        "./assets/player.json".to_owned(),
-    ) {
-        Ok(_) => {}
-        Err(e) => println!("{}", e),
-    };
-
     let mut avatar_info_file = std::env::current_exe().unwrap();
     avatar_info_file.pop();
     avatar_info_file.push("avatar_info");
@@ -64,7 +56,6 @@ pub fn start() {
             "import-avatar".to_string(),
             eth_address.trim().trim_matches('\n').to_string(),
         ];
-        println!("starting sprite maker");
         std::process::Command::new(std::env::current_exe().unwrap())
             .args(args)
             .spawn()
@@ -73,7 +64,14 @@ pub fn start() {
             .unwrap();
     }
 
-    println!("finished, running 2dcl");
+    match player_sprite_maker::make_player_spritesheet(
+        "./assets/wearables/".to_owned(),
+        "./assets/player.json".to_owned(),
+    ) {
+        Ok(_) => {}
+        Err(e) => println!("{}", e),
+    };
+
     let mut app = App::new();
     setup(&mut app, "2dcl".to_string());
     app.add_plugin(SceneLoaderPlugin)

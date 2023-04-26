@@ -18,8 +18,8 @@ use bevy::{
     },
     sprite::{Material2d, Material2dPlugin, MaterialMesh2dBundle},
 };
-use bevy_capture_media::{CaptureState, MediaCapture};
 use bevy_inspector_egui::quick::WorldInspectorPlugin;
+use bevy_spritesheet_maker::{CaptureState, MediaCapture};
 use catalyst::{entity_files::SceneFile, ContentClient};
 use glob::glob;
 use std::f32::consts::PI;
@@ -42,6 +42,7 @@ pub fn start(eth_adress: &str) {
         .add_plugins(DefaultPlugins.set(WindowPlugin {
             primary_window: Some(Window {
                 resolution: WindowResolution::new(640., 360.),
+                title: "2dcl sprite maker".to_string(),
                 ..default()
             }),
             ..default()
@@ -50,7 +51,7 @@ pub fn start(eth_adress: &str) {
             color: Color::WHITE,
             brightness: 1.0,
         })
-        .add_plugin(bevy_capture_media::BevyCapturePlugin)
+        .add_plugin(bevy_spritesheet_maker::BevyCapturePlugin)
         .add_plugin(Material2dPlugin::<PostProcessingMaterial>::default())
         .insert_resource(State::LoadingGltf)
         .insert_resource(avatar_properties)
@@ -101,23 +102,23 @@ struct Avatar {
 }
 
 #[derive(Serialize, Deserialize, Debug)]
+struct Profile {
+    avatars: AvatarList,
+}
+
+#[derive(Serialize, Deserialize, Debug)]
 struct AvatarList {
-    avatars: AvatarList2,
+    avatars: AvatarInfo,
 }
 
 #[derive(Serialize, Deserialize, Debug)]
-struct AvatarList2 {
-    avatars: AvatarList3,
-}
-
-#[derive(Serialize, Deserialize, Debug)]
-struct AvatarList3 {
-    avatar: AvatarInfo,
+struct AvatarInfo {
+    avatar: UserData,
 }
 
 #[derive(Serialize, Deserialize, Debug)]
 #[serde(rename_all = "camelCase")]
-struct AvatarInfo {
+struct UserData {
     user_id: String,
     email: String,
     name: String,
@@ -212,6 +213,7 @@ fn state_updater(
         }
     }
 }
+
 // Once the scene is loaded, start the animation
 fn setup_stuff(
     mut commands: Commands,
@@ -582,8 +584,8 @@ async fn download_avatar(eth_address: &str) -> dcl_common::Result<AvatarProperti
     let ids = vec![eth_address.to_string()];
 
     let catalyst_id = CatalystId { ids };
-    let avatar_list: AvatarList = server.post("/lambdas/profiles", &catalyst_id).await?;
-
+    let profile: Profile = server.post("/lambdas/profiles", &catalyst_id).await?;
+    let avatar = profile.avatars.avatars.avatar.avatar;
     let mut avatar_save_path = std::env::current_exe().unwrap();
     avatar_save_path.pop();
     avatar_save_path.push("assets");
@@ -597,7 +599,7 @@ async fn download_avatar(eth_address: &str) -> dcl_common::Result<AvatarProperti
         }
     }
 
-    for urn in avatar_list.avatars.avatars.avatar.avatar.wearables {
+    for urn in avatar.wearables {
         let request = Request {
             pointers: vec![urn.to_string()],
         };
@@ -612,14 +614,7 @@ async fn download_avatar(eth_address: &str) -> dcl_common::Result<AvatarProperti
         }
     }
 
-    let body_shape = match avatar_list
-        .avatars
-        .avatars
-        .avatar
-        .avatar
-        .body_shape
-        .contains("Female")
-    {
+    let body_shape = match avatar.body_shape.contains("Female") {
         true => BodyShape::Female,
         false => BodyShape::Male,
     };
@@ -627,8 +622,8 @@ async fn download_avatar(eth_address: &str) -> dcl_common::Result<AvatarProperti
     let new_avatar = AvatarProperties {
         eth_address: eth_address.to_string(),
         body_shape,
-        hair_color: avatar_list.avatars.avatars.avatar.avatar.hair.color,
-        skin_color: avatar_list.avatars.avatars.avatar.avatar.skin.color,
+        hair_color: avatar.hair.color,
+        skin_color: avatar.skin.color,
         glb_loading_count: 0,
     };
 

@@ -36,4 +36,4 @@ bevy_console = "0.7.0"
 glob = "0.3.0"
 rand = "0.8.5"
 tempdir = "0.3"
-bevy_capture_media = {path= "../bevy_capture_media-trunk"}
+bevy_spritesheet_maker = {path= "../bevy_spritesheet_maker"}
