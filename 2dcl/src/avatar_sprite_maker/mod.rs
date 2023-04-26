@@ -58,9 +58,9 @@ pub fn start(eth_adress: &str) {
         .add_startup_system(setup)
         .add_plugin(WorldInspectorPlugin::new())
         .add_system(material_update)
-        .add_system(state_updater.after(setup_stuff))
+        .add_system(state_updater.after(setup_gltf))
         //.add_system(setup_scene_once_loaded)
-        .add_system(setup_stuff)
+        .add_system(setup_gltf)
         .add_system(loading_text)
         .add_system(exit)
         .run();
@@ -161,13 +161,18 @@ enum State {
 }
 
 #[derive(Component)]
-struct LoadingGLTF(bool);
+struct LoadingGLTF
+{
+  loading_finished: bool,
+  is_body: bool,
+}
 
 fn exit(
     capture_media_state: Res<CaptureState>,
     mut app_exit_events: ResMut<Events<bevy::app::AppExit>>,
 ) {
     if *capture_media_state == CaptureState::Finished {
+        println!("avatar import finished");
         app_exit_events.send(bevy::app::AppExit);
     }
 }
@@ -215,9 +220,9 @@ fn state_updater(
 }
 
 // Once the scene is loaded, start the animation
-fn setup_stuff(
+fn setup_gltf(
     mut commands: Commands,
-    mut scene: Query<(&Children, Entity, &mut LoadingGLTF)>,
+    mut scene: Query<(&Children, Entity, &mut LoadingGLTF, &mut Transform)>,
     named_entities: Query<(Entity, &Name), Without<LoadingGLTF>>,
     unnamed_children: Query<(Entity, &Children), Without<Name>>,
     animations: Res<Animations>,
@@ -227,14 +232,18 @@ fn setup_stuff(
 ) {
     if !*done {
         let mut loading_count = 0;
-        for (scene_children, scene_entity, mut loading) in scene.iter_mut() {
+        for (scene_children, scene_entity, mut loading, mut transform) in scene.iter_mut() {
             loading_count += 1;
 
-            if loading.0 {
+            if loading.loading_finished {
                 continue;
             }
-            loading.0 = true;
-
+            loading.loading_finished = true;
+            
+            if loading.is_body
+            {
+              transform.scale = Vec3::new(0.9, 1., 0.9);
+            }
             let child = scene_children.iter().next();
 
             if child.is_none() {
@@ -377,7 +386,7 @@ fn setup(
                 target: RenderTarget::Image(image_handle.clone()),
                 ..default()
             },
-            transform: Transform::from_translation(Vec3::new(3., 4.0, 0.))
+            transform: Transform::from_translation(Vec3::new(3., 4.0, 2.))
                 .looking_at(Vec3::new(0., 1.5, 0.), Vec3::Y),
             ..default()
         },
@@ -521,19 +530,29 @@ fn setup(
             rev_entry.pop();
         }
 
-        match avatar_properties.body_shape {
+        if entry.to_str().unwrap().contains("/body_shape/") || entry.to_str().unwrap().contains("\\body_shape\\") 
+        {
+            commands
+            .spawn(SceneBundle {
+                scene: asset_server.load(format!("{}#Scene0", entry.to_str().unwrap())),
+                ..default()
+            })
+            .insert(LoadingGLTF{loading_finished: false, is_body: true});
+          loading_count += 1;
+        } else
+        {
+          match avatar_properties.body_shape {
             BodyShape::Male => {
                 if !entry.to_str().unwrap().to_lowercase().contains("female")
                     && !entry.to_str().unwrap().to_lowercase().contains("/f_")
                     && !entry.to_str().unwrap().to_lowercase().contains("\\f_")
                 {
-                    println!("loading: {:?} ", entry);
                     commands
                         .spawn(SceneBundle {
                             scene: asset_server.load(format!("{}#Scene0", entry.to_str().unwrap())),
                             ..default()
                         })
-                        .insert(LoadingGLTF(false));
+                        .insert(LoadingGLTF{loading_finished: false, is_body: false});
 
                     loading_count += 1;
                 }
@@ -544,19 +563,18 @@ fn setup(
                     || entry.to_str().unwrap().to_lowercase().contains("\\m_"))
                     || entry.to_str().unwrap().to_lowercase().contains("female")
                 {
-                    println!("loading: {:?} ", entry);
                     commands
                         .spawn(SceneBundle {
                             scene: asset_server.load(format!("{}#Scene0", entry.to_str().unwrap())),
                             ..default()
                         })
-                        .insert(LoadingGLTF(false));
+                        .insert(LoadingGLTF{loading_finished: false, is_body: false});
                     loading_count += 1;
                 }
             }
         }
+      }
     }
-
     avatar_properties.glb_loading_count = loading_count;
 }
 
@@ -600,19 +618,11 @@ async fn download_avatar(eth_address: &str) -> dcl_common::Result<AvatarProperti
     }
 
     for urn in avatar.wearables {
-        let request = Request {
-            pointers: vec![urn.to_string()],
-        };
-        let result: Vec<SceneFile> = server.post("/content/entities/active", &request).await?;
-        for scene_file in result {
-            for downloadable in scene_file.content {
-                let mut download_path = avatar_save_path.clone();
-                download_path.push(scene_file.id.to_string());
-                download_path.push(downloadable.filename.to_str().unwrap());
-                ContentClient::download(&server, downloadable.cid, &download_path).await?;
-            }
-        }
+      download_urn(&urn,&avatar_save_path).await?;
     }
+    
+    avatar_save_path.push("body_shape");
+    download_urn(&avatar.body_shape,&avatar_save_path).await?;
 
     let body_shape = match avatar.body_shape.contains("Female") {
         true => BodyShape::Female,
@@ -628,4 +638,22 @@ async fn download_avatar(eth_address: &str) -> dcl_common::Result<AvatarProperti
     };
 
     Ok(new_avatar)
+}
+
+async fn download_urn(urn: &str, save_path: &PathBuf) -> dcl_common::Result<()> 
+{
+  let server = catalyst::Server::production();
+  let request = Request {
+    pointers: vec![urn.to_string()],
+  };
+  let result: Vec<SceneFile> = server.post("/content/entities/active", &request).await?;
+  for scene_file in result {
+      for downloadable in scene_file.content {
+          let mut download_path = save_path.clone();
+          download_path.push(scene_file.id.to_string());
+          download_path.push(downloadable.filename.to_str().unwrap());
+          ContentClient::download(&server, downloadable.cid, &download_path).await?;
+      }
+  }
+  Ok(())
 }
