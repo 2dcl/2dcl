@@ -23,7 +23,7 @@ use bevy_spritesheet_maker::{CaptureState, MediaCapture};
 use catalyst::{entity_files::SceneFile, ContentClient};
 use glob::glob;
 use std::f32::consts::PI;
-use std::path::PathBuf;
+use std::path::{Path, PathBuf};
 use std::time::Duration;
 
 use serde::{Deserialize, Serialize};
@@ -161,10 +161,9 @@ enum State {
 }
 
 #[derive(Component)]
-struct LoadingGLTF
-{
-  loading_finished: bool,
-  is_body: bool,
+struct LoadingGLTF {
+    loading_finished: bool,
+    is_body: bool,
 }
 
 fn exit(
@@ -239,10 +238,9 @@ fn setup_gltf(
                 continue;
             }
             loading.loading_finished = true;
-            
-            if loading.is_body
-            {
-              transform.scale = Vec3::new(0.9, 1., 0.9);
+
+            if loading.is_body {
+                transform.scale = Vec3::new(0.9, 1., 0.9);
             }
             let child = scene_children.iter().next();
 
@@ -530,50 +528,61 @@ fn setup(
             rev_entry.pop();
         }
 
-        if entry.to_str().unwrap().contains("/body_shape/") || entry.to_str().unwrap().contains("\\body_shape\\") 
+        if entry.to_str().unwrap().contains("/body_shape/")
+            || entry.to_str().unwrap().contains("\\body_shape\\")
         {
             commands
-            .spawn(SceneBundle {
-                scene: asset_server.load(format!("{}#Scene0", entry.to_str().unwrap())),
-                ..default()
-            })
-            .insert(LoadingGLTF{loading_finished: false, is_body: true});
-          loading_count += 1;
-        } else
-        {
-          match avatar_properties.body_shape {
-            BodyShape::Male => {
-                if !entry.to_str().unwrap().to_lowercase().contains("female")
-                    && !entry.to_str().unwrap().to_lowercase().contains("/f_")
-                    && !entry.to_str().unwrap().to_lowercase().contains("\\f_")
-                {
-                    commands
-                        .spawn(SceneBundle {
-                            scene: asset_server.load(format!("{}#Scene0", entry.to_str().unwrap())),
-                            ..default()
-                        })
-                        .insert(LoadingGLTF{loading_finished: false, is_body: false});
+                .spawn(SceneBundle {
+                    scene: asset_server.load(format!("{}#Scene0", entry.to_str().unwrap())),
+                    ..default()
+                })
+                .insert(LoadingGLTF {
+                    loading_finished: false,
+                    is_body: true,
+                });
+            loading_count += 1;
+        } else {
+            match avatar_properties.body_shape {
+                BodyShape::Male => {
+                    if !entry.to_str().unwrap().to_lowercase().contains("female")
+                        && !entry.to_str().unwrap().to_lowercase().contains("/f_")
+                        && !entry.to_str().unwrap().to_lowercase().contains("\\f_")
+                    {
+                        commands
+                            .spawn(SceneBundle {
+                                scene: asset_server
+                                    .load(format!("{}#Scene0", entry.to_str().unwrap())),
+                                ..default()
+                            })
+                            .insert(LoadingGLTF {
+                                loading_finished: false,
+                                is_body: false,
+                            });
 
-                    loading_count += 1;
+                        loading_count += 1;
+                    }
                 }
-            }
-            BodyShape::Female => {
-                if !(entry.to_str().unwrap().to_lowercase().contains("male")
-                    || entry.to_str().unwrap().to_lowercase().contains("/m_")
-                    || entry.to_str().unwrap().to_lowercase().contains("\\m_"))
-                    || entry.to_str().unwrap().to_lowercase().contains("female")
-                {
-                    commands
-                        .spawn(SceneBundle {
-                            scene: asset_server.load(format!("{}#Scene0", entry.to_str().unwrap())),
-                            ..default()
-                        })
-                        .insert(LoadingGLTF{loading_finished: false, is_body: false});
-                    loading_count += 1;
+                BodyShape::Female => {
+                    if !(entry.to_str().unwrap().to_lowercase().contains("male")
+                        || entry.to_str().unwrap().to_lowercase().contains("/m_")
+                        || entry.to_str().unwrap().to_lowercase().contains("\\m_"))
+                        || entry.to_str().unwrap().to_lowercase().contains("female")
+                    {
+                        commands
+                            .spawn(SceneBundle {
+                                scene: asset_server
+                                    .load(format!("{}#Scene0", entry.to_str().unwrap())),
+                                ..default()
+                            })
+                            .insert(LoadingGLTF {
+                                loading_finished: false,
+                                is_body: false,
+                            });
+                        loading_count += 1;
+                    }
                 }
             }
         }
-      }
     }
     avatar_properties.glb_loading_count = loading_count;
 }
@@ -618,11 +627,11 @@ async fn download_avatar(eth_address: &str) -> dcl_common::Result<AvatarProperti
     }
 
     for urn in avatar.wearables {
-      download_urn(&urn,&avatar_save_path).await?;
+        download_urn(&urn, &avatar_save_path).await?;
     }
-    
+
     avatar_save_path.push("body_shape");
-    download_urn(&avatar.body_shape,&avatar_save_path).await?;
+    download_urn(&avatar.body_shape, &avatar_save_path).await?;
 
     let body_shape = match avatar.body_shape.contains("Female") {
         true => BodyShape::Female,
@@ -640,20 +649,19 @@ async fn download_avatar(eth_address: &str) -> dcl_common::Result<AvatarProperti
     Ok(new_avatar)
 }
 
-async fn download_urn(urn: &str, save_path: &PathBuf) -> dcl_common::Result<()> 
-{
-  let server = catalyst::Server::production();
-  let request = Request {
-    pointers: vec![urn.to_string()],
-  };
-  let result: Vec<SceneFile> = server.post("/content/entities/active", &request).await?;
-  for scene_file in result {
-      for downloadable in scene_file.content {
-          let mut download_path = save_path.clone();
-          download_path.push(scene_file.id.to_string());
-          download_path.push(downloadable.filename.to_str().unwrap());
-          ContentClient::download(&server, downloadable.cid, &download_path).await?;
-      }
-  }
-  Ok(())
+async fn download_urn(urn: &str, save_path: &Path) -> dcl_common::Result<()> {
+    let server = catalyst::Server::production();
+    let request = Request {
+        pointers: vec![urn.to_string()],
+    };
+    let result: Vec<SceneFile> = server.post("/content/entities/active", &request).await?;
+    for scene_file in result {
+        for downloadable in scene_file.content {
+            let mut download_path = save_path.to_path_buf();
+            download_path.push(scene_file.id.to_string());
+            download_path.push(downloadable.filename.to_str().unwrap());
+            ContentClient::download(&server, downloadable.cid, &download_path).await?;
+        }
+    }
+    Ok(())
 }
