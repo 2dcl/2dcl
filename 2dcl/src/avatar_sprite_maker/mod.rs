@@ -18,7 +18,6 @@ use bevy::{
     },
     sprite::{Material2d, Material2dPlugin, MaterialMesh2dBundle},
 };
-use bevy_inspector_egui::quick::WorldInspectorPlugin;
 use bevy_spritesheet_maker::{CaptureState, MediaCapture};
 use catalyst::{entity_files::SceneFile, ContentClient};
 use glob::glob;
@@ -47,19 +46,17 @@ pub fn start(eth_adress: &str) {
             }),
             ..default()
         }))
+        .add_plugin(bevy_spritesheet_maker::BevyCapturePlugin)
+        .add_plugin(Material2dPlugin::<PostProcessingMaterial>::default())
         .insert_resource(AmbientLight {
             color: Color::WHITE,
             brightness: 1.0,
         })
-        .add_plugin(bevy_spritesheet_maker::BevyCapturePlugin)
-        .add_plugin(Material2dPlugin::<PostProcessingMaterial>::default())
         .insert_resource(State::LoadingGltf)
         .insert_resource(avatar_properties)
         .add_startup_system(setup)
-        .add_plugin(WorldInspectorPlugin::new())
         .add_system(material_update)
         .add_system(state_updater.after(setup_gltf))
-        //.add_system(setup_scene_once_loaded)
         .add_system(setup_gltf)
         .add_system(loading_text)
         .add_system(exit)
