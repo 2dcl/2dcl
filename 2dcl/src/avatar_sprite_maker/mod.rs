@@ -82,19 +82,11 @@ struct CatalystId {
     ids: Vec<String>,
 }
 
-#[derive(Serialize, Deserialize, Debug)]
-struct AvatarSnapshots {
-    face: Option<String>,
-    face128: Option<String>,
-    face256: Option<String>,
-    body: Option<String>,
-}
 
 #[derive(Serialize, Deserialize, Debug)]
 #[serde(rename_all = "camelCase")]
 struct Avatar {
     body_shape: String,
-    snapshots: AvatarSnapshots,
     eyes: ColoredAvatarPart,
     hair: ColoredAvatarPart,
     skin: ColoredAvatarPart,
@@ -119,17 +111,7 @@ struct AvatarInfo {
 #[derive(Serialize, Deserialize, Debug)]
 #[serde(rename_all = "camelCase")]
 struct UserData {
-    user_id: String,
-    email: String,
-    name: String,
-    has_claimed_name: bool,
-    description: String,
-    eth_address: String,
-    version: i16,
     avatar: Avatar,
-    tutorial_step: i32,
-    interests: Vec<String>,
-    unclaimed_name: String,
 }
 
 #[derive(Serialize, Deserialize, Debug)]
@@ -618,7 +600,7 @@ async fn download_avatar(eth_address: &str) -> dcl_common::Result<AvatarProperti
     avatar_save_path.push("assets");
     avatar_save_path.push("avatar");
     avatar_save_path.push(eth_address);
-
+  
     if avatar_save_path.exists() {
         let result = std::fs::remove_dir_all(&avatar_save_path);
         if result.is_err() {
