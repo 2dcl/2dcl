@@ -78,7 +78,7 @@ where
             continue;
         }
 
-        if file_name.ends_with("lower.json") {
+        if file_name.ends_with("lower") {
             wearables.push(WearableData {
                 json_path: wearable_path,
                 wearable_type: WearableType::Lower,
@@ -86,7 +86,7 @@ where
             continue;
         }
 
-        if file_name.ends_with("upper.json") {
+        if file_name.ends_with("upper") {
             wearables.push(WearableData {
                 json_path: wearable_path,
                 wearable_type: WearableType::Upper,
@@ -94,7 +94,7 @@ where
             continue;
         }
 
-        if file_name.ends_with("headaccessory.json") {
+        if file_name.ends_with("headaccessory") {
             wearables.push(WearableData {
                 json_path: wearable_path,
                 wearable_type: WearableType::HeadAccesory,
@@ -102,7 +102,7 @@ where
             continue;
         }
 
-        if file_name.ends_with("hair.json") {
+        if file_name.ends_with("hair") {
             wearables.push(WearableData {
                 json_path: wearable_path,
                 wearable_type: WearableType::Hair,
@@ -110,7 +110,7 @@ where
             continue;
         }
 
-        if file_name.ends_with("background.json") || file_name.ends_with("bg.json") {
+        if file_name.ends_with("background") || file_name.ends_with("bg") {
             wearables.push(WearableData {
                 json_path: wearable_path,
                 wearable_type: WearableType::Background,
@@ -134,7 +134,21 @@ where
         return Err(Box::new(SpriteMakerError::NoWearables));
     }
 
-    let file = match File::open(&wearables[0].json_path) {
+    let mut body_wearable = None;
+
+    for wearable in &wearables {
+        if wearable.wearable_type == WearableType::Body {
+            body_wearable = Some(wearable);
+        }
+    }
+
+    if body_wearable.is_none() {
+        return Err(Box::new(SpriteMakerError::NoBody));
+    }
+
+    let body_wearable = body_wearable.unwrap();
+
+    let file = match File::open(&body_wearable.json_path) {
         Ok(v) => v,
         Err(e) => return Err(Box::new(e)),
     };
@@ -144,7 +158,7 @@ where
         Err(e) => return Err(Box::new(e)),
     };
 
-    let mut image_path = PathBuf::from(&wearables[0].json_path);
+    let mut image_path = PathBuf::from(&body_wearable.json_path);
     image_path.pop();
     image_path.push(final_spritesheet.meta.image.clone().unwrap_or_default());
 
@@ -224,7 +238,7 @@ fn add_wearable<P>(
     let mut wearable_image_path = PathBuf::new();
     wearable_image_path.push(wearable_path);
     wearable_image_path.pop();
-    wearable_image_path.push(&wearable_spritesheet.meta.image.unwrap_or_default());
+    wearable_image_path.push(&wearable_spritesheet.clone().meta.image.unwrap_or_default());
 
     let wearable_image = match ImageReader::open(wearable_image_path) {
         Ok(v) => v.decode().unwrap_or_default(),
@@ -234,6 +248,7 @@ fn add_wearable<P>(
     if let DynamicImage::ImageRgba8(wearable_dynamic_image) = wearable_image {
         for base_frame_tag in base_spritesheet.meta.frame_tags.clone().unwrap_or_default() {
             for wearable_frame_tag in wearable_spritesheet
+                .clone()
                 .meta
                 .frame_tags
                 .clone()
@@ -249,33 +264,25 @@ fn add_wearable<P>(
                         let base_frame = base_spritesheet.frames[base_frame_index].frame;
                         let wearable_frame =
                             wearable_spritesheet.frames[wearable_frame_index].frame;
+                        let max_x = base_frame.w.min(wearable_frame.w);
+                        let max_y = base_frame.h.min(wearable_frame.h);
 
-                        let mut pixel_x = base_frame.x;
-                        let mut pixel_y = base_frame.y;
-                        while pixel_y < wearable_dynamic_image.dimensions().1
-                            && pixel_y < base_dynamic_image.dimensions().1
-                            && pixel_y < base_frame.h + base_frame.y
-                            && pixel_y < wearable_frame.h + wearable_frame.y
-                        {
-                            while pixel_x < wearable_dynamic_image.dimensions().0
-                                && pixel_x < base_dynamic_image.dimensions().0
-                                && pixel_x < base_frame.w + base_frame.x
-                                && pixel_x < wearable_frame.w + wearable_frame.x
-                            {
-                                if wearable_dynamic_image.get_pixel(pixel_x, pixel_y).0[3] > 0 {
+                        for x_index in 0..max_x {
+                            for y_index in 0..max_y {
+                                let wearable_pixel = wearable_dynamic_image.get_pixel(
+                                    x_index + wearable_frame.x,
+                                    y_index + wearable_frame.y,
+                                );
+
+                                if wearable_pixel.0[3] > 0 {
                                     base_dynamic_image.put_pixel(
-                                        pixel_x,
-                                        pixel_y,
-                                        *wearable_dynamic_image.get_pixel(pixel_x, pixel_y),
+                                        x_index + base_frame.x,
+                                        y_index + base_frame.y,
+                                        *wearable_pixel,
                                     );
                                 }
-
-                                pixel_x += 1;
                             }
-                            pixel_y += 1;
-                            pixel_x = 0;
                         }
-
                         base_frame_index += 1;
                         wearable_frame_index += 1;
                     }

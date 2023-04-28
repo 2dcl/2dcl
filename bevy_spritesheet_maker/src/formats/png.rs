@@ -1,3 +1,5 @@
+use std::path::PathBuf;
+
 use bevy::asset::{Assets, Handle};
 use bevy::ecs::component::Component;
 use bevy::ecs::prelude::Events;
@@ -13,8 +15,6 @@ use crate::image_utils::frame_data_to_rgba_image;
 use crate::plugin::CaptureState;
 #[cfg(target_arch = "wasm32")]
 use crate::web_utils;
-
-const TOTAL_FRAMES: usize = 15;
 
 #[derive(Debug, Clone, Ord, PartialOrd, Eq, PartialEq, Default)]
 pub enum SavePng {
@@ -52,7 +52,7 @@ pub fn save_single_frame(
         if let Some(recorder) = recorders.get(&event.tracking_id) {
             let mut data: Vec<u8> = Vec::default();
 
-            for i in recorder.frames.len() - TOTAL_FRAMES..recorder.frames.len() {
+            for i in recorder.frames.len() - event.total_frames..recorder.frames.len() {
                 if i < recorder.frames.len() {
                     for e in 0..recorder.frames[i].texture.len() {
                         if (e + 1) % 4 == 0
@@ -73,7 +73,7 @@ pub fn save_single_frame(
             let (width, height, target_format) = match images.get(&recorder.target_handle) {
                 Some(image) => (
                     image.size().x as u32,
-                    image.size().y as u32 * TOTAL_FRAMES as u32,
+                    image.size().y as u32 * event.total_frames as u32,
                     image.texture_descriptor.format,
                 ),
                 None => continue 'event_drain,
@@ -98,11 +98,12 @@ pub fn save_single_frame(
 
                 #[cfg(not(target_arch = "wasm32"))]
                 {
-                    let mut file_name = std::env::current_exe().unwrap();
-                    file_name.pop();
-                    file_name.push("assets");
-                    file_name.push("wearables");
-                    file_name.push("PH-spritesheet.png");
+                    let file_name = event.path.unwrap_or_else(|| {
+                        PathBuf::from(format!(
+                            "{}.png",
+                            std::time::UNIX_EPOCH.elapsed().unwrap().as_secs()
+                        ))
+                    });
 
                     println!("saving: {:?}", file_name);
                     if let Err(e) = image.save_with_format(file_name, ImageFormat::Png) {

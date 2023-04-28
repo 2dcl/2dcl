@@ -90,7 +90,12 @@ fn spawn_player(
         .spawn(SpriteSheetBundle {
             sprite,
             texture_atlas: interact_animator.atlas.clone(),
-            transform: Transform::from_translation(Vec3::new(0.0, ITERACT_ICON_HEIGHT * 1./PLAYER_SCALE, 0.0)).with_scale((Vec2::ONE * 1./PLAYER_SCALE).extend(1.)),
+            transform: Transform::from_translation(Vec3::new(
+                0.0,
+                ITERACT_ICON_HEIGHT * 1. / PLAYER_SCALE,
+                0.0,
+            ))
+            .with_scale((Vec2::ONE * 1. / PLAYER_SCALE).extend(1.)),
             ..default()
         })
         .insert(interact_animator)
@@ -149,7 +154,10 @@ fn player_movement(
     }
 
     if walking {
-        animation_state = "Run";
+        animation_state = match movement_input.y > 0.0 {
+            true => "RunUp",
+            false => "RunDown",
+        };
 
         let mut target = transform.translation + Vec3::new(movement_input.x, 0.0, 0.0);
 

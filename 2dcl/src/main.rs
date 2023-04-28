@@ -2,7 +2,7 @@
 
 use dcl_common::Result;
 
-mod avatar_sprite_maker;
+mod avatar_spritesheet_maker;
 mod previewer;
 mod renderer;
 mod where_command;
@@ -70,7 +70,7 @@ fn main() -> Result<()> {
             where_command::where_command().unwrap();
         }
         Some(Action::ImportAvatar { eth_address }) => {
-            avatar_sprite_maker::start(&eth_address);
+            avatar_spritesheet_maker::start(&eth_address);
         }
         None => {
             renderer::start();

@@ -1,5 +1,6 @@
 //! Plays animations from a skinned glTF.
 
+use aseprite::{self, Frame, SpritesheetData};
 use bevy::gltf::Gltf;
 use bevy::pbr::CascadeShadowConfigBuilder;
 use bevy::prelude::*;
@@ -21,11 +22,27 @@ use bevy::{
 use bevy_spritesheet_maker::{CaptureState, MediaCapture};
 use catalyst::{entity_files::SceneFile, ContentClient};
 use glob::glob;
+use serde::{Deserialize, Serialize};
 use std::f32::consts::PI;
 use std::path::{Path, PathBuf};
 use std::time::Duration;
 
-use serde::{Deserialize, Serialize};
+const FRAMES_IDLE: usize = 5;
+const FRAMES_RUNNING: usize = 10;
+const AVATAR_RESOLUTION: (usize, usize) = (640, 360);
+const AVATAR_FRAME: (usize, usize) = (640, 300);
+const IDLE_FRAME_DURATION: u32 = 250;
+const RUNNING_FRAME_DURATION: u32 = 60;
+const CAMERA_LOCATION: Vec3 = Vec3 {
+    x: 3.,
+    y: 4.0,
+    z: 2.,
+};
+const CAMERA_FOCAL_POINT: Vec3 = Vec3 {
+    x: 0.,
+    y: 1.5,
+    z: 0.,
+};
 
 pub fn start(eth_adress: &str) {
     println!("making avatar for :{:?}", eth_adress);
@@ -59,7 +76,7 @@ pub fn start(eth_adress: &str) {
         .add_system(state_updater.after(setup_gltf))
         .add_system(setup_gltf)
         .add_system(loading_text)
-        .add_system(exit)
+        .add_system(finish)
         .run();
 }
 
@@ -78,7 +95,6 @@ struct ColoredAvatarPart {
 struct CatalystId {
     ids: Vec<String>,
 }
-
 
 #[derive(Serialize, Deserialize, Debug)]
 #[serde(rename_all = "camelCase")]
@@ -135,8 +151,9 @@ enum BodyShape {
 #[derive(Resource)]
 enum State {
     LoadingGltf,
-    Idle(u8),
-    Running(u8),
+    Idle(usize),
+    RunningDown(usize),
+    RunningUp(usize),
 }
 
 #[derive(Component)]
@@ -145,53 +162,159 @@ struct LoadingGLTF {
     is_body: bool,
 }
 
-fn exit(
+fn finish(
     capture_media_state: Res<CaptureState>,
     mut app_exit_events: ResMut<Events<bevy::app::AppExit>>,
 ) {
     if *capture_media_state == CaptureState::Finished {
+        save_aseprite_file();
         println!("avatar import finished");
         app_exit_events.send(bevy::app::AppExit);
     }
 }
 
+fn save_aseprite_file() {
+    let mut frames = Vec::default();
+    for i in 0..FRAMES_IDLE + FRAMES_RUNNING * 2 {
+        let duration = match i < FRAMES_IDLE {
+            true => IDLE_FRAME_DURATION,
+            false => RUNNING_FRAME_DURATION,
+        };
+
+        let frame = Frame {
+            filename: "avatar_body ".to_string() + &i.to_string() + ".aseprite",
+            frame: aseprite::Rect {
+                x: 0,
+                y: (i * AVATAR_RESOLUTION.1) as u32,
+                w: AVATAR_FRAME.0 as u32,
+                h: AVATAR_FRAME.1 as u32,
+            },
+            rotated: false,
+            trimmed: false,
+            sprite_source_size: aseprite::Rect {
+                x: 0,
+                y: 0,
+                w: AVATAR_RESOLUTION.0 as u32,
+                h: AVATAR_RESOLUTION.1 as u32,
+            },
+            source_size: aseprite::Dimensions {
+                w: AVATAR_RESOLUTION.0 as u32,
+                h: AVATAR_RESOLUTION.1 as u32,
+            },
+            duration,
+        };
+        frames.push(frame);
+    }
+
+    let layer = aseprite::Layer {
+        name: "Body".to_string(),
+        opacity: 255,
+        blend_mode: aseprite::BlendMode::Normal,
+    };
+
+    let idle_tag = aseprite::Frametag {
+        name: "Idle".to_string(),
+        from: 0,
+        to: (FRAMES_IDLE - 1) as u32,
+        direction: aseprite::Direction::Pingpong,
+    };
+
+    let run_down_tag = aseprite::Frametag {
+        name: "RunDown".to_string(),
+        from: FRAMES_IDLE as u32,
+        to: (FRAMES_IDLE + FRAMES_RUNNING - 1) as u32,
+        direction: aseprite::Direction::Forward,
+    };
+
+    let run_up_tag = aseprite::Frametag {
+        name: "RunUp".to_string(),
+        from: (FRAMES_IDLE + FRAMES_RUNNING) as u32,
+        to: (FRAMES_IDLE + FRAMES_RUNNING * 2 - 1) as u32,
+        direction: aseprite::Direction::Forward,
+    };
+
+    let meta = aseprite::Metadata {
+        app: "https://www.aseprite.org/".to_string(),
+        version: "1.2.39-x64".to_string(),
+        format: "RGBA8888".to_string(),
+        size: aseprite::Dimensions {
+            w: (AVATAR_RESOLUTION.0 * FRAMES_IDLE + FRAMES_RUNNING * 2) as u32,
+            h: AVATAR_RESOLUTION.1 as u32,
+        },
+        scale: "1".to_string(),
+        frame_tags: Some(vec![idle_tag, run_down_tag, run_up_tag]),
+        layers: Some(vec![layer]),
+        image: Some("avatar_body.png".to_string()),
+    };
+    let sprite_sheet = SpritesheetData { frames, meta };
+
+    let json_string = serde_json::to_string(&sprite_sheet).unwrap();
+
+    let mut file_name = std::env::current_exe().unwrap();
+    file_name.pop();
+    file_name.push("assets");
+    file_name.push("wearables");
+    file_name.push("avatar_body.json");
+    std::fs::write(file_name, json_string).unwrap();
+}
 fn state_updater(
     mut state: ResMut<State>,
     mut capture: MediaCapture,
-    mut players: Query<&mut AnimationPlayer>,
+    mut players: Query<(&mut AnimationPlayer, &mut Transform)>,
     animations: Res<Animations>,
 ) {
     match state.as_mut() {
         State::LoadingGltf => {}
         State::Idle(frames_passed) => {
             let frames_passed = *frames_passed + 1;
-            if frames_passed > 20 {
-                *state = State::Running(0);
-                for mut player in players.iter_mut() {
+            if frames_passed > FRAMES_IDLE + 1 {
+                *state = State::RunningDown(0);
+                for (mut player, _) in players.iter_mut() {
                     player.play(animations.0[1].clone_weak()).repeat();
                     player.set_speed(4.);
                     player.pause();
                     player.set_elapsed(0.);
                 }
             } else {
-                for mut player in players.iter_mut() {
+                for (mut player, _) in players.iter_mut() {
                     let elapsed = frames_passed as f32 * player.speed() * 1. / 60.;
                     player.set_elapsed(elapsed);
                 }
                 *state = State::Idle(frames_passed);
             }
         }
-        State::Running(frames_passed) => {
+        State::RunningDown(frames_passed) => {
             let frames_passed = *frames_passed + 1;
-            if frames_passed > 11 {
-                capture.capture_png(1357);
-                *state = State::LoadingGltf;
+            if frames_passed >= FRAMES_RUNNING {
+                for (mut player, mut transform) in players.iter_mut() {
+                    transform.rotate_y((-90_f32).to_radians());
+                    player.set_elapsed(0.);
+                }
+                *state = State::RunningUp(0);
             } else {
-                for mut player in players.iter_mut() {
+                for (mut player, _) in players.iter_mut() {
                     let elapsed = frames_passed as f32 * player.speed() * 1. / 60.;
                     player.set_elapsed(elapsed);
                 }
-                *state = State::Running(frames_passed);
+                *state = State::RunningDown(frames_passed);
+            }
+        }
+        State::RunningUp(frames_passed) => {
+            let frames_passed = *frames_passed + 1;
+            if frames_passed > FRAMES_RUNNING + 1 {
+                let mut file_name = std::env::current_exe().unwrap();
+                file_name.pop();
+                file_name.push("assets");
+                file_name.push("wearables");
+                file_name.push("avatar_body.png");
+                capture.capture_png_with_path(1357, FRAMES_RUNNING * 2 + FRAMES_IDLE, file_name);
+                *state = State::LoadingGltf;
+            } else {
+                for (mut player, _) in players.iter_mut() {
+                    let elapsed = frames_passed as f32 * player.speed() * 1. / 60.;
+                    player.set_elapsed(elapsed);
+                }
+                *state = State::RunningUp(frames_passed);
             }
         }
     }
@@ -363,8 +486,8 @@ fn setup(
                 target: RenderTarget::Image(image_handle.clone()),
                 ..default()
             },
-            transform: Transform::from_translation(Vec3::new(3., 4.0, 2.))
-                .looking_at(Vec3::new(0., 1.5, 0.), Vec3::Y),
+            transform: Transform::from_translation(CAMERA_LOCATION)
+                .looking_at(CAMERA_FOCAL_POINT, Vec3::Y),
             ..default()
         },
         // Disable UI rendering for the first pass camera. This prevents double rendering of UI at
@@ -597,7 +720,7 @@ async fn download_avatar(eth_address: &str) -> dcl_common::Result<AvatarProperti
     avatar_save_path.push("assets");
     avatar_save_path.push("avatar");
     avatar_save_path.push(eth_address);
-  
+
     if avatar_save_path.exists() {
         let result = std::fs::remove_dir_all(&avatar_save_path);
         if result.is_err() {

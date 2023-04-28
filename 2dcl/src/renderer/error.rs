@@ -5,6 +5,7 @@ use std::path::PathBuf;
 #[derive(Debug)]
 pub enum SpriteMakerError {
     NoWearables,
+    NoBody,
     InvalidImageFormat(PathBuf),
 }
 
@@ -15,6 +16,9 @@ impl fmt::Display for SpriteMakerError {
         match self {
             SpriteMakerError::NoWearables => {
                 write!(f, "No wearables found in the wearables folder.")
+            }
+            SpriteMakerError::NoBody => {
+                write!(f, "No body found in the wearables folder.")
             }
             SpriteMakerError::InvalidImageFormat(s) => {
                 write!(f, "File has an invalid image format : {}", s.display())

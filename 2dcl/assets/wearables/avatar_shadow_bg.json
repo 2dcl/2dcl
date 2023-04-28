@@ -1,12 +1,12 @@
 {
   "frames": [
     {
-      "filename": "PH-spritesheet 0.aseprite",
+      "filename": "avatar_shadow_bg 0.aseprite",
       "frame": {
         "x": 0,
         "y": 0,
         "w": 640,
-        "h": 360
+        "h": 300
       },
       "rotated": false,
       "trimmed": false,
@@ -23,12 +23,12 @@
       "duration": 250
     },
     {
-      "filename": "PH-spritesheet 1.aseprite",
+      "filename": "avatar_shadow_bg 1.aseprite",
       "frame": {
         "x": 0,
-        "y": 360,
+        "y": 0,
         "w": 640,
-        "h": 360
+        "h": 300
       },
       "rotated": false,
       "trimmed": false,
@@ -45,12 +45,12 @@
       "duration": 250
     },
     {
-      "filename": "PH-spritesheet 2.aseprite",
+      "filename": "avatar_shadow_bg 2.aseprite",
       "frame": {
         "x": 0,
-        "y": 720,
+        "y": 0,
         "w": 640,
-        "h": 360
+        "h": 300
       },
       "rotated": false,
       "trimmed": false,
@@ -67,12 +67,12 @@
       "duration": 250
     },
     {
-      "filename": "PH-spritesheet 3.aseprite",
+      "filename": "avatar_shadow_bg 3.aseprite",
       "frame": {
         "x": 0,
-        "y": 1080,
+        "y": 0,
         "w": 640,
-        "h": 360
+        "h": 300
       },
       "rotated": false,
       "trimmed": false,
@@ -89,12 +89,12 @@
       "duration": 250
     },
     {
-      "filename": "PH-spritesheet 4.aseprite",
+      "filename": "avatar_shadow_bg 4.aseprite",
       "frame": {
         "x": 0,
-        "y": 1440,
+        "y": 0,
         "w": 640,
-        "h": 360
+        "h": 300
       },
       "rotated": false,
       "trimmed": false,
@@ -111,12 +111,12 @@
       "duration": 250
     },
     {
-      "filename": "PH-spritesheet 5.aseprite",
+      "filename": "avatar_shadow_bg 5.aseprite",
       "frame": {
         "x": 0,
-        "y": 1800,
+        "y": 0,
         "w": 640,
-        "h": 360
+        "h": 300
       },
       "rotated": false,
       "trimmed": false,
@@ -133,12 +133,12 @@
       "duration": 60
     },
     {
-      "filename": "PH-spritesheet 6.aseprite",
+      "filename": "avatar_shadow_bg 6.aseprite",
       "frame": {
         "x": 0,
-        "y": 2160,
+        "y": 0,
         "w": 640,
-        "h": 360
+        "h": 300
       },
       "rotated": false,
       "trimmed": false,
@@ -155,12 +155,12 @@
       "duration": 60
     },
     {
-      "filename": "PH-spritesheet 7.aseprite",
+      "filename": "avatar_shadow_bg 7.aseprite",
       "frame": {
         "x": 0,
-        "y": 2520,
+        "y": 0,
         "w": 640,
-        "h": 360
+        "h": 300
       },
       "rotated": false,
       "trimmed": false,
@@ -177,12 +177,12 @@
       "duration": 60
     },
     {
-      "filename": "PH-spritesheet 8.aseprite",
+      "filename": "avatar_shadow_bg 8.aseprite",
       "frame": {
         "x": 0,
-        "y": 2880,
+        "y": 0,
         "w": 640,
-        "h": 360
+        "h": 300
       },
       "rotated": false,
       "trimmed": false,
@@ -199,12 +199,12 @@
       "duration": 60
     },
     {
-      "filename": "PH-spritesheet 9.aseprite",
+      "filename": "avatar_shadow_bg 9.aseprite",
       "frame": {
         "x": 0,
-        "y": 3240,
+        "y": 0,
         "w": 640,
-        "h": 360
+        "h": 300
       },
       "rotated": false,
       "trimmed": false,
@@ -221,12 +221,12 @@
       "duration": 60
     },
     {
-      "filename": "PH-spritesheet 10.aseprite",
+      "filename": "avatar_shadow_bg 10.aseprite",
       "frame": {
         "x": 0,
-        "y": 3600,
+        "y": 0,
         "w": 640,
-        "h": 360
+        "h": 300
       },
       "rotated": false,
       "trimmed": false,
@@ -243,12 +243,12 @@
       "duration": 60
     },
     {
-      "filename": "PH-spritesheet 11.aseprite",
+      "filename": "avatar_shadow_bg 11.aseprite",
       "frame": {
         "x": 0,
-        "y": 3960,
+        "y": 0,
         "w": 640,
-        "h": 360
+        "h": 300
       },
       "rotated": false,
       "trimmed": false,
@@ -265,12 +265,12 @@
       "duration": 60
     },
     {
-      "filename": "PH-spritesheet 12.aseprite",
+      "filename": "avatar_shadow_bg 12.aseprite",
       "frame": {
         "x": 0,
-        "y": 4320,
+        "y": 0,
         "w": 640,
-        "h": 360
+        "h": 300
       },
       "rotated": false,
       "trimmed": false,
@@ -287,12 +287,12 @@
       "duration": 60
     },
     {
-      "filename": "PH-spritesheet 13.aseprite",
+      "filename": "avatar_shadow_bg 13.aseprite",
       "frame": {
         "x": 0,
-        "y": 4680,
+        "y": 0,
         "w": 640,
-        "h": 360
+        "h": 300
       },
       "rotated": false,
       "trimmed": false,
@@ -309,12 +309,232 @@
       "duration": 60
     },
     {
-      "filename": "PH-spritesheet 14.aseprite",
+      "filename": "avatar_shadow_bg 14.aseprite",
       "frame": {
         "x": 0,
-        "y": 5040,
+        "y": 0,
+        "w": 640,
+        "h": 300
+      },
+      "rotated": false,
+      "trimmed": false,
+      "spriteSourceSize": {
+        "x": 0,
+        "y": 0,
         "w": 640,
         "h": 360
+      },
+      "sourceSize": {
+        "w": 640,
+        "h": 360
+      },
+      "duration": 60
+    },
+    {
+      "filename": "avatar_shadow_bg 15.aseprite",
+      "frame": {
+        "x": 0,
+        "y": 0,
+        "w": 640,
+        "h": 300
+      },
+      "rotated": false,
+      "trimmed": false,
+      "spriteSourceSize": {
+        "x": 0,
+        "y": 0,
+        "w": 640,
+        "h": 360
+      },
+      "sourceSize": {
+        "w": 640,
+        "h": 360
+      },
+      "duration": 60
+    },
+    {
+      "filename": "avatar_shadow_bg 16.aseprite",
+      "frame": {
+        "x": 0,
+        "y": 0,
+        "w": 640,
+        "h": 300
+      },
+      "rotated": false,
+      "trimmed": false,
+      "spriteSourceSize": {
+        "x": 0,
+        "y": 0,
+        "w": 640,
+        "h": 360
+      },
+      "sourceSize": {
+        "w": 640,
+        "h": 360
+      },
+      "duration": 60
+    },
+    {
+      "filename": "avatar_shadow_bg 17.aseprite",
+      "frame": {
+        "x": 0,
+        "y": 0,
+        "w": 640,
+        "h": 300
+      },
+      "rotated": false,
+      "trimmed": false,
+      "spriteSourceSize": {
+        "x": 0,
+        "y": 0,
+        "w": 640,
+        "h": 360
+      },
+      "sourceSize": {
+        "w": 640,
+        "h": 360
+      },
+      "duration": 60
+    },
+    {
+      "filename": "avatar_shadow_bg 18.aseprite",
+      "frame": {
+        "x": 0,
+        "y": 0,
+        "w": 640,
+        "h": 300
+      },
+      "rotated": false,
+      "trimmed": false,
+      "spriteSourceSize": {
+        "x": 0,
+        "y": 0,
+        "w": 640,
+        "h": 360
+      },
+      "sourceSize": {
+        "w": 640,
+        "h": 360
+      },
+      "duration": 60
+    },
+    {
+      "filename": "avatar_shadow_bg 19.aseprite",
+      "frame": {
+        "x": 0,
+        "y": 0,
+        "w": 640,
+        "h": 300
+      },
+      "rotated": false,
+      "trimmed": false,
+      "spriteSourceSize": {
+        "x": 0,
+        "y": 0,
+        "w": 640,
+        "h": 360
+      },
+      "sourceSize": {
+        "w": 640,
+        "h": 360
+      },
+      "duration": 60
+    },
+    {
+      "filename": "avatar_shadow_bg 20.aseprite",
+      "frame": {
+        "x": 0,
+        "y": 0,
+        "w": 640,
+        "h": 300
+      },
+      "rotated": false,
+      "trimmed": false,
+      "spriteSourceSize": {
+        "x": 0,
+        "y": 0,
+        "w": 640,
+        "h": 360
+      },
+      "sourceSize": {
+        "w": 640,
+        "h": 360
+      },
+      "duration": 60
+    },
+    {
+      "filename": "avatar_shadow_bg 21.aseprite",
+      "frame": {
+        "x": 0,
+        "y": 0,
+        "w": 640,
+        "h": 300
+      },
+      "rotated": false,
+      "trimmed": false,
+      "spriteSourceSize": {
+        "x": 0,
+        "y": 0,
+        "w": 640,
+        "h": 360
+      },
+      "sourceSize": {
+        "w": 640,
+        "h": 360
+      },
+      "duration": 60
+    },
+    {
+      "filename": "avatar_shadow_bg 22.aseprite",
+      "frame": {
+        "x": 0,
+        "y": 0,
+        "w": 640,
+        "h": 300
+      },
+      "rotated": false,
+      "trimmed": false,
+      "spriteSourceSize": {
+        "x": 0,
+        "y": 0,
+        "w": 640,
+        "h": 360
+      },
+      "sourceSize": {
+        "w": 640,
+        "h": 360
+      },
+      "duration": 60
+    },
+    {
+      "filename": "avatar_shadow_bg 23.aseprite",
+      "frame": {
+        "x": 0,
+        "y": 0,
+        "w": 640,
+        "h": 300
+      },
+      "rotated": false,
+      "trimmed": false,
+      "spriteSourceSize": {
+        "x": 0,
+        "y": 0,
+        "w": 640,
+        "h": 360
+      },
+      "sourceSize": {
+        "w": 640,
+        "h": 360
+      },
+      "duration": 60
+    },
+    {
+      "filename": "avatar_shadow_bg 24.aseprite",
+      "frame": {
+        "x": 0,
+        "y": 0,
+        "w": 640,
+        "h": 300
       },
       "rotated": false,
       "trimmed": false,
@@ -334,11 +554,10 @@
   "meta": {
     "app": "https://www.aseprite.org/",
     "version": "1.2.39-x64",
-    "image": "PH-spritesheet.png",
     "format": "RGBA8888",
     "size": {
-      "w": 1248,
-      "h": 360
+      "w": 640,
+      "h": 300
     },
     "scale": "1",
     "frameTags": [
@@ -349,9 +568,15 @@
         "direction": "pingpong"
       },
       {
-        "name": "Run",
+        "name": "RunDown",
         "from": 5,
         "to": 14,
+        "direction": "forward"
+      },
+      {
+        "name": "RunUp",
+        "from": 15,
+        "to": 24,
         "direction": "forward"
       }
     ],
@@ -362,7 +587,6 @@
         "blendMode": "normal"
       }
     ],
-    "slices": [
-    ]
+    "image": "avatar_shadow_bg.png"
   }
 }

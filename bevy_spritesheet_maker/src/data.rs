@@ -227,6 +227,8 @@ pub struct CaptureFrame<CaptureType> {
     /// Define the type of capture to use (e.g. PNG). Some capture types may provide more
     /// information or alter the capture behaviour
     pub capture_type: CaptureType,
+    // Total frames to save in the spritesheet
+    pub total_frames: usize,
 }
 
 /// Request that the current frame buffer is converted into the specified `CaptureType` and
@@ -349,25 +351,32 @@ impl<'w> MediaCapture<'w> {
     /// most recently stored frame into a PNG image, and save it with a
     /// default name
     #[cfg(feature = "png")]
-    pub fn capture_png(&mut self, tracking_id: RecorderID) {
+    pub fn capture_png(&mut self, tracking_id: RecorderID, total_frames: usize) {
         println!("taking screenshot");
         self.capture_png.send(CaptureFrame {
             tracking_id,
             and_then: PostCaptureAction::Continue,
             path: None,
             capture_type: crate::formats::png::SavePng::Basic,
+            total_frames,
         });
     }
     /// Request that the recorder identified by `tracking_id` encodes its
     /// most recently stored frame into a PNG image, and save it to a
     /// specified path
     #[cfg(feature = "png")]
-    pub fn capture_png_with_path<P: AsRef<Path>>(&mut self, tracking_id: RecorderID, path: P) {
+    pub fn capture_png_with_path<P: AsRef<Path>>(
+        &mut self,
+        tracking_id: RecorderID,
+        total_frames: usize,
+        path: P,
+    ) {
         self.capture_png.send(CaptureFrame {
             tracking_id,
             and_then: PostCaptureAction::Continue,
             path: Some(path.as_ref().to_path_buf()),
             capture_type: crate::formats::png::SavePng::Basic,
+            total_frames,
         })
     }
 }
