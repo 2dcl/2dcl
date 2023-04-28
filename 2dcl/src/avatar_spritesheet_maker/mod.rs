@@ -1,10 +1,11 @@
-//! Plays animations from a skinned glTF.
-
 use aseprite::{self, Frame, SpritesheetData};
+use bevy::app::{ScheduleRunnerPlugin, ScheduleRunnerSettings};
 use bevy::gltf::Gltf;
+use bevy::log::LogPlugin;
 use bevy::pbr::CascadeShadowConfigBuilder;
 use bevy::prelude::*;
 use bevy::window::WindowResolution;
+use bevy::winit::WinitPlugin;
 use bevy::{
     core_pipeline::clear_color::ClearColorConfig,
     reflect::TypeUuid,
@@ -53,16 +54,22 @@ pub fn start(eth_adress: &str) {
             return;
         }
     };
-
     App::new()
-        .add_plugins(DefaultPlugins.set(WindowPlugin {
+        .insert_resource(ScheduleRunnerSettings::run_loop(Duration::from_secs_f64(
+            1.0 / 60.0,
+        )))
+        .add_plugins(DefaultPlugins.build()
+          .disable::<WinitPlugin>()
+          .disable::<LogPlugin>()
+          .set(WindowPlugin {
             primary_window: Some(Window {
                 resolution: WindowResolution::new(640., 360.),
                 title: "2dcl sprite maker".to_string(),
                 ..default()
             }),
             ..default()
-        }))
+          }))
+        .add_plugin(ScheduleRunnerPlugin)
         .add_plugin(bevy_spritesheet_maker::BevyCapturePlugin)
         .add_plugin(Material2dPlugin::<PostProcessingMaterial>::default())
         .insert_resource(AmbientLight {
@@ -75,7 +82,6 @@ pub fn start(eth_adress: &str) {
         .add_system(material_update)
         .add_system(state_updater.after(setup_gltf))
         .add_system(setup_gltf)
-        .add_system(loading_text)
         .add_system(finish)
         .run();
 }
@@ -267,7 +273,7 @@ fn state_updater(
         State::LoadingGltf => {}
         State::Idle(frames_passed) => {
             let frames_passed = *frames_passed + 1;
-            if frames_passed > FRAMES_IDLE + 1 {
+            if frames_passed > FRAMES_IDLE + 20 {
                 *state = State::RunningDown(0);
                 for (mut player, _) in players.iter_mut() {
                     player.play(animations.0[1].clone_weak()).repeat();
@@ -421,19 +427,6 @@ fn material_update(
     }
 }
 
-fn loading_text(mut texts: Query<&mut Text>, time: Res<Time>) {
-    for mut text in texts.iter_mut() {
-        for mut section in text.sections.iter_mut() {
-            match time.elapsed().as_secs() % 3 {
-                0 => section.value = "Importing avatar .".to_string(),
-                1 => section.value = "Importing avatar ..".to_string(),
-                2 => section.value = "Importing avatar ...".to_string(),
-                _ => section.value = "Importing avatar".to_string(),
-            };
-        }
-    }
-}
-
 fn setup(
     mut commands: Commands,
     windows: Query<&Window>,
@@ -538,7 +531,7 @@ fn setup(
         ))
         .id();
 
-    capture.start_tracking_camera(1357, camera_entity, Duration::from_secs(5));
+    capture.start_tracking_camera(1357, camera_entity, Duration::from_secs(999999));
 
     // Insert a resource with the current scene information
     commands.insert_resource(Animations(vec![
@@ -559,32 +552,6 @@ fn setup(
         post_processing_pass_layer,
         UiCameraConfig { show_ui: true },
     ));
-
-    commands
-        .spawn(NodeBundle {
-            style: Style {
-                size: Size::new(Val::Percent(100.), Val::Percent(100.)),
-                justify_content: JustifyContent::Center,
-                align_items: AlignItems::Center,
-                padding: UiRect::new(Val::Auto, Val::Auto, Val::Auto, Val::Px(50.)),
-                ..Default::default()
-            },
-            background_color: BackgroundColor(Color::rgba(0., 0., 0., 1.)),
-            ..Default::default()
-        })
-        .with_children(|children| {
-            children.spawn(TextBundle {
-                text: Text::from_section(
-                    "Importing avatar",
-                    TextStyle {
-                        color: Color::WHITE,
-                        font_size: 25.0,
-                        font: asset_server.load("fonts/kongtext.ttf"),
-                    },
-                ),
-                ..Default::default()
-            });
-        });
 
     // Light
     commands.spawn(DirectionalLightBundle {

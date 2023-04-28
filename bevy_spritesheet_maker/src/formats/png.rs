@@ -51,7 +51,6 @@ pub fn save_single_frame(
     'event_drain: for event in events.drain() {
         if let Some(recorder) = recorders.get(&event.tracking_id) {
             let mut data: Vec<u8> = Vec::default();
-
             for i in recorder.frames.len() - event.total_frames..recorder.frames.len() {
                 if i < recorder.frames.len() {
                     for e in 0..recorder.frames[i].texture.len() {
