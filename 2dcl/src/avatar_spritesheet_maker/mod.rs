@@ -152,6 +152,7 @@ struct AvatarProperties {
     body_shape: BodyShape,
     hair_color: CatalystColor,
     skin_color: CatalystColor,
+    eyes_color: CatalystColor,
     glb_loading_count: usize,
 }
 
@@ -422,7 +423,11 @@ fn material_update(
 ) {
     for (_, gltf) in assets_gltf.iter() {
         for (material_name, material) in &gltf.named_materials {
-            if material_name.starts_with("AvatarSkin") {
+            if material_name.starts_with("AvatarSkin")
+                || material_name.starts_with("AvatarMouth")
+                || material_name.starts_with("AvatarEyebrows")
+                || material_name.starts_with("AvatarEyes")
+            {
                 assets_mats.get_mut(material).unwrap().base_color = Color::rgba(
                     avatar_properties.skin_color.r,
                     avatar_properties.skin_color.g,
@@ -434,6 +439,13 @@ fn material_update(
                     avatar_properties.hair_color.r,
                     avatar_properties.hair_color.g,
                     avatar_properties.hair_color.b,
+                    1.,
+                );
+            } else if material_name.starts_with("AvatarEyes") {
+                assets_mats.get_mut(material).unwrap().emissive = Color::rgba(
+                    avatar_properties.eyes_color.r,
+                    avatar_properties.eyes_color.g,
+                    avatar_properties.eyes_color.b,
                     1.,
                 );
             }
@@ -726,6 +738,7 @@ async fn download_avatar(eth_address: &str) -> dcl_common::Result<AvatarProperti
         body_shape,
         hair_color: avatar.hair.color,
         skin_color: avatar.skin.color,
+        eyes_color: avatar.eyes.color,
         glb_loading_count: 0,
     };
 
