@@ -2,7 +2,7 @@ use super::scene_loader::{level_changer, parcel_to_world_location};
 use super::screen_fade::FadeDirection;
 use super::{animations::*, collision::*, screen_fade};
 use crate::components::{LevelChange, PlayerInputState};
-use crate::renderer::config::*;
+use crate::renderer::constants::*;
 use crate::{components, resources};
 use bevy::{core_pipeline::clear_color::ClearColorConfig, prelude::*, sprite::Anchor};
 use dcl2d_ecs_v1::collision_type::CollisionType;
@@ -25,17 +25,25 @@ impl Plugin for PlayerPlugin {
     }
 }
 
-fn spawn_player(
-    mut commands: Commands,
-    assets: Res<AssetServer>,
-    mut texture_atlases: ResMut<Assets<TextureAtlas>>,
-) {
+pub fn make_player_animator(
+    assets: &Res<AssetServer>,
+    texture_atlases: &mut ResMut<Assets<TextureAtlas>>,
+) -> Result<components::Animator, String> {
     let mut player_animator_path = std::env::current_exe().unwrap_or_default();
     player_animator_path.pop();
     player_animator_path.push("assets");
     player_animator_path.push("player.json");
 
-    let player_animator = get_animator(player_animator_path, &assets, &mut texture_atlases);
+    get_animator(player_animator_path, assets, texture_atlases)
+}
+
+fn spawn_player(
+    mut commands: Commands,
+    assets: Res<AssetServer>,
+    mut texture_atlases: ResMut<Assets<TextureAtlas>>,
+    config: Res<resources::Config>,
+) {
+    let player_animator = make_player_animator(&assets, &mut texture_atlases);
 
     if let Err(e) = player_animator {
         println!("{}", e);
@@ -59,7 +67,7 @@ fn spawn_player(
     let mut sprite = TextureAtlasSprite::new(0);
     sprite.anchor = Anchor::BottomCenter;
 
-    let translation = parcel_to_world_location(PLAYER_STARTING_PARCEL);
+    let translation = parcel_to_world_location(Parcel(config.world.starting_parcel_x,config.world.starting_parcel_y));
 
     //Spawning Entity
     let player = commands
@@ -67,7 +75,7 @@ fn spawn_player(
             sprite: sprite.clone(),
             texture_atlas: player_animator.atlas.clone(),
             transform: Transform {
-                scale: (Vec2::ONE * PLAYER_SCALE * player_animator.scale).extend(1.),
+                scale: (Vec2::ONE * config.player.scale * player_animator.scale / 2.).extend(1.),
                 translation,
                 ..default()
             },
@@ -76,8 +84,8 @@ fn spawn_player(
         .insert(player_animator)
         .insert(Name::new("Player"))
         .insert(components::Player {
-            speed: PLAYER_SPEED,
-            collider_size: PLAYER_COLLIDER,
+            speed: config.player.speed,
+            collider_size: Vec2::new(config.player.collider_size_x, config.player.collider_size_y),
             current_level: 0,
             current_parcel: Parcel(0, 0),
             level_change_stack: vec![],
@@ -91,10 +99,10 @@ fn spawn_player(
             texture_atlas: interact_animator.atlas.clone(),
             transform: Transform::from_translation(Vec3::new(
                 0.0,
-                ITERACT_ICON_HEIGHT * 1. / PLAYER_SCALE,
+                INTERACT_ICON_HEIGHT * 2. / config.player.scale,
                 0.0,
             ))
-            .with_scale((Vec2::ONE * 1. / PLAYER_SCALE).extend(1.)),
+            .with_scale((Vec2::ONE * 2. / config.player.scale).extend(1.)),
             ..default()
         })
         .insert(interact_animator)
@@ -107,11 +115,11 @@ fn spawn_player(
     camera_bundle.camera_2d.clear_color = clear_color;
     camera_bundle.transform = Transform::from_translation(Vec3 {
         x: 0.0,
-        y: PLAYER_COLLIDER.y,
+        y: config.player.collider_size_y,
         z: 5000.0,
     });
 
-    camera_bundle.projection.scale = CAMERA_SCALE * 1. / PLAYER_SCALE;
+    camera_bundle.projection.scale = config.world.camera_scale * 2. / config.player.scale;
     let camera_entity = commands.spawn(camera_bundle).id();
 
     commands.entity(player).add_child(camera_entity);
@@ -145,7 +153,7 @@ fn player_movement(
     let mut movement_input = get_movment_axis_input(&keyboard);
 
     movement_input = movement_input.normalize();
-    movement_input = movement_input * player.speed * PLAYER_SCALE * time.delta_seconds();
+    movement_input = movement_input * player.speed * time.delta_seconds();
 
     let mut walking = false;
     if movement_input.length() > 0f32 {

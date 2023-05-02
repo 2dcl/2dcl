@@ -10,7 +10,7 @@ use imagesize::size;
 use crate::{
     components,
     renderer::{
-        config::{LAYERS_DISTANCE, PARCEL_SIZE_X, PARCEL_SIZE_Y},
+        constants::{LAYERS_DISTANCE, PARCEL_SIZE_X, PARCEL_SIZE_Y},
         scene_loader::world_location_to_parcel,
     },
 };

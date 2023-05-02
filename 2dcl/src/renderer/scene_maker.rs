@@ -9,7 +9,7 @@ use std::io::BufReader;
 use std::path::PathBuf;
 use std::str::FromStr;
 
-use super::config::{PARCEL_SIZE_X, PARCEL_SIZE_Y};
+use super::constants::{PARCEL_SIZE_X, PARCEL_SIZE_Y};
 use super::scenes_io::SceneData;
 
 const ROADS_DATA_MP_FILE: &str = "./assets/roads/roads.mp";

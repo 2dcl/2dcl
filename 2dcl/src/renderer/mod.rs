@@ -1,6 +1,6 @@
 use bevy::prelude::*;
 
-pub mod config;
+pub mod constants;
 mod custom_material;
 mod dcl_3d_scene;
 mod error;
@@ -38,6 +38,8 @@ use bevy::render::render_resource::{FilterMode, SamplerDescriptor};
 mod console;
 use console::MyConsolePlugin;
 
+use crate::resources;
+
 //mod roads_updater;
 //use roads_updater::update_roads;
 
@@ -46,7 +48,7 @@ pub fn start() {
     let current_path = current_path.parent().unwrap();
     std::env::set_current_dir(current_path).unwrap();
 
-    update_avatar();
+
 
     let mut app = App::new();
     setup(&mut app, "2dcl".to_string());
@@ -58,8 +60,11 @@ pub fn start() {
 }
 
 pub fn setup(app: &mut bevy::app::App, window_title: String) {
-    app.insert_resource(Msaa::Off)
-        .add_plugins(
+
+    let config = resources::Config::from_config_file();
+    update_avatar(&config.avatar.eth_adress);
+
+    app.add_plugins(
             DefaultPlugins
                 .set(ImagePlugin {
                     default_sampler: SamplerDescriptor {
@@ -80,27 +85,24 @@ pub fn setup(app: &mut bevy::app::App, window_title: String) {
         .add_plugin(AnimationsPlugin)
         .add_plugin(PlayerPlugin)
         .add_plugin(TransparencyPlugin)
-        .add_plugin(CollisionPlugin);
+        .add_plugin(CollisionPlugin)
+        .insert_resource(Msaa::Off)
+        .insert_resource(config);
 }
 
-pub fn update_avatar() {
-    let mut avatar_info_file = std::env::current_exe().unwrap();
-    avatar_info_file.pop();
-    avatar_info_file.push("avatar_info");
-    if avatar_info_file.exists() {
-        let eth_address = std::fs::read_to_string(avatar_info_file).unwrap();
+pub fn update_avatar(eth_adress: &str) {
 
-        let args = vec![
-            "import-avatar".to_string(),
-            eth_address.trim().trim_matches('\n').to_string(),
-        ];
-        std::process::Command::new(std::env::current_exe().unwrap())
-            .args(args)
-            .spawn()
-            .unwrap()
-            .wait()
-            .unwrap();
-    }
+    let args = vec![
+        "import-avatar".to_string(),
+        eth_adress.to_string(),
+    ];
+    std::process::Command::new(std::env::current_exe().unwrap())
+        .args(args)
+        .spawn()
+        .unwrap()
+        .wait()
+        .unwrap();
+    
 
     match player_sprite_maker::make_player_spritesheet(
         "./assets/wearables/".to_owned(),

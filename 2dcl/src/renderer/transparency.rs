@@ -3,7 +3,7 @@ use bevy::{prelude::*, sprite::collide_aabb::collide};
 use crate::{bundles::get_translation_by_anchor, components};
 
 use super::{
-    config::{
+    constants::{
         PLAYER_VISIBILITY_BOX, PLAYER_VISIBILITY_BOX_OFFSET, TRANSPARENCY_FADE_DURATION_IN_SECONDS,
         TRANSPARENCY_VALUE_FOR_HIDING_ELEMENTS,
     },

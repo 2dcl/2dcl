@@ -1,0 +1,11 @@
+use bevy::prelude::Vec2;
+
+pub const PARCEL_SIZE_X: f32 = 512.0;
+pub const PARCEL_SIZE_Y: f32 = 512.0;
+pub const SCREEN_FADE_DURATION_IN_SECONDS: f32 = 0.1;
+pub const TRANSPARENCY_FADE_DURATION_IN_SECONDS: f32 = 0.25;
+pub const PLAYER_VISIBILITY_BOX: Vec2 = Vec2::new(22.0, 64.0);
+pub const PLAYER_VISIBILITY_BOX_OFFSET: Vec2 = Vec2::new(0.0, 48.0);
+pub const TRANSPARENCY_VALUE_FOR_HIDING_ELEMENTS: f32 = 0.25;
+pub const INTERACT_ICON_HEIGHT: f32 = 100.0;
+pub const LAYERS_DISTANCE: f32 = 500.0;

@@ -1,7 +1,7 @@
 use crate::{
     components,
     renderer::{
-        config::{PARCEL_SIZE_X, PARCEL_SIZE_Y},
+        constants::{PARCEL_SIZE_X, PARCEL_SIZE_Y},
         scenes_io::SceneData,
     },
 };

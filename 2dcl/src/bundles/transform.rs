@@ -2,7 +2,7 @@ use bevy::prelude::*;
 use dcl_common::Parcel;
 
 use crate::renderer::{
-    config::{PARCEL_SIZE_X, PARCEL_SIZE_Y},
+    constants::{PARCEL_SIZE_X, PARCEL_SIZE_Y},
     scenes_io::SceneData,
 };
 

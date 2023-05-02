@@ -1,0 +1,15 @@
+[avatar]
+eth_adress = "0x22480812a9a0669783c06d359182a583bd1d9fc2"
+
+[world]
+starting_parcel_x = 0
+starting_parcel_y = 0
+min_render_distance = 4
+max_render_distance = 7
+camera_scale = 1.0
+
+[player]
+speed = 400.0
+scale = 1.0
+collider_size_x = 18.0
+collider_size_y = 20.0

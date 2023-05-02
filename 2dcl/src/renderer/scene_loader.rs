@@ -23,7 +23,7 @@ use std::path::PathBuf;
 use std::str::FromStr;
 use std::time::SystemTime;
 
-use crate::renderer::config::*;
+use crate::renderer::constants::*;
 use image::io::Reader as ImageReader;
 use image::{DynamicImage, ImageFormat};
 
@@ -157,6 +157,7 @@ pub fn scene_manager(
     scene_query: Query<&mut components::Scene, Without<components::Player>>,
     mut download_queue: ResMut<DownloadQueue>,
     spawning_queue: Res<SpawningQueue>,
+    config: Res<resources::Config>,
 ) {
     //Find the player
     let player_query = player_query.get_single_mut();
@@ -176,7 +177,7 @@ pub fn scene_manager(
     }
 
     let mut parcels_to_spawn =
-        get_all_parcels_around(&player_parcel, MIN_RENDERING_DISTANCE_IN_PARCELS);
+        get_all_parcels_around(&player_parcel, config.world.min_render_distance);
 
     //Check every scene already spawned
     for scene in scene_query.iter() {
@@ -261,10 +262,10 @@ pub fn scene_version_downloader(
     download_queue.parcels.clear();
 }
 
-fn get_all_parcels_around(parcel: &Parcel, distance: i16) -> Vec<Parcel> {
+fn get_all_parcels_around(parcel: &Parcel, distance: usize) -> Vec<Parcel> {
     let mut parcels: Vec<Parcel> = Vec::new();
-    for i in 0..distance {
-        for e in 0..i {
+    for i in 0..distance as i16 {
+        for e in 0..i  as i16 {
             parcels.push(Parcel(parcel.0 + i, parcel.1 + e));
             parcels.push(Parcel(parcel.0 + e, parcel.1 + i));
             parcels.push(Parcel(parcel.0 - i, parcel.1 + e));
@@ -657,6 +658,7 @@ fn default_scenes_despawner(
     mut despawned_entities: ResMut<DespawnedEntities>,
     player_query: Query<(&components::Player, &GlobalTransform)>,
     scenes_query: Query<(Entity, &components::Scene)>,
+    config: Res<resources::Config>,
 ) {
     let player_query = player_query.get_single();
 
@@ -665,7 +667,7 @@ fn default_scenes_despawner(
     }
     let player_query = player_query.unwrap();
     let player_parcel = player_query.0.current_parcel.clone();
-    let parcels_to_keep = get_all_parcels_around(&player_parcel, MAX_RENDERING_DISTANCE_IN_PARCELS);
+    let parcels_to_keep = get_all_parcels_around(&player_parcel, config.world.max_render_distance);
 
     'outer: for (entity, scene) in &scenes_query {
         for parcel in &parcels_to_keep {

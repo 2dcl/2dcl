@@ -2,7 +2,7 @@ use bevy::prelude::*;
 
 use crate::components;
 
-use super::config::SCREEN_FADE_DURATION_IN_SECONDS;
+use super::constants::SCREEN_FADE_DURATION_IN_SECONDS;
 
 pub struct FadeFinished(pub FadeDirection);
 
