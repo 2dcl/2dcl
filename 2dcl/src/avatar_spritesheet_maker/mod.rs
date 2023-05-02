@@ -20,6 +20,8 @@ use bevy::{
     },
     sprite::{Material2d, Material2dPlugin, MaterialMesh2dBundle},
 };
+use bevy_spritesheet_maker::data::ActiveRecorders;
+use bevy_spritesheet_maker::formats::png::is_ready_to_export;
 use bevy_spritesheet_maker::{CaptureState, MediaCapture};
 use catalyst::{entity_files::SceneFile, ContentClient};
 use glob::glob;
@@ -157,9 +159,11 @@ enum BodyShape {
 #[derive(Resource)]
 enum State {
     LoadingGltf,
+    WaitingForRender,
     Idle(usize),
     RunningDown(usize),
     RunningUp(usize),
+    Finished,
 }
 
 #[derive(Component)]
@@ -263,17 +267,20 @@ fn save_aseprite_file() {
     file_name.push("avatar_body.json");
     std::fs::write(file_name, json_string).unwrap();
 }
+
+
+
 fn state_updater(
     mut state: ResMut<State>,
     mut capture: MediaCapture,
     mut players: Query<(&mut AnimationPlayer, &mut Transform)>,
     animations: Res<Animations>,
+    recorders: Res<ActiveRecorders>
 ) {
     match state.as_mut() {
-        State::LoadingGltf => {}
         State::Idle(frames_passed) => {
             let frames_passed = *frames_passed + 1;
-            if frames_passed > FRAMES_IDLE + 20 {
+            if frames_passed > FRAMES_IDLE {
                 *state = State::RunningDown(0);
                 for (mut player, _) in players.iter_mut() {
                     player.play(animations.0[1].clone_weak()).repeat();
@@ -314,15 +321,23 @@ fn state_updater(
                 file_name.push("wearables");
                 file_name.push("avatar_body.png");
                 capture.capture_png_with_path(1357, FRAMES_RUNNING * 2 + FRAMES_IDLE, file_name);
-                *state = State::LoadingGltf;
+                *state = State::Finished;
             } else {
                 for (mut player, _) in players.iter_mut() {
                     let elapsed = frames_passed as f32 * player.speed() * 1. / 60.;
                     player.set_elapsed(elapsed);
                 }
                 *state = State::RunningUp(frames_passed);
+
             }
         }
+        State::WaitingForRender =>{
+          if is_ready_to_export(recorders, FRAMES_RUNNING * 2 + FRAMES_IDLE)
+          {
+            *state = State::Idle(0);
+          }
+        },
+        _ => {},
     }
 }
 
@@ -396,7 +411,7 @@ fn setup_gltf(
 
         if loading_count >= avatar_properties.glb_loading_count {
             *done = true;
-            *state = State::Idle(0);
+            *state = State::WaitingForRender;
         }
     }
 }

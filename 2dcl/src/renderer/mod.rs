@@ -41,36 +41,13 @@ use console::MyConsolePlugin;
 //mod roads_updater;
 //use roads_updater::update_roads;
 
+
 pub fn start() {
     let current_path = std::env::current_exe().unwrap();
     let current_path = current_path.parent().unwrap();
     std::env::set_current_dir(current_path).unwrap();
 
-    let mut avatar_info_file = std::env::current_exe().unwrap();
-    avatar_info_file.pop();
-    avatar_info_file.push("avatar_info");
-    if avatar_info_file.exists() {
-        let eth_address = std::fs::read_to_string(avatar_info_file).unwrap();
-
-        let args = vec![
-            "import-avatar".to_string(),
-            eth_address.trim().trim_matches('\n').to_string(),
-        ];
-        std::process::Command::new(std::env::current_exe().unwrap())
-            .args(args)
-            .spawn()
-            .unwrap()
-            .wait()
-            .unwrap();
-    }
-
-    match player_sprite_maker::make_player_spritesheet(
-        "./assets/wearables/".to_owned(),
-        "./assets/player.json".to_owned(),
-    ) {
-        Ok(_) => {}
-        Err(e) => println!("{}", e),
-    };
+    update_avatar();
 
     let mut app = App::new();
     setup(&mut app, "2dcl".to_string());
@@ -105,4 +82,33 @@ pub fn setup(app: &mut bevy::app::App, window_title: String) {
         .add_plugin(PlayerPlugin)
         .add_plugin(TransparencyPlugin)
         .add_plugin(CollisionPlugin);
+}
+
+pub fn update_avatar()
+{
+  let mut avatar_info_file = std::env::current_exe().unwrap();
+  avatar_info_file.pop();
+  avatar_info_file.push("avatar_info");
+  if avatar_info_file.exists() {
+      let eth_address = std::fs::read_to_string(avatar_info_file).unwrap();
+
+      let args = vec![
+          "import-avatar".to_string(),
+          eth_address.trim().trim_matches('\n').to_string(),
+      ];
+      std::process::Command::new(std::env::current_exe().unwrap())
+          .args(args)
+          .spawn()
+          .unwrap()
+          .wait()
+          .unwrap();
+  }
+
+  match player_sprite_maker::make_player_spritesheet(
+      "./assets/wearables/".to_owned(),
+      "./assets/player.json".to_owned(),
+  ) {
+      Ok(_) => {}
+      Err(e) => println!("{}", e),
+  };
 }

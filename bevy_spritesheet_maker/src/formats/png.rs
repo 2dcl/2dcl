@@ -40,6 +40,45 @@ impl HasTaskStatus for SaveFrameTask {
     }
 }
 
+pub fn is_ready_to_export(
+  recorders: Res<ActiveRecorders>,
+  total_frames: usize,
+) -> bool
+{
+  for (_,recorder) in recorders.iter()
+  {
+    if recorder.frames.len() >= total_frames
+    {
+      let texture = &recorder.frames[recorder.frames.len() - total_frames].texture;
+      for i in 0..texture.len() {
+        if (i + 1) % 4 == 0
+          //Not empty
+          && texture[i] != 0
+
+          //Not Cyan (chroma color)
+          //R
+          && !(texture[i - 3] == 0
+          //G
+          || texture[i - 2] == 255
+          //B
+          || texture[i - 1] == 255)
+
+          //Not plain blank
+          //R
+          && !(texture[i - 3] == 255
+          //G
+          || texture[i - 2] == 255
+          //B
+          || texture[i - 1] == 255)
+        {
+          return true;
+        }
+      }
+    }
+  }
+  false
+}
+
 pub fn save_single_frame(
     mut commands: Commands,
     mut events: ResMut<Events<SavePngFile>>,
@@ -55,9 +94,12 @@ pub fn save_single_frame(
                 if i < recorder.frames.len() {
                     for e in 0..recorder.frames[i].texture.len() {
                         if (e + 1) % 4 == 0
-                            && recorder.frames[i].texture[e - 1] == 255
-                            && recorder.frames[i].texture[e - 2] == 255
-                            && recorder.frames[i].texture[e - 3] == 0
+                          //R
+                          && recorder.frames[i].texture[e - 3] == 0
+                          //G
+                          && recorder.frames[i].texture[e - 2] == 255
+                          //B
+                          && recorder.frames[i].texture[e - 1] == 255
                         {
                             data.push(0);
                             continue;
