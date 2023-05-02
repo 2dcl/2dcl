@@ -40,43 +40,55 @@ impl HasTaskStatus for SaveFrameTask {
     }
 }
 
-pub fn is_ready_to_export(
-  recorders: Res<ActiveRecorders>,
-  total_frames: usize,
-) -> bool
-{
-  for (_,recorder) in recorders.iter()
-  {
-    if recorder.frames.len() >= total_frames
-    {
-      let texture = &recorder.frames[recorder.frames.len() - total_frames].texture;
-      for i in 0..texture.len() {
-        if (i + 1) % 4 == 0
+pub fn is_ready_to_export(recorders: Res<ActiveRecorders>, total_frames: usize) -> bool {
+    for (_, recorder) in recorders.iter() {
+        if recorder.frames.len() >= total_frames {
+            let texture = &recorder.frames[recorder.frames.len() - total_frames].texture;
+
+            for i in 0..texture.len() {
+                if (i + 1) % 4 == 0
           //Not empty
-          && texture[i] != 0
+          && !alpha_is_zero(texture, i)
 
           //Not Cyan (chroma color)
-          //R
-          && !(texture[i - 3] == 0
-          //G
-          || texture[i - 2] == 255
-          //B
-          || texture[i - 1] == 255)
+          && !is_cyan(texture, i)
 
           //Not plain blank
           //R
-          && !(texture[i - 3] == 255
-          //G
-          || texture[i - 2] == 255
-          //B
-          || texture[i - 1] == 255)
-        {
-          return true;
+          && !is_blank(texture, i)
+                {
+                    return true;
+                }
+            }
         }
-      }
     }
-  }
-  false
+
+    return false;
+
+    fn alpha_is_zero(texture: &Vec<u8>, index: usize) -> bool {
+        if texture.len() > index && (index + 1) % 4 == 0 {
+            return texture[index] == 0;
+        }
+        false
+    }
+
+    fn is_cyan(texture: &Vec<u8>, index: usize) -> bool {
+        if texture.len() > index && (index + 1) % 4 == 0 {
+            return texture[index - 3] == 0
+                && texture[index - 2] == 255
+                && texture[index - 1] == 255;
+        }
+        false
+    }
+
+    fn is_blank(texture: &Vec<u8>, index: usize) -> bool {
+        if texture.len() > index && (index + 1) % 4 == 0 {
+            return texture[index - 3] == 255
+                && texture[index - 2] == 255
+                && texture[index - 1] == 255;
+        }
+        false
+    }
 }
 
 pub fn save_single_frame(

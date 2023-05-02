@@ -60,17 +60,20 @@ pub fn start(eth_adress: &str) {
         .insert_resource(ScheduleRunnerSettings::run_loop(Duration::from_secs_f64(
             1.0 / 60.0,
         )))
-        .add_plugins(DefaultPlugins.build()
-          .disable::<WinitPlugin>()
-          .disable::<LogPlugin>()
-          .set(WindowPlugin {
-            primary_window: Some(Window {
-                resolution: WindowResolution::new(640., 360.),
-                title: "2dcl sprite maker".to_string(),
-                ..default()
-            }),
-            ..default()
-          }))
+        .add_plugins(
+            DefaultPlugins
+                .build()
+                .disable::<WinitPlugin>()
+                .disable::<LogPlugin>()
+                .set(WindowPlugin {
+                    primary_window: Some(Window {
+                        resolution: WindowResolution::new(640., 360.),
+                        title: "2dcl sprite maker".to_string(),
+                        ..default()
+                    }),
+                    ..default()
+                }),
+        )
         .add_plugin(ScheduleRunnerPlugin)
         .add_plugin(bevy_spritesheet_maker::BevyCapturePlugin)
         .add_plugin(Material2dPlugin::<PostProcessingMaterial>::default())
@@ -268,14 +271,12 @@ fn save_aseprite_file() {
     std::fs::write(file_name, json_string).unwrap();
 }
 
-
-
 fn state_updater(
     mut state: ResMut<State>,
     mut capture: MediaCapture,
     mut players: Query<(&mut AnimationPlayer, &mut Transform)>,
     animations: Res<Animations>,
-    recorders: Res<ActiveRecorders>
+    recorders: Res<ActiveRecorders>,
 ) {
     match state.as_mut() {
         State::Idle(frames_passed) => {
@@ -328,16 +329,14 @@ fn state_updater(
                     player.set_elapsed(elapsed);
                 }
                 *state = State::RunningUp(frames_passed);
-
             }
         }
-        State::WaitingForRender =>{
-          if is_ready_to_export(recorders, FRAMES_RUNNING * 2 + FRAMES_IDLE)
-          {
-            *state = State::Idle(0);
-          }
-        },
-        _ => {},
+        State::WaitingForRender => {
+            if is_ready_to_export(recorders, FRAMES_RUNNING * 2 + FRAMES_IDLE) {
+                *state = State::Idle(0);
+            }
+        }
+        _ => {}
     }
 }
 
