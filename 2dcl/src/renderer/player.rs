@@ -67,7 +67,10 @@ fn spawn_player(
     let mut sprite = TextureAtlasSprite::new(0);
     sprite.anchor = Anchor::BottomCenter;
 
-    let translation = parcel_to_world_location(Parcel(config.world.starting_parcel_x,config.world.starting_parcel_y));
+    let translation = parcel_to_world_location(Parcel(
+        config.world.starting_parcel_x,
+        config.world.starting_parcel_y,
+    ));
 
     //Spawning Entity
     let player = commands

@@ -265,7 +265,7 @@ pub fn scene_version_downloader(
 fn get_all_parcels_around(parcel: &Parcel, distance: usize) -> Vec<Parcel> {
     let mut parcels: Vec<Parcel> = Vec::new();
     for i in 0..distance as i16 {
-        for e in 0..i  as i16 {
+        for e in 0..i {
             parcels.push(Parcel(parcel.0 + i, parcel.1 + e));
             parcels.push(Parcel(parcel.0 + e, parcel.1 + i));
             parcels.push(Parcel(parcel.0 - i, parcel.1 + e));
