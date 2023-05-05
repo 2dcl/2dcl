@@ -1,3 +1,8 @@
+use std::{
+    path::{Path, PathBuf},
+    str::FromStr,
+};
+
 use bevy::prelude::*;
 
 pub mod constants;
@@ -46,10 +51,9 @@ use crate::resources;
 pub fn start() {
     let current_path = std::env::current_exe().unwrap();
     let current_path = current_path.parent().unwrap();
-    std::env::set_current_dir(current_path).unwrap();
 
     let mut app = App::new();
-    setup(&mut app, "2dcl".to_string());
+    setup(&mut app, "2dcl".to_string(), current_path);
     app.add_plugin(SceneLoaderPlugin)
         .add_plugin(MyConsolePlugin)
         .add_plugin(SceneMakerPlugin)
@@ -57,9 +61,16 @@ pub fn start() {
         .run();
 }
 
-pub fn setup(app: &mut bevy::app::App, window_title: String) {
+pub fn setup<P>(app: &mut bevy::app::App, window_title: String, working_dir: P)
+where
+    P: AsRef<Path>,
+{
     let config = resources::Config::from_config_file();
     update_avatar(&config.avatar.eth_adress);
+
+    std::env::set_current_dir(&working_dir).unwrap();
+    let absolute_base_dir = std::fs::canonicalize(PathBuf::from_str(".").unwrap()).unwrap();
+    std::env::set_var("CARGO_MANIFEST_DIR", absolute_base_dir);
 
     app.add_plugins(
         DefaultPlugins
@@ -88,6 +99,9 @@ pub fn setup(app: &mut bevy::app::App, window_title: String) {
 }
 
 pub fn update_avatar(eth_adress: &str) {
+    let current_path = std::env::current_exe().unwrap();
+    let current_path = current_path.parent().unwrap();
+    std::env::set_current_dir(current_path).unwrap();
     let args = vec!["import-avatar".to_string(), eth_adress.to_string()];
     std::process::Command::new(std::env::current_exe().unwrap())
         .args(args)

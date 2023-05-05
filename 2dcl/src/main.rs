@@ -1,5 +1,4 @@
 #![allow(clippy::too_many_arguments)]
-
 use dcl_common::Result;
 
 mod avatar_spritesheet_maker;

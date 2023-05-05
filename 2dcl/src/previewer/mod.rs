@@ -1,6 +1,3 @@
-use std::path::PathBuf;
-use std::str::FromStr;
-
 use std::path::Path;
 
 use bevy::prelude::*;
@@ -45,12 +42,12 @@ where
 }
 
 pub fn preview_scene(source_path: std::path::PathBuf, destination_path: std::path::PathBuf) {
-    std::env::set_current_dir(&destination_path).unwrap();
-    let absolute_base_dir = std::fs::canonicalize(PathBuf::from_str(".").unwrap()).unwrap();
-    std::env::set_var("CARGO_MANIFEST_DIR", absolute_base_dir);
-
     let mut app = App::new();
-    crate::renderer::setup(&mut app, "2dcl - Scene Preview".to_string());
+    crate::renderer::setup(
+        &mut app,
+        "2dcl - Scene Preview".to_string(),
+        &destination_path,
+    );
 
     app.add_plugin(SceneHotReloadPlugin)
         .insert_resource(RefreshData {
