@@ -13,13 +13,15 @@ fn fragment(
     #import bevy_sprite::mesh2d_vertex_output
 ) -> @location(0) vec4<f32> {
 
-    var ROUNDING_PREC = 0.99;
     var PIXELSIZE = 2.0;
-    var Slices = floor(512.0/PIXELSIZE);
+    var SLICES = floor(512.0/PIXELSIZE);
+    var COLORSPERCHANNEL = 8.0;
     
-    let uv = floor(coords_to_viewport_uv(position.xy, view.viewport)*Slices)/Slices;
+    let uv = floor(coords_to_viewport_uv(position.xy, view.viewport)*SLICES)/SLICES;
     var output_color = textureSample(texture, our_sampler, uv);
     output_color[3] = step(0.5,output_color[3]);
 
+    output_color = trunc(output_color * COLORSPERCHANNEL) / COLORSPERCHANNEL;
+    
     return output_color;
 }
