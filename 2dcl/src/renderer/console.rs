@@ -7,7 +7,8 @@ use crate::renderer::scene_loader::get_parcel_spawn_point;
 
 use super::scene_maker::RoadsData;
 use super::scenes_io::SceneFilesMap;
-use crate::components;
+use super::update_avatar;
+use crate::{components, resources};
 
 pub struct MyConsolePlugin;
 
@@ -15,6 +16,7 @@ impl Plugin for MyConsolePlugin {
     fn build(&self, app: &mut App) {
         app.add_plugin(ConsolePlugin)
             .add_console_command::<TeleportCommand, _>(teleport_command)
+            .add_console_command::<ReloadConfig, _>(reload_config)
             .add_console_command::<WhereCommand, _>(where_command);
     }
 }
@@ -32,12 +34,16 @@ struct TeleportCommand {
 #[command(name = "where")]
 struct WhereCommand;
 
+#[derive(Parser, ConsoleCommand)]
+#[command(name = "reload")]
+struct ReloadConfig;
+
 fn where_command(
     mut where_cmd: ConsoleCommand<WhereCommand>,
     mut player_query: Query<&components::Player>,
 ) {
-    let player = player_query.single_mut();
     if where_cmd.take().is_some() {
+        let player = player_query.single_mut();
         reply!(
             where_cmd,
             "You're in the parcel {},{}",
@@ -53,8 +59,8 @@ fn teleport_command(
     mut roads_data: ResMut<RoadsData>,
     scene_files_map: Res<SceneFilesMap>,
 ) {
-    let (mut player, mut transform) = player_query.single_mut();
     if let Some(Ok(TeleportCommand { parcel_x, parcel_y })) = tp.take() {
+        let (mut player, mut transform) = player_query.single_mut();
         player.current_level = 0;
         transform.translation = get_parcel_spawn_point(
             &Parcel(parcel_x, parcel_y),
@@ -63,5 +69,13 @@ fn teleport_command(
             &scene_files_map,
         );
         reply!(tp, "teleporting to parcel {},{}", parcel_x, parcel_y);
+    }
+}
+
+fn reload_config(mut reload_command: ConsoleCommand<ReloadConfig>, mut commands: Commands) {
+    if reload_command.take().is_some() {
+        let config = resources::Config::from_config_file();
+        update_avatar(&config.avatar.eth_adress);
+        commands.insert_resource(config);
     }
 }

@@ -5,6 +5,7 @@ use crate::components::{LevelChange, PlayerInputState};
 use crate::renderer::constants::*;
 use crate::{components, resources};
 use bevy::{core_pipeline::clear_color::ClearColorConfig, prelude::*, sprite::Anchor};
+use bevy_console::ConsoleOpen;
 use dcl2d_ecs_v1::collision_type::CollisionType;
 use dcl_common::Parcel;
 
@@ -142,7 +143,12 @@ fn player_movement(
     collision_map: Res<resources::CollisionMap>,
     scenes_query: Query<&components::Scene>,
     time: Res<Time>,
+    console: Res<ConsoleOpen>,
 ) {
+    if console.open {
+        return;
+    }
+
     let result = player_query.get_single_mut();
 
     if let Err(e) = result {
@@ -259,7 +265,11 @@ fn player_interact(
     collision_map: Res<resources::CollisionMap>,
     scenes_query: Query<&components::Scene>,
     mut fade: ResMut<screen_fade::Fade>,
+    console: Res<ConsoleOpen>,
 ) {
+    if console.open {
+        return;
+    }
     let result = player_query.get_single_mut();
 
     if let Err(e) = result {

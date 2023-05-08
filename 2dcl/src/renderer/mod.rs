@@ -74,6 +74,10 @@ where
 
     app.add_plugins(
         DefaultPlugins
+            .set(AssetPlugin {
+                watch_for_changes: true,
+                ..Default::default()
+            })
             .set(ImagePlugin {
                 default_sampler: SamplerDescriptor {
                     mag_filter: FilterMode::Nearest,
