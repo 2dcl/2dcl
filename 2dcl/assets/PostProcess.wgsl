@@ -15,7 +15,7 @@ fn fragment(
 
     var PIXELSIZE = 2.0;
     var SLICES = floor(512.0/PIXELSIZE);
-    var COLORSPERCHANNEL = 8.0;
+    var COLORSPERCHANNEL = 32.0;
     
     let uv = floor(coords_to_viewport_uv(position.xy, view.viewport)*SLICES)/SLICES;
     var output_color = textureSample(texture, our_sampler, uv);

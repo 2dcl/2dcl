@@ -1,5 +1,6 @@
 [avatar]
-eth_adress = "0x22480812a9a0669783c06d359182a583bd1d9fc2"
+eth_adress = "0x270722b5222968603E4650C3b70A7DfB971Ed5B6"
+light_intensity= 0.5
 
 [world]
 starting_parcel_x = 0

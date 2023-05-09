@@ -12,6 +12,7 @@ const PLAYER_SPEED: f32 = 400.0;
 const PLAYER_SCALE: f32 = 1.;
 const PLAYER_COLLIDER_SIZE_X: f32 = 18.;
 const PLAYER_COLLIDER_SIZE_Y: f32 = 20.;
+const LIGHT_INTENSITY: f32 = 0.2;
 const ETH_ADRESS: &str = "0x5e5d9d1dfd87e9b8b069b8e5d708db92be5ade99";
 
 #[derive(Resource, Deserialize, Default)]
@@ -44,18 +45,25 @@ impl Config {
 pub struct Avatar {
     #[serde(default = "eth_adress_default")]
     pub eth_adress: String,
+    #[serde(default = "light_intensity_default")]
+    pub light_intensity: f32,
 }
 
 impl Default for Avatar {
     fn default() -> Self {
         Avatar {
             eth_adress: ETH_ADRESS.to_string(),
+            light_intensity: LIGHT_INTENSITY
         }
     }
 }
 
 fn eth_adress_default() -> String {
     ETH_ADRESS.to_string()
+}
+
+fn light_intensity_default() -> f32 {
+  LIGHT_INTENSITY
 }
 
 #[derive(Deserialize)]

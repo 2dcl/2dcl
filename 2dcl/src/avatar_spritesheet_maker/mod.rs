@@ -23,12 +23,15 @@ use bevy::{
 use bevy_spritesheet_maker::data::ActiveRecorders;
 use bevy_spritesheet_maker::formats::png::is_ready_to_export;
 use bevy_spritesheet_maker::{CaptureState, MediaCapture};
+use bevy_toon_shader::{ToonShaderMainCamera, ToonShaderMaterial, ToonShaderPlugin, ToonShaderSun};
 use catalyst::{entity_files::SceneFile, ContentClient};
 use glob::glob;
 use serde::{Deserialize, Serialize};
 use std::f32::consts::PI;
 use std::path::{Path, PathBuf};
 use std::time::Duration;
+
+use crate::resources;
 
 const FRAMES_IDLE: usize = 5;
 const FRAMES_RUNNING: usize = 10;
@@ -57,6 +60,7 @@ pub fn start(eth_adress: &str) {
         }
     };
     App::new()
+        .insert_resource(resources::Config::from_config_file())
         .insert_resource(ScheduleRunnerSettings::run_loop(Duration::from_secs_f64(
             1.0 / 60.0,
         )))
@@ -77,6 +81,7 @@ pub fn start(eth_adress: &str) {
         .add_plugin(ScheduleRunnerPlugin)
         .add_plugin(bevy_spritesheet_maker::BevyCapturePlugin)
         .add_plugin(Material2dPlugin::<PostProcessingMaterial>::default())
+        .add_plugin(ToonShaderPlugin)
         .insert_resource(AmbientLight {
             color: Color::WHITE,
             brightness: 1.0,
@@ -152,7 +157,6 @@ struct AvatarProperties {
     body_shape: BodyShape,
     hair_color: CatalystColor,
     skin_color: CatalystColor,
-    eyes_color: CatalystColor,
     glb_loading_count: usize,
 }
 
@@ -418,8 +422,11 @@ fn setup_gltf(
 
 fn material_update(
     assets_gltf: Res<Assets<Gltf>>,
-    mut assets_mats: ResMut<Assets<StandardMaterial>>,
+    mut standard_materials: ResMut<Assets<StandardMaterial>>,
     avatar_properties: Res<AvatarProperties>,
+    mut commands: Commands,
+    query: Query<(Entity, &Handle<StandardMaterial>)>,
+    mut toon_materials: ResMut<Assets<ToonShaderMaterial>>,
 ) {
     for (_, gltf) in assets_gltf.iter() {
         for (material_name, material) in &gltf.named_materials {
@@ -428,28 +435,33 @@ fn material_update(
                 || material_name.starts_with("AvatarEyebrows")
                 || material_name.starts_with("AvatarEyes")
             {
-                assets_mats.get_mut(material).unwrap().base_color = Color::rgba(
+                standard_materials.get_mut(material).unwrap().base_color = Color::rgba(
                     avatar_properties.skin_color.r,
                     avatar_properties.skin_color.g,
                     avatar_properties.skin_color.b,
                     1.,
                 );
             } else if material_name.starts_with("Hair_MAT") {
-                assets_mats.get_mut(material).unwrap().base_color = Color::rgba(
+                standard_materials.get_mut(material).unwrap().base_color = Color::rgba(
                     avatar_properties.hair_color.r,
                     avatar_properties.hair_color.g,
                     avatar_properties.hair_color.b,
                     1.,
                 );
-            } else if material_name.starts_with("AvatarEyes") {
-                assets_mats.get_mut(material).unwrap().emissive = Color::rgba(
-                    avatar_properties.eyes_color.r,
-                    avatar_properties.eyes_color.g,
-                    avatar_properties.eyes_color.b,
-                    1.,
-                );
             }
         }
+    }
+
+    for (entity, material) in query.iter() {
+        let material: &StandardMaterial = standard_materials.get(material).unwrap();
+        let toon_material = toon_materials.add(ToonShaderMaterial {
+            base_color_texture: material.clone().base_color_texture,
+            color: material.clone().base_color,
+            ..default()
+        });
+
+        commands.entity(entity).remove::<Handle<StandardMaterial>>();
+        commands.entity(entity).insert(toon_material);
     }
 }
 
@@ -462,6 +474,7 @@ fn setup(
     mut meshes: ResMut<Assets<Mesh>>,
     mut capture: MediaCapture,
     mut avatar_properties: ResMut<AvatarProperties>,
+    config: Res<resources::Config>
 ) {
     // This assumes we only have a single window
     let window = windows.single();
@@ -577,22 +590,36 @@ fn setup(
         },
         post_processing_pass_layer,
         UiCameraConfig { show_ui: true },
+        ToonShaderMainCamera,
     ));
 
     // Light
-    commands.spawn(DirectionalLightBundle {
-        transform: Transform::from_rotation(Quat::from_euler(EulerRot::ZYX, 0.0, 1.0, -PI / 4.)),
-        directional_light: DirectionalLight {
-            shadows_enabled: true,
+    commands.spawn((
+        DirectionalLightBundle {
+            transform: Transform::from_rotation(Quat::from_euler(
+                EulerRot::ZYX,
+                0.0,
+                1.0,
+                -PI / 4.,
+            )),
+            directional_light: DirectionalLight {
+                shadows_enabled: true,
+                ..default()
+            },
+            cascade_shadow_config: CascadeShadowConfigBuilder {
+                first_cascade_far_bound: 200.0,
+                maximum_distance: 400.0,
+                ..default()
+            }
+            .into(),
             ..default()
         },
-        cascade_shadow_config: CascadeShadowConfigBuilder {
-            first_cascade_far_bound: 200.0,
-            maximum_distance: 400.0,
-            ..default()
-        }
-        .into(),
-        ..default()
+        ToonShaderSun,
+    ));
+
+    commands.insert_resource(AmbientLight {
+        color: Color::WHITE * config.avatar.light_intensity,
+        brightness: 0.10,
     });
 
     let mut base_path = std::env::current_exe().unwrap();
@@ -684,7 +711,7 @@ fn setup(
 
 // Region below declares of the custom material handling post processing effect
 
-/// Our custom post processing material
+/// Our custom post processinr,material
 #[derive(AsBindGroup, TypeUuid, Clone)]
 #[uuid = "bc2f08eb-a0fb-43f1-a908-54871ea597d5"]
 struct PostProcessingMaterial {
@@ -738,7 +765,6 @@ async fn download_avatar(eth_address: &str) -> dcl_common::Result<AvatarProperti
         body_shape,
         hair_color: avatar.hair.color,
         skin_color: avatar.skin.color,
-        eyes_color: avatar.eyes.color,
         glb_loading_count: 0,
     };
 
