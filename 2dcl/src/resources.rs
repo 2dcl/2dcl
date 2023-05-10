@@ -12,7 +12,8 @@ const PLAYER_SPEED: f32 = 400.0;
 const PLAYER_SCALE: f32 = 1.;
 const PLAYER_COLLIDER_SIZE_X: f32 = 18.;
 const PLAYER_COLLIDER_SIZE_Y: f32 = 20.;
-const LIGHT_INTENSITY: f32 = 0.2;
+const CELL_SHADING: bool = false;
+const CELL_SHADING_LIGHT_INTENSITY: f32 = 0.3;
 const ETH_ADRESS: &str = "0x5e5d9d1dfd87e9b8b069b8e5d708db92be5ade99";
 
 #[derive(Resource, Deserialize, Default)]
@@ -45,15 +46,18 @@ impl Config {
 pub struct Avatar {
     #[serde(default = "eth_adress_default")]
     pub eth_adress: String,
-    #[serde(default = "light_intensity_default")]
-    pub light_intensity: f32,
+    #[serde(default = "cell_shading_light_intensity")]
+    pub cell_shading_light_intensity: f32,
+    #[serde(default = "cell_shading_default")]
+    pub cell_shading: bool,
 }
 
 impl Default for Avatar {
     fn default() -> Self {
         Avatar {
             eth_adress: ETH_ADRESS.to_string(),
-            light_intensity: LIGHT_INTENSITY,
+            cell_shading_light_intensity: CELL_SHADING_LIGHT_INTENSITY,
+            cell_shading: CELL_SHADING,
         }
     }
 }
@@ -62,8 +66,12 @@ fn eth_adress_default() -> String {
     ETH_ADRESS.to_string()
 }
 
-fn light_intensity_default() -> f32 {
-    LIGHT_INTENSITY
+fn cell_shading_light_intensity() -> f32 {
+    CELL_SHADING_LIGHT_INTENSITY
+}
+
+fn cell_shading_default() -> bool {
+    CELL_SHADING
 }
 
 #[derive(Deserialize)]

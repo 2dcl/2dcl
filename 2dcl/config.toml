@@ -1,6 +1,7 @@
 [avatar]
 eth_adress = "0x270722b5222968603E4650C3b70A7DfB971Ed5B6"
-light_intensity= 0.3
+cell_shading = false
+cell_shading_light_intensity = 0.3
 
 [world]
 starting_parcel_x = 0

@@ -427,6 +427,7 @@ fn material_update(
     mut commands: Commands,
     query: Query<(Entity, &Handle<StandardMaterial>)>,
     mut toon_materials: ResMut<Assets<ToonShaderMaterial>>,
+    config: Res<resources::Config>,
 ) {
     for (_, gltf) in assets_gltf.iter() {
         for (material_name, material) in &gltf.named_materials {
@@ -452,16 +453,18 @@ fn material_update(
         }
     }
 
-    for (entity, material) in query.iter() {
-        let material: &StandardMaterial = standard_materials.get(material).unwrap();
-        let toon_material = toon_materials.add(ToonShaderMaterial {
-            base_color_texture: material.clone().base_color_texture,
-            color: material.clone().base_color,
-            ..default()
-        });
+    if config.avatar.cell_shading {
+        for (entity, material) in query.iter() {
+            let material: &StandardMaterial = standard_materials.get(material).unwrap();
+            let toon_material = toon_materials.add(ToonShaderMaterial {
+                base_color_texture: material.clone().base_color_texture,
+                color: material.clone().base_color,
+                ..default()
+            });
 
-        commands.entity(entity).remove::<Handle<StandardMaterial>>();
-        commands.entity(entity).insert(toon_material);
+            commands.entity(entity).remove::<Handle<StandardMaterial>>();
+            commands.entity(entity).insert(toon_material);
+        }
     }
 }
 
@@ -618,7 +621,7 @@ fn setup(
     ));
 
     commands.insert_resource(AmbientLight {
-        color: Color::WHITE * config.avatar.light_intensity,
+        color: Color::WHITE * config.avatar.cell_shading_light_intensity,
         brightness: 0.10,
     });
 
