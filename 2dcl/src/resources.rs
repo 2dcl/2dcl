@@ -53,7 +53,7 @@ impl Default for Avatar {
     fn default() -> Self {
         Avatar {
             eth_adress: ETH_ADRESS.to_string(),
-            light_intensity: LIGHT_INTENSITY
+            light_intensity: LIGHT_INTENSITY,
         }
     }
 }
@@ -63,7 +63,7 @@ fn eth_adress_default() -> String {
 }
 
 fn light_intensity_default() -> f32 {
-  LIGHT_INTENSITY
+    LIGHT_INTENSITY
 }
 
 #[derive(Deserialize)]

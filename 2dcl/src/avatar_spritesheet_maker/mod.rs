@@ -474,7 +474,7 @@ fn setup(
     mut meshes: ResMut<Assets<Mesh>>,
     mut capture: MediaCapture,
     mut avatar_properties: ResMut<AvatarProperties>,
-    config: Res<resources::Config>
+    config: Res<resources::Config>,
 ) {
     // This assumes we only have a single window
     let window = windows.single();
