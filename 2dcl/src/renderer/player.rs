@@ -38,6 +38,28 @@ pub fn make_player_animator(
     get_animator(player_animator_path, assets, texture_atlases)
 }
 
+pub fn update_player_scale(
+    new_scale: f32,
+    camera_size: f32,
+    mut player_transform: &mut Transform,
+    mut interact_icon_transform: &mut Transform,
+    orthografic_projection: &mut OrthographicProjection,
+    animator: &components::Animator,
+) {
+    player_transform.scale = (Vec2::ONE * new_scale * animator.scale / 2.).extend(1.);
+    interact_icon_transform.translation =
+        Vec3::new(0.0, INTERACT_ICON_HEIGHT * 2. / new_scale, 0.0);
+    interact_icon_transform.scale = (Vec2::ONE * 2. / new_scale).extend(1.);
+    update_camera_size(camera_size, new_scale, orthografic_projection);
+}
+
+pub fn update_camera_size(
+    new_camera_size: f32,
+    player_scale: f32,
+    mut orthografic_projection: &mut OrthographicProjection,
+) {
+    orthografic_projection.scale = new_camera_size * 2. / player_scale;
+}
 fn spawn_player(
     mut commands: Commands,
     assets: Res<AssetServer>,
@@ -88,8 +110,6 @@ fn spawn_player(
         .insert(player_animator)
         .insert(Name::new("Player"))
         .insert(components::Player {
-            speed: config.player.speed,
-            collider_size: Vec2::new(config.player.collider_size_x, config.player.collider_size_y),
             current_level: 0,
             current_parcel: Parcel(0, 0),
             level_change_stack: vec![],
@@ -123,7 +143,7 @@ fn spawn_player(
         z: 5000.0,
     });
 
-    camera_bundle.projection.scale = config.world.camera_scale * 2. / config.player.scale;
+    camera_bundle.projection.scale = config.world.camera_size * 2. / config.player.scale;
     let camera_entity = commands.spawn(camera_bundle).id();
 
     commands.entity(player).add_child(camera_entity);
@@ -144,6 +164,7 @@ fn player_movement(
     scenes_query: Query<&components::Scene>,
     time: Res<Time>,
     console: Res<ConsoleOpen>,
+    config: Res<resources::Config>,
 ) {
     if console.open {
         return;
@@ -162,7 +183,7 @@ fn player_movement(
     let mut movement_input = get_movment_axis_input(&keyboard);
 
     movement_input = movement_input.normalize();
-    movement_input = movement_input * player.speed * time.delta_seconds();
+    movement_input = movement_input * config.player.speed * time.delta_seconds();
 
     let mut walking = false;
     if movement_input.length() > 0f32 {
@@ -185,6 +206,7 @@ fn player_movement(
             &entities_with_level_change,
             &scenes_query,
             &collision_map,
+            &config,
         ) {
             transform.translation = target;
         }
@@ -199,6 +221,7 @@ fn player_movement(
             &entities_with_level_change,
             &scenes_query,
             &collision_map,
+            &config,
         ) {
             transform.translation = target;
         }
@@ -266,6 +289,7 @@ fn player_interact(
     scenes_query: Query<&components::Scene>,
     mut fade: ResMut<screen_fade::Fade>,
     console: Res<ConsoleOpen>,
+    config: Res<resources::Config>,
 ) {
     if console.open {
         return;
@@ -283,7 +307,10 @@ fn player_interact(
         &player.current_parcel,
         player.current_level,
         &transform.translation,
-        &player.collider_size,
+        &Vec2 {
+            x: config.player.collider_size_x,
+            y: config.player.collider_size_y,
+        },
         &box_collision_query,
         &entities_with_level_change,
         &scenes_query,
@@ -396,12 +423,16 @@ fn check_player_collision(
     entities_with_level_change: &Query<(Entity, &components::LevelChange)>,
     scenes_query: &Query<&components::Scene>,
     collision_map: &resources::CollisionMap,
+    config: &resources::Config,
 ) -> bool {
     let collisions = get_collisions(
         &player.current_parcel,
         player.current_level,
         current_location,
-        &player.collider_size,
+        &Vec2 {
+            x: config.player.collider_size_x,
+            y: config.player.collider_size_y,
+        },
         box_collision_query,
         entities_with_level_change,
         scenes_query,
@@ -418,7 +449,10 @@ fn check_player_collision(
         &player.current_parcel,
         player.current_level,
         target_location,
-        &player.collider_size,
+        &Vec2 {
+            x: config.player.collider_size_x,
+            y: config.player.collider_size_y,
+        },
         box_collision_query,
         entities_with_level_change,
         scenes_query,

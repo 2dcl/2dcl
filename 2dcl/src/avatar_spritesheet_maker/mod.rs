@@ -55,7 +55,7 @@ pub fn start(eth_adress: &str) {
     let avatar_properties = match download_avatar(eth_adress) {
         Ok(properties) => properties,
         Err(_) => {
-            println!("Could not find a decentraland avatar for the given ethereum address");
+            println!("could not find a decentraland avatar for the given ethereum address");
             return;
         }
     };
@@ -621,7 +621,7 @@ fn setup(
     ));
 
     commands.insert_resource(AmbientLight {
-        color: Color::WHITE * config.avatar.cell_shading_light_intensity,
+        color: Color::WHITE * get_fixed_brightness(&config),
         brightness: 0.10,
     });
 
@@ -710,6 +710,14 @@ fn setup(
         }
     }
     avatar_properties.glb_loading_count = loading_count;
+
+    fn get_fixed_brightness(config: &resources::Config) -> f32 {
+        if config.avatar.cell_shading {
+            return config.avatar.brightness;
+        }
+
+        config.avatar.brightness * 100.0 - 50.0
+    }
 }
 
 // Region below declares of the custom material handling post processing effect

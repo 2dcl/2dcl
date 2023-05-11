@@ -5,9 +5,10 @@ use dcl_common::Parcel;
 
 use crate::renderer::scene_loader::get_parcel_spawn_point;
 
-use super::scene_maker::RoadsData;
+use super::player::update_player_scale;
 use super::scenes_io::SceneFilesMap;
 use super::update_avatar;
+use super::{player::update_camera_size, scene_maker::RoadsData};
 use crate::{components, resources};
 
 pub struct MyConsolePlugin;
@@ -72,10 +73,44 @@ fn teleport_command(
     }
 }
 
-fn reload_config(mut reload_command: ConsoleCommand<ReloadConfig>, mut commands: Commands) {
+fn reload_config(
+    mut reload_command: ConsoleCommand<ReloadConfig>,
+    mut commands: Commands,
+    config: Res<resources::Config>,
+    mut player_query: Query<(&mut Transform, &components::Animator), With<components::Player>>,
+    mut interact_icon_query: Query<
+        &mut Transform,
+        (With<components::InteractIcon>, Without<components::Player>),
+    >,
+    mut camera_query: Query<&mut OrthographicProjection>,
+) {
     if reload_command.take().is_some() {
-        let config = resources::Config::from_config_file();
-        update_avatar(&config.avatar.eth_adress);
-        commands.insert_resource(config);
+        let new_config = resources::Config::from_config_file();
+
+        update_avatar(&new_config.avatar.eth_address);
+
+        if config.player.scale != new_config.player.scale {
+            let (mut player_transform, animator) = player_query.single_mut();
+            let mut interact_transform = interact_icon_query.single_mut();
+            let mut camera = camera_query.single_mut();
+
+            update_player_scale(
+                new_config.player.scale,
+                new_config.world.camera_size,
+                &mut player_transform,
+                &mut interact_transform,
+                &mut camera,
+                animator,
+            );
+        } else if config.world.camera_size != new_config.world.camera_size {
+            let mut camera = camera_query.single_mut();
+            update_camera_size(
+                new_config.world.camera_size,
+                new_config.player.scale,
+                &mut camera,
+            );
+        }
+
+        commands.insert_resource(new_config);
     }
 }

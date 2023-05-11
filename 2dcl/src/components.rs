@@ -108,8 +108,6 @@ pub struct Animator {
 
 #[derive(Component, Debug)]
 pub struct Player {
-    pub speed: f32,
-    pub collider_size: Vec2,
     pub level_change_stack: Vec<LevelChangeStackData>,
     pub input_state: PlayerInputState,
     pub current_level: usize,

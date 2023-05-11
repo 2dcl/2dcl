@@ -1,14 +1,14 @@
 [avatar]
-eth_adress = "0x270722b5222968603E4650C3b70A7DfB971Ed5B6"
+eth_address = "0x270722b5222968603E4650C3b70A7DfB971Ed5B6"
 cell_shading = false
-cell_shading_light_intensity = 0.3
+brightness = 0.25
 
 [world]
 starting_parcel_x = 0
 starting_parcel_y = 0
 min_render_distance = 4
 max_render_distance = 7
-camera_scale = 1.0
+camera_size = 1.0
 
 [player]
 speed = 400.0

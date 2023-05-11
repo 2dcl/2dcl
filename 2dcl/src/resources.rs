@@ -3,20 +3,20 @@ use bevy::prelude::*;
 use serde::Deserialize;
 
 //Config defaults
+const ETH_ADDRESS: &str = "0x270722b5222968603E4650C3b70A7DfB971Ed5B6";
+const CELL_SHADING: bool = false;
+const BRIGHTNESS: f32 = 0.25;
 const STARTING_PARCEL_Y: i16 = 0;
 const STARTING_PARCEL_X: i16 = 0;
 const MIN_RENDERING_DISTANCE_IN_PARCELS: usize = 4;
 const MAX_RENDERING_DISTANCE_IN_PARCELS: usize = 7;
-const CAMERA_SCALE: f32 = 1.0;
+const CAMERA_SIZE: f32 = 1.0;
 const PLAYER_SPEED: f32 = 400.0;
 const PLAYER_SCALE: f32 = 1.;
 const PLAYER_COLLIDER_SIZE_X: f32 = 18.;
 const PLAYER_COLLIDER_SIZE_Y: f32 = 20.;
-const CELL_SHADING: bool = false;
-const CELL_SHADING_LIGHT_INTENSITY: f32 = 0.3;
-const ETH_ADRESS: &str = "0x5e5d9d1dfd87e9b8b069b8e5d708db92be5ade99";
 
-#[derive(Resource, Deserialize, Default)]
+#[derive(Resource, Deserialize, Default, PartialEq)]
 pub struct Config {
     #[serde(default)]
     pub avatar: Avatar,
@@ -31,9 +31,21 @@ impl Config {
         let mut avatar_info_file = std::env::current_exe().unwrap();
         avatar_info_file.pop();
         avatar_info_file.push("config.toml");
-        if avatar_info_file.exists() {
-            let toml_str = std::fs::read_to_string(avatar_info_file).unwrap();
-            return toml::from_str(&toml_str).unwrap();
+        if let Ok(toml_str) = std::fs::read_to_string(avatar_info_file) {
+            match toml::from_str::<Config>(&toml_str) {
+                Ok(mut toml) => {
+                    if toml.player.scale <= 0. {
+                        toml.player.scale = PLAYER_SCALE;
+                    }
+
+                    if toml.world.camera_size <= 0. {
+                        toml.world.camera_size = CAMERA_SIZE;
+                    }
+
+                    return toml;
+                }
+                Err(err) => println!("{}", err),
+            }
         } else {
             println!("Missing config.toml file. Loading default values.");
         }
@@ -42,12 +54,12 @@ impl Config {
     }
 }
 
-#[derive(Deserialize)]
+#[derive(Deserialize, PartialEq)]
 pub struct Avatar {
-    #[serde(default = "eth_adress_default")]
-    pub eth_adress: String,
-    #[serde(default = "cell_shading_light_intensity")]
-    pub cell_shading_light_intensity: f32,
+    #[serde(default = "eth_address_default")]
+    pub eth_address: String,
+    #[serde(default = "brightness_default")]
+    pub brightness: f32,
     #[serde(default = "cell_shading_default")]
     pub cell_shading: bool,
 }
@@ -55,26 +67,26 @@ pub struct Avatar {
 impl Default for Avatar {
     fn default() -> Self {
         Avatar {
-            eth_adress: ETH_ADRESS.to_string(),
-            cell_shading_light_intensity: CELL_SHADING_LIGHT_INTENSITY,
+            eth_address: ETH_ADDRESS.to_string(),
+            brightness: BRIGHTNESS,
             cell_shading: CELL_SHADING,
         }
     }
 }
 
-fn eth_adress_default() -> String {
-    ETH_ADRESS.to_string()
+fn eth_address_default() -> String {
+    ETH_ADDRESS.to_string()
 }
 
-fn cell_shading_light_intensity() -> f32 {
-    CELL_SHADING_LIGHT_INTENSITY
+fn brightness_default() -> f32 {
+    BRIGHTNESS
 }
 
 fn cell_shading_default() -> bool {
     CELL_SHADING
 }
 
-#[derive(Deserialize)]
+#[derive(Deserialize, PartialEq)]
 pub struct World {
     #[serde(default = "starting_parcel_x_default")]
     pub starting_parcel_x: i16,
@@ -84,8 +96,8 @@ pub struct World {
     pub min_render_distance: usize,
     #[serde(default = "max_render_distance_default")]
     pub max_render_distance: usize,
-    #[serde(default = "camera_scale_default")]
-    pub camera_scale: f32,
+    #[serde(default = "camera_size_default")]
+    pub camera_size: f32,
 }
 
 impl Default for World {
@@ -95,7 +107,7 @@ impl Default for World {
             starting_parcel_y: STARTING_PARCEL_Y,
             min_render_distance: MIN_RENDERING_DISTANCE_IN_PARCELS,
             max_render_distance: MAX_RENDERING_DISTANCE_IN_PARCELS,
-            camera_scale: CAMERA_SCALE,
+            camera_size: CAMERA_SIZE,
         }
     }
 }
@@ -112,11 +124,11 @@ fn min_render_distance_default() -> usize {
 fn max_render_distance_default() -> usize {
     MAX_RENDERING_DISTANCE_IN_PARCELS
 }
-fn camera_scale_default() -> f32 {
-    CAMERA_SCALE
+fn camera_size_default() -> f32 {
+    CAMERA_SIZE
 }
 
-#[derive(Deserialize)]
+#[derive(Deserialize, PartialEq)]
 pub struct Player {
     #[serde(default = "player_speed_default")]
     pub speed: f32,

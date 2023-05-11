@@ -3,7 +3,7 @@ use std::{
     str::FromStr,
 };
 
-use bevy::prelude::*;
+use bevy::{log::LogPlugin, prelude::*};
 
 pub mod constants;
 mod custom_material;
@@ -66,7 +66,7 @@ where
     P: AsRef<Path>,
 {
     let config = resources::Config::from_config_file();
-    update_avatar(&config.avatar.eth_adress);
+    update_avatar(&config.avatar.eth_address);
 
     std::env::set_current_dir(&working_dir).unwrap();
     let absolute_base_dir = std::fs::canonicalize(PathBuf::from_str(".").unwrap()).unwrap();
@@ -90,7 +90,8 @@ where
                     ..default()
                 }),
                 ..default()
-            }),
+            })
+            .disable::<LogPlugin>(),
     )
     .add_plugin(DebugPlugin)
     .add_plugin(ScreenFadePlugin)
