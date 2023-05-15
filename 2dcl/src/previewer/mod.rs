@@ -63,5 +63,6 @@ pub fn preview_scene(source_path: std::path::PathBuf, destination_path: std::pat
         .add_system(loading_sprites_task_handler)
         .add_asset::<SceneAsset>()
         .init_asset_loader::<SceneAssetLoader>()
+        .init_resource::<bevy_console::ConsoleOpen>()
         .run();
 }
