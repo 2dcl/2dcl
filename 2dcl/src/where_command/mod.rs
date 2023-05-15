@@ -4,24 +4,47 @@ use catalyst::{ContentClient, Server};
 use dcl_common::Parcel;
 use tempdir::TempDir;
 
+const MIN_PARCEL: i16 = -152;
+const MAX_PARCEL: i16 = 152;
+const MAX_PARCELS_PER_QUERY: usize =
+    (MAX_PARCEL + 1 - MIN_PARCEL) as usize * (MAX_PARCEL + 1 - MIN_PARCEL) as usize;
+
 pub fn where_command() -> dcl_common::Result<()> {
+    println!("Finding 2dcl scenes...");
+    let result = print_2dcl_scenes(MAX_PARCELS_PER_QUERY);
+    println!("Finished");
+    result
+}
+
+fn print_2dcl_scenes(max_parcels_per_query: usize) -> dcl_common::Result<()> {
     let mut parcels = Vec::default();
-    for x in -152..152 {
-        for y in -152..152 {
+    for x in MIN_PARCEL..=MAX_PARCEL {
+        for y in MIN_PARCEL..=MAX_PARCEL {
             parcels.push(Parcel(x, y));
+
+            if parcels.len() >= max_parcels_per_query {
+                if print_2dcl_scenes_for_parcels(&parcels).is_err() {
+                    return print_2dcl_scenes(max_parcels_per_query / 2);
+                }
+                parcels.clear();
+            }
         }
     }
 
-    println!("Finding 2dcl scenes...");
-    print_2dcl_scenes(parcels)?;
-    println!("Finished");
+    if print_2dcl_scenes_for_parcels(&parcels).is_err() {
+        return print_2dcl_scenes(max_parcels_per_query / 2);
+    }
+
     Ok(())
 }
 
 #[tokio::main]
-async fn print_2dcl_scenes(parcels: Vec<Parcel>) -> dcl_common::Result<()> {
+async fn print_2dcl_scenes_for_parcels(parcels: &Vec<Parcel>) -> dcl_common::Result<()> {
+    if parcels.is_empty() {
+        return Ok(());
+    }
     let server = Server::production();
-    let scene_files = ContentClient::scene_files_for_parcels(&server, &parcels).await?;
+    let scene_files = ContentClient::scene_files_for_parcels(&server, parcels).await?;
     let tmp_dir = TempDir::new("where_downloads").unwrap();
 
     for scene_file in scene_files {
