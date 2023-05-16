@@ -5,7 +5,11 @@ use serde::Deserialize;
 //Config defaults
 const ETH_ADDRESS: &str = "0x270722b5222968603E4650C3b70A7DfB971Ed5B6";
 const CELL_SHADING: bool = false;
-const BRIGHTNESS: f32 = 0.25;
+const AMBIENT_LIGHT: bool = true;
+const AMBIENT_LIGHT_BRIGHTNESS: f32 = 0.1;
+const AMBIENT_LIGHT_R: f32 = 0.25;
+const AMBIENT_LIGHT_G: f32 = 0.25;
+const AMBIENT_LIGHT_B: f32 = 0.25;
 const STARTING_PARCEL_Y: i16 = 0;
 const STARTING_PARCEL_X: i16 = 0;
 const MIN_RENDERING_DISTANCE_IN_PARCELS: usize = 4;
@@ -58,18 +62,30 @@ impl Config {
 pub struct Avatar {
     #[serde(default = "eth_address_default")]
     pub eth_address: String,
-    #[serde(default = "brightness_default")]
-    pub brightness: f32,
     #[serde(default = "cell_shading_default")]
     pub cell_shading: bool,
+    #[serde(default = "ambient_light_default")]
+    pub ambient_light: bool,
+    #[serde(default = "ambient_light_brightness_default")]
+    pub ambient_light_brightness: f32,
+    #[serde(default = "ambient_light_r_default")]
+    pub ambient_light_r: f32,
+    #[serde(default = "ambient_light_g_default")]
+    pub ambient_light_g: f32,
+    #[serde(default = "ambient_light_b_default")]
+    pub ambient_light_b: f32,
 }
 
 impl Default for Avatar {
     fn default() -> Self {
         Avatar {
-            eth_address: ETH_ADDRESS.to_string(),
-            brightness: BRIGHTNESS,
-            cell_shading: CELL_SHADING,
+            eth_address: eth_address_default(),
+            cell_shading: cell_shading_default(),
+            ambient_light: ambient_light_default(),
+            ambient_light_brightness: ambient_light_brightness_default(),
+            ambient_light_r: ambient_light_r_default(),
+            ambient_light_g: ambient_light_g_default(),
+            ambient_light_b: ambient_light_b_default(),
         }
     }
 }
@@ -78,12 +94,26 @@ fn eth_address_default() -> String {
     ETH_ADDRESS.to_string()
 }
 
-fn brightness_default() -> f32 {
-    BRIGHTNESS
-}
-
 fn cell_shading_default() -> bool {
     CELL_SHADING
+}
+
+fn ambient_light_default() -> bool {
+    AMBIENT_LIGHT
+}
+
+fn ambient_light_brightness_default() -> f32 {
+    AMBIENT_LIGHT_BRIGHTNESS
+}
+
+fn ambient_light_r_default() -> f32 {
+    AMBIENT_LIGHT_R
+}
+fn ambient_light_g_default() -> f32 {
+    AMBIENT_LIGHT_G
+}
+fn ambient_light_b_default() -> f32 {
+    AMBIENT_LIGHT_B
 }
 
 #[derive(Deserialize, PartialEq)]
@@ -103,11 +133,11 @@ pub struct World {
 impl Default for World {
     fn default() -> Self {
         World {
-            starting_parcel_x: STARTING_PARCEL_X,
-            starting_parcel_y: STARTING_PARCEL_Y,
-            min_render_distance: MIN_RENDERING_DISTANCE_IN_PARCELS,
-            max_render_distance: MAX_RENDERING_DISTANCE_IN_PARCELS,
-            camera_size: CAMERA_SIZE,
+            starting_parcel_x: starting_parcel_x_default(),
+            starting_parcel_y: starting_parcel_y_default(),
+            min_render_distance: min_render_distance_default(),
+            max_render_distance: max_render_distance_default(),
+            camera_size: camera_size_default(),
         }
     }
 }
@@ -143,10 +173,10 @@ pub struct Player {
 impl Default for Player {
     fn default() -> Self {
         Player {
-            speed: PLAYER_SPEED,
-            scale: PLAYER_SCALE,
-            collider_size_x: PLAYER_COLLIDER_SIZE_X,
-            collider_size_y: PLAYER_COLLIDER_SIZE_Y,
+            speed: player_speed_default(),
+            scale: player_scale_default(),
+            collider_size_x: player_collider_size_x_default(),
+            collider_size_y: player_collider_size_y_default(),
         }
     }
 }

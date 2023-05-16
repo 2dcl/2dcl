@@ -674,10 +674,16 @@ fn setup(
         ToonShaderSun,
     ));
 
-    commands.insert_resource(AmbientLight {
-        color: Color::WHITE * get_fixed_brightness(&config),
-        brightness: 0.10,
-    });
+    if config.avatar.ambient_light {
+        commands.insert_resource(AmbientLight {
+            color: Color::rgb(
+                config.avatar.ambient_light_r,
+                config.avatar.ambient_light_g,
+                config.avatar.ambient_light_b,
+            ),
+            brightness: config.avatar.ambient_light_brightness,
+        });
+    }
 
     let mut base_path = std::env::current_exe().unwrap();
     base_path.pop();
@@ -764,14 +770,6 @@ fn setup(
         }
     }
     avatar_properties.glb_loading_count = loading_count;
-
-    fn get_fixed_brightness(config: &resources::Config) -> f32 {
-        if config.avatar.cell_shading {
-            return config.avatar.brightness;
-        }
-
-        config.avatar.brightness * 100.0 - 50.0
-    }
 }
 
 // Region below declares of the custom material handling post processing effect

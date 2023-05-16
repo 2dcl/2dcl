@@ -7,7 +7,7 @@ If the file is not present, the client will use its default values.
 ## Avatar
 
 In the avatar section you can define what your avatar looks like while you're exploring the world.
-It has three keys: `eth_address`, `cell_shading` and `brightness`.
+It has six keys: `eth_address`, `cell_shading`, `ambient_light`, `ambient_light_brightness`, `ambient_light_r`, `ambient_light_g` and `ambient_light_b`.
 
 `eth_address` takes a string value and it represents the Ethereum address associated with the Decentraland avatar that you want to use in 2dcl. If the address defined is not valid or doesn't have a Decentraland avatar associated with it, it will load the last successfully imported avatar and prompt the following message:
 
@@ -19,7 +19,12 @@ If `eth_address` is not defined, it will load a default avatar.
 
 `cell_shading` takes a boolean value and allows the avatar to be imported with cell shading. If not defined, the default value is `false`.
 
-`brightness` takes a float value and determines how bright the avatar looks. A value of `-1.0` looks like it's completely in the dark, while a value of `1.0` looks very bright. If not defined, the default value is `0.25`.
+`ambient_light` takes a boolean value and allows an ambient light to project its light into the player avatar. If not defined, the default value is `true`
+
+`ambient_light_brightness` takes a float value and if `ambient_light` is defined as `true` it allows you to change the brightness of the ambient light projecting into the player avatar. If not defined, the default value is `0.1`.
+
+`ambient_light_r`, `ambient_light_g`and `ambient_light_b` all take a float value and defines the `red`, `green` and `blue` values for the `ambient_light` if it's defined as `true`. All these keys take the default value of `0.25` if not defined. 
+
 
 ## World
 
