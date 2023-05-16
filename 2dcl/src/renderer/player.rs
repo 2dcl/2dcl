@@ -191,9 +191,18 @@ fn player_movement(
     }
 
     if walking {
-        animation_state = match movement_input.y > 0.0 {
-            true => "RunUp",
-            false => "RunDown",
+        let runing_up = movement_input.y > 0.0;
+        let running_diagonal = movement_input.x.abs() > 0.25;
+
+        animation_state = match runing_up {
+            true => match running_diagonal {
+                true => "RunUpSide",
+                false => "RunUp",
+            },
+            false => match running_diagonal {
+                true => "RunDownSide",
+                false => "RunDown",
+            },
         };
 
         let mut target = transform.translation + Vec3::new(movement_input.x, 0.0, 0.0);
@@ -470,19 +479,19 @@ fn check_player_collision(
 fn get_movment_axis_input(keyboard: &Res<Input<KeyCode>>) -> Vec3 {
     let mut movement_input = Vec3::default();
 
-    if keyboard.pressed(KeyCode::W) {
+    if keyboard.pressed(KeyCode::W) || keyboard.pressed(KeyCode::Up) {
         movement_input.y += 1f32;
     }
 
-    if keyboard.pressed(KeyCode::S) {
+    if keyboard.pressed(KeyCode::S) || keyboard.pressed(KeyCode::Down) {
         movement_input.y -= 1f32;
     }
 
-    if keyboard.pressed(KeyCode::D) {
+    if keyboard.pressed(KeyCode::D) || keyboard.pressed(KeyCode::Right) {
         movement_input.x += 1f32;
     }
 
-    if keyboard.pressed(KeyCode::A) {
+    if keyboard.pressed(KeyCode::A) || keyboard.pressed(KeyCode::Left) {
         movement_input.x -= 1f32;
     }
 
