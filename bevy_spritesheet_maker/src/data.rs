@@ -262,24 +262,6 @@ pub struct CaptureRecording<CaptureType> {
     pub capture_type: CaptureType,
 }
 
-// -- Handlers --
-
-/// Dispatch events to control media capture. Works as a system param. The methods available
-/// will depend on what formats you have enabled with feature flags
-///
-/// ## Example
-///
-/// ```rust
-/// pub fn my_screenshot_system(
-///    input: Res<Input<KeyCode>>,
-///    mut media: MediaCapture
-/// ) {
-///    if input.just_released(KeyCode::Escape) {
-///    // Typically you would store the recorder ID in a resource
-///    media.capture_png_with_path(1, "screenshots/achievement_123.png");
-///    }
-/// }
-/// ```
 #[derive(SystemParam)]
 pub struct MediaCapture<'w> {
     #[cfg(feature = "gif")]

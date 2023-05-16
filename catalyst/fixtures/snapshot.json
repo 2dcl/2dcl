@@ -17,6 +17,11 @@
     "store": {
       "hash": "bafybeidr3m2rrsmsujhtfoygpl662akt2lsfg5ezwtkxxnvi252ufqv7ry",
       "lastIncludedDeploymentTimestamp": 1657950097152
+    },
+    "emote": {
+      "hash": "bafybeidr3m2rrsmsujhtfoygpl662akt2lsfg5ezwtkxxnvi252ufqv7ry",
+      "lastIncludedDeploymentTimestamp": 1657950097152
     }
+    
   }
 }
