@@ -30,16 +30,15 @@ pub struct ContentFileStatus {
 impl ContentClient {
     /// Returns a list of entity ids related to the given ContentId hash.
     /// [See on Catalyst API Docs](https://decentraland.github.io/catalyst-api-specs/#operation/getListEntityIdsByHashId)
-    pub async fn active_entities(server: &Server, content_id: &ContentId) -> Result<Vec<EntityId>> {
+    pub fn active_entities(server: &Server, content_id: &ContentId) -> Result<Vec<EntityId>> {
         let result = server
-            .get(format!("/content/contents/{}/active-entities", content_id))
-            .await?;
+            .get(format!("/content/contents/{}/active-entities", content_id));
         Ok(result)
     }
 
     /// Returns the availability state for all the given ContentIds.
     /// [See on Catalyst API Docs](https://decentraland.github.io/catalyst-api-specs/#operation/getIfFileExists)
-    pub async fn content_files_exists(
+    pub fn content_files_exists(
         server: &Server,
         content: &Vec<ContentId>,
     ) -> Result<Vec<ContentFileStatus>> {
@@ -54,27 +53,25 @@ impl ContentClient {
         }
 
         let result = server
-            .get(format!("/content/available-content/?{}", cids))
-            .await?;
+            .get(format!("/content/available-content/?{}", cids));
         Ok(result)
     }
 
     /// Download the file referenced by `content_id` in the path given by `filename`.
     /// [See on Catalyst API Docs](https://decentraland.github.io/catalyst-api-specs/#operation/getContentFile)
-    pub async fn download<V>(server: &Server, content_id: ContentId, filename: V) -> Result<()>
+    pub fn download<V>(server: &Server, content_id: ContentId, filename: V) -> Result<()>
     where
         V: AsRef<Path>,
     {
         let response = server
-            .raw_get(format!("/content/contents/{}", content_id))
-            .await?;
+            .raw_get(format!("/content/contents/{}", content_id));
 
         if let Some(parent) = filename.as_ref().parent() {
             fs::create_dir_all(parent)?;
         }
 
         let mut dest = File::create(filename)?;
-        let content = response.bytes().await?;
+        let content = response.bytes();
         dest.write_all(&content)?;
 
         Ok(())
@@ -82,26 +79,25 @@ impl ContentClient {
 
     /// Get information about the given `entity`.
     /// [See on Catalyst API Docs](https://decentraland.github.io/catalyst-api-specs/#operation/getEntityInformation)
-    pub async fn entity_information(server: &Server, entity: &Entity) -> Result<EntityInformation> {
+    pub fn entity_information(server: &Server, entity: &Entity) -> Result<EntityInformation> {
         let result = server
-            .get(format!("/content/audit/{}/{}", entity.kind, entity.id))
-            .await?;
+            .get(format!("/content/audit/{}/{}", entity.kind, entity.id));
         Ok(result)
     }
 
     /// Returns the scene content files for all the scenes that own the given `parcels`.
     /// [See on Catalyst API Docs](https://decentraland.github.io/catalyst-api-specs/#operation/getListOfEntities)
-    pub async fn scene_files_for_parcels(
+    pub fn scene_files_for_parcels(
         server: &Server,
         parcels: &Vec<Parcel>,
     ) -> Result<Vec<SceneFile>> {
         let pointers = ParcelPointer { pointers: parcels };
-        let result: Vec<SceneFile> = server.post("/content/entities/active", &pointers).await?;
+        let result: Vec<SceneFile> = server.post("/content/entities/active", &pointers);
         Ok(result)
     }
 
     /// Returns a list of entities (in the form of `EntitySnapshot`) for the given `entity_type` and `snapshot`.
-    pub async fn snapshot_entities<T>(
+    pub fn snapshot_entities<T>(
         server: &Server,
         entity_type: EntityType,
         snapshot: &Snapshot,
@@ -117,10 +113,9 @@ impl ContentClient {
         };
 
         let response = server
-            .raw_get(format!("/content/contents/{}", hash))
-            .await?;
+            .raw_get(format!("/content/contents/{}", hash));
 
-        let text = response.text().await?;
+        let text = response.text();
 
         let mut result: Vec<EntitySnapshot<T>> = vec![];
 
@@ -136,15 +131,15 @@ impl ContentClient {
 
     /// Returns a snapshot that includes the content ids for the entities available in the snapshot.
     /// [See on Catalyst API Docs](https://decentraland.github.io/catalyst-api-specs/#operation/getActiveEntities)
-    pub async fn snapshot(server: &Server) -> Result<Snapshot> {
-        let result = server.get("/content/snapshot").await?;
+    pub fn snapshot(server: &Server) -> Result<Snapshot> {
+        let result = server.get("/content/snapshot");
         Ok(result)
     }
 
     /// Returns information about the status of the server.
     /// [See on Catalyst API Docs](https://decentraland.github.io/catalyst-api-specs/#operation/getStatus)
-    pub async fn status(server: &Server) -> Result<ContentServerStatus> {
-        let result = server.get("/content/status").await?;
+    pub fn status(server: &Server) -> Result<ContentServerStatus> {
+        let result = server.get("/content/status");
         Ok(result)
     }
 }

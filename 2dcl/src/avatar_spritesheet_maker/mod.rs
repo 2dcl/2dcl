@@ -1,6 +1,6 @@
 use aseprite::{self, Frame, SpritesheetData};
 use bevy::app::{ScheduleRunnerPlugin, ScheduleRunnerSettings};
-use bevy::gltf::Gltf;
+// use bevy::gltf::Gltf;
 use bevy::log::LogPlugin;
 use bevy::pbr::CascadeShadowConfigBuilder;
 use bevy::prelude::*;

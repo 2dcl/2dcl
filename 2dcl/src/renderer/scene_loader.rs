@@ -14,7 +14,7 @@ use bevy::tasks::AsyncComputeTaskPool;
 use catalyst::entity_files::ContentFile;
 use catalyst::{ContentClient, Server};
 use dcl_common::Parcel;
-use futures_lite::future;
+// use futures_lite::future;
 use rmp_serde::*;
 use serde::Deserialize;
 use std::fs;
@@ -304,8 +304,7 @@ pub fn parcel_to_world_location(parcel: Parcel) -> Vec3 {
     }
 }
 
-#[tokio::main]
-pub async fn download_scene_files(
+pub fn download_scene_files(
     scene_files: Vec<catalyst::entity_files::SceneFile>,
 ) -> dcl_common::Result<Vec<PathBuf>> {
     let server = Server::production();
@@ -323,7 +322,7 @@ pub async fn download_scene_files(
                 downloadable.filename.to_str().unwrap()
             );
 
-            ContentClient::download(&server, downloadable.cid, &filename).await?;
+            ContentClient::download(&server, downloadable.cid, &filename);
         }
         scene_paths.push(scene_path.to_path_buf());
     }
@@ -331,7 +330,6 @@ pub async fn download_scene_files(
     Ok(scene_paths)
 }
 
-#[tokio::main]
 pub async fn get_newest_scene_files_for_parcels(
     parcels: Vec<Parcel>,
     scene_files_map: &SceneFilesMap,
@@ -340,7 +338,7 @@ pub async fn get_newest_scene_files_for_parcels(
     let mut parcels_to_download: Vec<Parcel> = Vec::new();
 
     let server = Server::production();
-    let scene_files = ContentClient::scene_files_for_parcels(&server, &parcels).await?;
+    let scene_files = ContentClient::scene_files_for_parcels(&server, &parcels);
 
     for scene_file in scene_files {
         let path_str = "./assets/scenes/".to_string() + &scene_file.id.to_string();
@@ -385,7 +383,7 @@ pub async fn get_newest_scene_files_for_parcels(
                 downloadable_json.filename.to_str().unwrap()
             );
 
-            ContentClient::download(&server, downloadable_json.cid, &filename).await?;
+            ContentClient::download(&server, downloadable_json.cid, &filename);
 
             if let Ok(scene_3d) = read_3dcl_scene(filename) {
                 let filename = format!(
@@ -394,7 +392,7 @@ pub async fn get_newest_scene_files_for_parcels(
                     downloadable_2dcl.filename.to_str().unwrap()
                 );
 
-                ContentClient::download(&server, downloadable_2dcl.cid, &filename).await?;
+                ContentClient::download(&server, downloadable_2dcl.cid, &filename);
 
                 if let Some(scene_2cl) = read_scene_file(&filename) {
                     let mut should_download = false;
@@ -436,7 +434,6 @@ pub async fn get_newest_scene_files_for_parcels(
     Ok((scene_files_to_download, parcels_to_download))
 }
 
-#[tokio::main]
 pub async fn download_level_spawn_point(parcel: &Parcel, level_id: usize) -> Vec3 {
     let server = Server::production();
     let scene_files =
