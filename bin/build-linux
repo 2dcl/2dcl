@@ -1,3 +1,5 @@
+#!/bin/bash
+
 rm -rf build &&
 cargo build --release &&
 mkdir -p build/linux &&
