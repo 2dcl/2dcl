@@ -9,9 +9,11 @@ name = "2dcl"
 path = "src/main.rs"
 
 [dependencies]
-bevy = { version = "0.10.1", default-features = false, features = ["bevy_render", "bevy_core_pipeline", "bevy_ui", "bevy_asset", "bevy_text", "png", "vorbis", "bevy_sprite", "bevy_winit", "mp3", "x11"] }
-tokio = { version = "1", features = ["full"] }
-futures-util = { version = "0.3", default-features = false, features = ["sink", "std"] }
+# bevy = { version = "0.10.1", default-features = false, features = ["bevy_render", "bevy_core_pipeline", "bevy_ui", "bevy_asset", "bevy_text", "png", "vorbis", "bevy_sprite", "bevy_winit", "mp3", "x11"] }
+bevy = "0.10.1"
+# tokio = { version = "1", features = ["full"] }
+tokio = "1"
+# futures-util = { version = "0.3", default-features = false, features = ["sink", "std"] }
 log = "0.4"
 dcl-common = { path = "../dcl-common" }
 serde = { version = "1.0", features = ["derive"] }
@@ -23,10 +25,10 @@ psd = "0.3.4"
 catalyst = {path = "../catalyst"}
 walkdir = "2"
 clap = { version = "4.0.17", features = ["derive"] }
-futures-lite = "1.12.0"
+# futures-lite = "1.12.0"
 rmp-serde = "1.1.1"
 rmp = "^0.8"
-notify = "5.1.0"
+# notify = "5.1.0"
 scene-compiler = { path = "../scene-compiler" }
 dcl2d-ecs-v1 = { path = "../ecs-v1" }
 ron = "0.8.0"
@@ -35,6 +37,6 @@ bevy_console = "0.7.0"
 glob = "0.3.0"
 rand = "0.8.5"
 tempdir = "0.3"
-bevy_spritesheet_maker = {path= "../bevy_spritesheet_maker"}
+# bevy_spritesheet_maker = {path= "../bevy_spritesheet_maker"}
 toml = "0.7.3"
 bevy_toon_shader = { git = "https://github.com/tbillington/bevy_toon_shader" }

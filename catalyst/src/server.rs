@@ -1,5 +1,4 @@
 use dcl_common::Result;
-use reqwest::Client as ReqwestClient;
 use serde::{Deserialize, Serialize};
 
 /// A *single* catalyst server.
@@ -11,7 +10,7 @@ pub struct Server {
     pub owner: String,
     pub id: String,
     #[serde(skip)]
-    http_client: ReqwestClient,
+    http_client: reqwest::blocking::Client,
 }
 
 #[derive(Deserialize, Debug)]
@@ -96,51 +95,50 @@ impl Server {
     /// The response is parsed as JSON and deserialized in the result.
     /// If you need to deal with the result by hand, use `get_raw`.
     ///
-    pub async fn get<U, R>(&self, path: U) -> Result<R>
+    pub fn get<U, R>(&self, path: U) -> Result<R>
     where
         U: AsRef<str> + std::fmt::Display,
         R: for<'a> Deserialize<'a>,
     {
-        let response = self.raw_get(path).await?;
-        let text = response.text().await?;
+        let response = self.raw_get(path)?;
+        let text = response.text()?;
         let status: R = serde_json::from_str(text.as_str())?;
         Ok(status)
     }
 
     /// Executes a `GET` request to `path`.
-    /// The response is returned as is using `reqwest::Response`.
+    /// The response is returned as is using `reqwest::blocking::Response`.
     /// For automatic deserialization of JSON response see `get`.
-    pub async fn raw_get<U>(&self, path: U) -> Result<reqwest::Response>
+    pub fn raw_get<U>(&self, path: U) -> Result<reqwest::blocking::Response>
     where
         U: AsRef<str> + std::fmt::Display,
     {
         Ok(self
             .http_client
-            .get(format!("{}{}", self.base_url, path))
-            .send()
-            .await?)
+            .get(format!("{}{}", self.base_url, path))?
+            )
     }
 
     /// Executes a `POST` request to `path` with body `body`.
     /// The response is parsed as JSON and deserialized in the result.
     /// If you need to deal with the result by hand, use `get_raw`.
     ///
-    pub async fn post<U, B, R>(&self, path: U, body: &B) -> Result<R>
+    pub fn post<U, B, R>(&self, path: U, body: &B) -> Result<R>
     where
         U: AsRef<str> + std::fmt::Display,
         B: for<'a> Serialize,
         R: for<'a> Deserialize<'a>,
     {
-        let response = self.raw_post(path, body).await?;
-        let text = response.text().await?;
+        let response = self.raw_post(path, body);
+        let text = response.text()?;
         let status: R = serde_json::from_str(text.as_str())?;
         Ok(status)
     }
 
     /// Executes a `POST` request to `path` with body `body`.
-    /// The response is returned as is using `reqwest::Response`.
+    /// The response is returned as is using `reqwest::blocking::Response`.
     /// For automatic deserialization of JSON response see `post`.
-    pub async fn raw_post<U, B>(&self, path: U, body: &B) -> Result<reqwest::Response>
+    pub fn raw_post<U, B>(&self, path: U, body: &B) -> Result<reqwest::blocking::Response>
     where
         U: AsRef<str> + std::fmt::Display,
         B: for<'a> Serialize,
@@ -149,8 +147,8 @@ impl Server {
             .http_client
             .post(format!("{}{}", self.base_url, path))
             .json(&body)
-            .send()
-            .await?)
+            .send()?
+            )
     }
 }
 
@@ -231,7 +229,7 @@ mod tests {
 
         let server = Server::new(server.url(""));
 
-        let response: reqwest::Response =
+        let response: reqwest::blocking::Response =
             tokio_test::block_on(server.raw_get("/lambdas/status")).unwrap();
         let body = tokio_test::block_on(response.text()).unwrap();
 
@@ -274,7 +272,7 @@ mod tests {
         let server = Server::new(server.url(""));
 
         let parcels = vec![Parcel(0, 0)];
-        let response: reqwest::Response =
+        let response: reqwest::blocking::Response =
             tokio_test::block_on(server.raw_post("/some/path", &parcels)).unwrap();
         let body = tokio_test::block_on(response.text()).unwrap();
 
