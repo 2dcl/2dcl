@@ -13,3 +13,4 @@ build
 2dcl/assets/scenes/*
 2dcl/assets/prebuild_scenes/*
 !2dcl/assets/scenes/templates
+.DS_Store
