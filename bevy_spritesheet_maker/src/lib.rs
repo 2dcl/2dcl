@@ -11,7 +11,7 @@ mod render;
 mod web_utils;
 
 mod plugin {
-    use bevy::app::{App, CoreSet, Plugin};
+    use bevy::app::{App, Plugin};
     use bevy::prelude::*;
     use bevy::render::{RenderApp, RenderSet};
 
@@ -35,35 +35,34 @@ mod plugin {
                 .insert_resource(tracking_tracker)
                 .insert_resource(data_smuggler.clone())
                 .insert_resource(CaptureState::Idle)
-                .add_system(management::clean_cameras.in_base_set(CoreSet::First))
-                .add_system(management::move_camera_buffers.in_base_set(CoreSet::First))
-                .add_system(management::sync_tracking_cameras.in_base_set(CoreSet::PostUpdate))
-                .add_system(
-                    management::start_tracking_orthographic_camera.in_base_set(CoreSet::PostUpdate),
+                .add_systems(First,management::clean_cameras)
+                .add_systems(First, management::move_camera_buffers)
+                .add_systems(PostUpdate, management::sync_tracking_cameras)
+                .add_systems(PostUpdate,
+                    management::start_tracking_orthographic_camera,
                 );
 
             #[cfg(feature = "gif")]
             {
                 app.add_event::<formats::gif::CaptureGifRecording>()
                     .add_system(
-                        formats::gif::capture_gif_recording.in_base_set(CoreSet::PostUpdate),
+                        formats::gif::capture_gif_recording.in_base_set(PostUpdate),
                     );
 
                 #[cfg(not(target_arch = "wasm32"))]
                 app.add_system(
                     management::clean_unmonitored_tasks::<formats::gif::SaveGifRecording>
-                        .in_base_set(CoreSet::Last),
+                        .in_base_set(Last),
                 );
             }
             #[cfg(feature = "png")]
             {
                 app.add_event::<formats::png::SavePngFile>()
-                    .add_system(formats::png::save_single_frame.in_base_set(CoreSet::PostUpdate));
+                    .add_systems(PostUpdate, formats::png::save_single_frame);
 
                 #[cfg(not(target_arch = "wasm32"))]
-                app.add_system(
-                    management::clean_unmonitored_tasks::<formats::png::SaveFrameTask>
-                        .in_base_set(CoreSet::Last),
+                app.add_systems(Last,
+                    management::clean_unmonitored_tasks::<formats::png::SaveFrameTask>,
                 );
             }
 

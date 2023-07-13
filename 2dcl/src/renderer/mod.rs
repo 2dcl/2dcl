@@ -1,12 +1,11 @@
 use std::{
     path::{Path, PathBuf},
-    str::FromStr,
+    str::FromStr, time::Duration,
 };
 
-use bevy::{log::LogPlugin, prelude::*};
+use bevy::{log::LogPlugin, prelude::*, asset::ChangeWatcher};
 
 pub mod constants;
-mod custom_material;
 mod dcl_3d_scene;
 mod error;
 mod player_sprite_maker;
@@ -40,8 +39,8 @@ use screen_fade::ScreenFadePlugin;
 
 use bevy::render::render_resource::{FilterMode, SamplerDescriptor};
 
-mod console;
-use console::MyConsolePlugin;
+//mod console;
+//use console::MyConsolePlugin;
 
 use crate::resources;
 
@@ -54,10 +53,9 @@ pub fn start() {
 
     let mut app = App::new();
     setup(&mut app, "2dcl".to_string(), current_path);
-    app.add_plugin(SceneLoaderPlugin)
-        .add_plugin(MyConsolePlugin)
-        .add_plugin(SceneMakerPlugin)
-        .add_plugin(ScenesIOPlugin)
+    app.add_plugins(SceneLoaderPlugin)
+      .add_plugins(SceneMakerPlugin)
+      .add_plugins(ScenesIOPlugin)
         .run();
 }
 
@@ -75,7 +73,7 @@ where
     app.add_plugins(
         DefaultPlugins
             .set(AssetPlugin {
-                watch_for_changes: true,
+                watch_for_changes: ChangeWatcher::with_delay(Duration::from_millis(200)),
                 ..Default::default()
             })
             .set(ImagePlugin {
@@ -93,12 +91,12 @@ where
             })
             .disable::<LogPlugin>(),
     )
-    .add_plugin(DebugPlugin)
-    .add_plugin(ScreenFadePlugin)
-    .add_plugin(AnimationsPlugin)
-    .add_plugin(PlayerPlugin)
-    .add_plugin(TransparencyPlugin)
-    .add_plugin(CollisionPlugin)
+    .add_plugins(DebugPlugin)
+    .add_plugins(ScreenFadePlugin)
+    .add_plugins(AnimationsPlugin)
+    .add_plugins(PlayerPlugin)
+    .add_plugins(TransparencyPlugin)
+    .add_plugins(CollisionPlugin)
     .insert_resource(Msaa::Off)
     .insert_resource(config);
 }

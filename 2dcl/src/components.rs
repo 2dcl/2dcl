@@ -4,6 +4,7 @@ use dcl2d_ecs_v1::collision_type::CollisionType;
 use dcl_common::Parcel;
 use std::path::PathBuf;
 use std::time::SystemTime;
+use bevy::reflect::TypePath;
 
 use crate::renderer::animations::Animation;
 use crate::renderer::player::LevelChangeStackData;
@@ -50,13 +51,30 @@ pub struct LevelChange {
     pub parcels: Vec<Parcel>,
 }
 
+
+#[derive(Debug)]
+pub struct TimeStamp(pub SystemTime);
+
+impl TimeStamp{
+  fn now() -> Self{
+    Self(SystemTime::now())
+  }
+}
+
+impl Default for TimeStamp
+{
+  fn default() -> Self {
+      Self(SystemTime::now())
+  }
+}
+
 #[derive(Debug, Component, Reflect)]
 pub struct Scene {
     pub name: String,
     #[reflect(ignore)]
     pub parcels: Vec<Parcel>,
     #[reflect(ignore)]
-    pub timestamp: SystemTime,
+    pub timestamp: TimeStamp,
     #[reflect(ignore)]
     pub serialized_data: Vec<u8>,
     pub path: PathBuf,
@@ -68,7 +86,7 @@ impl Default for Scene {
         Scene {
             name: String::default(),
             parcels: Vec::default(),
-            timestamp: SystemTime::now(),
+            timestamp: TimeStamp::now(),
             serialized_data: Vec::default(),
             path: PathBuf::default(),
             is_default: false,

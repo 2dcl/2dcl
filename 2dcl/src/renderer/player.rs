@@ -163,12 +163,12 @@ fn player_movement(
     collision_map: Res<resources::CollisionMap>,
     scenes_query: Query<&components::Scene>,
     time: Res<Time>,
-    console: Res<ConsoleOpen>,
+    //console: Res<ConsoleOpen>,
     config: Res<resources::Config>,
 ) {
-    if console.open {
-        return;
-    }
+  //  if console.open {
+  //      return;
+  //  }
 
     let result = player_query.get_single_mut();
 
@@ -297,12 +297,12 @@ fn player_interact(
     collision_map: Res<resources::CollisionMap>,
     scenes_query: Query<&components::Scene>,
     mut fade: ResMut<screen_fade::Fade>,
-    console: Res<ConsoleOpen>,
+    //console: Res<ConsoleOpen>,
     config: Res<resources::Config>,
 ) {
-    if console.open {
-        return;
-    }
+    //if console.open {
+    //    return;
+    //}
     let result = player_query.get_single_mut();
 
     if let Err(e) = result {

@@ -49,18 +49,13 @@ pub fn preview_scene(source_path: std::path::PathBuf, destination_path: std::pat
         &destination_path,
     );
 
-    app.add_plugin(SceneHotReloadPlugin)
+    app.add_plugins(SceneHotReloadPlugin)
         .insert_resource(RefreshData {
             source_path,
             destination_path,
         })
-        .add_system(level_switch)
-        .add_system(collider_debugger)
-        .add_system(manual_refresh)
-        .add_startup_system(ui::setup)
-        .add_system(ui::toggle_ui)
-        .add_system(loading_animation)
-        .add_system(loading_sprites_task_handler)
+        .add_systems(level_switch. collider_debugger, manual_refresh, ui::toggle_ui, loading_animation, loading_sprites_task_handler)
+        .add_systems(Startup,ui::setup)
         .add_asset::<SceneAsset>()
         .init_asset_loader::<SceneAssetLoader>()
         .init_resource::<bevy_console::ConsoleOpen>()

@@ -600,7 +600,7 @@ fn downloading_scenes_task_handler(
                             if let Some(scene_data) =
                                 get_scene(&mut roads_data, &scene_files_map, parcel_1)
                             {
-                                if scene.timestamp != scene_data.scene.timestamp {
+                                if scene.timestamp.0 != scene_data.scene.timestamp {
                                     despawned_entities.entities.push(entity);
                                     commands.entity(entity).despawn_recursive();
                                     spawn_scene(

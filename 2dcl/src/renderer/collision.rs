@@ -29,7 +29,7 @@ pub struct CollisionPlugin;
 impl Plugin for CollisionPlugin {
     fn build(&self, app: &mut App) {
         app.init_resource::<resources::CollisionMap>()
-            .add_startup_system(setup.in_base_set(StartupSet::Startup));
+            .add_systems(Startup, setup);
     }
 }
 

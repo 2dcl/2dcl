@@ -7,6 +7,7 @@ use crate::renderer::scenes_io::SceneData;
 use crate::resources;
 use bevy::asset::Handle;
 use bevy::prelude::*;
+use bevy::reflect::TypePath;
 use dcl_common::Parcel;
 use notify::Event;
 use notify::EventKind::Modify;
@@ -29,7 +30,7 @@ use crate::renderer::scene_loader;
 use rmp_serde::*;
 use serde::Deserialize;
 
-#[derive(Debug, Deserialize, TypeUuid)]
+#[derive(Debug, Deserialize, TypeUuid, TypePath)]
 #[uuid = "1b06c21a-5ecd-11ed-9b6a-0242ac120002"]
 pub struct SceneAsset {
     pub bytes: Vec<u8>,
@@ -133,7 +134,7 @@ fn scene_reload(
     if let Ok((player, mut player_transform)) = player_query.get_single_mut() {
         if let Some(scene) = scene_assets.get(&scene_handlers.0) {
             if let Ok((entity, current_scene)) = scenes.get_single_mut() {
-                if scene.timestamp != current_scene.timestamp {
+                if scene.timestamp != current_scene.timestamp.0 {
                     despawned_entities.entities.push(entity);
                     commands.entity(entity).despawn_recursive();
                     let timestamp = scene.timestamp;

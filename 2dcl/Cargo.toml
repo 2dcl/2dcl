@@ -9,7 +9,7 @@ name = "2dcl"
 path = "src/main.rs"
 
 [dependencies]
-bevy = { version = "0.10.1", default-features = false, features = ["bevy_render", "bevy_core_pipeline", "bevy_ui", "bevy_asset", "bevy_text", "png", "vorbis", "bevy_sprite", "bevy_winit", "mp3", "x11"] }
+bevy = { version = "0.11.0", default-features = false, features = ["bevy_render", "bevy_core_pipeline", "bevy_ui", "bevy_asset", "bevy_text", "png", "vorbis", "bevy_sprite", "bevy_winit", "mp3", "x11"] }
 tokio = { version = "1", features = ["full"] }
 tokio-tungstenite = { version = "*", features = ["native-tls"] }
 futures-util = { version = "0.3", default-features = false, features = ["sink", "std"] }
@@ -18,7 +18,7 @@ dcl-common = { path = "../dcl-common" }
 serde = { version = "1.0", features = ["derive"] }
 serde_json = "1.0"
 image= "0.24.3"
-bevy-inspector-egui = "0.18.1"
+bevy-inspector-egui = "0.19.0"
 aseprite = "0.1.3"
 psd = "0.3.4"
 catalyst = {path = "../catalyst"}

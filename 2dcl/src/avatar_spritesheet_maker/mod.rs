@@ -1,9 +1,10 @@
 use aseprite::{self, Frame, SpritesheetData};
-use bevy::app::{ScheduleRunnerPlugin, ScheduleRunnerSettings};
+use bevy::app::ScheduleRunnerPlugin;
 use bevy::gltf::Gltf;
 use bevy::log::LogPlugin;
 use bevy::pbr::CascadeShadowConfigBuilder;
 use bevy::prelude::*;
+use bevy::reflect::TypePath;
 use bevy::window::WindowResolution;
 use bevy::winit::WinitPlugin;
 use bevy::{
@@ -61,9 +62,7 @@ pub fn start(eth_adress: &str) {
     };
     App::new()
         .insert_resource(resources::Config::from_config_file())
-        .insert_resource(ScheduleRunnerSettings::run_loop(Duration::from_secs_f64(
-            1.0 / 60.0,
-        )))
+
         .add_plugins(
             DefaultPlugins
                 .build()
@@ -78,10 +77,12 @@ pub fn start(eth_adress: &str) {
                     ..default()
                 }),
         )
-        .add_plugin(ScheduleRunnerPlugin)
+        .add_plugin(ScheduleRunnerPlugin::run_loop(Duration::from_secs_f64(
+          1.0 / 60.0,
+        )))
         .add_plugin(bevy_spritesheet_maker::BevyCapturePlugin)
         .add_plugin(Material2dPlugin::<PostProcessingMaterial>::default())
-        .add_plugin(ToonShaderPlugin)
+        //.add_plugin(ToonShaderPlugin)
         .insert_resource(AmbientLight {
             color: Color::WHITE,
             brightness: 1.0,
@@ -480,7 +481,7 @@ fn material_update(
     avatar_properties: Res<AvatarProperties>,
     mut commands: Commands,
     query: Query<(Entity, &Handle<StandardMaterial>)>,
-    mut toon_materials: ResMut<Assets<ToonShaderMaterial>>,
+   // mut toon_materials: ResMut<Assets<ToonShaderMaterial>>,
     config: Res<resources::Config>,
 ) {
     for (_, gltf) in assets_gltf.iter() {
@@ -507,7 +508,7 @@ fn material_update(
         }
     }
 
-    if config.avatar.cell_shading {
+   /* if config.avatar.cell_shading {
         for (entity, material) in query.iter() {
             let material: &StandardMaterial = standard_materials.get(material).unwrap();
             let toon_material = toon_materials.add(ToonShaderMaterial {
@@ -519,7 +520,7 @@ fn material_update(
             commands.entity(entity).remove::<Handle<StandardMaterial>>();
             commands.entity(entity).insert(toon_material);
         }
-    }
+    } */
 }
 
 fn setup(
@@ -775,7 +776,7 @@ fn setup(
 // Region below declares of the custom material handling post processing effect
 
 /// Our custom post processinr,material
-#[derive(AsBindGroup, TypeUuid, Clone)]
+#[derive(AsBindGroup, TypeUuid, Clone, TypePath)]
 #[uuid = "bc2f08eb-a0fb-43f1-a908-54871ea597d5"]
 struct PostProcessingMaterial {
     /// In this example, this image will be the result of the main camera.

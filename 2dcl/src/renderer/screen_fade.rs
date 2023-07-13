@@ -4,6 +4,7 @@ use crate::components;
 
 use super::constants::SCREEN_FADE_DURATION_IN_SECONDS;
 
+#[derive(Event)]
 pub struct FadeFinished(pub FadeDirection);
 
 #[derive(Default, Eq, PartialEq, Clone)]
