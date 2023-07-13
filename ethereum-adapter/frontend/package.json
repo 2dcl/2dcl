@@ -1,0 +1,9 @@
+{
+  "dependencies": {
+    "@metamask/detect-provider": "^2.0.0"
+  },
+  "devDependencies": {
+    "webpack": "^5.88.1",
+    "webpack-cli": "^5.1.4"
+  }
+}
