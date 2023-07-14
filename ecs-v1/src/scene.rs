@@ -2,7 +2,7 @@ use rmp_serde::Deserializer;
 use crate::Level;
 use serde::{Deserialize, Serialize};
 use std::time::SystemTime;
-use dcl_common::Result;
+use dcl_common::{Result, Parcel};
 
 #[derive(Serialize, Deserialize, Debug)]
 pub struct Scene {
@@ -11,6 +11,8 @@ pub struct Scene {
     #[serde(default = "timestamp_default")]
     pub timestamp: SystemTime,
     pub name: String,
+    pub parcels: Vec<Parcel>,
+    pub base: Parcel,
     pub levels: Vec<Level>,
 }
 
@@ -20,6 +22,8 @@ impl Default for Scene {
             id: usize::default(),
             timestamp: timestamp_default(),
             name: String::default(),
+            parcels: Vec::default(),
+            base: Parcel(0,0),
             levels: Vec::default(),
         }
     }

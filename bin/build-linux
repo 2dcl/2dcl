@@ -4,6 +4,7 @@ rm -rf build &&
 cargo build --release &&
 mkdir -p build/linux &&
 cp target/release/2dcl build/linux &&
+cp target/release/ethereum-adapter-webserver build/macos &&
 cp -rf 2dcl/assets build/linux &&
 cp 2dcl/config.toml build/linux &&
 cd build/linux &&

@@ -1,5 +1,7 @@
 {
       "name": "main_plaza",
+      "parcels": ["0,0"],
+      "base": "0,0",
       "levels": [],
       "timestamp":{"secs_since_epoch":1680533041,"nanos_since_epoch":457304500}
 }
