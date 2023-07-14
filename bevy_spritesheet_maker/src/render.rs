@@ -3,7 +3,6 @@ use bevy::render::render_asset::RenderAssets;
 use bevy::render::render_resource::TextureFormat;
 use bevy::render::renderer::{RenderDevice, RenderQueue};
 use bevy::render::texture::{Image, TextureFormatPixelInfo};
-use std::num::NonZeroU32;
 use std::ops::Deref;
 use wgpu::{
     BufferDescriptor, BufferUsages, CommandEncoderDescriptor, Extent3d, ImageCopyBuffer,

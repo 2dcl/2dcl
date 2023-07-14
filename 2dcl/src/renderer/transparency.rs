@@ -82,11 +82,8 @@ fn check_elements_on_top_of_player(
             &other_transform.translation(),
             &other_sprite.anchor,
         );
-        if is_object_covering_player(player_transform.translation(), other_location, other_size) {
-            other_sprite_renderer.is_on_top_of_player = true;
-        } else {
-            other_sprite_renderer.is_on_top_of_player = false;
-        }
+        other_sprite_renderer.is_on_top_of_player =
+            is_object_covering_player(player_transform.translation(), other_location, other_size);
     }
 }
 

@@ -120,7 +120,7 @@ fn change_frame(
     animator.timer.set_duration(new_duration);
 }
 pub fn change_animator_state<P>(
-    mut animator: &mut components::Animator,
+    animator: &mut components::Animator,
     sprite: &mut TextureAtlasSprite,
     new_state: P,
 ) -> Option<Animation>

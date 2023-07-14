@@ -55,7 +55,7 @@ pub fn update_player_scale(
 pub fn update_camera_size(
     new_camera_size: f32,
     player_scale: f32,
-    mut orthografic_projection: &mut OrthographicProjection,
+    orthografic_projection: &mut OrthographicProjection,
 ) {
     orthografic_projection.scale = new_camera_size * 2. / player_scale;
 }
@@ -130,7 +130,7 @@ fn spawn_player(
         })
         .insert(interact_animator)
         .insert(Name::new("Interact_icon"))
-        .insert(components::InteractIcon::default())
+        .insert(components::InteractIcon)
         .id();
 
     let clear_color = ClearColorConfig::Custom(Color::BLACK);
