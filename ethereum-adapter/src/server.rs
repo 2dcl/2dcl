@@ -1,13 +1,12 @@
-
-use std::sync::RwLock;
-use rocket::*;
-use rocket::State;
 use rocket::response::content;
-use rocket::serde::{Serialize, Deserialize, json::Json};
+use rocket::serde::{json::Json, Deserialize, Serialize};
+use rocket::State;
+use rocket::*;
+use std::sync::RwLock;
 
 #[derive(Debug, Default)]
 struct AdapterState {
-  address: RwLock<Option<Address>>
+    address: RwLock<Option<Address>>,
 }
 
 #[get("/login")]
@@ -15,16 +14,16 @@ fn login() -> content::RawHtml<&'static str> {
     content::RawHtml(include_str!("../frontend/dist/index.html"))
 }
 
-#[derive(Serialize,Deserialize, Debug, Clone)]
+#[derive(Serialize, Deserialize, Debug, Clone)]
 #[serde(crate = "rocket::serde")]
 struct Address {
-  address: String
+    address: String,
 }
 
 #[post("/address", data = "<address>")]
 fn save_address(address: Json<Address>, state: &State<AdapterState>) {
-  let mut state_address = state.address.write().unwrap();
-  *state_address = Some(address.0);
+    let mut state_address = state.address.write().unwrap();
+    *state_address = Some(address.0);
 }
 
 #[get("/main.js")]
@@ -39,17 +38,13 @@ fn css() -> content::RawCss<&'static str> {
 
 #[get("/address")]
 fn get_address(state: &State<AdapterState>) -> Json<Option<Address>> {
-  let address = state.address.read().unwrap();
-  Json((*address).clone())
+    let address = state.address.read().unwrap();
+    Json((*address).clone())
 }
 
 #[launch]
 fn rocket() -> _ {
-    rocket::build().manage(AdapterState::default()).mount("/", routes![
-      login, 
-      js, 
-      css,
-      get_address, 
-      save_address
-    ])
+    rocket::build()
+        .manage(AdapterState::default())
+        .mount("/", routes![login, js, css, get_address, save_address])
 }
