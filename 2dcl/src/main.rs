@@ -33,6 +33,12 @@ enum Action {
         #[clap(default_value = "./build/")]
         destination_path: std::path::PathBuf,
     },
+    Deploy {
+        #[clap(default_value = "./")]
+        source_path: std::path::PathBuf,
+        #[clap(default_value = "./build/")]
+        destination_path: std::path::PathBuf,
+    },
     Where,
     ImportAvatar {
         eth_address: String,
@@ -55,6 +61,13 @@ fn main() -> Result<()> {
             destination_path,
         }) => {
             scene_compiler::compile(source_path, destination_path).unwrap();
+        }
+        Some(Action::Deploy {
+            source_path,
+            destination_path,
+        }) => {
+            scene_compiler::compile(source_path, destination_path).unwrap();
+            todo!("Deploy")
         }
         Some(Action::Clean) => {
             let current_path = std::env::current_exe().unwrap();
