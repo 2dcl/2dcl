@@ -14,9 +14,14 @@ pub struct TransparencyPlugin;
 
 impl Plugin for TransparencyPlugin {
     fn build(&self, app: &mut App) {
-        app.add_system(update_transparency.after(screen_fade::update_fade))
-            .add_system(check_elements_overlapping_parcels)
-            .add_system(check_elements_on_top_of_player);
+        app.add_systems(Update, update_transparency.after(screen_fade::update_fade))
+            .add_systems(
+                Update,
+                (
+                    check_elements_overlapping_parcels,
+                    check_elements_on_top_of_player,
+                ),
+            );
     }
 }
 

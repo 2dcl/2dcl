@@ -1,9 +1,10 @@
 use std::{
     path::{Path, PathBuf},
-    str::FromStr, time::Duration,
+    str::FromStr,
+    time::Duration,
 };
 
-use bevy::{log::LogPlugin, prelude::*, asset::ChangeWatcher};
+use bevy::{asset::ChangeWatcher, log::LogPlugin, prelude::*};
 
 pub mod constants;
 mod dcl_3d_scene;
@@ -54,8 +55,8 @@ pub fn start() {
     let mut app = App::new();
     setup(&mut app, "2dcl".to_string(), current_path);
     app.add_plugins(SceneLoaderPlugin)
-      .add_plugins(SceneMakerPlugin)
-      .add_plugins(ScenesIOPlugin)
+        .add_plugins(SceneMakerPlugin)
+        .add_plugins(ScenesIOPlugin)
         .run();
 }
 

@@ -4,7 +4,6 @@ use dcl2d_ecs_v1::collision_type::CollisionType;
 use dcl_common::Parcel;
 use std::path::PathBuf;
 use std::time::SystemTime;
-use bevy::reflect::TypePath;
 
 use crate::renderer::animations::Animation;
 use crate::renderer::player::LevelChangeStackData;
@@ -51,21 +50,19 @@ pub struct LevelChange {
     pub parcels: Vec<Parcel>,
 }
 
-
 #[derive(Debug)]
 pub struct TimeStamp(pub SystemTime);
 
-impl TimeStamp{
-  fn now() -> Self{
-    Self(SystemTime::now())
-  }
+impl TimeStamp {
+    fn now() -> Self {
+        Self(SystemTime::now())
+    }
 }
 
-impl Default for TimeStamp
-{
-  fn default() -> Self {
-      Self(SystemTime::now())
-  }
+impl Default for TimeStamp {
+    fn default() -> Self {
+        Self(SystemTime::now())
+    }
 }
 
 #[derive(Debug, Component, Reflect)]

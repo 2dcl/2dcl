@@ -13,7 +13,7 @@ mod web_utils;
 mod plugin {
     use bevy::app::{App, Plugin};
     use bevy::prelude::*;
-    use bevy::render::{RenderApp, RenderSet};
+    use bevy::render::{Render, RenderApp, RenderSet};
 
     use super::*;
 
@@ -35,19 +35,15 @@ mod plugin {
                 .insert_resource(tracking_tracker)
                 .insert_resource(data_smuggler.clone())
                 .insert_resource(CaptureState::Idle)
-                .add_systems(First,management::clean_cameras)
+                .add_systems(First, management::clean_cameras)
                 .add_systems(First, management::move_camera_buffers)
                 .add_systems(PostUpdate, management::sync_tracking_cameras)
-                .add_systems(PostUpdate,
-                    management::start_tracking_orthographic_camera,
-                );
+                .add_systems(PostUpdate, management::start_tracking_orthographic_camera);
 
             #[cfg(feature = "gif")]
             {
                 app.add_event::<formats::gif::CaptureGifRecording>()
-                    .add_system(
-                        formats::gif::capture_gif_recording.in_base_set(PostUpdate),
-                    );
+                    .add_system(formats::gif::capture_gif_recording.in_base_set(PostUpdate));
 
                 #[cfg(not(target_arch = "wasm32"))]
                 app.add_system(
@@ -61,7 +57,8 @@ mod plugin {
                     .add_systems(PostUpdate, formats::png::save_single_frame);
 
                 #[cfg(not(target_arch = "wasm32"))]
-                app.add_systems(Last,
+                app.add_systems(
+                    Last,
                     management::clean_unmonitored_tasks::<formats::png::SaveFrameTask>,
                 );
             }
@@ -71,7 +68,7 @@ mod plugin {
 
             render_app
                 .insert_resource(data_smuggler)
-                .add_system(render::smuggle_frame.in_set(RenderSet::Render));
+                .add_systems(Render, render::smuggle_frame.in_set(RenderSet::Render));
         }
     }
 }

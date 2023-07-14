@@ -49,14 +49,20 @@ impl Plugin for SceneLoaderPlugin {
         app.insert_resource(DownloadQueue::default())
             .insert_resource(DespawnedEntities::default())
             .insert_resource(SpawningQueue::default())
-            .add_system(level_changer.before(scene_manager))
-            .add_system(scene_manager.after(level_changer))
-            .add_system(scene_version_downloader)
-            .add_system(downloading_scenes_task_handler)
-            .add_system(downloading_version_task_handler)
-            .add_system(loading_sprites_task_handler)
-            .add_system(loading_animation)
-            .add_system(
+            .add_systems(Update, level_changer.before(scene_manager))
+            .add_systems(Update, scene_manager.after(level_changer))
+            .add_systems(
+                Update,
+                (
+                    scene_version_downloader,
+                    downloading_scenes_task_handler,
+                    downloading_version_task_handler,
+                    loading_sprites_task_handler,
+                    loading_animation,
+                ),
+            )
+            .add_systems(
+                Update,
                 spawning_queue_cleaner
                     .before(level_changer)
                     .before(scene_manager)
@@ -65,7 +71,7 @@ impl Plugin for SceneLoaderPlugin {
                     .before(loading_sprites_task_handler)
                     .before(downloading_scenes_task_handler),
             )
-            .add_system(default_scenes_despawner.before(scene_manager));
+            .add_systems(Update, default_scenes_despawner.before(scene_manager));
     }
 }
 

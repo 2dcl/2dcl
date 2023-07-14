@@ -54,10 +54,19 @@ pub fn preview_scene(source_path: std::path::PathBuf, destination_path: std::pat
             source_path,
             destination_path,
         })
-        .add_systems(level_switch. collider_debugger, manual_refresh, ui::toggle_ui, loading_animation, loading_sprites_task_handler)
-        .add_systems(Startup,ui::setup)
+        .add_systems(
+            Update,
+            (
+                level_switch,
+                collider_debugger,
+                manual_refresh,
+                ui::toggle_ui,
+                loading_animation,
+                loading_sprites_task_handler,
+            ),
+        )
         .add_asset::<SceneAsset>()
         .init_asset_loader::<SceneAssetLoader>()
-        .init_resource::<bevy_console::ConsoleOpen>()
+        //.init_resource::<bevy_console::ConsoleOpen>()
         .run();
 }

@@ -5,7 +5,7 @@ use crate::components::{LevelChange, PlayerInputState};
 use crate::renderer::constants::*;
 use crate::{components, resources};
 use bevy::{core_pipeline::clear_color::ClearColorConfig, prelude::*, sprite::Anchor};
-use bevy_console::ConsoleOpen;
+//use bevy_console::ConsoleOpen;
 use dcl2d_ecs_v1::collision_type::CollisionType;
 use dcl_common::Parcel;
 
@@ -19,10 +19,9 @@ pub struct LevelChangeStackData {
 
 impl Plugin for PlayerPlugin {
     fn build(&self, app: &mut App) {
-        app.add_startup_system(spawn_player)
-            .add_system(player_interact)
-            .add_system(player_input_state_update.before(level_changer))
-            .add_system(player_movement);
+        app.add_systems(Startup, spawn_player)
+            .add_systems(Update, (player_interact, player_movement))
+            .add_systems(Update, player_input_state_update.before(level_changer));
     }
 }
 
@@ -41,8 +40,8 @@ pub fn make_player_animator(
 pub fn update_player_scale(
     new_scale: f32,
     camera_size: f32,
-    mut player_transform: &mut Transform,
-    mut interact_icon_transform: &mut Transform,
+    player_transform: &mut Transform,
+    interact_icon_transform: &mut Transform,
     orthografic_projection: &mut OrthographicProjection,
     animator: &components::Animator,
 ) {
@@ -166,9 +165,9 @@ fn player_movement(
     //console: Res<ConsoleOpen>,
     config: Res<resources::Config>,
 ) {
-  //  if console.open {
-  //      return;
-  //  }
+    //  if console.open {
+    //      return;
+    //  }
 
     let result = player_query.get_single_mut();
 

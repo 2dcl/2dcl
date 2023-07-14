@@ -15,8 +15,8 @@ pub fn setup(mut commands: Commands, asset_server: Res<AssetServer>) {
     let canvas = commands
         .spawn(NodeBundle {
             style: Style {
-              width: Val::Percent(100.0),
-              height: Val::Percent(100.0),
+                width: Val::Percent(100.0),
+                height: Val::Percent(100.0),
                 align_items: AlignItems::End,
                 justify_content: JustifyContent::Start,
                 ..default()

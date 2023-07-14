@@ -109,7 +109,7 @@ pub struct SceneMakerPlugin;
 
 impl Plugin for SceneMakerPlugin {
     fn build(&self, app: &mut App) {
-        app.add_startup_system(setup);
+        app.add_systems(Startup, setup);
     }
 }
 

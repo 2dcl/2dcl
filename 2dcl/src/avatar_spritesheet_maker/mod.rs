@@ -24,7 +24,7 @@ use bevy::{
 use bevy_spritesheet_maker::data::ActiveRecorders;
 use bevy_spritesheet_maker::formats::png::is_ready_to_export;
 use bevy_spritesheet_maker::{CaptureState, MediaCapture};
-use bevy_toon_shader::{ToonShaderMainCamera, ToonShaderMaterial, ToonShaderPlugin, ToonShaderSun};
+//use bevy_toon_shader::{ToonShaderMainCamera, ToonShaderMaterial, ToonShaderPlugin, ToonShaderSun};
 use catalyst::{entity_files::SceneFile, ContentClient};
 use glob::glob;
 use serde::{Deserialize, Serialize};
@@ -62,7 +62,6 @@ pub fn start(eth_adress: &str) {
     };
     App::new()
         .insert_resource(resources::Config::from_config_file())
-
         .add_plugins(
             DefaultPlugins
                 .build()
@@ -77,11 +76,11 @@ pub fn start(eth_adress: &str) {
                     ..default()
                 }),
         )
-        .add_plugin(ScheduleRunnerPlugin::run_loop(Duration::from_secs_f64(
-          1.0 / 60.0,
+        .add_plugins(ScheduleRunnerPlugin::run_loop(Duration::from_secs_f64(
+            1.0 / 60.0,
         )))
-        .add_plugin(bevy_spritesheet_maker::BevyCapturePlugin)
-        .add_plugin(Material2dPlugin::<PostProcessingMaterial>::default())
+        .add_plugins(bevy_spritesheet_maker::BevyCapturePlugin)
+        .add_plugins(Material2dPlugin::<PostProcessingMaterial>::default())
         //.add_plugin(ToonShaderPlugin)
         .insert_resource(AmbientLight {
             color: Color::WHITE,
@@ -89,11 +88,9 @@ pub fn start(eth_adress: &str) {
         })
         .insert_resource(State::LoadingGltf)
         .insert_resource(avatar_properties)
-        .add_startup_system(setup)
-        .add_system(material_update)
-        .add_system(state_updater.after(setup_gltf))
-        .add_system(setup_gltf)
-        .add_system(finish)
+        .add_systems(Startup, setup)
+        .add_systems(Update, (material_update, setup_gltf, finish))
+        .add_systems(Update, state_updater.after(setup_gltf))
         .run();
 }
 
@@ -479,10 +476,10 @@ fn material_update(
     assets_gltf: Res<Assets<Gltf>>,
     mut standard_materials: ResMut<Assets<StandardMaterial>>,
     avatar_properties: Res<AvatarProperties>,
-    mut commands: Commands,
-    query: Query<(Entity, &Handle<StandardMaterial>)>,
-   // mut toon_materials: ResMut<Assets<ToonShaderMaterial>>,
-    config: Res<resources::Config>,
+   // mut commands: Commands,
+   // query: Query<(Entity, &Handle<StandardMaterial>)>,
+    // mut toon_materials: ResMut<Assets<ToonShaderMaterial>>,
+   // config: Res<resources::Config>,
 ) {
     for (_, gltf) in assets_gltf.iter() {
         for (material_name, material) in &gltf.named_materials {
@@ -508,7 +505,7 @@ fn material_update(
         }
     }
 
-   /* if config.avatar.cell_shading {
+    /* if config.avatar.cell_shading {
         for (entity, material) in query.iter() {
             let material: &StandardMaterial = standard_materials.get(material).unwrap();
             let toon_material = toon_materials.add(ToonShaderMaterial {
@@ -648,7 +645,7 @@ fn setup(
         },
         post_processing_pass_layer,
         UiCameraConfig { show_ui: true },
-        ToonShaderMainCamera,
+        // ToonShaderMainCamera,
     ));
 
     // Light
@@ -672,7 +669,7 @@ fn setup(
             .into(),
             ..default()
         },
-        ToonShaderSun,
+        // ToonShaderSun,
     ));
 
     if config.avatar.ambient_light {
