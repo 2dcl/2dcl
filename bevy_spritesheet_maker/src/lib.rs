@@ -43,12 +43,12 @@ mod plugin {
             #[cfg(feature = "gif")]
             {
                 app.add_event::<formats::gif::CaptureGifRecording>()
-                    .add_system(formats::gif::capture_gif_recording.in_base_set(PostUpdate));
+                    .add_systems(PostUpdate, formats::gif::capture_gif_recording);
 
                 #[cfg(not(target_arch = "wasm32"))]
-                app.add_system(
-                    management::clean_unmonitored_tasks::<formats::gif::SaveGifRecording>
-                        .in_base_set(Last),
+                app.add_systems(
+                    Last,
+                    management::clean_unmonitored_tasks::<formats::gif::SaveGifRecording>,
                 );
             }
             #[cfg(feature = "png")]

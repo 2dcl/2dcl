@@ -476,10 +476,10 @@ fn material_update(
     assets_gltf: Res<Assets<Gltf>>,
     mut standard_materials: ResMut<Assets<StandardMaterial>>,
     avatar_properties: Res<AvatarProperties>,
-   // mut commands: Commands,
-   // query: Query<(Entity, &Handle<StandardMaterial>)>,
+    // mut commands: Commands,
+    // query: Query<(Entity, &Handle<StandardMaterial>)>,
     // mut toon_materials: ResMut<Assets<ToonShaderMaterial>>,
-   // config: Res<resources::Config>,
+    // config: Res<resources::Config>,
 ) {
     for (_, gltf) in assets_gltf.iter() {
         for (material_name, material) in &gltf.named_materials {
