@@ -15,7 +15,7 @@ pub struct MyConsolePlugin;
 
 impl Plugin for MyConsolePlugin {
     fn build(&self, app: &mut App) {
-        app.add_plugin(ConsolePlugin)
+        app.add_plugins(ConsolePlugin)
             .add_console_command::<TeleportCommand, _>(teleport_command)
             .add_console_command::<ReloadConfig, _>(reload_config)
             .add_console_command::<WhereCommand, _>(where_command);

@@ -40,8 +40,8 @@ use screen_fade::ScreenFadePlugin;
 
 use bevy::render::render_resource::{FilterMode, SamplerDescriptor};
 
-//mod console;
-//use console::MyConsolePlugin;
+mod console;
+use console::MyConsolePlugin;
 
 use crate::resources;
 
@@ -54,10 +54,13 @@ pub fn start() {
 
     let mut app = App::new();
     setup(&mut app, "2dcl".to_string(), current_path);
-    app.add_plugins(SceneLoaderPlugin)
-        .add_plugins(SceneMakerPlugin)
-        .add_plugins(ScenesIOPlugin)
-        .run();
+    app.add_plugins((
+        SceneLoaderPlugin,
+        SceneMakerPlugin,
+        ScenesIOPlugin,
+        MyConsolePlugin,
+    ))
+    .run();
 }
 
 pub fn setup<P>(app: &mut bevy::app::App, window_title: String, working_dir: P)
