@@ -23,6 +23,7 @@ function startApp(provider) {
 /**********************************************************/
 
 const chainId = await window.ethereum.request({ method: 'eth_chainId' });
+let metamaskAccounts = [];
 
 window.ethereum.on('chainChanged', handleChainChanged);
 
@@ -44,8 +45,9 @@ window.ethereum.request({ method: 'eth_accounts' })
 window.ethereum.on('accountsChanged', handleAccountsChanged);
 
 function handleAccountsChanged(accounts) {
+  metamaskAccounts = accounts;
   if (accounts.length === 0) {
-    ethereumButton.classList.remove('hidden')
+    connectButton.classList.remove('hidden')
     connected.classList.add('hidden')
   } else if (accounts[0] !== currentAccount) {
     currentAccount = accounts[0];
@@ -57,16 +59,32 @@ function handleAccountsChanged(accounts) {
 /* Access the user's accounts (per EIP-1102) */
 /*********************************************/
 
-const ethereumButton = document.querySelector('.enableEthereumButton');
+const connectButton = document.querySelector('.connectButton');
 const showAccount = document.querySelector('.showAccount');
 const connected = document.querySelector('#connected');
 
-ethereumButton.addEventListener('click', () => {
+connectButton.addEventListener('click', () => {
   getAccount();
 });
 
+async function getAccount() {
+  const accounts = await window.ethereum.request(
+    { method: 'eth_requestAccounts' })
+    .catch((err) => {
+      if (err.code === 4001) {
+        console.log('Please connect to MetaMask.');
+      } else {
+        // console.error(err);
+      }
+    });
+  metamaskAccounts = accounts;
+  const account = accounts[0];
+  storeAccount(account);
+  return account;
+}
+
 function storeAccount(account) {
-  ethereumButton.classList.add('hidden')
+  connectButton.classList.add('hidden')
   showAccount.innerHTML = account;
   connected.classList.remove('hidden')
   fetch('/address', {
@@ -79,16 +97,55 @@ function storeAccount(account) {
   });
 }
 
-async function getAccount() {
-  const accounts = await window.ethereum.request(
-    { method: 'eth_requestAccounts' })
-    .catch((err) => {
-      if (err.code === 4001) {
-        console.log('Please connect to MetaMask.');
-      } else {
-        // console.error(err);
-      }
+/*********************************************/
+/* Sign Deployment */
+/*********************************************/
+const signButton = document.querySelector(".signButton")
+const signed = document.querySelector('#signed')
+const signature = document.querySelector('.signature')
+
+if (signButton) {
+  signButton.addEventListener('click', () => {
+    signPayload();
+  })
+}
+
+const toHexString = (bytes) => {
+  return Array.from(bytes, (byte) => {
+    return ('0' + (byte & 0xff).toString(16)).slice(-2);
+  }).join('');
+};
+
+function storeSignature(account, signature) {
+  fetch('/signature', {
+      method: 'POST',
+      headers: {
+          'Accept': 'application/json',
+          'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({ by: { "address": account }, "signature": signature })
+  });
+}
+
+
+async function signPayload() {
+  const urlParams = new URLSearchParams(window.location.search);
+  const payload = urlParams.get('payload');
+
+  try {
+    const from = metamaskAccounts[0];
+
+    let enc = new TextEncoder(); 
+    const msg = `0x${toHexString(enc.encode(payload))}`;
+
+    const sign = await ethereum.request({
+      method: 'personal_sign',
+      params: [msg, from],
     });
-  const account = accounts[0];
-  storeAccount(account);
+
+    storeSignature(from, sign);
+    signed.classList.remove('hidden');
+  } catch (err) {
+    console.error(err);
+  }
 }
