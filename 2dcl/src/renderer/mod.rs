@@ -1,7 +1,7 @@
 use std::{
     path::{Path, PathBuf},
     str::FromStr,
-    time::Duration,
+    time::Duration, default,
 };
 
 use bevy::{asset::ChangeWatcher, log::LogPlugin, prelude::*};
@@ -43,10 +43,11 @@ use bevy::render::render_resource::{FilterMode, SamplerDescriptor};
 mod console;
 use console::MyConsolePlugin;
 
-use crate::resources;
+use crate::{resources, states::AppState, metamask_login::MetamaskLoginPlugin};
 
 //mod roads_updater;
 //use roads_updater::update_roads;
+
 
 pub fn start() {
     let current_path = std::env::current_exe().unwrap();
@@ -54,25 +55,29 @@ pub fn start() {
 
     let mut app = App::new();
     setup(&mut app, "2dcl".to_string(), current_path);
+   
     app.add_plugins((
-        SceneLoaderPlugin,
-        SceneMakerPlugin,
-        ScenesIOPlugin,
-        MyConsolePlugin,
+       // SceneLoaderPlugin,
+       // SceneMakerPlugin,
+       // ScenesIOPlugin,
+       // MyConsolePlugin,
+        MetamaskLoginPlugin
     ))
+    .add_state::<AppState>()
     .run();
 }
+
 
 pub fn setup<P>(app: &mut bevy::app::App, window_title: String, working_dir: P)
 where
     P: AsRef<Path>,
 {
-    let config = resources::Config::from_config_file();
-    update_avatar(&config.avatar.eth_address);
+   // let config = resources::Config::from_config_file();
+   // update_avatar(&config.avatar.eth_address);
 
-    std::env::set_current_dir(&working_dir).unwrap();
-    let absolute_base_dir = std::fs::canonicalize(PathBuf::from_str(".").unwrap()).unwrap();
-    std::env::set_var("CARGO_MANIFEST_DIR", absolute_base_dir);
+ //   std::env::set_current_dir(&working_dir).unwrap();
+ //   let absolute_base_dir = std::fs::canonicalize(PathBuf::from_str(".").unwrap()).unwrap();
+ //   std::env::set_var("CARGO_MANIFEST_DIR", absolute_base_dir);
 
     app.add_plugins(
         DefaultPlugins
@@ -95,14 +100,14 @@ where
             })
             .disable::<LogPlugin>(),
     )
-    .add_plugins(DebugPlugin)
-    .add_plugins(ScreenFadePlugin)
-    .add_plugins(AnimationsPlugin)
-    .add_plugins(PlayerPlugin)
-    .add_plugins(TransparencyPlugin)
-    .add_plugins(CollisionPlugin)
-    .insert_resource(Msaa::Off)
-    .insert_resource(config);
+  //  .add_plugins(DebugPlugin)
+  //  .add_plugins(ScreenFadePlugin)
+  //  .add_plugins(AnimationsPlugin)
+   // .add_plugins(PlayerPlugin)
+    //.add_plugins(TransparencyPlugin)
+    //.add_plugins(CollisionPlugin)
+    .insert_resource(Msaa::Off);
+   // .insert_resource(config);
 }
 
 pub fn update_avatar(eth_adress: &str) {

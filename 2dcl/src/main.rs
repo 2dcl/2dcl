@@ -5,7 +5,9 @@ mod avatar_spritesheet_maker;
 mod previewer;
 mod renderer;
 mod where_command;
+mod metamask_login;
 
+pub mod states;
 pub mod bundles;
 pub mod components;
 pub mod resources;
