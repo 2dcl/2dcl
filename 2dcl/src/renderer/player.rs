@@ -3,12 +3,12 @@ use super::screen_fade::FadeDirection;
 use super::{animations::*, collision::*, screen_fade};
 use crate::components::{LevelChange, PlayerInputState};
 use crate::renderer::constants::*;
+use crate::states::AppState;
 use crate::{components, resources};
 use bevy::{core_pipeline::clear_color::ClearColorConfig, prelude::*, sprite::Anchor};
 use bevy_console::ConsoleOpen;
 use dcl2d_ecs_v1::collision_type::CollisionType;
 use dcl_common::Parcel;
-
 pub struct PlayerPlugin;
 
 #[derive(Debug)]
@@ -19,9 +19,17 @@ pub struct LevelChangeStackData {
 
 impl Plugin for PlayerPlugin {
     fn build(&self, app: &mut App) {
-        app.add_systems(Startup, spawn_player)
-            .add_systems(Update, (player_interact, player_movement))
-            .add_systems(Update, player_input_state_update.before(level_changer));
+        app.add_systems(OnEnter(AppState::InGame), spawn_player)
+            .add_systems(
+                Update,
+                (player_interact, player_movement).run_if(in_state(AppState::InGame)),
+            )
+            .add_systems(
+                Update,
+                player_input_state_update
+                    .before(level_changer)
+                    .run_if(in_state(AppState::InGame)),
+            );
     }
 }
 

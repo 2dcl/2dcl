@@ -3,8 +3,10 @@ use super::scenes_io::{
     get_parcel_file_data, get_scene, read_scene_file, refresh_path, SceneData, SceneFilesMap,
 };
 use crate::bundles::{self, get_parcels_center_location, loading_animation};
+use crate::renderer::constants::*;
 use crate::renderer::scene_maker::*;
 use crate::renderer::scenes_io::read_3dcl_scene;
+use crate::states::AppState;
 use crate::{
     components::{self, *},
     resources,
@@ -15,6 +17,8 @@ use catalyst::entity_files::ContentFile;
 use catalyst::{ContentClient, Server};
 use dcl_common::Parcel;
 use futures_lite::future;
+use image::io::Reader as ImageReader;
+use image::{DynamicImage, ImageFormat};
 use rmp_serde::*;
 use serde::Deserialize;
 use std::fs;
@@ -22,10 +26,6 @@ use std::path::Path;
 use std::path::PathBuf;
 use std::str::FromStr;
 use std::time::SystemTime;
-
-use crate::renderer::constants::*;
-use image::io::Reader as ImageReader;
-use image::{DynamicImage, ImageFormat};
 
 pub struct SceneLoaderPlugin;
 
@@ -49,8 +49,18 @@ impl Plugin for SceneLoaderPlugin {
         app.insert_resource(DownloadQueue::default())
             .insert_resource(DespawnedEntities::default())
             .insert_resource(SpawningQueue::default())
-            .add_systems(Update, level_changer.before(scene_manager))
-            .add_systems(Update, scene_manager.after(level_changer))
+            .add_systems(
+                Update,
+                level_changer
+                    .before(scene_manager)
+                    .run_if(in_state(AppState::InGame)),
+            )
+            .add_systems(
+                Update,
+                scene_manager
+                    .after(level_changer)
+                    .run_if(in_state(AppState::InGame)),
+            )
             .add_systems(
                 Update,
                 (
@@ -59,7 +69,8 @@ impl Plugin for SceneLoaderPlugin {
                     downloading_version_task_handler,
                     loading_sprites_task_handler,
                     loading_animation,
-                ),
+                )
+                    .run_if(in_state(AppState::InGame)),
             )
             .add_systems(
                 Update,
@@ -69,9 +80,15 @@ impl Plugin for SceneLoaderPlugin {
                     .before(scene_version_downloader)
                     .before(downloading_version_task_handler)
                     .before(loading_sprites_task_handler)
-                    .before(downloading_scenes_task_handler),
+                    .before(downloading_scenes_task_handler)
+                    .run_if(in_state(AppState::InGame)),
             )
-            .add_systems(Update, default_scenes_despawner.before(scene_manager));
+            .add_systems(
+                Update,
+                default_scenes_despawner
+                    .before(scene_manager)
+                    .run_if(in_state(AppState::InGame)),
+            );
     }
 }
 

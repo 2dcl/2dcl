@@ -1,7 +1,5 @@
 use bevy::{prelude::*, sprite::collide_aabb::collide};
 
-use crate::{bundles::get_translation_by_anchor, components};
-
 use super::{
     constants::{
         PLAYER_VISIBILITY_BOX, PLAYER_VISIBILITY_BOX_OFFSET, TRANSPARENCY_FADE_DURATION_IN_SECONDS,
@@ -9,19 +7,27 @@ use super::{
     },
     screen_fade,
 };
+use crate::states::AppState;
+use crate::{bundles::get_translation_by_anchor, components};
 
 pub struct TransparencyPlugin;
 
 impl Plugin for TransparencyPlugin {
     fn build(&self, app: &mut App) {
-        app.add_systems(Update, update_transparency.after(screen_fade::update_fade))
-            .add_systems(
-                Update,
-                (
-                    check_elements_overlapping_parcels,
-                    check_elements_on_top_of_player,
-                ),
-            );
+        app.add_systems(
+            Update,
+            update_transparency
+                .after(screen_fade::update_fade)
+                .run_if(in_state(AppState::InGame)),
+        )
+        .add_systems(
+            Update,
+            (
+                check_elements_overlapping_parcels,
+                check_elements_on_top_of_player,
+            )
+                .run_if(in_state(AppState::InGame)),
+        );
     }
 }
 

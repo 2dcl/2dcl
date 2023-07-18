@@ -5,9 +5,9 @@ use tokio::process::Command;
 
 mod server;
 
-#[derive(Debug, Default, Clone, Deserialize)]
+#[derive(Debug, Default, Clone, Deserialize, PartialEq)]
 pub struct EthAddress {
-    address: String,
+    pub address: String,
 }
 
 #[derive(Debug, Default)]

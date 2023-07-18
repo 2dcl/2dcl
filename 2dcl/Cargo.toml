@@ -37,3 +37,4 @@ tempdir = "0.3"
 bevy_spritesheet_maker = {path= "../bevy_spritesheet_maker"}
 toml = "0.7.3"
 bevy_console = "0.8.0"
+ethereum-adapter = {path ="../ethereum-adapter"}

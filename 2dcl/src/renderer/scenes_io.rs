@@ -1,3 +1,8 @@
+use super::dcl_3d_scene;
+use super::error::ScenesIOError;
+use super::scene_maker::make_default_background_entities;
+use super::scene_maker::{is_road, make_road_scene, RoadsData};
+use crate::states::AppState;
 use bevy::prelude::*;
 use dcl_common::Parcel;
 use glob::glob;
@@ -8,11 +13,6 @@ use std::fs::File;
 use std::io::BufReader;
 use std::path::Path;
 use std::path::PathBuf;
-
-use super::dcl_3d_scene;
-use super::error::ScenesIOError;
-use super::scene_maker::make_default_background_entities;
-use super::scene_maker::{is_road, make_road_scene, RoadsData};
 
 #[derive(Debug, Clone, Default, Resource)]
 pub struct SceneFilesMap {
@@ -37,7 +37,7 @@ pub struct ScenesIOPlugin;
 
 impl Plugin for ScenesIOPlugin {
     fn build(&self, app: &mut App) {
-        app.add_systems(Startup, setup);
+        app.add_systems(OnEnter(AppState::InGame), setup);
     }
 }
 

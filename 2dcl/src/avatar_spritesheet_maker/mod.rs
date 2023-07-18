@@ -25,14 +25,14 @@ use bevy_spritesheet_maker::data::ActiveRecorders;
 use bevy_spritesheet_maker::formats::png::is_ready_to_export;
 use bevy_spritesheet_maker::{CaptureState, MediaCapture};
 //use bevy_toon_shader::{ToonShaderMainCamera, ToonShaderMaterial, ToonShaderPlugin, ToonShaderSun};
+use crate::resources;
+use crate::states::AppState;
 use catalyst::{entity_files::SceneFile, ContentClient};
 use glob::glob;
 use serde::{Deserialize, Serialize};
 use std::f32::consts::PI;
 use std::path::{Path, PathBuf};
 use std::time::Duration;
-
-use crate::resources;
 
 const FRAMES_IDLE: usize = 5;
 const FRAMES_RUNNING: usize = 10;
@@ -88,9 +88,17 @@ pub fn start(eth_adress: &str) {
         })
         .insert_resource(State::LoadingGltf)
         .insert_resource(avatar_properties)
-        .add_systems(Startup, setup)
-        .add_systems(Update, (material_update, setup_gltf, finish))
-        .add_systems(Update, state_updater.after(setup_gltf))
+        .add_systems(OnEnter(AppState::InGame), setup)
+        .add_systems(
+            Update,
+            (material_update, setup_gltf, finish).run_if(in_state(AppState::InGame)),
+        )
+        .add_systems(
+            Update,
+            state_updater
+                .after(setup_gltf)
+                .run_if(in_state(AppState::InGame)),
+        )
         .run();
 }
 

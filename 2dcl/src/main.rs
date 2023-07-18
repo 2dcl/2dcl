@@ -2,15 +2,15 @@
 use dcl_common::Result;
 
 mod avatar_spritesheet_maker;
+mod metamask_login;
 mod previewer;
 mod renderer;
 mod where_command;
-mod metamask_login;
 
-pub mod states;
 pub mod bundles;
 pub mod components;
 pub mod resources;
+pub mod states;
 
 use clap::Parser;
 

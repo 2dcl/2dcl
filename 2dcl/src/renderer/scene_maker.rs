@@ -1,3 +1,6 @@
+use super::constants::{PARCEL_SIZE_X, PARCEL_SIZE_Y};
+use super::scenes_io::SceneData;
+use crate::states::AppState;
 use bevy::prelude::*;
 use dcl_common::{Parcel, Result};
 use rand::prelude::*;
@@ -8,9 +11,6 @@ use std::fs::File;
 use std::io::BufReader;
 use std::path::PathBuf;
 use std::str::FromStr;
-
-use super::constants::{PARCEL_SIZE_X, PARCEL_SIZE_Y};
-use super::scenes_io::SceneData;
 
 const ROADS_DATA_MP_FILE: &str = "./assets/roads/roads.mp";
 
@@ -109,7 +109,7 @@ pub struct SceneMakerPlugin;
 
 impl Plugin for SceneMakerPlugin {
     fn build(&self, app: &mut App) {
-        app.add_systems(Startup, setup);
+        app.add_systems(OnEnter(AppState::InGame), setup);
     }
 }
 

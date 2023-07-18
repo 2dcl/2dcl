@@ -1,3 +1,5 @@
+use crate::components;
+use crate::states::AppState;
 use bevy::prelude::*;
 use bevy::utils::Duration;
 use serde::Deserialize;
@@ -5,8 +7,6 @@ use std::f32::EPSILON;
 use std::fs::File;
 use std::path::Path;
 use std::path::PathBuf;
-
-use crate::components;
 
 #[derive(Deserialize, Debug, Clone, PartialEq, Eq)]
 pub enum AnimDirection {
@@ -28,7 +28,10 @@ pub struct AnimationsPlugin;
 
 impl Plugin for AnimationsPlugin {
     fn build(&self, app: &mut App) {
-        app.add_systems(Update, update_animations);
+        app.add_systems(
+            Update,
+            update_animations.run_if(in_state(AppState::InGame)),
+        );
     }
 }
 

@@ -5,6 +5,7 @@ use crate::renderer::scene_loader::SpawningQueue;
 use crate::renderer::scenes_io::read_scene_u8;
 use crate::renderer::scenes_io::SceneData;
 use crate::resources;
+use crate::states::AppState;
 use bevy::asset::Handle;
 use bevy::prelude::*;
 use bevy::reflect::TypePath;
@@ -68,8 +69,8 @@ impl Plugin for SceneHotReloadPlugin {
     fn build(&self, app: &mut App) {
         app.insert_resource(DespawnedEntities::default())
             .insert_resource(SpawningQueue::default())
-            .add_systems(Update, (scene_reload, level_change))
-            .add_systems(Startup, setup);
+            .add_systems(Update, (scene_reload, level_change).run_if(in_state(AppState::InGame)))
+            .add_systems(OnEnter(AppState::InGame), setup);
     }
 }
 

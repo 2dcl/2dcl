@@ -1,12 +1,12 @@
-use bevy::prelude::*;
-use bevy::sprite::collide_aabb::collide;
-use dcl2d_ecs_v1::collision_type::CollisionType;
-use dcl_common::Parcel;
-
+use crate::states::AppState;
 use crate::{
     components::{BoxCollider, LevelChange, Scene},
     resources,
 };
+use bevy::prelude::*;
+use bevy::sprite::collide_aabb::collide;
+use dcl2d_ecs_v1::collision_type::CollisionType;
+use dcl_common::Parcel;
 
 pub const TILE_SIZE: f32 = 1.0;
 
@@ -29,7 +29,7 @@ pub struct CollisionPlugin;
 impl Plugin for CollisionPlugin {
     fn build(&self, app: &mut App) {
         app.init_resource::<resources::CollisionMap>()
-            .add_systems(Startup, setup);
+            .add_systems(OnEnter(AppState::InGame), setup);
     }
 }
 
