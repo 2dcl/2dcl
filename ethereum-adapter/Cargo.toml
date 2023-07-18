@@ -1,0 +1,20 @@
+[package]
+name = "ethereum-adapter"
+version = "0.1.0"
+edition = "2021"
+
+[[bin]]
+name = "ethereum-adapter-webserver"
+path = "src/server.rs"
+
+[lib]
+path = "src/lib.rs"
+
+[dependencies]
+rocket = { version = "=0.5.0-rc.3", features = ["json"] }
+reqwest = { version = "0.11", features = ["json"] }
+tokio = { version = "1", features = ["full"] }
+dcl-common = { path = "../dcl-common" }
+open = "5.0.0"
+serde = { version = "1.0", features = ["derive"] }
+serde_json = "1.0"
