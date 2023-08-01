@@ -7,6 +7,21 @@ use bevy::{
 use ethereum_adapter::{EthAddress, EthereumAdapter};
 use futures_lite::future;
 use std::{thread, time};
+
+const CLEAR_COLOR: Color = Color::rgb(0.12, 0.1, 0.25);
+
+const NORMAL_BUTTON: Color = Color::rgb(0.43, 0.04, 0.12);
+const HOVERED_BUTTON: Color = Color::CRIMSON;
+const PRESSED_BUTTON: Color = Color::rgb(1.72, 0.16, 0.48);
+
+const NORMAL_TEXT: Color = Color::rgb(0.85, 0.85, 0.85);
+const HOVERED_TEXT: Color = Color::WHITE;
+const PRESSED_TEXT: Color = Color::WHITE;
+
+const NORMAL_BORDER: Color = Color::BLACK;
+const HOVERED_BORDER: Color = Color::WHITE;
+const PRESSED_BORDER: Color = Color::WHITE;
+
 pub struct MetamaskLoginPlugin;
 
 #[derive(Component)]
@@ -34,20 +49,6 @@ impl Plugin for MetamaskLoginPlugin {
             .add_systems(OnExit(AppState::MetamaskLogin), exit);
     }
 }
-
-const CLEAR_COLOR: Color = Color::rgb(0.12, 0.1, 0.25);
-
-const NORMAL_BUTTON: Color = Color::rgb(0.43, 0.04, 0.12);
-const HOVERED_BUTTON: Color = Color::CRIMSON;
-const PRESSED_BUTTON: Color = Color::rgb(1.72, 0.16, 0.48);
-
-const NORMAL_TEXT: Color = Color::rgb(0.85, 0.85, 0.85);
-const HOVERED_TEXT: Color = Color::WHITE;
-const PRESSED_TEXT: Color = Color::WHITE;
-
-const NORMAL_BORDER: Color = Color::BLACK;
-const HOVERED_BORDER: Color = Color::WHITE;
-const PRESSED_BORDER: Color = Color::WHITE;
 
 fn display_text(mut display_text_query: Query<(&mut DisplayText, &mut Text)>, time: Res<Time>) {
     if let Ok((mut display_text, mut text)) = display_text_query.get_single_mut() {
@@ -278,4 +279,53 @@ async fn login() -> dcl_common::Result<Option<EthAddress>> {
         println!("Awaiting for login...");
     }
     Ok(adapter.address())
+}
+
+#[cfg(test)]
+mod test {
+    use super::{handle_tasks, WebLogin};
+    use crate::{metamask_login::AvatarMaker, resources::Config, states::AppState};
+    use bevy::{prelude::*, tasks::AsyncComputeTaskPool};
+    use ethereum_adapter::EthAddress;
+
+    #[test]
+    fn eth_address_updates_when_web_task_finishes() {
+        let mut app = App::new();
+        app.add_state::<AppState>();
+        app.add_plugins(bevy::prelude::TaskPoolPlugin::default());
+        app.insert_resource(Config::default());
+        app.add_systems(Update, handle_tasks);
+
+        let thread_pool = AsyncComputeTaskPool::get();
+        let new_address = EthAddress {
+            address: "new_address".to_string(),
+        };
+        let new_address_clone = new_address.clone();
+
+        let task = thread_pool.spawn(async move { Some(new_address_clone) });
+        app.world.spawn(WebLogin(task));
+        app.update();
+
+        let current_address = &app.world.resource::<Config>().avatar.eth_address;
+        assert_eq!(new_address, *current_address);
+    }
+
+    #[test]
+    fn changes_states_after_avatar_making_finishes() {
+        let mut app = App::new();
+        app.add_state::<AppState>();
+        app.add_plugins(bevy::prelude::TaskPoolPlugin::default());
+        app.insert_resource(Config::default());
+        app.add_systems(Update, handle_tasks);
+
+        let thread_pool = AsyncComputeTaskPool::get();
+
+        let task = thread_pool.spawn(async move { () });
+        app.world.spawn(AvatarMaker(task));
+        app.update();
+        app.update();
+
+        let current_state = app.world.get_resource::<State<AppState>>().unwrap().get();
+        assert_eq!(AppState::InGame, *current_state);
+    }
 }
