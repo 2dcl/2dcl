@@ -28,10 +28,7 @@ pub struct AnimationsPlugin;
 
 impl Plugin for AnimationsPlugin {
     fn build(&self, app: &mut App) {
-        app.add_systems(
-            Update,
-            update_animations.run_if(in_state(AppState::InGame)),
-        );
+        app.add_systems(Update, update_animations.run_if(in_state(AppState::InGame)));
     }
 }
 

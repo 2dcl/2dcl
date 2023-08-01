@@ -26,10 +26,7 @@ impl Plugin for ScreenFadePlugin {
     fn build(&self, app: &mut App) {
         app.insert_resource(Fade::default())
             .add_event::<FadeFinished>()
-            .add_systems(
-                Update,
-                update_fade.run_if(in_state(AppState::InGame)),
-            );
+            .add_systems(Update, update_fade.run_if(in_state(AppState::InGame)));
     }
 }
 

@@ -1,5 +1,4 @@
 use std::{
-    default,
     path::{Path, PathBuf},
     str::FromStr,
     time::Duration,

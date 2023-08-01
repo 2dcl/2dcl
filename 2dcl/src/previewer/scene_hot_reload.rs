@@ -69,7 +69,10 @@ impl Plugin for SceneHotReloadPlugin {
     fn build(&self, app: &mut App) {
         app.insert_resource(DespawnedEntities::default())
             .insert_resource(SpawningQueue::default())
-            .add_systems(Update, (scene_reload, level_change).run_if(in_state(AppState::InGame)))
+            .add_systems(
+                Update,
+                (scene_reload, level_change).run_if(in_state(AppState::InGame)),
+            )
             .add_systems(OnEnter(AppState::InGame), setup);
     }
 }

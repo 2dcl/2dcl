@@ -125,7 +125,6 @@ pub fn make_player_spritesheet<P>(wearables_path: P, output_file: P) -> Result<(
 where
     P: AsRef<Path> + Clone + Debug,
 {
-    println!("make_player_spritesheet");
     let wearables = match get_wearables_data(wearables_path) {
         Ok(v) => v,
         Err(e) => return Err(e),
