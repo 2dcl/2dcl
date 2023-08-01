@@ -13,14 +13,23 @@ pub struct MetamaskLoginPlugin;
 struct WebLogin(Task<Option<EthAddress>>);
 
 #[derive(Component)]
-struct DisplayText;
+struct AvatarMaker(Task<()>);
+
+#[derive(Component)]
+enum DisplayText {
+    WatingForInput,
+    WebLogin,
+    MakingAvatar { animation_timer: Timer },
+    Loading2dcl { animation_timer: Timer },
+}
 
 impl Plugin for MetamaskLoginPlugin {
     fn build(&self, app: &mut App) {
         app.add_systems(OnEnter(AppState::MetamaskLogin), setup)
             .add_systems(
                 Update,
-                (button_system, handle_tasks).run_if(in_state(AppState::MetamaskLogin)),
+                (button_system, handle_tasks, display_text)
+                    .run_if(in_state(AppState::MetamaskLogin)),
             )
             .add_systems(OnExit(AppState::MetamaskLogin), exit);
     }
@@ -40,6 +49,46 @@ const NORMAL_BORDER: Color = Color::BLACK;
 const HOVERED_BORDER: Color = Color::WHITE;
 const PRESSED_BORDER: Color = Color::WHITE;
 
+fn display_text(mut display_text_query: Query<(&mut DisplayText, &mut Text)>, time: Res<Time>) {
+    if let Ok((mut display_text, mut text)) = display_text_query.get_single_mut() {
+        text.sections[0].value = match display_text.as_mut() {
+            DisplayText::WatingForInput => String::default(),
+            DisplayText::WebLogin => "Continue the login process in your browser.".to_string(),
+            DisplayText::MakingAvatar { animation_timer } => {
+                animation_timer.tick(time.delta());
+                format!(
+                    "Making avatar{}",
+                    get_dots(&text.sections[0].value, animation_timer)
+                )
+            }
+            DisplayText::Loading2dcl { animation_timer } => {
+                animation_timer.tick(time.delta());
+                format!(
+                    "Loading 2dcl{}",
+                    get_dots(&text.sections[0].value, animation_timer)
+                )
+            }
+        };
+    }
+
+    fn get_dots(previuos_string: &str, timer: &Timer) -> String {
+        let mut total_dots = previuos_string.matches('.').count();
+        if timer.just_finished() {
+            total_dots += 1;
+            if total_dots > 3 {
+                total_dots = 1;
+            }
+        }
+
+        let mut final_string = String::default();
+        for _ in 0..total_dots {
+            final_string += ".";
+        }
+
+        final_string
+    }
+}
+
 fn button_system(
     mut commands: Commands,
     mut interaction_query: Query<
@@ -53,7 +102,7 @@ fn button_system(
         (Changed<Interaction>, With<Button>),
     >,
     mut text_query: Query<&mut Text>,
-    mut display_text_query: Query<&mut Style, (With<DisplayText>, Without<Interaction>)>,
+    mut display_text_query: Query<&mut DisplayText>,
 ) {
     for (interaction, mut color, mut border_color, mut style, children) in &mut interaction_query {
         let mut text: Mut<'_, Text> = text_query.get_mut(children[0]).unwrap();
@@ -64,16 +113,13 @@ fn button_system(
                 border_color.0 = PRESSED_BORDER;
 
                 if let Ok(mut display_text) = display_text_query.get_single_mut() {
-                    display_text.display = Display::Flex;
+                    *display_text = DisplayText::WebLogin;
                 }
-                // Spawn new task on the AsyncComputeTaskPool
+
                 let thread_pool = AsyncComputeTaskPool::get();
                 let task = thread_pool.spawn(async move { login().unwrap() });
-                // Spawn new entity and add our new task as a component
                 commands.spawn(WebLogin(task));
                 text.sections[0].style.color = PRESSED_TEXT;
-
-                //SHOW TEXT
             }
             Interaction::Hovered => {
                 *color = HOVERED_BUTTON.into();
@@ -125,12 +171,8 @@ fn setup(mut commands: Commands, asset_server: Res<AssetServer>) {
             ));
             parent
                 .spawn(TextBundle {
-                    style: Style {
-                        display: Display::None,
-                        ..Default::default()
-                    },
                     text: Text::from_section(
-                        "Continue the login process in your browser.",
+                        "",
                         TextStyle {
                             font: asset_server.load("fonts/kongtext.ttf"),
                             font_size: 25.0,
@@ -139,7 +181,7 @@ fn setup(mut commands: Commands, asset_server: Res<AssetServer>) {
                     ),
                     ..Default::default()
                 })
-                .insert(DisplayText);
+                .insert(DisplayText::WatingForInput);
             parent
                 .spawn(ButtonBundle {
                     style: Style {
@@ -173,7 +215,6 @@ fn exit(
     mut commands: Commands,
     ui_elements: Query<Entity, &Node>,
     cameras: Query<Entity, &Camera>,
-    config: Res<Config>,
 ) {
     for ui in ui_elements.into_iter() {
         commands.entity(ui).despawn_recursive();
@@ -181,28 +222,44 @@ fn exit(
     for camera in cameras.into_iter() {
         commands.entity(camera).despawn_recursive();
     }
-    update_avatar(&config.avatar.eth_address);
 }
 
 fn handle_tasks(
     mut commands: Commands,
-    mut tasks: Query<(Entity, &mut WebLogin)>,
+    mut web_login_tasks: Query<(Entity, &mut WebLogin)>,
+    mut avatar_maker_tasks: Query<(Entity, &mut AvatarMaker)>,
     mut config: ResMut<Config>,
     mut next_state: ResMut<NextState<AppState>>,
-    mut display_text_query: Query<&mut Text, With<DisplayText>>,
+    mut display_text_query: Query<&mut DisplayText>,
 ) {
-    for (entity, mut task) in &mut tasks {
+    for (entity, mut task) in &mut web_login_tasks {
         if let Some(address) = future::block_on(future::poll_once(&mut task.0)) {
             // Add our new PbrBundle of components to our tagged entity
             if let Some(address) = address {
                 if let Ok(mut display_text) = display_text_query.get_single_mut() {
-                    display_text.sections[0].value = "Making avatar".to_string();
+                    *display_text = DisplayText::MakingAvatar {
+                        animation_timer: Timer::from_seconds(0.75, TimerMode::Repeating),
+                    };
                 }
-                config.avatar.eth_address = address;
-                next_state.set(AppState::InGame);
+                config.avatar.eth_address = address.clone();
+                let thread_pool = AsyncComputeTaskPool::get();
+                let task = thread_pool.spawn(async move { update_avatar(&address) });
+                commands.spawn(AvatarMaker(task));
             }
             // Task is complete, so remove task component from entity
             commands.entity(entity).remove::<WebLogin>();
+        }
+    }
+
+    for (entity, mut task) in &mut avatar_maker_tasks {
+        if future::block_on(future::poll_once(&mut task.0)).is_some() {
+            if let Ok(mut display_text) = display_text_query.get_single_mut() {
+                *display_text = DisplayText::Loading2dcl {
+                    animation_timer: Timer::from_seconds(0.75, TimerMode::Repeating),
+                };
+            }
+            next_state.set(AppState::InGame);
+            commands.entity(entity).remove::<AvatarMaker>();
         }
     }
 }
