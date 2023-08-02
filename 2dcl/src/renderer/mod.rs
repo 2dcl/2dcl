@@ -15,8 +15,8 @@ pub mod player;
 use ethereum_adapter::EthAddress;
 use player::PlayerPlugin;
 
-pub mod animations;
-use animations::AnimationsPlugin;
+pub mod animation;
+use animation::AnimationPlugin;
 
 pub mod collision;
 use collision::CollisionPlugin;
@@ -100,7 +100,7 @@ where
     )
     .add_plugins(DebugPlugin)
     .add_plugins(ScreenFadePlugin)
-    .add_plugins(AnimationsPlugin)
+    .add_plugins(AnimationPlugin)
     .add_plugins(PlayerPlugin)
     .add_plugins(TransparencyPlugin)
     .add_plugins(CollisionPlugin)
