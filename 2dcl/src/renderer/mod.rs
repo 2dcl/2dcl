@@ -63,7 +63,6 @@ pub fn start() {
         MyConsolePlugin,
         MetamaskLoginPlugin,
     ))
-    .add_state::<AppState>()
     .run();
 }
 
@@ -106,6 +105,7 @@ where
     .add_plugins(TransparencyPlugin)
     .add_plugins(CollisionPlugin)
     .insert_resource(Msaa::Off)
+    .add_state::<AppState>()
     .insert_resource(config);
 }
 

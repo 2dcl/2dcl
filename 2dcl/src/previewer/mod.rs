@@ -16,7 +16,10 @@ use manual_refresh::manual_refresh;
 
 mod ui;
 
-use crate::{bundles::loading_animation, renderer::scene_loader::loading_sprites_task_handler};
+use crate::{
+    bundles::loading_animation, renderer::scene_loader::loading_sprites_task_handler,
+    states::AppState,
+};
 
 use self::manual_refresh::RefreshData;
 
@@ -66,8 +69,13 @@ pub fn preview_scene(source_path: std::path::PathBuf, destination_path: std::pat
             ),
         )
         .add_systems(Startup, ui::setup)
+        .add_systems(Startup, skip_login_process)
         .add_asset::<SceneAsset>()
         .init_asset_loader::<SceneAssetLoader>()
         .init_resource::<bevy_console::ConsoleOpen>()
         .run();
+}
+
+fn skip_login_process(mut next_state: ResMut<NextState<AppState>>) {
+    next_state.set(AppState::InGame);
 }
