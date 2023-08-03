@@ -9,7 +9,6 @@ use bevy::{asset::ChangeWatcher, log::LogPlugin, prelude::*};
 pub mod constants;
 mod dcl_3d_scene;
 mod error;
-mod player_sprite_maker;
 
 pub mod player;
 use ethereum_adapter::EthAddress;
@@ -120,12 +119,4 @@ pub fn update_avatar(eth_adress: &EthAddress) {
         .unwrap()
         .wait()
         .unwrap();
-
-    match player_sprite_maker::make_player_spritesheet(
-        "./assets/wearables/".to_owned(),
-        "./assets/player.json".to_owned(),
-    ) {
-        Ok(_) => {}
-        Err(e) => println!("{}", e),
-    };
 }

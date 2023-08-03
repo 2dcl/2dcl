@@ -11,8 +11,8 @@ use dcl2d_ecs_v1::collision_type::CollisionType;
 use dcl_common::Parcel;
 pub struct PlayerPlugin;
 
-const PLAYER_ANIMATION_JSON: &str = include_str!("../../assets/player_animation.json");
-const INTERACT_ANIMATION_JSON: &str = include_str!("../../assets/interact_animation.json");
+const PLAYER_ANIMATION_JSON: &str = include_str!("../../assets/player.json");
+const INTERACT_ANIMATION_JSON: &str = include_str!("../../assets/interact.json");
 
 #[derive(Debug)]
 pub struct LevelChangeStackData {
@@ -73,20 +73,18 @@ fn spawn_player(
         };
     animator.sprite_sheet.sprite.anchor = Anchor::BottomCenter;
 
-
     let translation = parcel_to_world_location(Parcel(
-      config.world.starting_parcel_x,
-      config.world.starting_parcel_y,
+        config.world.starting_parcel_x,
+        config.world.starting_parcel_y,
     ));
 
     let transform = Transform {
-      scale: (Vec2::ONE * config.player.scale ).extend(1.),
-      translation,
-      ..default()
+        scale: (Vec2::ONE * config.player.scale).extend(1.),
+        translation,
+        ..default()
     };
 
     animator.sprite_sheet.transform = transform;
-   
 
     let mut interact_animator = match bundles::Animator::from_json(
         INTERACT_ANIMATION_JSON,
@@ -102,13 +100,12 @@ fn spawn_player(
 
     interact_animator.sprite_sheet.sprite.anchor = Anchor::BottomCenter;
 
-
     let transform = Transform::from_translation(Vec3::new(
-      0.0,
-      INTERACT_ICON_HEIGHT * 2. / config.player.scale,
-      0.0,
-  ))
-  .with_scale((Vec2::ONE * 2. / config.player.scale).extend(1.));
+        0.0,
+        INTERACT_ICON_HEIGHT * 2. / config.player.scale,
+        0.0,
+    ))
+    .with_scale((Vec2::ONE * 2. / config.player.scale).extend(1.));
 
     interact_animator.sprite_sheet.transform = transform;
 
@@ -282,10 +279,7 @@ fn player_input_state_update(
 
 fn player_interact(
     mut player_query: Query<(&mut components::Player, &mut Transform)>,
-    mut iteract_query: Query<
-        &mut components::Animator,
-        With<components::InteractIcon>
-    >,
+    mut iteract_query: Query<&mut components::Animator, With<components::InteractIcon>>,
     box_collision_query: Query<(Entity, &GlobalTransform, &components::BoxCollider)>,
     entities_with_level_change: Query<(Entity, &components::LevelChange)>,
     keyboard: Res<Input<KeyCode>>,
@@ -336,7 +330,7 @@ fn player_interact(
     let result = iteract_query.get_single_mut();
 
     match result {
-        Ok(mut animator)=> {
+        Ok(mut animator) => {
             update_interact_icon_visibility(&collisions, animator.as_mut());
         }
 
@@ -357,22 +351,24 @@ fn update_interact_icon_visibility(
             break;
         }
     }
-    
-   // println!("{}",interact_icon_animator.current_state);
+
+    // println!("{}",interact_icon_animator.current_state);
     if player_is_in_trigger {
         if interact_icon_animator.current_state == "hidden"
             || interact_icon_animator.current_state == "fade_out"
         {
-          interact_icon_animator.update_state("fade_in".to_string());
-          interact_icon_animator.state_queue.push("idle".to_string());
+            interact_icon_animator.update_state("fade_in".to_string());
+            interact_icon_animator.state_queue.push("idle".to_string());
         }
     } else if interact_icon_animator.current_state == "idle"
         || interact_icon_animator.current_state == "fade_in"
     {
-      interact_icon_animator.update_state("fade_out".to_string());
-      interact_icon_animator.state_queue.push("hidden".to_string());
+        interact_icon_animator.update_state("fade_out".to_string());
+        interact_icon_animator
+            .state_queue
+            .push("hidden".to_string());
     }
-} 
+}
 fn change_level(
     player: &mut components::Player,
     player_transform: &mut Transform,

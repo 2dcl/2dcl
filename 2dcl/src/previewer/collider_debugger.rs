@@ -15,7 +15,7 @@ pub fn collider_debugger(
     box_colliders: Query<(Entity, &components::BoxCollider)>,
     debug_colliders: Query<(Entity, &BoxColliderDebug)>,
     player_query: Query<Entity, With<components::Player>>,
-    config: Res<Config>
+    config: Res<Config>,
 ) {
     if keyboard.just_pressed(KeyCode::C) {
         for (parent, collider) in box_colliders.iter() {
@@ -32,13 +32,12 @@ pub fn collider_debugger(
                 });
 
             let color = match collider.collision_type {
-                CollisionType::Trigger => {
-                  Color::Rgba {
+                CollisionType::Trigger => Color::Rgba {
                     red: 0.0,
                     green: 1.0,
                     blue: 0.0,
                     alpha: 0.2,
-                }},
+                },
                 CollisionType::Solid => Color::GREEN,
             };
 
@@ -56,31 +55,30 @@ pub fn collider_debugger(
         }
 
         for player in player_query.iter() {
-          let transform = Transform::default()
-          .with_translation(Vec3 {
-              x: 0.,
-              y: config.player.collider_size_y/2.,
-              z: 100.0,
-          })
-          .with_scale(Vec3 {
-              x: config.player.collider_size_x,
-              y: config.player.collider_size_y,
-              z: 1.0,
-          });
-          let color = Color::ORANGE_RED;
+            let transform = Transform::default()
+                .with_translation(Vec3 {
+                    x: 0.,
+                    y: config.player.collider_size_y / 2.,
+                    z: 100.0,
+                })
+                .with_scale(Vec3 {
+                    x: config.player.collider_size_x,
+                    y: config.player.collider_size_y,
+                    z: 1.0,
+                });
+            let color = Color::ORANGE_RED;
 
-          let entity = commands
-          .spawn(MaterialMesh2dBundle {
-              mesh: meshes.add(Mesh::from(shape::Quad::default())).into(),
-              transform,
-              material: materials.add(ColorMaterial::from(color)),
-              ..default()
-          })
-          .insert(BoxColliderDebug {})
-          .id();
+            let entity = commands
+                .spawn(MaterialMesh2dBundle {
+                    mesh: meshes.add(Mesh::from(shape::Quad::default())).into(),
+                    transform,
+                    material: materials.add(ColorMaterial::from(color)),
+                    ..default()
+                })
+                .insert(BoxColliderDebug {})
+                .id();
 
-        commands.entity(player).add_child(entity);
-
+            commands.entity(player).add_child(entity);
         }
     }
 

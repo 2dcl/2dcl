@@ -1,4 +1,3 @@
-use aseprite::{self, Frame, SpritesheetData};
 use bevy::app::ScheduleRunnerPlugin;
 use bevy::gltf::Gltf;
 use bevy::log::LogPlugin;
@@ -26,7 +25,6 @@ use bevy_spritesheet_maker::formats::png::is_ready_to_export;
 use bevy_spritesheet_maker::{CaptureState, MediaCapture};
 //use bevy_toon_shader::{ToonShaderMainCamera, ToonShaderMaterial, ToonShaderPlugin, ToonShaderSun};
 use crate::resources;
-use crate::states::AppState;
 use catalyst::{entity_files::SceneFile, ContentClient};
 use glob::glob;
 use serde::{Deserialize, Serialize};
@@ -36,10 +34,6 @@ use std::time::Duration;
 
 const FRAMES_IDLE: usize = 5;
 const FRAMES_RUNNING: usize = 10;
-const AVATAR_RESOLUTION: (usize, usize) = (640, 360);
-const AVATAR_FRAME: (usize, usize) = (640, 300);
-const IDLE_FRAME_DURATION: u32 = 250;
-const RUNNING_FRAME_DURATION: u32 = 60;
 const CAMERA_LOCATION: Vec3 = Vec3 {
     x: 3.,
     y: 4.0,
@@ -88,17 +82,9 @@ pub fn start(eth_adress: &str) {
         })
         .insert_resource(State::LoadingGltf)
         .insert_resource(avatar_properties)
-        .add_systems(OnEnter(AppState::InGame), setup)
-        .add_systems(
-            Update,
-            (material_update, setup_gltf, finish).run_if(in_state(AppState::InGame)),
-        )
-        .add_systems(
-            Update,
-            state_updater
-                .after(setup_gltf)
-                .run_if(in_state(AppState::InGame)),
-        )
+        .add_systems(Startup, setup)
+        .add_systems(Update, (material_update, setup_gltf, finish))
+        .add_systems(Update, state_updater.after(setup_gltf))
         .run();
 }
 
@@ -193,115 +179,9 @@ fn finish(
     mut app_exit_events: ResMut<Events<bevy::app::AppExit>>,
 ) {
     if *capture_media_state == CaptureState::Finished {
-        save_aseprite_file();
         println!("avatar import finished");
         app_exit_events.send(bevy::app::AppExit);
     }
-}
-
-fn save_aseprite_file() {
-    let mut frames = Vec::default();
-    for i in 0..FRAMES_IDLE + FRAMES_RUNNING * 4 {
-        let duration = match i < FRAMES_IDLE {
-            true => IDLE_FRAME_DURATION,
-            false => RUNNING_FRAME_DURATION,
-        };
-
-        let frame = Frame {
-            filename: "avatar_body ".to_string() + &i.to_string() + ".aseprite",
-            frame: aseprite::Rect {
-                x: 0,
-                y: (i * AVATAR_RESOLUTION.1) as u32,
-                w: AVATAR_FRAME.0 as u32,
-                h: AVATAR_FRAME.1 as u32,
-            },
-            rotated: false,
-            trimmed: false,
-            sprite_source_size: aseprite::Rect {
-                x: 0,
-                y: 0,
-                w: AVATAR_RESOLUTION.0 as u32,
-                h: AVATAR_RESOLUTION.1 as u32,
-            },
-            source_size: aseprite::Dimensions {
-                w: AVATAR_RESOLUTION.0 as u32,
-                h: AVATAR_RESOLUTION.1 as u32,
-            },
-            duration,
-        };
-        frames.push(frame);
-    }
-
-    let layer = aseprite::Layer {
-        name: "Body".to_string(),
-        opacity: 255,
-        blend_mode: aseprite::BlendMode::Normal,
-    };
-
-    let idle_tag = aseprite::Frametag {
-        name: "Idle".to_string(),
-        from: 0,
-        to: (FRAMES_IDLE - 1) as u32,
-        direction: aseprite::Direction::Pingpong,
-    };
-
-    let run_down_side_tag = aseprite::Frametag {
-        name: "RunDownSide".to_string(),
-        from: FRAMES_IDLE as u32,
-        to: (FRAMES_IDLE + FRAMES_RUNNING - 1) as u32,
-        direction: aseprite::Direction::Forward,
-    };
-
-    let run_up_side_tag = aseprite::Frametag {
-        name: "RunUpSide".to_string(),
-        from: (FRAMES_IDLE + FRAMES_RUNNING) as u32,
-        to: (FRAMES_IDLE + FRAMES_RUNNING * 2 - 1) as u32,
-        direction: aseprite::Direction::Forward,
-    };
-
-    let run_up_tag = aseprite::Frametag {
-        name: "RunUp".to_string(),
-        from: (FRAMES_IDLE + FRAMES_RUNNING * 2) as u32,
-        to: (FRAMES_IDLE + FRAMES_RUNNING * 3 - 1) as u32,
-        direction: aseprite::Direction::Forward,
-    };
-
-    let run_down_tag = aseprite::Frametag {
-        name: "RunDown".to_string(),
-        from: (FRAMES_IDLE + FRAMES_RUNNING * 3) as u32,
-        to: (FRAMES_IDLE + FRAMES_RUNNING * 4 - 1) as u32,
-        direction: aseprite::Direction::Forward,
-    };
-
-    let meta = aseprite::Metadata {
-        app: "https://www.aseprite.org/".to_string(),
-        version: "1.2.39-x64".to_string(),
-        format: "RGBA8888".to_string(),
-        size: aseprite::Dimensions {
-            w: (AVATAR_RESOLUTION.0 * FRAMES_IDLE + FRAMES_RUNNING * 4) as u32,
-            h: AVATAR_RESOLUTION.1 as u32,
-        },
-        scale: "1".to_string(),
-        frame_tags: Some(vec![
-            idle_tag,
-            run_down_side_tag,
-            run_up_side_tag,
-            run_down_tag,
-            run_up_tag,
-        ]),
-        layers: Some(vec![layer]),
-        image: Some("avatar_body.png".to_string()),
-    };
-    let sprite_sheet = SpritesheetData { frames, meta };
-
-    let json_string = serde_json::to_string(&sprite_sheet).unwrap();
-
-    let mut file_name = std::env::current_exe().unwrap();
-    file_name.pop();
-    file_name.push("assets");
-    file_name.push("wearables");
-    file_name.push("avatar_body.json");
-    std::fs::write(file_name, json_string).unwrap();
 }
 
 fn state_updater(
@@ -384,8 +264,7 @@ fn state_updater(
                 let mut file_name = std::env::current_exe().unwrap();
                 file_name.pop();
                 file_name.push("assets");
-                file_name.push("wearables");
-                file_name.push("avatar_body.png");
+                file_name.push("player.png");
                 capture.capture_png_with_path(1357, FRAMES_RUNNING * 4 + FRAMES_IDLE, file_name);
                 *state = State::Finished;
             } else {
