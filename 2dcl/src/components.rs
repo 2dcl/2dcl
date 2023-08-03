@@ -157,7 +157,8 @@ impl Animator {
         if new_state == self.current_state {
             return;
         }
-        self.current_state = new_state;
+        self.current_state = new_state.clone();
+        self.state_queue = vec![new_state];
         if let Some(current_animation) = self.get_current_animation() {
             self.timer
                 .set_duration(Duration::from_secs_f32(1. / current_animation.frame_rate));

@@ -77,7 +77,7 @@ fn reload_config(
     mut reload_command: ConsoleCommand<ReloadConfig>,
     mut commands: Commands,
     config: Res<resources::Config>,
-    mut player_query: Query<(&mut Transform, &components::Animator), With<components::Player>>,
+    mut player_query: Query<&mut Transform, With<components::Player>>,
     mut interact_icon_query: Query<
         &mut Transform,
         (With<components::InteractIcon>, Without<components::Player>),
@@ -90,7 +90,7 @@ fn reload_config(
         update_avatar(&new_config.avatar.eth_address);
 
         if config.player.scale != new_config.player.scale {
-            let (mut player_transform, animator) = player_query.single_mut();
+            let mut player_transform = player_query.single_mut();
             let mut interact_transform = interact_icon_query.single_mut();
             let mut camera = camera_query.single_mut();
 
@@ -100,7 +100,6 @@ fn reload_config(
                 &mut player_transform,
                 &mut interact_transform,
                 &mut camera,
-                animator,
             );
         } else if config.world.camera_size != new_config.world.camera_size {
             let mut camera = camera_query.single_mut();
