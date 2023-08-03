@@ -36,7 +36,7 @@ const FRAMES_IDLE: usize = 5;
 const FRAMES_RUNNING: usize = 10;
 const CAMERA_LOCATION: Vec3 = Vec3 {
     x: 3.,
-    y: 4.0,
+    y: 4.,
     z: 2.,
 };
 const CAMERA_FOCAL_POINT: Vec3 = Vec3 {
