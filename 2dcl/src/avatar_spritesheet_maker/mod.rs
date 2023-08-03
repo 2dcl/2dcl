@@ -306,7 +306,7 @@ fn setup_gltf(
             loading.loading_finished = true;
 
             if loading.is_body {
-                transform.scale = Vec3::new(0.9, 1., 0.9);
+                transform.scale = Vec3::new(0.93, 1., 0.93);
             }
             let child = scene_children.iter().next();
 
