@@ -8,19 +8,14 @@ use ethereum_adapter::{EthAddress, EthereumAdapter};
 use futures_lite::future;
 use std::{thread, time};
 
-const CLEAR_COLOR: Color = Color::rgb(0.12, 0.1, 0.25);
-
-const NORMAL_BUTTON: Color = Color::rgb(0.43, 0.04, 0.12);
-const HOVERED_BUTTON: Color = Color::CRIMSON;
-const PRESSED_BUTTON: Color = Color::rgb(1.72, 0.16, 0.48);
-
-const NORMAL_TEXT: Color = Color::rgb(0.85, 0.85, 0.85);
-const HOVERED_TEXT: Color = Color::WHITE;
-const PRESSED_TEXT: Color = Color::WHITE;
-
-const NORMAL_BORDER: Color = Color::BLACK;
-const HOVERED_BORDER: Color = Color::WHITE;
-const PRESSED_BORDER: Color = Color::WHITE;
+const CLEAR_COLOR: Color = Color::rgb(0.098, 0.075, 0.102);
+const TEXT_COLOR: Color = Color::rgb(1.0, 0.176, 0.333);
+const DCL_2D_LOGO: &str = "ui/login_screen/2dcl_LOGO.png";
+const DEFAULT_BUTTON: &str = "ui/login_screen/LOGIN.png";
+const HOVERED_BUTTON: &str = "ui/login_screen/LOGIN_.png";
+const DCL_LOGO: &str = "ui/login_screen/LOGO_DCL.png";
+const LOADING_ICON: &str = "ui/login_screen/loading.png";
+const LOADING_ANIMATION_SPRITE_COUNT: usize = 8;
 
 pub struct MetamaskLoginPlugin;
 
@@ -29,6 +24,24 @@ struct WebLogin(Task<Option<EthAddress>>);
 
 #[derive(Component)]
 struct AvatarMaker(Task<()>);
+
+#[derive(Component)]
+struct LoginButton {
+    default: Handle<Image>,
+    hovered: Handle<Image>,
+}
+
+#[derive(Component)]
+struct DCL2dLogo;
+
+#[derive(Component, Deref, DerefMut, Clone)]
+pub struct LoadingIcon(Timer);
+
+impl LoadingIcon {
+    pub fn new(duration: f32) -> Self {
+        LoadingIcon(Timer::from_seconds(duration, TimerMode::Repeating))
+    }
+}
 
 #[derive(Component)]
 enum DisplayText {
@@ -43,7 +56,12 @@ impl Plugin for MetamaskLoginPlugin {
         app.add_systems(OnEnter(AppState::MetamaskLogin), setup)
             .add_systems(
                 Update,
-                (button_system, handle_tasks, display_text)
+                (
+                    button_system,
+                    handle_tasks,
+                    display_text,
+                    animate_loading_screen,
+                )
                     .run_if(in_state(AppState::MetamaskLogin)),
             )
             .add_systems(OnExit(AppState::MetamaskLogin), exit);
@@ -53,7 +71,7 @@ impl Plugin for MetamaskLoginPlugin {
 fn display_text(mut display_text_query: Query<(&mut DisplayText, &mut Text)>, time: Res<Time>) {
     if let Ok((mut display_text, mut text)) = display_text_query.get_single_mut() {
         text.sections[0].value = match display_text.as_mut() {
-            DisplayText::WatingForInput => String::default(),
+            DisplayText::WatingForInput => "2023 DECENTRALAND AND HIDDEN PEOPLE CLUB.".to_string(),
             DisplayText::WebLogin => "Continue the login process in your browser.".to_string(),
             DisplayText::MakingAvatar { animation_timer } => {
                 animation_timer.tick(time.delta());
@@ -93,50 +111,75 @@ fn display_text(mut display_text_query: Query<(&mut DisplayText, &mut Text)>, ti
 fn button_system(
     mut commands: Commands,
     mut interaction_query: Query<
-        (
-            &Interaction,
-            &mut BackgroundColor,
-            &mut BorderColor,
-            &mut Style,
-            &Children,
-        ),
+        (&Interaction, &mut Style, &mut UiImage, &LoginButton),
         (Changed<Interaction>, With<Button>),
     >,
-    mut text_query: Query<&mut Text>,
+    mut dcl_2d_icon: Query<Entity, (With<DCL2dLogo>, Without<Button>, Without<LoadingIcon>)>,
     mut display_text_query: Query<&mut DisplayText>,
+    asset_server: Res<AssetServer>,
+    mut texture_atlases: ResMut<Assets<TextureAtlas>>,
+    mut text_query: Query<&mut Style, (With<Text>, Without<Button>, Without<DCL2dLogo>)>,
 ) {
-    for (interaction, mut color, mut border_color, mut style, children) in &mut interaction_query {
-        let mut text: Mut<'_, Text> = text_query.get_mut(children[0]).unwrap();
+    for (interaction, mut style, mut image, button) in &mut interaction_query {
         match *interaction {
             Interaction::Pressed => {
                 style.display = Display::None;
-                *color = PRESSED_BUTTON.into();
-                border_color.0 = PRESSED_BORDER;
-
                 if let Ok(mut display_text) = display_text_query.get_single_mut() {
                     *display_text = DisplayText::WebLogin;
+                }
+
+                if let Ok(mut text_style) = text_query.get_single_mut() {
+                    text_style.bottom = Val::Percent(75.);
+                }
+
+                if let Ok(entity) = dcl_2d_icon.get_single_mut() {
+                    commands.entity(entity).remove::<UiImage>();
+                    commands.entity(entity).remove::<DCL2dLogo>();
+                    let texture_handle = asset_server.load(LOADING_ICON);
+                    let texture_atlas = TextureAtlas::from_grid(
+                        texture_handle,
+                        Vec2::new(114., 89.),
+                        4,
+                        2,
+                        None,
+                        None,
+                    );
+                    let texture_atlas_handle = texture_atlases.add(texture_atlas);
+                    commands
+                        .entity(entity)
+                        .insert(AtlasImageBundle {
+                            texture_atlas: texture_atlas_handle,
+                            style: Style {
+                                width: Val::Px(114.0),
+                                height: Val::Px(89.0),
+                                top: Val::Percent(25.),
+                                ..default()
+                            },
+                            ..default()
+                        })
+                        .insert(LoadingIcon::new(0.1));
                 }
 
                 let thread_pool = AsyncComputeTaskPool::get();
                 let task = thread_pool.spawn(async move { login().unwrap() });
                 commands.spawn(WebLogin(task));
-                text.sections[0].style.color = PRESSED_TEXT;
             }
             Interaction::Hovered => {
-                *color = HOVERED_BUTTON.into();
-                border_color.0 = HOVERED_BORDER;
-                text.sections[0].style.color = HOVERED_TEXT;
+                image.texture = button.hovered.clone();
             }
             Interaction::None => {
-                *color = NORMAL_BUTTON.into();
-                border_color.0 = NORMAL_BORDER;
-                text.sections[0].style.color = NORMAL_TEXT;
+                image.texture = button.default.clone();
             }
         }
     }
 }
 
 fn setup(mut commands: Commands, asset_server: Res<AssetServer>) {
+    let login_button = LoginButton {
+        default: asset_server.load(DEFAULT_BUTTON),
+        hovered: asset_server.load(HOVERED_BUTTON),
+    };
+
     // ui camera
     commands.spawn(Camera2dBundle {
         camera_2d: Camera2d {
@@ -150,7 +193,7 @@ fn setup(mut commands: Commands, asset_server: Res<AssetServer>) {
                 width: Val::Percent(100.0),
                 flex_direction: FlexDirection::Column,
                 align_items: AlignItems::Center,
-                justify_content: JustifyContent::SpaceAround,
+                justify_content: JustifyContent::SpaceBetween,
                 ..default()
             },
             ..default()
@@ -159,54 +202,77 @@ fn setup(mut commands: Commands, asset_server: Res<AssetServer>) {
             parent.spawn((
                 NodeBundle {
                     style: Style {
-                        width: Val::Px(186.0),
-                        height: Val::Px(183.0),
-                        margin: UiRect::top(Val::VMin(5.)),
+                        width: Val::Px(246.0),
+                        height: Val::Px(120.0),
+                        margin: UiRect::top(Val::VMin(25.)),
                         ..default()
                     },
                     // a `NodeBundle` is transparent by default, so to see the image we have to its color to `WHITE`
                     background_color: Color::WHITE.into(),
                     ..default()
                 },
-                UiImage::new(asset_server.load("ui/2dcl_logo.png")),
+                UiImage::new(asset_server.load(DCL_2D_LOGO)),
+                DCL2dLogo,
             ));
             parent
-                .spawn(TextBundle {
-                    text: Text::from_section(
-                        "",
-                        TextStyle {
-                            font: asset_server.load("fonts/kongtext.ttf"),
-                            font_size: 25.0,
-                            color: Color::rgb(0.9, 0.9, 0.9),
-                        },
-                    ),
-                    ..Default::default()
-                })
-                .insert(DisplayText::WatingForInput);
-            parent
-                .spawn(ButtonBundle {
+                .spawn(NodeBundle {
                     style: Style {
-                        width: Val::Px(200.0),
-                        height: Val::Px(100.0),
-                        border: UiRect::all(Val::Px(5.0)),
-                        // horizontally center child text
-                        justify_content: JustifyContent::Center,
-                        // vertically center child text
+                        flex_direction: FlexDirection::Column,
                         align_items: AlignItems::Center,
+                        justify_content: JustifyContent::SpaceBetween,
+                        align_self: AlignSelf::Stretch,
                         ..default()
                     },
-                    border_color: NORMAL_BORDER.into(),
-                    background_color: NORMAL_BUTTON.into(),
                     ..default()
                 })
                 .with_children(|parent| {
-                    parent.spawn(TextBundle::from_section(
-                        "Login",
-                        TextStyle {
-                            font: asset_server.load("fonts/kongtext.ttf"),
-                            font_size: 25.0,
-                            color: Color::rgb(0.9, 0.9, 0.9),
+                    parent.spawn((
+                        ButtonBundle {
+                            style: Style {
+                                width: Val::Px(107.33),
+                                height: Val::Px(43.33),
+                                bottom: Val::Percent(50.),
+                                // horizontally center child text
+                                justify_content: JustifyContent::Center,
+                                // vertically center child text
+                                align_items: AlignItems::Center,
+                                ..default()
+                            },
+                            image: UiImage::new(login_button.default.clone()),
+                            ..default()
                         },
+                        login_button,
+                    ));
+                    parent
+                        .spawn(TextBundle {
+                            text: Text::from_section(
+                                "",
+                                TextStyle {
+                                    font: asset_server.load("fonts/Arcadepix Plus.ttf"),
+                                    font_size: 16.0,
+                                    color: TEXT_COLOR,
+                                },
+                            ),
+                            ..Default::default()
+                        })
+                        .insert(DisplayText::WatingForInput);
+
+                    parent.spawn((
+                        NodeBundle {
+                            style: Style {
+                                width: Val::Px(130.0),
+                                height: Val::Px(128.66),
+                                justify_self: JustifySelf::End,
+                                align_self: AlignSelf::End,
+                                right: Val::Px(10.),
+                                bottom: Val::Px(10.),
+                                ..default()
+                            },
+                            // a `NodeBundle` is transparent by default, so to see the image we have to its color to `WHITE`
+                            background_color: Color::WHITE.into(),
+                            ..default()
+                        },
+                        UiImage::new(asset_server.load(DCL_LOGO)),
                     ));
                 });
         });
@@ -261,6 +327,22 @@ fn handle_tasks(
             }
             next_state.set(AppState::InGame);
             commands.entity(entity).remove::<AvatarMaker>();
+        }
+    }
+}
+
+fn animate_loading_screen(
+    time: Res<Time>,
+    mut query: Query<(&mut LoadingIcon, &mut UiTextureAtlasImage)>,
+) {
+    for (mut timer, mut sprite) in &mut query {
+        timer.tick(time.delta());
+        if timer.just_finished() {
+            sprite.index = if sprite.index >= LOADING_ANIMATION_SPRITE_COUNT - 1 {
+                0
+            } else {
+                sprite.index + 1
+            };
         }
     }
 }
