@@ -152,6 +152,22 @@ impl Server {
             .send()
             .await?)
     }
+
+    pub async fn raw_post_form<U>(
+        &self,
+        path: U,
+        form: reqwest::multipart::Form,
+    ) -> Result<reqwest::Response>
+    where
+        U: AsRef<str> + std::fmt::Display,
+    {
+        Ok(self
+            .http_client
+            .post(format!("{}{}", self.base_url, path))
+            .multipart(form)
+            .send()
+            .await?)
+    }
 }
 
 #[cfg(test)]

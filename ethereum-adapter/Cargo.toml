@@ -22,3 +22,5 @@ walkdir = "2"
 dcl-crypto = "0.2.1"
 dcl2d-ecs-v1 = { path = "../ecs-v1" }
 catalyst = {path = "../catalyst"}
+cid = "0.7.0"
+chrono = "0.4.18"

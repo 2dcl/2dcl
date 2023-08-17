@@ -1,8 +1,8 @@
-use rmp_serde::Deserializer;
 use crate::Level;
+use dcl_common::{Parcel, Result};
+use rmp_serde::Deserializer;
 use serde::{Deserialize, Serialize};
 use std::time::SystemTime;
-use dcl_common::{Result, Parcel};
 
 #[derive(Serialize, Deserialize, Debug)]
 pub struct Scene {
@@ -23,21 +23,20 @@ impl Default for Scene {
             timestamp: timestamp_default(),
             name: String::default(),
             parcels: Vec::default(),
-            base: Parcel(0,0),
+            base: Parcel(0, 0),
             levels: Vec::default(),
         }
     }
 }
 
 impl Scene {
-    pub fn from_mp(data: &Vec<u8>) -> Result<Scene> { 
+    pub fn from_mp(data: &Vec<u8>) -> Result<Scene> {
         let mut de = Deserializer::from_read_ref(data);
-        let deserialized_scene: Scene = 
-            Deserialize::deserialize(&mut de)?;
+        let deserialized_scene: Scene = Deserialize::deserialize(&mut de)?;
         Ok(deserialized_scene)
     }
 
-    pub fn from_json(data: String) -> Result<Scene> { 
+    pub fn from_json(data: String) -> Result<Scene> {
         Ok(serde_json::from_str(&data)?)
     }
 }
