@@ -16,9 +16,9 @@ const MIN_RENDERING_DISTANCE_IN_PARCELS: usize = 4;
 const MAX_RENDERING_DISTANCE_IN_PARCELS: usize = 7;
 const CAMERA_SIZE: f32 = 1.0;
 const PLAYER_SPEED: f32 = 400.0;
-const PLAYER_SCALE: f32 = 1.;
-const PLAYER_COLLIDER_SIZE_X: f32 = 18.;
-const PLAYER_COLLIDER_SIZE_Y: f32 = 20.;
+const PLAYER_SCALE: f32 = 0.5;
+const PLAYER_COLLIDER_SIZE_X: f32 = 25.;
+const PLAYER_COLLIDER_SIZE_Y: f32 = 25.;
 
 #[derive(Resource, Deserialize, Default, PartialEq)]
 pub struct Config {

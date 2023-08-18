@@ -1,9 +1,11 @@
 {
   "spritesheet": "player.png",
   "tile_size_x": 640.0,
-  "tile_size_y": 360.0,
+  "tile_size_y": 300.0,
   "columns": 1,
   "rows": 54,
+  "padding": [ 0.0, 60.0 ],
+  "offset": [ 0.0, 0.0 ],
   "default_state": "Idle",
   "animations": {
     "Idle": {

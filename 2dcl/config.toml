@@ -15,5 +15,5 @@ camera_size = 1.0
 [player]
 speed = 400.0
 scale = 0.5
-collider_size_x = 18.0
-collider_size_y = 20.0
+collider_size_x = 25.0
+collider_size_y = 25.0

@@ -30,8 +30,8 @@ impl Animator {
             Vec2::new(json.tile_size_x, json.tile_size_y),
             json.columns,
             json.rows,
-            None,
-            None,
+            json.padding,
+            json.offset,
         );
         let texture_atlas_handle = texture_atlases.add(texture_atlas);
 
@@ -62,6 +62,9 @@ struct AnimatorJson {
     tile_size_y: f32,
     columns: usize,
     rows: usize,
+    padding: Option<Vec2>,
+    offset: Option<Vec2>,
     animations: HashMap<AnimationState, Animation>,
     default_state: AnimationState,
+
 }
