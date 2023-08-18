@@ -1,5 +1,5 @@
 {
-  "spritesheet": "interact.png",
+  "spritesheet": "avatar/interact.png",
   "tile_size_x": 48.0,
   "tile_size_y": 48.0,
   "columns": 13,

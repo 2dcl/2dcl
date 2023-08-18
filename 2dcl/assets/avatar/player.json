@@ -1,5 +1,5 @@
 {
-  "spritesheet": "player.png",
+  "spritesheet": "avatar/player.png",
   "tile_size_x": 640.0,
   "tile_size_y": 300.0,
   "columns": 1,

@@ -11,8 +11,8 @@ use dcl2d_ecs_v1::collision_type::CollisionType;
 use dcl_common::Parcel;
 pub struct PlayerPlugin;
 
-const PLAYER_ANIMATION_JSON: &str = include_str!("../../assets/player.json");
-const INTERACT_ANIMATION_JSON: &str = include_str!("../../assets/interact.json");
+const PLAYER_ANIMATION_JSON: &str = include_str!("../../assets/avatar/player.json");
+const INTERACT_ANIMATION_JSON: &str = include_str!("../../assets/avatar/interact.json");
 
 #[derive(Debug)]
 pub struct LevelChangeStackData {
@@ -126,6 +126,19 @@ fn spawn_player(
         .insert(components::InteractIcon)
         .id();
 
+    let mut shadow_path = std::env::current_exe().unwrap_or_default();
+    shadow_path.pop();
+    shadow_path.push("assets");
+    shadow_path.push("avatar");
+    shadow_path.push("shadow.png");
+    let shadow = commands
+        .spawn(SpriteBundle {
+            texture: assets.load(shadow_path),
+            ..Default::default()
+        })
+        .insert(Name::new("Shadow"))
+        .id();
+
     let clear_color = ClearColorConfig::Custom(Color::BLACK);
     let mut camera_bundle = Camera2dBundle::new_with_far(10000.0);
     camera_bundle.camera_2d.clear_color = clear_color;
@@ -140,6 +153,7 @@ fn spawn_player(
 
     commands.entity(player).add_child(camera_entity);
     commands.entity(player).add_child(interact_icon);
+    commands.entity(player).add_child(shadow);
 }
 
 fn player_movement(

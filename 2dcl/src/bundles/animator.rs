@@ -66,5 +66,4 @@ struct AnimatorJson {
     offset: Option<Vec2>,
     animations: HashMap<AnimationState, Animation>,
     default_state: AnimationState,
-
 }

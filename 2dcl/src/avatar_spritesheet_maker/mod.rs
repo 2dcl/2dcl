@@ -264,6 +264,7 @@ fn state_updater(
                 let mut file_name = std::env::current_exe().unwrap();
                 file_name.pop();
                 file_name.push("assets");
+                file_name.push("avatar");
                 file_name.push("player.png");
                 capture.capture_png_with_path(1357, FRAMES_RUNNING * 4 + FRAMES_IDLE, file_name);
                 *state = State::Finished;
