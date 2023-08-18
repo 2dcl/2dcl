@@ -94,7 +94,7 @@ where
                     ..default()
                 }),
                 ..default()
-            }), //  .disable::<LogPlugin>(),
+            }).disable::<LogPlugin>(),
     )
     .add_plugins(DebugPlugin)
     .add_plugins(ScreenFadePlugin)
