@@ -102,10 +102,10 @@ fn spawn_player(
 
     let transform = Transform::from_translation(Vec3::new(
         0.0,
-        INTERACT_ICON_HEIGHT * 2. / config.player.scale,
+        INTERACT_ICON_HEIGHT / config.player.scale,
         0.0,
     ))
-    .with_scale((Vec2::ONE * 2. / config.player.scale).extend(1.));
+    .with_scale((Vec2::ONE / config.player.scale).extend(1.));
 
     interact_animator.sprite_sheet.transform = transform;
 
