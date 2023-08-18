@@ -28,7 +28,6 @@ pub struct SceneFileData {
 #[derive(Debug, Default)]
 pub struct SceneData {
     pub scene: dcl2d_ecs_v1::Scene,
-    pub parcels: Vec<Parcel>,
     pub path: PathBuf,
     pub is_default: bool,
 }
@@ -130,7 +129,6 @@ pub fn get_scene(
             }
             let scene_data = SceneData {
                 scene,
-                parcels: scene_file_data.parcels,
                 path,
                 is_default: false,
             };
@@ -174,21 +172,21 @@ pub fn refresh_path(path: PathBuf, scene_files_map: &mut SceneFilesMap) -> dcl_c
         }
     };
 
-    let mut json_path = path;
-    json_path.push("scene.json");
-
-    if let Ok(scene_3dcl) = read_3dcl_scene(&json_path) {
-        let parcels = scene_3dcl.scene.parcels.clone();
-        if let Some(entry) = glob(pattern_2dcl.as_str())
-            .expect("Failed to read glob pattern")
-            .next()
-        {
-            match entry {
-                Ok(path) => {
-                    let scene_file_data = SceneFileData { path, parcels };
+    if let Some(entry) = glob(pattern_2dcl.as_str())
+        .expect("Failed to read glob pattern")
+        .next()
+    {
+        match entry {
+            Ok(mut path) => {
+                if let Some(scene) = read_scene_file(path.clone()) {
+                    let parcels = scene.parcels.clone();
+                    let scene_file_data = SceneFileData {
+                        path: path.clone(),
+                        parcels,
+                    };
 
                     if is_latest_version(&scene_file_data, scene_files_map) {
-                        for parcel in scene_3dcl.scene.parcels {
+                        for parcel in scene.parcels {
                             clear_scene_files_for_parcel(&parcel, scene_files_map)
                                 .unwrap_or_default();
                             scene_files_map
@@ -196,14 +194,14 @@ pub fn refresh_path(path: PathBuf, scene_files_map: &mut SceneFilesMap) -> dcl_c
                                 .insert((parcel.0, parcel.1), scene_file_data.clone());
                         }
                     } else {
-                        json_path.pop();
-                        if std::fs::remove_dir_all(&json_path).is_err() {
-                            return Err(Box::new(ScenesIOError::InvalidPath(json_path)));
+                        path.pop();
+                        if std::fs::remove_dir_all(&path).is_err() {
+                            return Err(Box::new(ScenesIOError::InvalidPath(path)));
                         }
                     }
                 }
-                Err(e) => return Err(Box::new(e)),
             }
+            Err(e) => return Err(Box::new(e)),
         }
     }
 

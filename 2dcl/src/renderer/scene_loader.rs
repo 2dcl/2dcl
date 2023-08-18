@@ -5,7 +5,6 @@ use super::scenes_io::{
 use crate::bundles::{self, get_parcels_center_location, loading_animation};
 use crate::renderer::constants::*;
 use crate::renderer::scene_maker::*;
-use crate::renderer::scenes_io::read_3dcl_scene;
 use crate::states::AppState;
 use crate::{
     components::{self, *},
@@ -149,7 +148,6 @@ pub fn level_changer(
                             Deserialize::deserialize(&mut de).unwrap();
                         let scene_data = SceneData {
                             scene: deserialized_scene,
-                            parcels: scene.parcels.clone(),
                             path: scene.path.clone(),
                             is_default: false,
                         };
@@ -368,7 +366,6 @@ pub async fn get_newest_scene_files_for_parcels(
     for scene_file in scene_files {
         let path_str = "./assets/scenes/".to_string() + &scene_file.id.to_string();
         let scene_path = Path::new(&path_str);
-        let mut downloadable_json: Option<ContentFile> = None;
         let mut downloadable_2dcl: Option<ContentFile> = None;
 
         for downloadable in scene_file.clone().content {
@@ -379,19 +376,7 @@ pub async fn get_newest_scene_files_for_parcels(
                 .ends_with("scene.2dcl")
             {
                 downloadable_2dcl = Some(downloadable);
-                if downloadable_json.is_some() {
-                    break;
-                }
-            } else if downloadable
-                .filename
-                .to_str()
-                .unwrap()
-                .ends_with("scene.json")
-            {
-                downloadable_json = Some(downloadable);
-                if downloadable_2dcl.is_some() {
-                    break;
-                }
+                break;
             }
         }
 
@@ -399,57 +384,56 @@ pub async fn get_newest_scene_files_for_parcels(
             fs::create_dir_all(format!("./assets/scenes/{}", scene_file.id))?;
         }
 
-        if let (Some(downloadable_json), Some(downloadable_2dcl)) =
-            (downloadable_json, downloadable_2dcl)
-        {
+        if let Some(downloadable_2dcl) = downloadable_2dcl {
             let filename = format!(
-                "./assets/scenes/{}/{}",
+                "./assets/scenes/{}/{}-temp",
                 scene_file.id,
-                downloadable_json.filename.to_str().unwrap()
+                downloadable_2dcl.filename.to_str().unwrap()
             );
 
-            ContentClient::download(&server, downloadable_json.cid, &filename).await?;
+            ContentClient::download(&server, downloadable_2dcl.cid, &filename).await?;
+            let mut parcels = Vec::default();
+            for parcel in &scene_file.pointers {
+                if let Ok(parcel) = Parcel::from_str(parcel) {
+                    parcels.push(parcel);
+                }
+            }
 
-            if let Ok(scene_3d) = read_3dcl_scene(filename) {
-                let filename = format!(
-                    "./assets/scenes/{}/{}-temp",
-                    scene_file.id,
-                    downloadable_2dcl.filename.to_str().unwrap()
-                );
-
-                ContentClient::download(&server, downloadable_2dcl.cid, &filename).await?;
-
-                if let Some(scene_2cl) = read_scene_file(&filename) {
-                    let mut should_download = false;
-                    for parcel in &scene_3d.scene.parcels {
-                        match get_parcel_file_data(parcel, scene_files_map) {
-                            Some(parcel_data) => {
-                                if let Some(previous_2dcl_scene) = read_scene_file(parcel_data.path)
-                                {
-                                    if previous_2dcl_scene.timestamp != scene_2cl.timestamp {
-                                        scene_files_to_download.push(scene_file);
-                                        should_download = true;
-                                        break;
-                                    }
+            println!("reading new scene_2dcl");
+            if let Some(scene_2cl) = read_scene_file(&filename) {
+                println!("Some");
+                let mut should_download = false;
+                for parcel in &parcels {
+                    println!("pre match");
+                    match get_parcel_file_data(parcel, scene_files_map) {
+                        Some(parcel_data) => {
+                            println!("some");
+                            if let Some(previous_2dcl_scene) = read_scene_file(parcel_data.path) {
+                                println!("read scene 2dcl");
+                                if previous_2dcl_scene.timestamp != scene_2cl.timestamp {
+                                    scene_files_to_download.push(scene_file);
+                                    should_download = true;
+                                    break;
                                 }
                             }
-                            None => {
-                                scene_files_to_download.push(scene_file);
-                                should_download = true;
-                                break;
-                            }
+                        }
+                        None => {
+                            println!("none");
+                            scene_files_to_download.push(scene_file);
+                            should_download = true;
+                            break;
                         }
                     }
-
-                    if should_download {
-                        parcels_to_download.append(&mut scene_3d.scene.parcels.clone());
-                    }
                 }
-                match std::fs::remove_file(filename) {
-                    Ok(_) => {}
-                    Err(e) => println!("{}", e),
-                };
+
+                if should_download {
+                    parcels_to_download.append(&mut parcels);
+                }
             }
+            match std::fs::remove_file(filename) {
+                Ok(_) => {}
+                Err(e) => println!("{}", e),
+            };
         }
 
         if scene_path.read_dir()?.next().is_none() {
@@ -466,18 +450,14 @@ pub async fn download_level_spawn_point(parcel: &Parcel, level_id: usize) -> Vec
         match ContentClient::scene_files_for_parcels(&server, &vec![parcel.clone()]).await {
             Ok(v) => v,
             Err(_) => {
-                let scene_data = SceneData {
-                    parcels: vec![parcel.clone()],
-                    ..default()
-                };
-                return get_parcels_center_location(&scene_data.parcels);
+                let scene_data = SceneData { ..default() };
+                return get_parcels_center_location(&scene_data.scene.parcels);
             }
         };
 
     for scene_file in scene_files {
         let path_str = "./assets/scenes/".to_string() + &scene_file.id.to_string();
         let scene_path = Path::new(&path_str);
-        let mut downloadable_json: Option<ContentFile> = None;
         let mut downloadable_2dcl: Option<ContentFile> = None;
 
         for downloadable in scene_file.clone().content {
@@ -488,19 +468,7 @@ pub async fn download_level_spawn_point(parcel: &Parcel, level_id: usize) -> Vec
                 .ends_with("scene.2dcl")
             {
                 downloadable_2dcl = Some(downloadable);
-                if downloadable_json.is_some() {
-                    break;
-                }
-            } else if downloadable
-                .filename
-                .to_str()
-                .unwrap()
-                .ends_with("scene.json")
-            {
-                downloadable_json = Some(downloadable);
-                if downloadable_2dcl.is_some() {
-                    break;
-                }
+                break;
             }
         }
 
@@ -510,66 +478,43 @@ pub async fn download_level_spawn_point(parcel: &Parcel, level_id: usize) -> Vec
             continue;
         }
 
-        if let (Some(downloadable_json), Some(downloadable_2dcl)) =
-            (downloadable_json, downloadable_2dcl)
-        {
+        if let Some(downloadable_2dcl) = downloadable_2dcl {
             let filename = format!(
                 "./assets/scenes/{}/{}-temp",
                 scene_file.id,
-                downloadable_json.filename.to_str().unwrap()
+                downloadable_2dcl.filename.to_str().unwrap()
             );
 
-            if ContentClient::download(&server, downloadable_json.cid, &filename)
+            if ContentClient::download(&server, downloadable_2dcl.cid, &filename)
                 .await
                 .is_err()
             {
                 continue;
             }
 
-            if let Ok(scene_3d) = read_3dcl_scene(filename) {
-                let filename = format!(
-                    "./assets/scenes/{}/{}-temp",
-                    scene_file.id,
-                    downloadable_2dcl.filename.to_str().unwrap()
-                );
+            if let Some(scene_2d) = read_scene_file(filename) {
+                let scene_data = SceneData {
+                    scene: scene_2d,
+                    ..default()
+                };
 
-                if ContentClient::download(&server, downloadable_2dcl.cid, &filename)
-                    .await
-                    .is_err()
-                {
-                    continue;
-                }
-
-                if let Some(scene_2d) = read_scene_file(filename) {
-                    let scene_data = SceneData {
-                        scene: scene_2d,
-                        parcels: scene_3d.scene.parcels,
-                        ..default()
-                    };
-
-                    let scene_center = get_parcels_center_location(&scene_data.parcels);
-                    return match level_id < scene_data.scene.levels.len() {
-                        true => {
-                            let spawn_point = scene_data.scene.levels[level_id].spawn_point.clone();
-                            Vec3 {
-                                x: spawn_point.x as f32 + scene_center.x,
-                                y: spawn_point.y as f32 + scene_center.y,
-                                z: (spawn_point.y as f32 + scene_center.y) * -1.0,
-                            }
+                let scene_center = get_parcels_center_location(&scene_data.scene.parcels);
+                return match level_id < scene_data.scene.levels.len() {
+                    true => {
+                        let spawn_point = scene_data.scene.levels[level_id].spawn_point.clone();
+                        Vec3 {
+                            x: spawn_point.x as f32 + scene_center.x,
+                            y: spawn_point.y as f32 + scene_center.y,
+                            z: (spawn_point.y as f32 + scene_center.y) * -1.0,
                         }
-                        false => scene_center,
-                    };
-                }
+                    }
+                    false => scene_center,
+                };
             }
         }
     }
 
-    let scene_data = SceneData {
-        parcels: vec![parcel.clone()],
-        ..default()
-    };
-
-    get_parcels_center_location(&scene_data.parcels)
+    get_parcels_center_location(&vec![parcel.clone()])
 }
 
 pub fn loading_sprites_task_handler(
@@ -606,8 +551,9 @@ fn downloading_scenes_task_handler(
     for (entity, mut downloading_scene) in &mut tasks_downloading_scenes {
         if let Some(new_paths) = future::block_on(future::poll_once(&mut downloading_scene.task)) {
             commands.entity(entity).despawn_recursive();
-
+            println!("FINISHED DOWNLOADING SCENE");
             if let Some(new_paths) = new_paths {
+                println!("NEW PATHS/refreshing");
                 for new_path in new_paths {
                     match refresh_path(new_path.clone(), &mut scene_files_map) {
                         Ok(_) => {}
@@ -626,6 +572,7 @@ fn downloading_scenes_task_handler(
                                 if scene.timestamp.0 != scene_data.scene.timestamp {
                                     despawned_entities.entities.push(entity);
                                     commands.entity(entity).despawn_recursive();
+                                    println!("ABOUT TO SPAWN NEW SCENE");
                                     spawn_scene(
                                         &mut commands,
                                         &asset_server,
@@ -635,6 +582,8 @@ fn downloading_scenes_task_handler(
                                         &mut spawning_queue,
                                     );
                                 }
+                            } else {
+                                println!("SCENE DATA KEK");
                             }
                         }
                     }
@@ -810,7 +759,7 @@ pub fn get_parcel_spawn_point(
 ) -> Vec3 {
     match get_scene(roads_data, scene_files_map, parcel) {
         Some(scene_data) => {
-            let scene_center = get_parcels_center_location(&scene_data.parcels);
+            let scene_center = get_parcels_center_location(&scene_data.scene.parcels);
             match level_id < scene_data.scene.levels.len() {
                 true => {
                     let spawn_point = scene_data.scene.levels[level_id].spawn_point.clone();
@@ -843,7 +792,7 @@ pub fn spawn_scene(
     if !scene.levels.is_empty() {
         spawning_queue
             .parcels
-            .append(&mut scene_data.parcels.clone());
+            .append(&mut scene_data.scene.parcels.clone());
         match spawn_level(
             commands,
             asset_server,
@@ -962,7 +911,7 @@ fn spawn_entity(
                     &transform,
                     image_path,
                     asset_server,
-                    scene_data.parcels.clone(),
+                    scene_data.scene.parcels.clone(),
                     level_id,
                 ));
         }
@@ -975,7 +924,7 @@ fn spawn_entity(
                 center: Vec2::new(collider.center.x as f32, collider.center.y as f32),
                 size: Vec2::new(collider.size.width as f32, collider.size.height as f32),
                 collision_type: collider.collision_type.clone(),
-                parcels: scene_data.parcels.clone(),
+                parcels: scene_data.scene.parcels.clone(),
             };
             commands.entity(spawned_entity).insert(box_collider);
         }
@@ -996,8 +945,8 @@ fn spawn_entity(
                     let mut pixels = image.pixels();
                     let rows = image.rows().len();
                     let columns = pixels.len() / rows;
-                    let world_transform =
-                        transform.translation + get_parcels_center_location(&scene_data.parcels);
+                    let world_transform = transform.translation
+                        + get_parcels_center_location(&scene_data.scene.parcels);
 
                     let fixed_translation = get_fixed_translation_by_anchor(
                         &Vec2 {
@@ -1022,7 +971,7 @@ fn spawn_entity(
                                 location: tile_location,
                                 colliision_type: collider.collision_type.clone(),
                                 entity: Some(spawned_entity),
-                                parcels: scene_data.parcels.clone(),
+                                parcels: scene_data.scene.parcels.clone(),
                             };
                             collision_map.tiles.push(collision_tile);
                         }
@@ -1045,14 +994,14 @@ fn spawn_entity(
                 }
             }
 
-            let scene_center_location = get_parcels_center_location(&scene_data.parcels);
+            let scene_center_location = get_parcels_center_location(&scene_data.scene.parcels);
             let level_change_component = LevelChange {
                 level: new_level_id,
                 spawn_point: Vec2::new(
                     level_change.spawn_point.x as f32 + scene_center_location.x,
                     level_change.spawn_point.y as f32 + scene_center_location.y,
                 ),
-                parcels: scene_data.parcels.clone(),
+                parcels: scene_data.scene.parcels.clone(),
             };
             commands
                 .entity(spawned_entity)

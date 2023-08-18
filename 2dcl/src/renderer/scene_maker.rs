@@ -123,8 +123,11 @@ pub fn setup(mut commands: Commands) {
 
 pub fn make_default_scene(parcel: &Parcel) -> Result<SceneData> {
     let mut scene_data = SceneData {
-        parcels: vec![parcel.clone()],
         is_default: true,
+        scene: dcl2d_ecs_v1::Scene {
+            parcels: vec![parcel.clone()],
+            ..Default::default()
+        },
         ..default()
     };
 
@@ -163,13 +166,13 @@ pub fn make_road_scene(roads_data: &RoadsData, parcel: &Parcel) -> Result<SceneD
 
     let scene = dcl2d_ecs_v1::Scene {
         name: format!("Road {} , {}", &parcel.0, &parcel.1),
+        parcels: vec![parcel.clone()],
         levels: vec![level],
         ..default()
     };
 
     let scene_data = SceneData {
         scene,
-        parcels: vec![parcel.clone()],
         path,
         is_default: true,
     };

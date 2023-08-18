@@ -143,9 +143,9 @@ fn scene_reload(
                     let timestamp = scene.timestamp;
                     if let Some(mut scene) = read_scene_u8(&scene.bytes) {
                         scene.timestamp = timestamp;
+                        scene.parcels = vec![Parcel(0, 0)];
                         let scene_data = SceneData {
                             scene,
-                            parcels: vec![Parcel(0, 0)],
                             path: PathBuf::from_str("../").unwrap(),
                             is_default: false,
                         };
@@ -159,7 +159,7 @@ fn scene_reload(
                             &mut spawning_queue,
                         );
 
-                        let scene_center = get_parcels_center_location(&scene_data.parcels);
+                        let scene_center = get_parcels_center_location(&scene_data.scene.parcels);
                         player_transform.translation =
                             match player.current_level < scene_data.scene.levels.len() {
                                 true => {
@@ -180,9 +180,9 @@ fn scene_reload(
                 let timestamp = scene.timestamp;
                 if let Some(mut scene) = read_scene_u8(&scene.bytes) {
                     scene.timestamp = timestamp;
+                    scene.parcels = vec![Parcel(0, 0)];
                     let scene_data = SceneData {
                         scene,
-                        parcels: vec![Parcel(0, 0)],
                         path: PathBuf::from_str("../").unwrap(),
                         is_default: false,
                     };
@@ -196,7 +196,7 @@ fn scene_reload(
                         &mut spawning_queue,
                     );
 
-                    let scene_center = get_parcels_center_location(&scene_data.parcels);
+                    let scene_center = get_parcels_center_location(&scene_data.scene.parcels);
                     player_transform.translation =
                         match player.current_level < scene_data.scene.levels.len() {
                             true => {
@@ -261,10 +261,11 @@ pub fn level_change(
 
     if should_spawn {
         let mut de = Deserializer::from_read_ref(&scene.serialized_data);
-        let deserialized_scene: dcl2d_ecs_v1::Scene = Deserialize::deserialize(&mut de).unwrap();
+        let mut deserialized_scene: dcl2d_ecs_v1::Scene =
+            Deserialize::deserialize(&mut de).unwrap();
+        deserialized_scene.parcels = vec![Parcel(0, 0)];
         let scene_data = SceneData {
             scene: deserialized_scene,
-            parcels: vec![Parcel(0, 0)],
             path: scene.path.clone(),
             is_default: false,
         };
