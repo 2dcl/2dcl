@@ -1,5 +1,6 @@
 use std::{
     collections::HashMap,
+    path::Path,
     thread,
     time::{Duration, SystemTime},
 };
@@ -12,27 +13,22 @@ use dcl_crypto::{
     AuthChain, AuthLink, Signer,
 };
 use ethereum_adapter::EthereumAdapter;
-use scene_deployer::*;
 use walkdir::WalkDir;
 
 #[tokio::main]
-async fn main() -> Result<()> {
+pub async fn deploy<T>(deploy_folder: T) -> Result<()>
+where
+    T: AsRef<Path>,
+{
     let mut adapter = EthereumAdapter::new();
     let mut command = std::env::current_exe().unwrap();
 
     command.pop();
-    command.pop();
     adapter.start(&mut command).unwrap();
-
-    let mut deploy_folder = std::env::current_exe().unwrap();
-    deploy_folder.pop();
-    deploy_folder.pop();
-    deploy_folder.pop();
-    deploy_folder.pop();
-    deploy_folder.push("ethereum-adapter/fixtures/2dcl");
 
     // Create Catalyst Server Client
     let server = catalyst::Server::production();
+    let deploy_folder = deploy_folder.as_ref().to_path_buf();
     // Get Entity Id
     let mut scene_file = deploy_folder.clone();
     scene_file.push("scene.2dcl");
@@ -70,7 +66,7 @@ async fn main() -> Result<()> {
     }
 
     let (deploy_data, entity_id) =
-        build_entity_scene(pointers, files, scene_files[0].metadata.clone());
+        scene_deployer::build_entity_scene(pointers, files, scene_files[0].metadata.clone());
 
     // Create AuthChain
     let ephemeral_identity = dcl_crypto::Account::random();
@@ -113,7 +109,9 @@ async fn main() -> Result<()> {
 
     println!("Deploying to Catalyst...");
 
-    let response = deploy(entity_id, deploy_data, chain, server).await.unwrap();
+    let response = scene_deployer::deploy(entity_id, deploy_data, chain, server)
+        .await
+        .unwrap();
     println!("{:?}", response);
     // Figure out how to upload files.
 

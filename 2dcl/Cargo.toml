@@ -28,6 +28,8 @@ rmp-serde = "1.1.1"
 rmp = "^0.8"
 notify = "5.1.0"
 scene-compiler = { path = "../scene-compiler" }
+scene-deployer = { path = "../scene-deployer" }
+ethereum-adapter = { path = "../ethereum-adapter" }
 dcl2d-ecs-v1 = { path = "../ecs-v1" }
 ron = "0.8.0"
 imagesize = "0.10.1"
@@ -38,3 +40,5 @@ tempdir = "0.3"
 bevy_spritesheet_maker = {path= "../bevy_spritesheet_maker"}
 toml = "0.7.3"
 bevy_toon_shader = { git = "https://github.com/tbillington/bevy_toon_shader" }
+chrono = "0.4.18"
+dcl-crypto = "0.2.1"

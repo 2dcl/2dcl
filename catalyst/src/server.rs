@@ -4,7 +4,7 @@ use serde::{Deserialize, Serialize};
 
 /// A *single* catalyst server.
 ///
-#[derive(Deserialize, Debug)]
+#[derive(Deserialize, Debug, Clone)]
 #[serde(rename_all = "camelCase")]
 pub struct Server {
     pub base_url: String,

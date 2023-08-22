@@ -2,6 +2,7 @@
 use dcl_common::Result;
 
 mod avatar_spritesheet_maker;
+mod deploy;
 mod previewer;
 mod renderer;
 mod where_command;
@@ -11,6 +12,7 @@ pub mod components;
 pub mod resources;
 
 use clap::Parser;
+use tempdir::TempDir;
 
 /// Search for a pattern in a file and display the lines that contain it.
 #[derive(Parser)]
@@ -36,8 +38,6 @@ enum Action {
     Deploy {
         #[clap(default_value = "./")]
         source_path: std::path::PathBuf,
-        #[clap(default_value = "./build/")]
-        destination_path: std::path::PathBuf,
     },
     Where,
     ImportAvatar {
@@ -62,12 +62,10 @@ fn main() -> Result<()> {
         }) => {
             scene_compiler::compile(source_path, destination_path).unwrap();
         }
-        Some(Action::Deploy {
-            source_path,
-            destination_path,
-        }) => {
-            scene_compiler::compile(source_path, destination_path).unwrap();
-            todo!("Deploy")
+        Some(Action::Deploy { source_path }) => {
+            let tmp_dir = TempDir::new("temp_build").unwrap();
+            scene_compiler::compile(source_path, &tmp_dir).unwrap();
+            deploy::deploy(tmp_dir)?;
         }
         Some(Action::Clean) => {
             let current_path = std::env::current_exe().unwrap();

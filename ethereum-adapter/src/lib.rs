@@ -72,7 +72,10 @@ impl EthereumAdapter {
     pub fn personal_sign(&mut self, payload: &String) {
         self.signature = None;
 
-        let url = format!("http://localhost:8000/sign?payload={}", payload.replace("\n", "\\n"));
+        let url = format!(
+            "http://localhost:8000/sign?payload={}",
+            payload.replace("\n", "\\n")
+        );
         println!("Sign deployment: {}", url);
         open::that(url).unwrap();
     }
