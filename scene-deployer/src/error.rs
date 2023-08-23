@@ -1,8 +1,6 @@
 use std::error;
 use std::fmt;
 
-use dcl_common::Parcel;
-
 #[derive(Debug)]
 pub enum SceneDeployError {
     InvalidPointers {

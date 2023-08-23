@@ -334,13 +334,17 @@ pub async fn download_scene_files(
     let mut scene_paths: Vec<PathBuf> = Vec::new();
 
     for scene_file in scene_files {
-        let path_str = "./assets/scenes/".to_string() + &scene_file.id.to_string();
+        let id_str = match &scene_file.id {
+            Some(id) => id.to_string(),
+            None => String::default(),
+        };
+        let path_str = "./assets/scenes/".to_string() + &id_str;
         let scene_path = Path::new(&path_str);
 
         for downloadable in scene_file.content {
             let filename = format!(
                 "./assets/scenes/{}/{}",
-                scene_file.id,
+                id_str,
                 downloadable.filename.to_str().unwrap()
             );
 
@@ -364,7 +368,11 @@ pub async fn get_newest_scene_files_for_parcels(
     let scene_files = ContentClient::scene_files_for_parcels(&server, &parcels).await?;
 
     for scene_file in scene_files {
-        let path_str = "./assets/scenes/".to_string() + &scene_file.id.to_string();
+        let id_str = match &scene_file.id {
+            Some(id) => id.to_string(),
+            None => String::default(),
+        };
+        let path_str = "./assets/scenes/".to_string() + &id_str;
         let scene_path = Path::new(&path_str);
         let mut downloadable_2dcl: Option<ContentFile> = None;
 
@@ -381,13 +389,13 @@ pub async fn get_newest_scene_files_for_parcels(
         }
 
         if !scene_path.exists() {
-            fs::create_dir_all(format!("./assets/scenes/{}", scene_file.id))?;
+            fs::create_dir_all(format!("./assets/scenes/{}", id_str))?;
         }
 
         if let Some(downloadable_2dcl) = downloadable_2dcl {
             let filename = format!(
                 "./assets/scenes/{}/{}-temp",
-                scene_file.id,
+                id_str,
                 downloadable_2dcl.filename.to_str().unwrap()
             );
 
@@ -456,7 +464,11 @@ pub async fn download_level_spawn_point(parcel: &Parcel, level_id: usize) -> Vec
         };
 
     for scene_file in scene_files {
-        let path_str = "./assets/scenes/".to_string() + &scene_file.id.to_string();
+        let id_str = match &scene_file.id {
+            Some(id) => id.to_string(),
+            None => String::default(),
+        };
+        let path_str = "./assets/scenes/".to_string() + &id_str;
         let scene_path = Path::new(&path_str);
         let mut downloadable_2dcl: Option<ContentFile> = None;
 
@@ -473,7 +485,7 @@ pub async fn download_level_spawn_point(parcel: &Parcel, level_id: usize) -> Vec
         }
 
         if !scene_path.exists()
-            && fs::create_dir_all(format!("./assets/scenes/{}", scene_file.id)).is_err()
+            && fs::create_dir_all(format!("./assets/scenes/{}", id_str)).is_err()
         {
             continue;
         }
@@ -481,7 +493,7 @@ pub async fn download_level_spawn_point(parcel: &Parcel, level_id: usize) -> Vec
         if let Some(downloadable_2dcl) = downloadable_2dcl {
             let filename = format!(
                 "./assets/scenes/{}/{}-temp",
-                scene_file.id,
+                id_str,
                 downloadable_2dcl.filename.to_str().unwrap()
             );
 

@@ -3,8 +3,8 @@
 use dcl_common::Result;
 
 mod avatar_spritesheet_maker;
-mod metamask_login;
 mod deploy;
+mod metamask_login;
 mod previewer;
 mod renderer;
 mod where_command;

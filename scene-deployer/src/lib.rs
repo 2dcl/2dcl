@@ -42,13 +42,13 @@ pub async fn deploy(
             let scene_files =
                 catalyst::ContentClient::scene_files_for_parcels(&server, &scene_3d.scene.parcels)
                     .await?;
-            if !scene_files.is_empty() {
-                if scene_files.len() > 1 || scene_files[0].pointers != entity.pointers {
-                    return Err(Box::new(SceneDeployError::InvalidPointers {
-                        expected_parcels: scene_files[0].pointers.clone(),
-                        parcels_found: entity.pointers,
-                    }));
-                }
+            if !scene_files.is_empty()
+                && (scene_files.len() > 1 || scene_files[0].pointers != entity.pointers)
+            {
+                return Err(Box::new(SceneDeployError::InvalidPointers {
+                    expected_parcels: scene_files[0].pointers.clone(),
+                    parcels_found: entity.pointers,
+                }));
             }
         }
     } else {
@@ -197,12 +197,11 @@ pub fn build_entity_scene(
         mime_str: "application/octet-stream".to_string(),
     });
     (files_data, EntityId(entity_id))
-
 }
 
 fn find_entity(files_data: &Vec<FileData>) -> Option<SceneFile> {
     for file in files_data {
-        if file.mime_str == "application/octet-stream".to_string() {
+        if file.mime_str == *"application/octet-stream" {
             if let Ok(scene_file) = serde_json::from_slice::<SceneFile>(&file.bytes) {
                 return Some(scene_file);
             };

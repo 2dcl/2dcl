@@ -32,6 +32,10 @@ use std::f32::consts::PI;
 use std::path::{Path, PathBuf};
 use std::time::Duration;
 
+use self::error::AvatarMakerError;
+
+mod error;
+
 const FRAMES_IDLE: usize = 5;
 const FRAMES_RUNNING: usize = 10;
 const CAMERA_LOCATION: Vec3 = Vec3 {
@@ -727,9 +731,13 @@ async fn download_urn(urn: &str, save_path: &Path) -> dcl_common::Result<()> {
     };
     let result: Vec<SceneFile> = server.post("/content/entities/active", &request).await?;
     for scene_file in result {
+        let scene_file_id = match scene_file.id {
+            Some(id) => id,
+            None => return Err(Box::new(AvatarMakerError::MissingEntityId)),
+        };
         for downloadable in scene_file.content {
             let mut download_path = save_path.to_path_buf();
-            download_path.push(scene_file.id.to_string());
+            download_path.push(scene_file_id.to_string());
             download_path.push(downloadable.filename.to_str().unwrap());
             ContentClient::download(&server, downloadable.cid, &download_path).await?;
         }

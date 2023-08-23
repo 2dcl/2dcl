@@ -5,7 +5,7 @@ use tokio::process::Command;
 
 //mod server;
 
-#[derive(Debug, Default, Clone, Deserialize)]
+#[derive(Debug, Default, Clone, Deserialize, PartialEq)]
 pub struct EthAddress {
     pub address: String,
 }
@@ -69,12 +69,12 @@ impl EthereumAdapter {
         self.address.clone()
     }
 
-    pub fn personal_sign(&mut self, payload: &String) {
+    pub fn personal_sign(&mut self, payload: &str) {
         self.signature = None;
 
         let url = format!(
             "http://localhost:8000/sign?payload={}",
-            payload.replace("\n", "\\n")
+            payload.replace('\n', "\\n")
         );
         println!("Sign deployment: {}", url);
         open::that(url).unwrap();
