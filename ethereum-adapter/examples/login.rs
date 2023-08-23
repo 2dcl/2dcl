@@ -5,7 +5,7 @@ use ethereum_adapter::EthereumAdapter;
 
 #[tokio::main]
 async fn main() -> Result<()> {
-    let mut adapter = EthereumAdapter::new();
+    let mut adapter = EthereumAdapter::default();
     let mut command = std::env::current_exe().unwrap();
     command.pop();
     command.pop();

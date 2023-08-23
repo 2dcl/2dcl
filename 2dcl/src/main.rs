@@ -1,7 +1,9 @@
 #![allow(clippy::too_many_arguments)]
+#![allow(clippy::type_complexity)]
 use dcl_common::Result;
 
 mod avatar_spritesheet_maker;
+mod metamask_login;
 mod deploy;
 mod previewer;
 mod renderer;
@@ -10,6 +12,7 @@ mod where_command;
 pub mod bundles;
 pub mod components;
 pub mod resources;
+pub mod states;
 
 use clap::Parser;
 use tempdir::TempDir;

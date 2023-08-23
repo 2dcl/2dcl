@@ -15,7 +15,8 @@ pub fn setup(mut commands: Commands, asset_server: Res<AssetServer>) {
     let canvas = commands
         .spawn(NodeBundle {
             style: Style {
-                size: Size::new(Val::Percent(100.0), Val::Percent(100.0)),
+                width: Val::Percent(100.0),
+                height: Val::Percent(100.0),
                 align_items: AlignItems::End,
                 justify_content: JustifyContent::Start,
                 ..default()
@@ -46,7 +47,8 @@ pub fn setup(mut commands: Commands, asset_server: Res<AssetServer>) {
                 alpha: 0.75,
             }),
             style: Style {
-                size: Size::new(Val::Px(180.0), Val::Px(125.0)),
+                width: Val::Px(180.0),
+                height: Val::Px(125.0),
                 align_items: AlignItems::Start,
                 flex_direction: FlexDirection::Column,
                 justify_content: JustifyContent::Start,
@@ -153,7 +155,8 @@ pub fn setup(mut commands: Commands, asset_server: Res<AssetServer>) {
                             top: Val::Px(2.),
                             bottom: Val::Px(0.),
                         },
-                        size: Size::new(Val::Px(16.0), Val::Px(17.0)),
+                        width: Val::Px(16.0),
+                        height: Val::Px(17.0),
                         ..default()
                     },
                     ..default()

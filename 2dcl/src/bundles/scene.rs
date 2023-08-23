@@ -20,7 +20,7 @@ pub struct Scene {
 
 impl Scene {
     pub fn from_2dcl_scene_data(scene_data: &SceneData) -> Self {
-        let location: Vec3 = get_parcels_center_location(&scene_data.parcels);
+        let location: Vec3 = get_parcels_center_location(&scene_data.scene.parcels);
         let scene = &scene_data.scene;
         let mut scene_u8: Vec<u8> = Vec::new();
         scene
@@ -32,8 +32,8 @@ impl Scene {
             transform: TransformBundle::from_transform(Transform::from_translation(location)),
             scene: components::Scene {
                 name: scene.name.clone(),
-                parcels: scene_data.parcels.clone(),
-                timestamp: scene_data.scene.timestamp,
+                parcels: scene_data.scene.parcels.clone(),
+                timestamp: components::TimeStamp(scene_data.scene.timestamp),
                 serialized_data: scene_u8,
                 path: scene_data.path.clone(),
                 is_default: scene_data.is_default,

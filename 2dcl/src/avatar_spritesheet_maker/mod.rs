@@ -1,9 +1,9 @@
-use aseprite::{self, Frame, SpritesheetData};
-use bevy::app::{ScheduleRunnerPlugin, ScheduleRunnerSettings};
+use bevy::app::ScheduleRunnerPlugin;
 use bevy::gltf::Gltf;
 use bevy::log::LogPlugin;
 use bevy::pbr::CascadeShadowConfigBuilder;
 use bevy::prelude::*;
+use bevy::reflect::TypePath;
 use bevy::window::WindowResolution;
 use bevy::winit::WinitPlugin;
 use bevy::{
@@ -23,7 +23,8 @@ use bevy::{
 use bevy_spritesheet_maker::data::ActiveRecorders;
 use bevy_spritesheet_maker::formats::png::is_ready_to_export;
 use bevy_spritesheet_maker::{CaptureState, MediaCapture};
-use bevy_toon_shader::{ToonShaderMainCamera, ToonShaderMaterial, ToonShaderPlugin, ToonShaderSun};
+//use bevy_toon_shader::{ToonShaderMainCamera, ToonShaderMaterial, ToonShaderPlugin, ToonShaderSun};
+use crate::resources;
 use catalyst::{entity_files::SceneFile, ContentClient};
 use glob::glob;
 use serde::{Deserialize, Serialize};
@@ -31,17 +32,11 @@ use std::f32::consts::PI;
 use std::path::{Path, PathBuf};
 use std::time::Duration;
 
-use crate::resources;
-
 const FRAMES_IDLE: usize = 5;
 const FRAMES_RUNNING: usize = 10;
-const AVATAR_RESOLUTION: (usize, usize) = (640, 360);
-const AVATAR_FRAME: (usize, usize) = (640, 300);
-const IDLE_FRAME_DURATION: u32 = 250;
-const RUNNING_FRAME_DURATION: u32 = 60;
 const CAMERA_LOCATION: Vec3 = Vec3 {
     x: 3.,
-    y: 4.0,
+    y: 4.,
     z: 2.,
 };
 const CAMERA_FOCAL_POINT: Vec3 = Vec3 {
@@ -61,9 +56,6 @@ pub fn start(eth_adress: &str) {
     };
     App::new()
         .insert_resource(resources::Config::from_config_file())
-        .insert_resource(ScheduleRunnerSettings::run_loop(Duration::from_secs_f64(
-            1.0 / 60.0,
-        )))
         .add_plugins(
             DefaultPlugins
                 .build()
@@ -78,21 +70,21 @@ pub fn start(eth_adress: &str) {
                     ..default()
                 }),
         )
-        .add_plugin(ScheduleRunnerPlugin)
-        .add_plugin(bevy_spritesheet_maker::BevyCapturePlugin)
-        .add_plugin(Material2dPlugin::<PostProcessingMaterial>::default())
-        .add_plugin(ToonShaderPlugin)
+        .add_plugins(ScheduleRunnerPlugin::run_loop(Duration::from_secs_f64(
+            1.0 / 60.0,
+        )))
+        .add_plugins(bevy_spritesheet_maker::BevyCapturePlugin)
+        .add_plugins(Material2dPlugin::<PostProcessingMaterial>::default())
+        //.add_plugin(ToonShaderPlugin)
         .insert_resource(AmbientLight {
             color: Color::WHITE,
             brightness: 1.0,
         })
         .insert_resource(State::LoadingGltf)
         .insert_resource(avatar_properties)
-        .add_startup_system(setup)
-        .add_system(material_update)
-        .add_system(state_updater.after(setup_gltf))
-        .add_system(setup_gltf)
-        .add_system(finish)
+        .add_systems(Startup, setup)
+        .add_systems(Update, (material_update, setup_gltf, finish))
+        .add_systems(Update, state_updater.after(setup_gltf))
         .run();
 }
 
@@ -187,115 +179,9 @@ fn finish(
     mut app_exit_events: ResMut<Events<bevy::app::AppExit>>,
 ) {
     if *capture_media_state == CaptureState::Finished {
-        save_aseprite_file();
         println!("avatar import finished");
         app_exit_events.send(bevy::app::AppExit);
     }
-}
-
-fn save_aseprite_file() {
-    let mut frames = Vec::default();
-    for i in 0..FRAMES_IDLE + FRAMES_RUNNING * 4 {
-        let duration = match i < FRAMES_IDLE {
-            true => IDLE_FRAME_DURATION,
-            false => RUNNING_FRAME_DURATION,
-        };
-
-        let frame = Frame {
-            filename: "avatar_body ".to_string() + &i.to_string() + ".aseprite",
-            frame: aseprite::Rect {
-                x: 0,
-                y: (i * AVATAR_RESOLUTION.1) as u32,
-                w: AVATAR_FRAME.0 as u32,
-                h: AVATAR_FRAME.1 as u32,
-            },
-            rotated: false,
-            trimmed: false,
-            sprite_source_size: aseprite::Rect {
-                x: 0,
-                y: 0,
-                w: AVATAR_RESOLUTION.0 as u32,
-                h: AVATAR_RESOLUTION.1 as u32,
-            },
-            source_size: aseprite::Dimensions {
-                w: AVATAR_RESOLUTION.0 as u32,
-                h: AVATAR_RESOLUTION.1 as u32,
-            },
-            duration,
-        };
-        frames.push(frame);
-    }
-
-    let layer = aseprite::Layer {
-        name: "Body".to_string(),
-        opacity: 255,
-        blend_mode: aseprite::BlendMode::Normal,
-    };
-
-    let idle_tag = aseprite::Frametag {
-        name: "Idle".to_string(),
-        from: 0,
-        to: (FRAMES_IDLE - 1) as u32,
-        direction: aseprite::Direction::Pingpong,
-    };
-
-    let run_down_side_tag = aseprite::Frametag {
-        name: "RunDownSide".to_string(),
-        from: FRAMES_IDLE as u32,
-        to: (FRAMES_IDLE + FRAMES_RUNNING - 1) as u32,
-        direction: aseprite::Direction::Forward,
-    };
-
-    let run_up_side_tag = aseprite::Frametag {
-        name: "RunUpSide".to_string(),
-        from: (FRAMES_IDLE + FRAMES_RUNNING) as u32,
-        to: (FRAMES_IDLE + FRAMES_RUNNING * 2 - 1) as u32,
-        direction: aseprite::Direction::Forward,
-    };
-
-    let run_up_tag = aseprite::Frametag {
-        name: "RunUp".to_string(),
-        from: (FRAMES_IDLE + FRAMES_RUNNING * 2) as u32,
-        to: (FRAMES_IDLE + FRAMES_RUNNING * 3 - 1) as u32,
-        direction: aseprite::Direction::Forward,
-    };
-
-    let run_down_tag = aseprite::Frametag {
-        name: "RunDown".to_string(),
-        from: (FRAMES_IDLE + FRAMES_RUNNING * 3) as u32,
-        to: (FRAMES_IDLE + FRAMES_RUNNING * 4 - 1) as u32,
-        direction: aseprite::Direction::Forward,
-    };
-
-    let meta = aseprite::Metadata {
-        app: "https://www.aseprite.org/".to_string(),
-        version: "1.2.39-x64".to_string(),
-        format: "RGBA8888".to_string(),
-        size: aseprite::Dimensions {
-            w: (AVATAR_RESOLUTION.0 * FRAMES_IDLE + FRAMES_RUNNING * 4) as u32,
-            h: AVATAR_RESOLUTION.1 as u32,
-        },
-        scale: "1".to_string(),
-        frame_tags: Some(vec![
-            idle_tag,
-            run_down_side_tag,
-            run_up_side_tag,
-            run_down_tag,
-            run_up_tag,
-        ]),
-        layers: Some(vec![layer]),
-        image: Some("avatar_body.png".to_string()),
-    };
-    let sprite_sheet = SpritesheetData { frames, meta };
-
-    let json_string = serde_json::to_string(&sprite_sheet).unwrap();
-
-    let mut file_name = std::env::current_exe().unwrap();
-    file_name.pop();
-    file_name.push("assets");
-    file_name.push("wearables");
-    file_name.push("avatar_body.json");
-    std::fs::write(file_name, json_string).unwrap();
 }
 
 fn state_updater(
@@ -378,8 +264,8 @@ fn state_updater(
                 let mut file_name = std::env::current_exe().unwrap();
                 file_name.pop();
                 file_name.push("assets");
-                file_name.push("wearables");
-                file_name.push("avatar_body.png");
+                file_name.push("avatar");
+                file_name.push("player.png");
                 capture.capture_png_with_path(1357, FRAMES_RUNNING * 4 + FRAMES_IDLE, file_name);
                 *state = State::Finished;
             } else {
@@ -421,7 +307,7 @@ fn setup_gltf(
             loading.loading_finished = true;
 
             if loading.is_body {
-                transform.scale = Vec3::new(0.9, 1., 0.9);
+                transform.scale = Vec3::new(0.93, 1., 0.93);
             }
             let child = scene_children.iter().next();
 
@@ -478,10 +364,10 @@ fn material_update(
     assets_gltf: Res<Assets<Gltf>>,
     mut standard_materials: ResMut<Assets<StandardMaterial>>,
     avatar_properties: Res<AvatarProperties>,
-    mut commands: Commands,
-    query: Query<(Entity, &Handle<StandardMaterial>)>,
-    mut toon_materials: ResMut<Assets<ToonShaderMaterial>>,
-    config: Res<resources::Config>,
+    // mut commands: Commands,
+    // query: Query<(Entity, &Handle<StandardMaterial>)>,
+    // mut toon_materials: ResMut<Assets<ToonShaderMaterial>>,
+    // config: Res<resources::Config>,
 ) {
     for (_, gltf) in assets_gltf.iter() {
         for (material_name, material) in &gltf.named_materials {
@@ -507,7 +393,7 @@ fn material_update(
         }
     }
 
-    if config.avatar.cell_shading {
+    /* if config.avatar.cell_shading {
         for (entity, material) in query.iter() {
             let material: &StandardMaterial = standard_materials.get(material).unwrap();
             let toon_material = toon_materials.add(ToonShaderMaterial {
@@ -519,7 +405,7 @@ fn material_update(
             commands.entity(entity).remove::<Handle<StandardMaterial>>();
             commands.entity(entity).insert(toon_material);
         }
-    }
+    } */
 }
 
 fn setup(
@@ -647,7 +533,7 @@ fn setup(
         },
         post_processing_pass_layer,
         UiCameraConfig { show_ui: true },
-        ToonShaderMainCamera,
+        // ToonShaderMainCamera,
     ));
 
     // Light
@@ -671,7 +557,7 @@ fn setup(
             .into(),
             ..default()
         },
-        ToonShaderSun,
+        // ToonShaderSun,
     ));
 
     if config.avatar.ambient_light {
@@ -775,7 +661,7 @@ fn setup(
 // Region below declares of the custom material handling post processing effect
 
 /// Our custom post processinr,material
-#[derive(AsBindGroup, TypeUuid, Clone)]
+#[derive(AsBindGroup, TypeUuid, Clone, TypePath)]
 #[uuid = "bc2f08eb-a0fb-43f1-a908-54871ea597d5"]
 struct PostProcessingMaterial {
     /// In this example, this image will be the result of the main camera.

@@ -9,9 +9,9 @@ default = ["png"]
 png = ["dep:image"]
 
 [dependencies]
-bevy =  "0.10.1" 
+bevy =  "0.11.0" 
 log = "0.4"
-wgpu = "0.15.0"
+wgpu = "0.16.2"
 futures-lite = "1.13"
 
 # Dependencies for all image types

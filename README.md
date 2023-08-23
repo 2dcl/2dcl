@@ -1,6 +1,7 @@
 # decentraland-rs
 [![ci](https://github.com/hiddenpeopleclub/decentraland-rs/actions/workflows/ci.yaml/badge.svg)](https://github.com/hiddenpeopleclub/decentraland-rs/actions/workflows/ci.yaml)
 [![codecov](https://codecov.io/gh/hiddenpeopleclub/decentraland-rs/branch/main/graph/badge.svg?token=27AwcuMf9H)](https://codecov.io/gh/hiddenpeopleclub/decentraland-rs)
+[![funded by Decentraland DAO](https://img.shields.io/badge/%F0%9F%92%B0-funded%20by%20Decentraland%20DAO-green)](https://dao.decentraland.org)
 
 A Rust workspace with several useful libraries to work with Decentraland
 

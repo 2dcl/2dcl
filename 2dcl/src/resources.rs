@@ -1,10 +1,10 @@
 use super::renderer::collision;
 use bevy::prelude::*;
+use ethereum_adapter::EthAddress;
 use serde::Deserialize;
 
 //Config defaults
 const ETH_ADDRESS: &str = "0x270722b5222968603E4650C3b70A7DfB971Ed5B6";
-const CELL_SHADING: bool = false;
 const AMBIENT_LIGHT: bool = true;
 const AMBIENT_LIGHT_BRIGHTNESS: f32 = 0.1;
 const AMBIENT_LIGHT_R: f32 = 0.25;
@@ -16,9 +16,9 @@ const MIN_RENDERING_DISTANCE_IN_PARCELS: usize = 4;
 const MAX_RENDERING_DISTANCE_IN_PARCELS: usize = 7;
 const CAMERA_SIZE: f32 = 1.0;
 const PLAYER_SPEED: f32 = 400.0;
-const PLAYER_SCALE: f32 = 1.;
-const PLAYER_COLLIDER_SIZE_X: f32 = 18.;
-const PLAYER_COLLIDER_SIZE_Y: f32 = 20.;
+const PLAYER_SCALE: f32 = 0.5;
+const PLAYER_COLLIDER_SIZE_X: f32 = 25.;
+const PLAYER_COLLIDER_SIZE_Y: f32 = 25.;
 
 #[derive(Resource, Deserialize, Default, PartialEq)]
 pub struct Config {
@@ -60,10 +60,8 @@ impl Config {
 
 #[derive(Deserialize, PartialEq)]
 pub struct Avatar {
-    #[serde(default = "eth_address_default")]
-    pub eth_address: String,
-    #[serde(default = "cell_shading_default")]
-    pub cell_shading: bool,
+    #[serde(skip)]
+    pub eth_address: EthAddress,
     #[serde(default = "ambient_light_default")]
     pub ambient_light: bool,
     #[serde(default = "ambient_light_brightness_default")]
@@ -80,7 +78,6 @@ impl Default for Avatar {
     fn default() -> Self {
         Avatar {
             eth_address: eth_address_default(),
-            cell_shading: cell_shading_default(),
             ambient_light: ambient_light_default(),
             ambient_light_brightness: ambient_light_brightness_default(),
             ambient_light_r: ambient_light_r_default(),
@@ -90,12 +87,10 @@ impl Default for Avatar {
     }
 }
 
-fn eth_address_default() -> String {
-    ETH_ADDRESS.to_string()
-}
-
-fn cell_shading_default() -> bool {
-    CELL_SHADING
+fn eth_address_default() -> EthAddress {
+    EthAddress {
+        address: ETH_ADDRESS.to_string(),
+    }
 }
 
 fn ambient_light_default() -> bool {
