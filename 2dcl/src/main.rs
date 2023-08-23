@@ -3,12 +3,12 @@
 use dcl_common::Result;
 
 mod avatar_spritesheet_maker;
-mod deploy;
 mod metamask_login;
 mod previewer;
 mod renderer;
 mod where_command;
 
+pub mod deploy;
 pub mod bundles;
 pub mod components;
 pub mod resources;

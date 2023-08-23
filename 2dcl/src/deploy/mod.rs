@@ -110,8 +110,13 @@ where
     println!("Deploying to Catalyst...");
 
     let mut response = scene_deployer::deploy(entity_id, deploy_data, chain, server).await?;
-    println!("{:?}", response);
-    println!("{:?}", response.chunk().await);
-    println!("Done with Deployment");
+    if response.status() == 200
+    {
+      println!("Scene deployed");
+    } else{
+      println!("Scene could not be deployed");
+      println!("{:?}", response.chunk().await?);
+    }
+   
     Ok(())
 }

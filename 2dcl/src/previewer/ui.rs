@@ -48,7 +48,7 @@ pub fn setup(mut commands: Commands, asset_server: Res<AssetServer>) {
             }),
             style: Style {
                 width: Val::Px(180.0),
-                height: Val::Px(125.0),
+                height: Val::Px(160.0),
                 align_items: AlignItems::Start,
                 flex_direction: FlexDirection::Column,
                 justify_content: JustifyContent::Start,
@@ -110,12 +110,25 @@ pub fn setup(mut commands: Commands, asset_server: Res<AssetServer>) {
     let mut image_path = asset_path.clone();
     image_path.push("ui");
     image_path.push("button_u.png");
+    
 
     make_ui_tooltip(
         &mut commands,
         vec![asset_server.load(image_path)],
-        asset_server.load(font_path),
+        asset_server.load(font_path.as_path()),
         "toggle ui",
+        background,
+    );
+
+    let mut image_path = asset_path.clone();
+    image_path.push("ui");
+    image_path.push("button_f4.png");
+    
+    make_ui_tooltip(
+        &mut commands,
+        vec![asset_server.load(image_path)],
+        asset_server.load(font_path),
+        "deploy",
         background,
     );
 

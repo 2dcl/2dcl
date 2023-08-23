@@ -14,6 +14,9 @@ use collider_debugger::collider_debugger;
 mod manual_refresh;
 use manual_refresh::manual_refresh;
 
+mod deploy;
+use deploy::deploy;
+
 mod ui;
 
 use crate::{
@@ -63,6 +66,7 @@ pub fn preview_scene(source_path: std::path::PathBuf, destination_path: std::pat
                 level_switch,
                 collider_debugger,
                 manual_refresh,
+                deploy,
                 ui::toggle_ui,
                 loading_animation,
                 loading_sprites_task_handler,
