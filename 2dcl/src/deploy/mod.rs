@@ -21,10 +21,10 @@ where
     T: AsRef<Path>,
 {
     let mut adapter = EthereumAdapter::new();
-    let mut command = std::env::current_exe().unwrap();
+    let mut command = std::env::current_exe()?;
 
     command.pop();
-    adapter.start(&mut command).unwrap();
+    adapter.start(&mut command)?;
 
     // Create Catalyst Server Client
     let server = catalyst::Server::production();
@@ -49,11 +49,11 @@ where
         if !entry.file_name().to_str().unwrap_or(".").starts_with('.') {
             let path = entry.into_path();
             if let Ok(bytes) = std::fs::read(&path) {
-                let mut a = deploy_folder.clone();
-                a.pop();
+                let mut path_to_remove = deploy_folder.clone();
+                path_to_remove.pop();
 
-                let mut path_str = path.to_str().unwrap().to_string();
-                path_str = path_str.replace(a.to_str().unwrap(), ".");
+                let mut path_str = path.to_str().unwrap_or_default().to_string();
+                path_str = path_str.replace(path_to_remove.to_str().unwrap_or_default(), ".");
                 path_str = path_str.replace('\\', "/");
                 files.insert(path_str, bytes);
             }
@@ -74,7 +74,7 @@ where
     let date_time: DateTime<Utc> = system_time.into();
     let expiration_str = format!("{}", date_time.format("%Y-%m-%dT%T.000Z"));
     println!("{}", expiration_str);
-    let expiration = dcl_crypto::Expiration::try_from(expiration_str).unwrap();
+    let expiration = dcl_crypto::Expiration::try_from(expiration_str)?;
     let payload = EphemeralPayload::new(ephemeral_identity.address(), expiration);
 
     adapter.personal_sign(&payload.to_string());
@@ -84,17 +84,17 @@ where
         println!("Awaiting for signature...");
     }
 
-    let signature = adapter.signature().unwrap();
+    let signature = adapter.signature().unwrap_or_default();
     let address_str = signature.by.address;
     let signature = signature.signature;
 
-    let address = dcl_crypto::Address::try_from(address_str.clone()).unwrap();
+    let address = dcl_crypto::Address::try_from(address_str.clone())?;
 
     let mut chain = vec![
         AuthLink::signer(address),
         AuthLink::EcdsaPersonalEphemeral {
             payload,
-            signature: PersonalSignature::try_from(signature).unwrap(),
+            signature: PersonalSignature::try_from(signature)?,
         },
     ];
 
@@ -109,12 +109,9 @@ where
 
     println!("Deploying to Catalyst...");
 
-    let response = scene_deployer::deploy(entity_id, deploy_data, chain, server)
-        .await
-        .unwrap();
+    let mut response = scene_deployer::deploy(entity_id, deploy_data, chain, server).await?;
     println!("{:?}", response);
-    // Figure out how to upload files.
-
+    println!("{:?}", response.chunk().await);
     println!("Done with Deployment");
     Ok(())
 }

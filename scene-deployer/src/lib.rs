@@ -12,7 +12,9 @@ use catalyst::{
     ContentId, EntityId, EntityType,
 };
 use cid::{multihash::MultihashDigest, Cid};
+use dcl_common::Parcel;
 use dcl_crypto::{AuthChain, AuthLink};
+use error::SceneDeployError;
 use reqwest::Response;
 
 pub struct FileData {
@@ -27,6 +29,32 @@ pub async fn deploy(
     auth_chain: AuthChain,
     server: catalyst::Server,
 ) -> Result<Response, Box<dyn Error>> {
+    if let Some(entity) = find_entity(&deploy_data) {
+        if let Some(scene_3d) = entity.metadata {
+            let expected_parcels = parcels_vec_to_strings_vec(&scene_3d.scene.parcels);
+            if expected_parcels != entity.pointers {
+                return Err(Box::new(SceneDeployError::InvalidPointers {
+                    parcels_found: entity.pointers,
+                    expected_parcels,
+                }));
+            }
+
+            let scene_files =
+                catalyst::ContentClient::scene_files_for_parcels(&server, &scene_3d.scene.parcels)
+                    .await?;
+            if !scene_files.is_empty() {
+                if scene_files.len() > 1 || scene_files[0].pointers != entity.pointers {
+                    return Err(Box::new(SceneDeployError::InvalidPointers {
+                        expected_parcels: scene_files[0].pointers.clone(),
+                        parcels_found: entity.pointers,
+                    }));
+                }
+            }
+        }
+    } else {
+        return Err(Box::new(SceneDeployError::MissingSceneEntity));
+    }
+
     let form =
         build_entity_form_data_for_deployment(entity_id.to_string(), deploy_data, auth_chain);
     server.raw_post_form("/content/entities", form).await
@@ -170,5 +198,25 @@ pub fn build_entity_scene(
     });
     (files_data, EntityId(entity_id))
 
-    // prevent duplicated file names
+}
+
+fn find_entity(files_data: &Vec<FileData>) -> Option<SceneFile> {
+    for file in files_data {
+        if file.mime_str == "application/octet-stream".to_string() {
+            if let Ok(scene_file) = serde_json::from_slice::<SceneFile>(&file.bytes) {
+                return Some(scene_file);
+            };
+        }
+    }
+
+    None
+}
+
+fn parcels_vec_to_strings_vec(parcels: &Vec<Parcel>) -> Vec<String> {
+    let mut output = Vec::default();
+    for parcel in parcels {
+        output.push(format!("{},{}", parcel.0, parcel.1));
+    }
+
+    output
 }
