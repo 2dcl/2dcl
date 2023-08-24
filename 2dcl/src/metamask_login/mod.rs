@@ -360,6 +360,9 @@ async fn login() -> dcl_common::Result<Option<EthAddress>> {
         thread::sleep(time::Duration::from_millis(1000));
         println!("Awaiting for login...");
     }
+
+    adapter.stop().await?;
+    
     Ok(adapter.address())
 }
 

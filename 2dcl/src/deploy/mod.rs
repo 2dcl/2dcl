@@ -114,5 +114,7 @@ where
         println!("{:?}", response.chunk().await?);
     }
 
+    adapter.stop().await?;
+
     Ok(())
 }

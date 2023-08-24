@@ -1,7 +1,7 @@
 use dcl_common::Result;
 use serde::Deserialize;
 use std::path::PathBuf;
-use tokio::process::Command;
+use tokio::process::{ Command, Child };
 
 //mod server;
 
@@ -29,6 +29,7 @@ pub struct EthereumAdapter {
     address: Option<EthAddress>,
     deploy_signing_state: DeploySignState,
     signature: Option<Signature>,
+    command: Option<Child>
 }
 
 impl EthereumAdapter {
@@ -38,10 +39,18 @@ impl EthereumAdapter {
 
     pub fn start(&mut self, path: &mut PathBuf) -> Result<()> {
         path.push("ethereum-adapter-webserver");
-        Command::new(path).spawn().expect("failed to spawn");
+        self.command = Some(Command::new(path).spawn().expect("failed to spawn"));
         Ok(())
     }
 
+    pub async fn stop(&mut self) -> Result<()> {
+        if let Some(child) = &mut self.command {
+            child.kill().await?;
+        }
+        self.command = None;
+        Ok(())
+    }
+    
     pub fn login(&mut self) {
         self.address = None;
         let url = "http://localhost:8000/login";
