@@ -48,12 +48,11 @@ where
         if !entry.file_name().to_str().unwrap_or(".").starts_with('.') {
             let path = entry.into_path();
             if let Ok(bytes) = std::fs::read(&path) {
-                let mut path_to_remove = deploy_folder.clone();
-                path_to_remove.pop();
-
+                let path_to_remove = deploy_folder.clone();
                 let mut path_str = path.to_str().unwrap_or_default().to_string();
                 path_str = path_str.replace(path_to_remove.to_str().unwrap_or_default(), "./2dcl");
                 path_str = path_str.replace('\\', "/");
+                println!("path: {:?}", path_str);
                 files.insert(path_str, bytes);
             }
         }
