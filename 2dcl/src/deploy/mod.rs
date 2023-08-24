@@ -52,7 +52,7 @@ where
                 path_to_remove.pop();
 
                 let mut path_str = path.to_str().unwrap_or_default().to_string();
-                path_str = path_str.replace(path_to_remove.to_str().unwrap_or_default(), ".");
+                path_str = path_str.replace(path_to_remove.to_str().unwrap_or_default(), "./2dcl");
                 path_str = path_str.replace('\\', "/");
                 files.insert(path_str, bytes);
             }
@@ -72,7 +72,6 @@ where
     let system_time = SystemTime::now() + Duration::from_secs(300);
     let date_time: DateTime<Utc> = system_time.into();
     let expiration_str = format!("{}", date_time.format("%Y-%m-%dT%T.000Z"));
-    println!("{}", expiration_str);
     let expiration = dcl_crypto::Expiration::try_from(expiration_str)?;
     let payload = EphemeralPayload::new(ephemeral_identity.address(), expiration);
 

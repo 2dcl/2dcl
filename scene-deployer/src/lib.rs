@@ -155,17 +155,17 @@ pub fn build_entity_scene(
 ) -> (Vec<FileData>, EntityId) {
     let mut content = scene_file.content.clone();
     let mut files_data = Vec::default();
+
+    for i in 0..content.len() {
+        if content[i].filename.starts_with("./2dcl") || content[i].filename.starts_with("/2dcl") {
+            content.remove(i);
+            break;
+        }
+    }
+
     for (path, bytes) in files {
         let cid = get_cid(&bytes);
         let filename = PathBuf::from_str(&path).unwrap();
-
-        for i in 0..content.len() {
-            if content[i].filename == filename {
-                content.remove(i);
-                break;
-            }
-        }
-
         content.push(ContentFile {
             filename,
             cid: ContentId::new(cid.clone()),

@@ -366,7 +366,6 @@ pub async fn get_newest_scene_files_for_parcels(
 
     let server = Server::production();
     let scene_files = ContentClient::scene_files_for_parcels(&server, &parcels).await?;
-
     for scene_file in scene_files {
         let id_str = match &scene_file.id {
             Some(id) => id.to_string(),
@@ -398,7 +397,6 @@ pub async fn get_newest_scene_files_for_parcels(
                 id_str,
                 downloadable_2dcl.filename.to_str().unwrap()
             );
-
             ContentClient::download(&server, downloadable_2dcl.cid, &filename).await?;
             let mut parcels = Vec::default();
             for parcel in &scene_file.pointers {
@@ -407,17 +405,12 @@ pub async fn get_newest_scene_files_for_parcels(
                 }
             }
 
-            println!("reading new scene_2dcl");
             if let Some(scene_2cl) = read_scene_file(&filename) {
-                println!("Some");
                 let mut should_download = false;
                 for parcel in &parcels {
-                    println!("pre match");
                     match get_parcel_file_data(parcel, scene_files_map) {
                         Some(parcel_data) => {
-                            println!("some");
                             if let Some(previous_2dcl_scene) = read_scene_file(parcel_data.path) {
-                                println!("read scene 2dcl");
                                 if previous_2dcl_scene.timestamp != scene_2cl.timestamp {
                                     scene_files_to_download.push(scene_file);
                                     should_download = true;
@@ -426,7 +419,6 @@ pub async fn get_newest_scene_files_for_parcels(
                             }
                         }
                         None => {
-                            println!("none");
                             scene_files_to_download.push(scene_file);
                             should_download = true;
                             break;
@@ -563,9 +555,7 @@ fn downloading_scenes_task_handler(
     for (entity, mut downloading_scene) in &mut tasks_downloading_scenes {
         if let Some(new_paths) = future::block_on(future::poll_once(&mut downloading_scene.task)) {
             commands.entity(entity).despawn_recursive();
-            println!("FINISHED DOWNLOADING SCENE");
             if let Some(new_paths) = new_paths {
-                println!("NEW PATHS/refreshing");
                 for new_path in new_paths {
                     match refresh_path(new_path.clone(), &mut scene_files_map) {
                         Ok(_) => {}
@@ -584,7 +574,6 @@ fn downloading_scenes_task_handler(
                                 if scene.timestamp.0 != scene_data.scene.timestamp {
                                     despawned_entities.entities.push(entity);
                                     commands.entity(entity).despawn_recursive();
-                                    println!("ABOUT TO SPAWN NEW SCENE");
                                     spawn_scene(
                                         &mut commands,
                                         &asset_server,
@@ -594,8 +583,6 @@ fn downloading_scenes_task_handler(
                                         &mut spawning_queue,
                                     );
                                 }
-                            } else {
-                                println!("SCENE DATA KEK");
                             }
                         }
                     }

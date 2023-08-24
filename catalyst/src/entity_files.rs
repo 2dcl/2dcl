@@ -6,7 +6,7 @@ use serde::Deserialize;
 use serde::Serialize;
 use std::path::PathBuf;
 
-#[derive(Debug, Serialize, Deserialize, Eq, PartialEq, Clone)]
+#[derive(Debug, Serialize, Deserialize, PartialEq, Clone)]
 pub struct SceneFile {
     #[serde(skip_serializing_if = "Option::is_none")]
     pub id: Option<EntityId>,
@@ -20,7 +20,7 @@ pub struct SceneFile {
     pub metadata: Option<DCL3dScene>,
 }
 
-#[derive(Debug, Serialize, Deserialize, Eq, PartialEq, Clone)]
+#[derive(Debug, Serialize, Deserialize, PartialEq, Clone)]
 pub struct EntityFile {
     #[serde(skip_serializing_if = "Option::is_none")]
     pub id: Option<EntityId>,
@@ -32,7 +32,7 @@ pub struct EntityFile {
     pub content: Vec<ContentFile>,
 }
 
-#[derive(Debug, Serialize, Deserialize, Eq, PartialEq, Clone)]
+#[derive(Debug, Serialize, Deserialize, PartialEq, Clone)]
 pub struct ContentFile {
     #[serde(rename(deserialize = "file", serialize = "file"))]
     pub filename: PathBuf,
@@ -40,7 +40,7 @@ pub struct ContentFile {
     pub cid: ContentId,
 }
 
-#[derive(Debug, Deserialize, Serialize, Clone, PartialEq, Eq)]
+#[derive(Debug, Deserialize, Serialize, Clone, PartialEq)]
 pub struct DCL3dScene {
     #[serde(rename(
         deserialize = "isPortableExperience",
@@ -85,7 +85,7 @@ pub struct DCL3dScene {
     pub communications: Option<Communications>,
 }
 
-#[derive(Debug, Deserialize, Serialize, Clone, PartialEq, Eq)]
+#[derive(Debug, Deserialize, Serialize, Clone, PartialEq)]
 pub enum RequiredPermission {
     #[serde(rename(
         deserialize = "ALLOW_MEDIA_HOSTNAMES",
@@ -112,12 +112,12 @@ pub enum RequiredPermission {
     UseWebsocket,
 }
 
-#[derive(Debug, Deserialize, Serialize, Default, Clone, PartialEq, Eq)]
+#[derive(Debug, Deserialize, Serialize, Default, Clone, PartialEq)]
 pub struct WorldConfiguration {
     #[serde(skip_serializing_if = "Option::is_none")]
     pub name: Option<String>,
     #[serde(skip_serializing_if = "Option::is_none")]
-    pub skybox: Option<i32>,
+    pub skybox: Option<f32>,
     #[serde(rename(deserialize = "minimapVisible", serialize = "minimapVisible"))]
     #[serde(skip_serializing_if = "Option::is_none")]
     pub minimap_visible: Option<bool>,
@@ -135,21 +135,21 @@ pub struct WorldConfiguration {
     pub places_config: Option<PlacesConfig>,
 }
 
-#[derive(Debug, Deserialize, Serialize, Default, Clone, PartialEq, Eq)]
+#[derive(Debug, Deserialize, Serialize, Default, Clone, PartialEq)]
 pub struct PlacesConfig {
     #[serde(rename(deserialize = "optOut", serialize = "optOut"))]
     #[serde(skip_serializing_if = "Option::is_none")]
     opt_out: Option<bool>,
 }
 
-#[derive(Debug, Deserialize, Serialize, Default, Clone, PartialEq, Eq)]
+#[derive(Debug, Deserialize, Serialize, Default, Clone, PartialEq)]
 pub struct SkyBoxConfig {
     #[serde(skip_serializing_if = "Option::is_none")]
-    pub fixed_time: Option<i32>,
+    pub fixed_time: Option<f32>,
     #[serde(skip_serializing_if = "Option::is_none")]
     pub textures: Option<Vec<String>>,
 }
-#[derive(Debug, Deserialize, Serialize, Default, Clone, PartialEq, Eq)]
+#[derive(Debug, Deserialize, Serialize, Default, Clone, PartialEq)]
 pub struct MiniMapConfig {
     #[serde(skip_serializing_if = "Option::is_none")]
     pub visible: Option<bool>,
@@ -160,7 +160,7 @@ pub struct MiniMapConfig {
     #[serde(skip_serializing_if = "Option::is_none")]
     pub estate_image: Option<String>,
 }
-#[derive(Debug, Deserialize, Serialize, Default, Clone, PartialEq, Eq)]
+#[derive(Debug, Deserialize, Serialize, Default, Clone, PartialEq)]
 pub struct FeatureToggles {
     #[serde(rename(deserialize = "voiceChat", serialize = "voiceChat"))]
     #[serde(skip_serializing_if = "Option::is_none")]
@@ -170,7 +170,7 @@ pub struct FeatureToggles {
     pub portable_experiences: Option<Toggle>,
 }
 
-#[derive(Debug, Deserialize, Serialize, Clone, PartialEq, Eq)]
+#[derive(Debug, Deserialize, Serialize, Clone, PartialEq)]
 pub enum Toggle {
     #[serde(rename(deserialize = "enabled", serialize = "enabled"))]
     Enabled,
@@ -180,15 +180,15 @@ pub enum Toggle {
     HideUi,
 }
 
-#[derive(Debug, Deserialize, Serialize, Default, Clone, PartialEq, Eq)]
+#[derive(Debug, Deserialize, Serialize, Default, Clone, PartialEq)]
 pub struct Source {
     #[serde(skip_serializing_if = "Option::is_none")]
-    pub version: Option<i32>,
+    pub version: Option<f32>,
     pub origin: String,
     #[serde(rename(deserialize = "projectId", serialize = "projectId"))]
     pub project_id: String,
     #[serde(skip_serializing_if = "Option::is_none")]
-    pub point: Option<Point>,
+    pub point: Option<PointType>,
     #[serde(skip_serializing_if = "Option::is_none")]
     pub rotation: Option<Rotation>,
     #[serde(skip_serializing_if = "Option::is_none")]
@@ -198,13 +198,13 @@ pub struct Source {
     pub is_empty: Option<bool>,
 }
 
-#[derive(Debug, Deserialize, Serialize, Default, Clone, PartialEq, Eq)]
+#[derive(Debug, Deserialize, Serialize, Default, Clone, PartialEq)]
 pub struct Layout {
     pub rows: i32,
     pub cols: i32,
 }
 
-#[derive(Debug, Deserialize, Serialize, Default, Clone, PartialEq, Eq)]
+#[derive(Debug, Deserialize, Serialize, Default, Clone, PartialEq)]
 pub enum Rotation {
     #[default]
     #[serde(rename(deserialize = "north", serialize = "north"))]
@@ -216,13 +216,21 @@ pub enum Rotation {
     #[serde(rename(deserialize = "west", serialize = "west"))]
     West,
 }
-#[derive(Debug, Deserialize, Serialize, Default, Clone, PartialEq, Eq)]
+
+#[derive(Debug, Deserialize, Serialize, Clone, PartialEq)]
+#[serde(untagged)]
+pub enum PointType {
+    Point(Point),
+    Str(String),
+}
+
+#[derive(Debug, Deserialize, Serialize, Default, Clone, PartialEq)]
 pub struct Point {
     pub x: i32,
     pub y: i32,
 }
 
-#[derive(Debug, Deserialize, Serialize, Default, Clone, PartialEq, Eq)]
+#[derive(Debug, Deserialize, Serialize, Default, Clone, PartialEq)]
 pub struct SpawnPoints {
     #[serde(skip_serializing_if = "Option::is_none")]
     pub name: Option<String>,
@@ -234,7 +242,7 @@ pub struct SpawnPoints {
     pub camera_target: Option<SinglePosition>,
 }
 
-#[derive(Debug, Deserialize, Serialize, Clone, PartialEq, Eq)]
+#[derive(Debug, Deserialize, Serialize, Clone, PartialEq)]
 #[serde(untagged)]
 pub enum SpawnPosition {
     SinglePosition(SinglePosition),
@@ -247,21 +255,21 @@ impl Default for SpawnPosition {
     }
 }
 
-#[derive(Debug, Deserialize, Serialize, Default, Clone, PartialEq, Eq)]
+#[derive(Debug, Deserialize, Serialize, Default, Clone, PartialEq)]
 pub struct SinglePosition {
-    pub x: i32,
-    pub y: i32,
-    pub z: i32,
+    pub x: f32,
+    pub y: f32,
+    pub z: f32,
 }
 
-#[derive(Debug, Deserialize, Serialize, Default, Clone, PartialEq, Eq)]
+#[derive(Debug, Deserialize, Serialize, Default, Clone, PartialEq)]
 pub struct MultiPosition {
-    pub x: Vec<i32>,
-    pub y: Vec<i32>,
-    pub z: Vec<i32>,
+    pub x: Vec<f32>,
+    pub y: Vec<f32>,
+    pub z: Vec<f32>,
 }
 
-#[derive(Debug, Deserialize, Serialize, Default, Clone, PartialEq, Eq)]
+#[derive(Debug, Deserialize, Serialize, Default, Clone, PartialEq)]
 pub struct Display {
     #[serde(skip_serializing_if = "Option::is_none")]
     pub title: Option<String>,
@@ -274,7 +282,7 @@ pub struct Display {
     pub favicon: Option<String>,
 }
 
-#[derive(Debug, Deserialize, Serialize, Default, Clone, PartialEq, Eq)]
+#[derive(Debug, Deserialize, Serialize, Default, Clone, PartialEq)]
 pub struct Contact {
     #[serde(skip_serializing_if = "Option::is_none")]
     pub name: Option<String>,
@@ -286,19 +294,19 @@ pub struct Contact {
     pub url: Option<String>,
 }
 
-#[derive(Debug, Deserialize, Serialize, Clone, PartialEq, Eq)]
+#[derive(Debug, Deserialize, Serialize, Clone, PartialEq)]
 pub struct SceneParcels {
     pub base: Parcel,
     pub parcels: Vec<Parcel>,
 }
 
-#[derive(Debug, Deserialize, Serialize, Default, Clone, PartialEq, Eq)]
+#[derive(Debug, Deserialize, Serialize, Default, Clone, PartialEq)]
 pub struct Communications {
     #[serde(skip_serializing_if = "Option::is_none")]
     pub signalling: Option<String>,
 }
 
-#[derive(Debug, Deserialize, Serialize, Default, Clone, PartialEq, Eq)]
+#[derive(Debug, Deserialize, Serialize, Default, Clone, PartialEq)]
 pub struct Policy {
     #[serde(skip_serializing_if = "Option::is_none")]
     pub content_rating: Option<String>,

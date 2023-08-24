@@ -57,7 +57,7 @@ async fn main() -> Result<()> {
                 a.pop();
 
                 let mut path_str = path.to_str().unwrap().to_string();
-                path_str = path_str.replace(a.to_str().unwrap(), ".");
+                path_str = path_str.replace(a.to_str().unwrap(), "./2dcl");
                 path_str = path_str.replace('\\', "/");
                 files.insert(path_str, bytes);
             }
