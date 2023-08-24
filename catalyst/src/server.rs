@@ -4,7 +4,7 @@ use serde::{Deserialize, Serialize};
 
 /// A *single* catalyst server.
 ///
-#[derive(Deserialize, Debug)]
+#[derive(Deserialize, Debug, Clone)]
 #[serde(rename_all = "camelCase")]
 pub struct Server {
     pub base_url: String,
@@ -149,6 +149,22 @@ impl Server {
             .http_client
             .post(format!("{}{}", self.base_url, path))
             .json(&body)
+            .send()
+            .await?)
+    }
+
+    pub async fn raw_post_form<U>(
+        &self,
+        path: U,
+        form: reqwest::multipart::Form,
+    ) -> Result<reqwest::Response>
+    where
+        U: AsRef<str> + std::fmt::Display,
+    {
+        Ok(self
+            .http_client
+            .post(format!("{}{}", self.base_url, path))
+            .multipart(form)
             .send()
             .await?)
     }

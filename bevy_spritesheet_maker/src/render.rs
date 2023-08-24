@@ -1,11 +1,9 @@
-use std::num::NonZeroU32;
-use std::ops::Deref;
-
 use bevy::ecs::system::{Res, ResMut};
 use bevy::render::render_asset::RenderAssets;
 use bevy::render::render_resource::TextureFormat;
 use bevy::render::renderer::{RenderDevice, RenderQueue};
 use bevy::render::texture::{Image, TextureFormatPixelInfo};
+use std::ops::Deref;
 use wgpu::{
     BufferDescriptor, BufferUsages, CommandEncoderDescriptor, Extent3d, ImageCopyBuffer,
     ImageDataLayout, Maintain, COPY_BYTES_PER_ROW_ALIGNMENT,
@@ -25,7 +23,7 @@ pub fn layout_data(width: u32, height: u32, format: TextureFormat) -> ImageDataL
     ImageDataLayout {
         bytes_per_row: if height > 1 {
             // 1 = 1 row
-            NonZeroU32::new(get_aligned_size(width, 1, format.pixel_size() as u32))
+            Some(get_aligned_size(width, 1, format.pixel_size() as u32))
         } else {
             None
         },
@@ -41,7 +39,7 @@ pub fn smuggle_frame(
     render_queue: Res<RenderQueue>,
 ) {
     let mut smugglers = smugglers.0.lock().unwrap();
-    for (_id, mut recorder) in smugglers.0.iter_mut() {
+    for (_id, recorder) in smugglers.0.iter_mut() {
         if let Some(image) = images.get(&recorder.target_handle) {
             let width = image.size.x as u32;
             let height = image.size.y as u32;

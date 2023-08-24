@@ -1,3 +1,6 @@
+use super::constants::{PARCEL_SIZE_X, PARCEL_SIZE_Y};
+use super::scenes_io::SceneData;
+use crate::states::AppState;
 use bevy::prelude::*;
 use dcl_common::{Parcel, Result};
 use rand::prelude::*;
@@ -8,9 +11,6 @@ use std::fs::File;
 use std::io::BufReader;
 use std::path::PathBuf;
 use std::str::FromStr;
-
-use super::constants::{PARCEL_SIZE_X, PARCEL_SIZE_Y};
-use super::scenes_io::SceneData;
 
 const ROADS_DATA_MP_FILE: &str = "./assets/roads/roads.mp";
 
@@ -109,7 +109,7 @@ pub struct SceneMakerPlugin;
 
 impl Plugin for SceneMakerPlugin {
     fn build(&self, app: &mut App) {
-        app.add_startup_system(setup);
+        app.add_systems(OnEnter(AppState::InGame), setup);
     }
 }
 
@@ -123,8 +123,11 @@ pub fn setup(mut commands: Commands) {
 
 pub fn make_default_scene(parcel: &Parcel) -> Result<SceneData> {
     let mut scene_data = SceneData {
-        parcels: vec![parcel.clone()],
         is_default: true,
+        scene: dcl2d_ecs_v1::Scene {
+            parcels: vec![parcel.clone()],
+            ..Default::default()
+        },
         ..default()
     };
 
@@ -163,13 +166,13 @@ pub fn make_road_scene(roads_data: &RoadsData, parcel: &Parcel) -> Result<SceneD
 
     let scene = dcl2d_ecs_v1::Scene {
         name: format!("Road {} , {}", &parcel.0, &parcel.1),
+        parcels: vec![parcel.clone()],
         levels: vec![level],
         ..default()
     };
 
     let scene_data = SceneData {
         scene,
-        parcels: vec![parcel.clone()],
         path,
         is_default: true,
     };

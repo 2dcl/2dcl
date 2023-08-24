@@ -1,12 +1,30 @@
-// use crate::*;
-// use dcl_common::{ ContentId, Parcel, SceneId, Result};
-// use serde::Deserialize;
+use std::println;
 
-// /// `LambdaClient` implements all the request to interact with [Catalyst Lambda](https://decentraland.github.io/catalyst-api-specs/#tag/Lambdas).
-// ///
-// #[derive(Default)]
-// pub struct LambdaClient {}
-// impl LambdaClient {
+use crate::*;
+use dcl_common::{Result};
+use dcl_crypto::Address;
+
+
+/// `LambdaClient` implements all the request to interact with [Catalyst Lambda](https://decentraland.github.io/catalyst-api-specs/#tag/Lambdas).
+///
+#[derive(Default)]
+pub struct LambdaClient {}
+
+impl LambdaClient {
+  /// Implements [`/lambda/profiles/{id}`](https://decentraland.github.io/catalyst-api-specs/#tag/Lambdas/operation/getAvatarDetails)
+  pub async fn profile(server: &Server, address: Address) -> Result<String> {
+    let path = format!("/lambdas/profiles/{}", address.to_string());
+
+    println!("{}", path);
+
+    let result = server
+        .raw_get(path)
+        .await?
+        .text()
+        .await?;
+    
+    Ok(result)
+  }
 //     /// Implements [`/lambda/contracts/servers`](https://decentraland.github.io/catalyst-api-specs/#operation/getServers)
 //     pub async fn servers(server: &Server) -> Result<Vec<Server>> {
 //         let servers: Vec<Server> = server.get("/lambdas/contracts/servers").await?;
@@ -178,4 +196,4 @@
 //         assert_eq!(content_file, expected);
 
 //     }
-// }
+}

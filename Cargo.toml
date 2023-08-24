@@ -5,5 +5,6 @@ members = [
   "dcl-common",
   "catalyst",
   "scene-compiler",
-  "ecs-v1"
+  "ecs-v1",
+  "ethereum-adapter"
 ]

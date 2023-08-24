@@ -38,6 +38,8 @@ The bare minimum content of `scene.json` is this:
 ```json
 {
   "name": "The Name of My Scene",
+  "parcels": ["0,0"],
+  "base" : "0,0",
   "levels": [
     {
       ""

@@ -15,7 +15,8 @@ pub fn setup(mut commands: Commands, asset_server: Res<AssetServer>) {
     let canvas = commands
         .spawn(NodeBundle {
             style: Style {
-                size: Size::new(Val::Percent(100.0), Val::Percent(100.0)),
+                width: Val::Percent(100.0),
+                height: Val::Percent(100.0),
                 align_items: AlignItems::End,
                 justify_content: JustifyContent::Start,
                 ..default()
@@ -46,7 +47,8 @@ pub fn setup(mut commands: Commands, asset_server: Res<AssetServer>) {
                 alpha: 0.75,
             }),
             style: Style {
-                size: Size::new(Val::Px(180.0), Val::Px(125.0)),
+                width: Val::Px(180.0),
+                height: Val::Px(160.0),
                 align_items: AlignItems::Start,
                 flex_direction: FlexDirection::Column,
                 justify_content: JustifyContent::Start,
@@ -108,12 +110,25 @@ pub fn setup(mut commands: Commands, asset_server: Res<AssetServer>) {
     let mut image_path = asset_path.clone();
     image_path.push("ui");
     image_path.push("button_u.png");
+    
 
     make_ui_tooltip(
         &mut commands,
         vec![asset_server.load(image_path)],
-        asset_server.load(font_path),
+        asset_server.load(font_path.as_path()),
         "toggle ui",
+        background,
+    );
+
+    let mut image_path = asset_path.clone();
+    image_path.push("ui");
+    image_path.push("button_f4.png");
+    
+    make_ui_tooltip(
+        &mut commands,
+        vec![asset_server.load(image_path)],
+        asset_server.load(font_path),
+        "deploy",
         background,
     );
 
@@ -153,7 +168,8 @@ pub fn setup(mut commands: Commands, asset_server: Res<AssetServer>) {
                             top: Val::Px(2.),
                             bottom: Val::Px(0.),
                         },
-                        size: Size::new(Val::Px(16.0), Val::Px(17.0)),
+                        width: Val::Px(16.0),
+                        height: Val::Px(17.0),
                         ..default()
                     },
                     ..default()

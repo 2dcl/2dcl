@@ -96,7 +96,8 @@ pub fn move_camera_buffers(
             }
 
             recorder.frames.push_back(TextureFrame::with_duration(
-                std::mem::replace(&mut data.last_frame, None)
+                data.last_frame
+                    .take()
                     .expect("A frame has disappeared in Lego City"),
                 dt,
             ));
