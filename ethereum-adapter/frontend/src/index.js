@@ -59,7 +59,7 @@ function handleAccountsChanged(accounts) {
 /* Access the user's accounts (per EIP-1102) */
 /*********************************************/
 
-const connectButton = document.querySelector('.connectButton');
+const connectButton = document.querySelector('.connect');
 const showAccount = document.querySelector('.showAccount');
 const connected = document.querySelector('#connected');
 
