@@ -7,8 +7,8 @@
 mod content_client;
 pub use content_client::ContentClient;
 
-// mod lambda_client;
-// pub use lambda_client::LambdaClient;
+mod lambda_client;
+pub use lambda_client::LambdaClient;
 
 mod entity;
 pub use entity::Entity;
