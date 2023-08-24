@@ -23,9 +23,10 @@ use bevy::{
 use bevy_spritesheet_maker::data::ActiveRecorders;
 use bevy_spritesheet_maker::formats::png::is_ready_to_export;
 use bevy_spritesheet_maker::{CaptureState, MediaCapture};
+use catalyst::entity_files::EntityFile;
 //use bevy_toon_shader::{ToonShaderMainCamera, ToonShaderMaterial, ToonShaderPlugin, ToonShaderSun};
 use crate::resources;
-use catalyst::{entity_files::SceneFile, ContentClient};
+use catalyst::ContentClient;
 use glob::glob;
 use serde::{Deserialize, Serialize};
 use std::f32::consts::PI;
@@ -53,7 +54,8 @@ pub fn start(eth_adress: &str) {
     println!("making avatar for :{:?}", eth_adress);
     let avatar_properties = match download_avatar(eth_adress) {
         Ok(properties) => properties,
-        Err(_) => {
+        Err(err) => {
+            println!("{:?}", err);
             println!("could not find a decentraland avatar for the given ethereum address");
             return;
         }
@@ -707,7 +709,6 @@ async fn download_avatar(eth_address: &str) -> dcl_common::Result<AvatarProperti
 
     avatar_save_path.push("body_shape");
     download_urn(&avatar.body_shape, &avatar_save_path).await?;
-
     let body_shape = match avatar.body_shape.contains("Female") {
         true => BodyShape::Female,
         false => BodyShape::Male,
@@ -729,7 +730,7 @@ async fn download_urn(urn: &str, save_path: &Path) -> dcl_common::Result<()> {
     let request = Request {
         pointers: vec![urn.to_string()],
     };
-    let result: Vec<SceneFile> = server.post("/content/entities/active", &request).await?;
+    let result: Vec<EntityFile> = server.post("/content/entities/active", &request).await?;
     for scene_file in result {
         let scene_file_id = match scene_file.id {
             Some(id) => id,

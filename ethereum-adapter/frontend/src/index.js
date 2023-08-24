@@ -130,8 +130,7 @@ function storeSignature(account, signature) {
 
 async function signPayload() {
   const urlParams = new URLSearchParams(window.location.search);
-  const payload = urlParams.get('payload').replace(/\\\\n/g,"\n");
-
+  const payload = urlParams.get('payload').replace(/\\n/g,"\n");
   try {
     const from = metamaskAccounts[0];
 

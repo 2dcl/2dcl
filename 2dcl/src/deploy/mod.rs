@@ -37,7 +37,6 @@ where
     let scene = Scene::from_mp(&scene)?;
 
     let parcels = scene.parcels;
-
     let scene_files = catalyst::ContentClient::scene_files_for_parcels(&server, &parcels).await?;
 
     // Create list of files to deploy
@@ -66,7 +65,7 @@ where
     }
 
     let (deploy_data, entity_id) =
-        scene_deployer::build_entity_scene(pointers, files, scene_files[0].metadata.clone());
+        scene_deployer::build_entity_scene(pointers, files, &scene_files[0]);
 
     // Create AuthChain
     let ephemeral_identity = dcl_crypto::Account::random();
@@ -110,13 +109,12 @@ where
     println!("Deploying to Catalyst...");
 
     let mut response = scene_deployer::deploy(entity_id, deploy_data, chain, server).await?;
-    if response.status() == 200
-    {
-      println!("Scene deployed");
-    } else{
-      println!("Scene could not be deployed");
-      println!("{:?}", response.chunk().await?);
+    if response.status() == 200 {
+        println!("Scene deployed");
+    } else {
+        println!("Scene could not be deployed");
+        println!("{:?}", response.chunk().await?);
     }
-   
+
     Ok(())
 }

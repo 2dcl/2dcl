@@ -1,6 +1,7 @@
 use crate::entity::EntityType;
 use crate::ContentId;
 use crate::EntityId;
+use dcl_common::Parcel;
 use serde::Deserialize;
 use serde::Serialize;
 use std::path::PathBuf;
@@ -20,14 +21,24 @@ pub struct SceneFile {
 }
 
 #[derive(Debug, Serialize, Deserialize, Eq, PartialEq, Clone)]
+pub struct EntityFile {
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub id: Option<EntityId>,
+    pub version: String,
+    #[serde(rename(deserialize = "type", serialize = "type"))]
+    pub kind: EntityType,
+    pub pointers: Vec<String>,
+    pub timestamp: u128,
+    pub content: Vec<ContentFile>,
+}
+
+#[derive(Debug, Serialize, Deserialize, Eq, PartialEq, Clone)]
 pub struct ContentFile {
     #[serde(rename(deserialize = "file", serialize = "file"))]
     pub filename: PathBuf,
     #[serde(rename(deserialize = "hash", serialize = "hash"))]
     pub cid: ContentId,
 }
-
-use dcl_common::Parcel;
 
 #[derive(Debug, Deserialize, Serialize, Clone, PartialEq, Eq)]
 pub struct DCL3dScene {
@@ -224,6 +235,7 @@ pub struct SpawnPoints {
 }
 
 #[derive(Debug, Deserialize, Serialize, Clone, PartialEq, Eq)]
+#[serde(untagged)]
 pub enum SpawnPosition {
     SinglePosition(SinglePosition),
     MultiPosition(MultiPosition),
@@ -256,6 +268,7 @@ pub struct Display {
     #[serde(skip_serializing_if = "Option::is_none")]
     pub description: Option<String>,
     #[serde(skip_serializing_if = "Option::is_none")]
+    #[serde(rename(deserialize = "navmapThumbnail", serialize = "navmapThumbnail"))]
     pub navmap_thumbnail: Option<String>,
     #[serde(skip_serializing_if = "Option::is_none")]
     pub favicon: Option<String>,

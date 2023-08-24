@@ -69,8 +69,7 @@ async fn main() -> Result<()> {
         pointers.push(format!("{},{}", parcel.0, parcel.1));
     }
 
-    let (deploy_data, entity_id) =
-        build_entity_scene(pointers, files, scene_files[0].metadata.clone());
+    let (deploy_data, entity_id) = build_entity_scene(pointers, files, &scene_files[0]);
 
     // Create AuthChain
     let ephemeral_identity = dcl_crypto::Account::random();

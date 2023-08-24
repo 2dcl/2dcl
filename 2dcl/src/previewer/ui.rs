@@ -110,7 +110,6 @@ pub fn setup(mut commands: Commands, asset_server: Res<AssetServer>) {
     let mut image_path = asset_path.clone();
     image_path.push("ui");
     image_path.push("button_u.png");
-    
 
     make_ui_tooltip(
         &mut commands,
@@ -123,7 +122,7 @@ pub fn setup(mut commands: Commands, asset_server: Res<AssetServer>) {
     let mut image_path = asset_path.clone();
     image_path.push("ui");
     image_path.push("button_f4.png");
-    
+
     make_ui_tooltip(
         &mut commands,
         vec![asset_server.load(image_path)],

@@ -8,9 +8,9 @@ mod previewer;
 mod renderer;
 mod where_command;
 
-pub mod deploy;
 pub mod bundles;
 pub mod components;
+pub mod deploy;
 pub mod resources;
 pub mod states;
 

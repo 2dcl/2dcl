@@ -8,7 +8,7 @@ use std::{
 };
 
 use catalyst::{
-    entity_files::{ContentFile, DCL3dScene, SceneFile},
+    entity_files::{ContentFile, SceneFile},
     ContentId, EntityId, EntityType,
 };
 use cid::{multihash::MultihashDigest, Cid};
@@ -151,14 +151,23 @@ fn get_cid(content: &[u8]) -> String {
 pub fn build_entity_scene(
     pointers: Vec<String>,
     files: HashMap<String, Vec<u8>>,
-    metadata: Option<DCL3dScene>,
+    scene_file: &SceneFile,
 ) -> (Vec<FileData>, EntityId) {
-    let mut content = Vec::default();
+    let mut content = scene_file.content.clone();
     let mut files_data = Vec::default();
     for (path, bytes) in files {
         let cid = get_cid(&bytes);
+        let filename = PathBuf::from_str(&path).unwrap();
+
+        for i in 0..content.len() {
+            if content[i].filename == filename {
+                content.remove(i);
+                break;
+            }
+        }
+
         content.push(ContentFile {
-            filename: PathBuf::from_str(&path).unwrap(),
+            filename,
             cid: ContentId::new(cid.clone()),
         });
 
@@ -184,7 +193,7 @@ pub fn build_entity_scene(
         pointers,
         timestamp,
         content,
-        metadata,
+        metadata: scene_file.metadata.clone(),
     };
 
     let entity_file = serde_json::to_string(&entity).unwrap();
