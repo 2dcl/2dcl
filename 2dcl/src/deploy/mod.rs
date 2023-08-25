@@ -110,7 +110,7 @@ pub async fn sign_ephemeral(
     let date_time: DateTime<Utc> = system_time.into();
     let expiration_str = format!("{}", date_time.format("%Y-%m-%dT%T.000Z"));
     let expiration = dcl_crypto::Expiration::try_from(expiration_str)?;
-    let payload = EphemeralPayload::new(ephemeral_identity.address().clone(), expiration);
+    let payload = EphemeralPayload::new(ephemeral_identity.address(), expiration);
 
     adapter.personal_sign(&payload.to_string());
 
