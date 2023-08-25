@@ -34,26 +34,26 @@ pub async fn deploy(
         if let Some(scene_3d) = entity.metadata {
             let expected_parcels = parcels_vec_to_strings_vec(&scene_3d.scene.parcels);
             if expected_parcels != entity.pointers {
-                /*return Err(Box::new(SceneDeployError::InvalidPointers {
+                return Err(Box::new(SceneDeployError::InvalidPointers {
                     parcels_found: entity.pointers,
                     expected_parcels,
-                }));*/
+                }) as Box<dyn Error>);
             }
 
             let scene_files =
                 catalyst::ContentClient::scene_files_for_parcels(&server, &scene_3d.scene.parcels)
-                    .await.unwrap();
+                    .await?;
             if !scene_files.is_empty()
                 && (scene_files.len() > 1 || scene_files[0].pointers != entity.pointers)
             {
-               /* return Err(Box::new(SceneDeployError::InvalidPointers {
+                return Err(Box::new(SceneDeployError::InvalidPointers {
                     expected_parcels: scene_files[0].pointers.clone(),
                     parcels_found: entity.pointers,
-                })); */
+                }) as Box<dyn Error>);
             }
         }
     } else {
-        //=return Err(Box::new(SceneDeployError::MissingSceneEntity));
+        return Err(Box::new(SceneDeployError::MissingSceneEntity) as Box<dyn Error>);
     }
 
     let form =

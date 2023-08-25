@@ -92,8 +92,7 @@ pub fn handle_tasks(
                         let server = catalyst::Server::production();
 
                         let response =
-                            match scene_deployer::deploy(entity_id, deploy_data, chain, server)
-                            {
+                            match scene_deployer::deploy(entity_id, deploy_data, chain, server) {
                                 Ok(v) => v,
                                 Err(err) => return DeployState::Error(format!("{}", err)),
                             };
@@ -121,7 +120,7 @@ pub fn handle_tasks(
                     commands.entity(entity).despawn();
                 }
                 DeployState::Error(err) => {
-                    println!("{}",err);
+                    println!("{}", err);
                     for mut message in messages.iter_mut() {
                         message.0 = err.clone();
                     }
