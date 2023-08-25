@@ -39,7 +39,7 @@ where
 
     println!("Deploying to Catalyst...");
 
-    let response = scene_deployer::deploy(entity_id, deploy_data, chain, server).await?;
+    let response = scene_deployer::deploy(entity_id, deploy_data, chain, server)?;
     if response.status() == 200 {
         println!("Scene deployed");
     } else {

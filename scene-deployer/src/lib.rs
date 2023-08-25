@@ -12,7 +12,7 @@ use catalyst::{
     ContentId, EntityId, EntityType,
 };
 use cid::{multihash::MultihashDigest, Cid};
-use dcl_common::Parcel;
+use dcl_common::{Parcel, Result};
 use dcl_crypto::{AuthChain, AuthLink};
 use error::SceneDeployError;
 use reqwest::Response;
@@ -23,36 +23,37 @@ pub struct FileData {
     mime_str: String,
 }
 
+#[tokio::main]
 pub async fn deploy(
     entity_id: EntityId,
     deploy_data: Vec<FileData>,
     auth_chain: AuthChain,
     server: catalyst::Server,
-) -> Result<Response, Box<dyn Error>> {
+) -> Result<Response> {
     if let Some(entity) = find_entity(&deploy_data) {
         if let Some(scene_3d) = entity.metadata {
             let expected_parcels = parcels_vec_to_strings_vec(&scene_3d.scene.parcels);
             if expected_parcels != entity.pointers {
-                return Err(Box::new(SceneDeployError::InvalidPointers {
+                /*return Err(Box::new(SceneDeployError::InvalidPointers {
                     parcels_found: entity.pointers,
                     expected_parcels,
-                }));
+                }));*/
             }
 
             let scene_files =
                 catalyst::ContentClient::scene_files_for_parcels(&server, &scene_3d.scene.parcels)
-                    .await?;
+                    .await.unwrap();
             if !scene_files.is_empty()
                 && (scene_files.len() > 1 || scene_files[0].pointers != entity.pointers)
             {
-                return Err(Box::new(SceneDeployError::InvalidPointers {
+               /* return Err(Box::new(SceneDeployError::InvalidPointers {
                     expected_parcels: scene_files[0].pointers.clone(),
                     parcels_found: entity.pointers,
-                }));
+                })); */
             }
         }
     } else {
-        return Err(Box::new(SceneDeployError::MissingSceneEntity));
+        //=return Err(Box::new(SceneDeployError::MissingSceneEntity));
     }
 
     let form =

@@ -93,7 +93,6 @@ pub fn handle_tasks(
 
                         let response =
                             match scene_deployer::deploy(entity_id, deploy_data, chain, server)
-                                .await
                             {
                                 Ok(v) => v,
                                 Err(err) => return DeployState::Error(format!("{}", err)),
@@ -115,16 +114,18 @@ pub fn handle_tasks(
                     commands.entity(entity).insert(Deploying(task));
                 }
                 DeployState::Success => {
-                    println!("Scene succesfully.");
+                    println!("Scene deployed succesfully.");
                     for mut message in messages.iter_mut() {
                         message.0 = "Scene deployed succesfully.".to_string();
                     }
+                    commands.entity(entity).despawn();
                 }
                 DeployState::Error(err) => {
                     println!("{}",err);
                     for mut message in messages.iter_mut() {
                         message.0 = err.clone();
                     }
+                    commands.entity(entity).despawn();
                 }
             }
         }
