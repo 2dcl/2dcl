@@ -50,14 +50,14 @@ fn animate_sprite(
         current_index > animation.last || current_index < animation.first
     }
 }
-
+    /*
 #[cfg(test)]
 mod test {
     use bevy::prelude::*;
     use std::time::Duration;
 
     use crate::{bundles, components, renderer::animation::animate_sprite};
-    /*
+
     #[test]
     fn sprite_indices_updates_correctly() {
       let mut world = World::default();
@@ -101,5 +101,6 @@ mod test {
       let expected_index = 0;
       let actual_index = world.get::<TextureAtlasSprite>(entity).unwrap().index;
       assert_eq!(expected_index, actual_index);
-    }*/
+    }
 }
+*/
