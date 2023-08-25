@@ -1,6 +1,7 @@
 use serde::Serialize;
 use serde::Serializer;
 use std::fmt;
+use std::str::FromStr;
 
 use serde::de::{self, Deserialize, Deserializer, Visitor};
 
@@ -50,6 +51,28 @@ impl<'de> Deserialize<'de> for Parcel {
         D: Deserializer<'de>,
     {
         deserializer.deserialize_string(ParcelVisitor)
+    }
+}
+
+#[derive(Debug, PartialEq, Eq)]
+pub struct ParseParcelError;
+
+impl FromStr for Parcel {
+    type Err = ParseParcelError;
+
+    fn from_str(s: &str) -> Result<Self, Self::Err> {
+        let mut split = s.split(',');
+        let x = split.next();
+        let y = split.next();
+        if let (Some(x), Some(y)) = (x, y) {
+            if let (Ok(x), Ok(y)) = (x.trim().parse::<i16>(), y.trim().parse::<i16>()) {
+                Ok(Parcel(x, y))
+            } else {
+                Err(ParseParcelError)
+            }
+        } else {
+            Err(ParseParcelError)
+        }
     }
 }
 

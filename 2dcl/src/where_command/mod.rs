@@ -48,7 +48,11 @@ async fn print_2dcl_scenes_for_parcels(parcels: &Vec<Parcel>) -> dcl_common::Res
     let tmp_dir = TempDir::new("where_downloads").unwrap();
 
     for scene_file in scene_files {
-        let scene_path = tmp_dir.path().join(scene_file.id.to_string());
+        let id_str = match &scene_file.id {
+            Some(id) => id.to_string(),
+            None => String::default(),
+        };
+        let scene_path = tmp_dir.path().join(&id_str);
         let mut downloadable_json: Option<ContentFile> = None;
         let mut downloadable_2dcl: Option<ContentFile> = None;
 
@@ -85,7 +89,7 @@ async fn print_2dcl_scenes_for_parcels(parcels: &Vec<Parcel>) -> dcl_common::Res
 
             let file_3d = scene_path
                 .clone()
-                .join(scene_file.id.to_string())
+                .join(&id_str)
                 .join(downloadable_json.filename.to_str().unwrap());
 
             ContentClient::download(&server, downloadable_json.cid, &file_3d).await?;
@@ -93,7 +97,7 @@ async fn print_2dcl_scenes_for_parcels(parcels: &Vec<Parcel>) -> dcl_common::Res
             if let Ok(scene_3d) = read_3dcl_scene(file_3d) {
                 let file_2d = scene_path
                     .clone()
-                    .join(scene_file.id.to_string())
+                    .join(id_str)
                     .join(downloadable_2dcl.filename.to_str().unwrap());
 
                 ContentClient::download(&server, downloadable_2dcl.cid, &file_2d).await?;

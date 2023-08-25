@@ -1,0 +1,47 @@
+{
+  "spritesheet": "avatar/player.png",
+  "tile_size_x": 640.0,
+  "tile_size_y": 300.0,
+  "columns": 1,
+  "rows": 54,
+  "padding": [ 0.0, 60.0 ],
+  "offset": [ 0.0, 0.0 ],
+  "default_state": "Idle",
+  "animations": {
+    "Idle": {
+      "first": 0,
+      "last": 4,
+      "flip_x": false,
+      "flip_y": false,
+      "frame_rate": 6
+    },
+    "RunDownSide": {
+      "first": 5,
+      "last": 14,
+      "flip_x": false,
+      "flip_y": false,
+      "frame_rate": 15
+    },
+    "RunUpSide": {
+      "first": 15,
+      "last": 24,
+      "flip_x": false,
+      "flip_y": false,
+      "frame_rate": 15
+    },
+    "RunDown": {
+      "first": 35,
+      "last": 44,
+      "flip_x": false,
+      "flip_y": false,
+      "frame_rate": 15
+    },
+    "RunUp": {
+      "first": 25,
+      "last": 34,
+      "flip_x": false,
+      "flip_y": false,
+      "frame_rate": 15
+    }
+  }
+}

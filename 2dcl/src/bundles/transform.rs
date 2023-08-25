@@ -23,11 +23,11 @@ impl Transform {
         )
         .extend(-transform_component.location.y as f32);
 
-        let scale = match level_id == 0 && !is_location_in_bounds(translation, &scene_data.parcels)
-        {
-            true => Vec3::ZERO,
-            false => Vec3::new(transform_component.scale.x, transform_component.scale.y, 1.),
-        };
+        let scale =
+            match level_id == 0 && !is_location_in_bounds(translation, &scene_data.scene.parcels) {
+                true => Vec3::ZERO,
+                false => Vec3::new(transform_component.scale.x, transform_component.scale.y, 1.),
+            };
 
         let rotation = Quat::from_euler(
             EulerRot::XYZ,

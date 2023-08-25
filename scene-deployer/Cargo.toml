@@ -1,0 +1,23 @@
+[package]
+name = "scene-deployer"
+version = "0.0.1"
+edition = "2021"
+resolver = "2"
+
+[lib]
+path = "src/lib.rs"
+
+[dependencies]
+serde = { version = "1.0", features = ["derive"] }
+serde_json = "1.0"
+dcl-common = { path = "../dcl-common" }
+dcl2d-ecs-v1 = { path = "../ecs-v1" }
+rmp-serde = "1.1.1"
+tempdir = "0.3"
+clap = { version = "4.0.17", features = ["derive"] }
+fs_extra = "1.2.0"
+cid = "0.7.0"
+reqwest = { version = "0.11", features = ["json"] }
+dcl-crypto = "0.2.1"
+catalyst = {path = "../catalyst"}
+tokio = { version = "1", features = ["full"] }

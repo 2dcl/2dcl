@@ -128,7 +128,7 @@ impl fmt::Display for EntityType {
 /// assert_eq!(message, "entity missing: a-missing-entity");
 /// ```
 #[derive(Debug, PartialEq, Eq, Deserialize, Serialize, Clone)]
-pub struct EntityId(HashId);
+pub struct EntityId(pub HashId);
 
 impl EntityId {
     /// Constructs a new entity id with id as a string.

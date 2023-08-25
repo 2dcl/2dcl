@@ -5,8 +5,10 @@ use crate::renderer::scene_loader::SpawningQueue;
 use crate::renderer::scenes_io::read_scene_u8;
 use crate::renderer::scenes_io::SceneData;
 use crate::resources;
+use crate::states::AppState;
 use bevy::asset::Handle;
 use bevy::prelude::*;
+use bevy::reflect::TypePath;
 use dcl_common::Parcel;
 use notify::Event;
 use notify::EventKind::Modify;
@@ -29,7 +31,7 @@ use crate::renderer::scene_loader;
 use rmp_serde::*;
 use serde::Deserialize;
 
-#[derive(Debug, Deserialize, TypeUuid)]
+#[derive(Debug, Deserialize, TypeUuid, TypePath)]
 #[uuid = "1b06c21a-5ecd-11ed-9b6a-0242ac120002"]
 pub struct SceneAsset {
     pub bytes: Vec<u8>,
@@ -67,9 +69,11 @@ impl Plugin for SceneHotReloadPlugin {
     fn build(&self, app: &mut App) {
         app.insert_resource(DespawnedEntities::default())
             .insert_resource(SpawningQueue::default())
-            .add_system(scene_reload)
-            .add_system(level_change)
-            .add_startup_system(setup);
+            .add_systems(
+                Update,
+                (scene_reload, level_change).run_if(in_state(AppState::InGame)),
+            )
+            .add_systems(OnEnter(AppState::InGame), setup);
     }
 }
 
@@ -133,15 +137,15 @@ fn scene_reload(
     if let Ok((player, mut player_transform)) = player_query.get_single_mut() {
         if let Some(scene) = scene_assets.get(&scene_handlers.0) {
             if let Ok((entity, current_scene)) = scenes.get_single_mut() {
-                if scene.timestamp != current_scene.timestamp {
+                if scene.timestamp != current_scene.timestamp.0 {
                     despawned_entities.entities.push(entity);
                     commands.entity(entity).despawn_recursive();
                     let timestamp = scene.timestamp;
                     if let Some(mut scene) = read_scene_u8(&scene.bytes) {
                         scene.timestamp = timestamp;
+                        scene.parcels = vec![Parcel(0, 0)];
                         let scene_data = SceneData {
                             scene,
-                            parcels: vec![Parcel(0, 0)],
                             path: PathBuf::from_str("../").unwrap(),
                             is_default: false,
                         };
@@ -155,7 +159,7 @@ fn scene_reload(
                             &mut spawning_queue,
                         );
 
-                        let scene_center = get_parcels_center_location(&scene_data.parcels);
+                        let scene_center = get_parcels_center_location(&scene_data.scene.parcels);
                         player_transform.translation =
                             match player.current_level < scene_data.scene.levels.len() {
                                 true => {
@@ -176,9 +180,9 @@ fn scene_reload(
                 let timestamp = scene.timestamp;
                 if let Some(mut scene) = read_scene_u8(&scene.bytes) {
                     scene.timestamp = timestamp;
+                    scene.parcels = vec![Parcel(0, 0)];
                     let scene_data = SceneData {
                         scene,
-                        parcels: vec![Parcel(0, 0)],
                         path: PathBuf::from_str("../").unwrap(),
                         is_default: false,
                     };
@@ -192,7 +196,7 @@ fn scene_reload(
                         &mut spawning_queue,
                     );
 
-                    let scene_center = get_parcels_center_location(&scene_data.parcels);
+                    let scene_center = get_parcels_center_location(&scene_data.scene.parcels);
                     player_transform.translation =
                         match player.current_level < scene_data.scene.levels.len() {
                             true => {
@@ -257,10 +261,11 @@ pub fn level_change(
 
     if should_spawn {
         let mut de = Deserializer::from_read_ref(&scene.serialized_data);
-        let deserialized_scene: dcl2d_ecs_v1::Scene = Deserialize::deserialize(&mut de).unwrap();
+        let mut deserialized_scene: dcl2d_ecs_v1::Scene =
+            Deserialize::deserialize(&mut de).unwrap();
+        deserialized_scene.parcels = vec![Parcel(0, 0)];
         let scene_data = SceneData {
             scene: deserialized_scene,
-            parcels: vec![Parcel(0, 0)],
             path: scene.path.clone(),
             is_default: false,
         };

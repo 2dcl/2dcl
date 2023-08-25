@@ -16,3 +16,6 @@ pub use sprite_renderer::SpriteRenderer;
 mod downloading_scene;
 pub use downloading_scene::loading_animation;
 pub use downloading_scene::DownloadingScene;
+
+mod animator;
+pub use animator::Animator;

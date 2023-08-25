@@ -10,6 +10,7 @@ use bevy::ecs::entity::Entity;
 use bevy::ecs::event::EventWriter;
 use bevy::ecs::system::Resource;
 use bevy::ecs::system::SystemParam;
+use bevy::prelude::Event;
 use bevy::render::camera::OrthographicProjection;
 use bevy::render::texture::{BevyDefault, Image};
 use wgpu::{Extent3d, TextureDescriptor, TextureDimension, TextureFormat, TextureUsages};
@@ -185,14 +186,14 @@ pub trait HasTaskStatus: Component {
 
 // -- EVENTS --
 
-#[derive(Clone, Copy, Ord, PartialOrd, Eq, PartialEq, Debug)]
+#[derive(Clone, Copy, Ord, PartialOrd, Eq, PartialEq, Debug, Event)]
 pub struct StartTrackingCamera {
     pub cam_entity: Entity,
     pub tracking_id: RecorderID,
     pub length: Duration,
 }
 
-#[derive(Clone, Copy, Ord, PartialOrd, Eq, PartialEq, Debug)]
+#[derive(Clone, Copy, Ord, PartialOrd, Eq, PartialEq, Debug, Event)]
 pub struct StopTrackingCamera {
     pub tracking_id: RecorderID,
 }
@@ -201,7 +202,7 @@ pub struct StopTrackingCamera {
 /// information. This will be the most recent frame already stored when
 /// the event is processed, rather than the next frame to be stored after
 /// the event is processed.
-#[derive(Clone, Ord, PartialOrd, Eq, PartialEq, Debug, Default)]
+#[derive(Clone, Ord, PartialOrd, Eq, PartialEq, Debug, Default, Event)]
 pub struct CaptureFrame<CaptureType> {
     /// The identifier for the camera tracker that should capture a frame
     pub tracking_id: RecorderID,
