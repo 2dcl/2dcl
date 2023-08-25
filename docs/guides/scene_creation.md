@@ -100,7 +100,7 @@ If you hit a number from `1` to `0` you'll jump to that level.
 
 Once you're happy with your scene, you can run `2dcl deploy` and follow instructions.
 
-If you have the previewer open you can also hit `Control + d` and the same process will be fired.
+If you have the previewer open you can also hit `Control + P` and the same process will be fired.
 
 You'll have to sign the deployment and if everything goes according to plan, you should have your land on 2dcl! Congrats!
 
