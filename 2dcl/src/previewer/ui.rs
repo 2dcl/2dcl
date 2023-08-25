@@ -1,14 +1,14 @@
 use bevy::prelude::*;
 
 #[derive(Component, Default)]
-pub enum Message{
+pub enum Message {
     #[default]
     None,
     AwaitingSignature,
     PreparingFiles,
     UploadingFiles,
     Success(Timer),
-    Error(String)
+    Error(String),
 }
 
 pub fn toggle_ui(keyboard: Res<Input<KeyCode>>, mut ui_query: Query<&mut Visibility, With<Node>>) {
@@ -23,40 +23,36 @@ pub fn toggle_ui(keyboard: Res<Input<KeyCode>>, mut ui_query: Query<&mut Visibil
     }
 }
 
-pub fn update_messages(mut messages_query: Query<(&mut Text, &mut Message)>, 
-time: Res<Time>) {
+pub fn update_messages(mut messages_query: Query<(&mut Text, &mut Message)>, time: Res<Time>) {
     for (mut text, mut message) in messages_query.iter_mut() {
-        text.sections[0].value = match message.as_mut(){
+        text.sections[0].value = match message.as_mut() {
             Message::None => String::default(),
             Message::AwaitingSignature => {
                 format!("Awaiting signature{}", make_elipsis(&time))
-            },
+            }
             Message::PreparingFiles => {
                 format!("Preparing files{}", make_elipsis(&time))
-            },
+            }
             Message::UploadingFiles => {
                 format!("Uploading files{}", make_elipsis(&time))
-            },
+            }
             Message::Success(timer) => {
                 timer.tick(time.delta());
-                if timer.just_finished()
-                {
+                if timer.just_finished() {
                     *message = Message::None;
                     "".to_string()
-                } else
-                {
+                } else {
                     "Scene deployed successfully".to_string()
                 }
-            },
+            }
             Message::Error(err) => err.clone(),
         }
     }
 
-    fn make_elipsis(time: &Time) -> String
-    {
-        let total_elipsis = time.elapsed().as_secs()%3;
+    fn make_elipsis(time: &Time) -> String {
+        let total_elipsis = time.elapsed().as_secs() % 3;
         let mut elipsis = ".".to_string();
-        for _ in 0..total_elipsis{
+        for _ in 0..total_elipsis {
             elipsis += ".";
         }
         elipsis

@@ -81,7 +81,10 @@ pub fn handle_tasks(
                 DeployState::Success => {
                     println!("Scene deployed succesfully.");
                     for mut message in messages.iter_mut() {
-                        *message = Message::Success(Timer::new(Duration::from_secs_f32(10.), TimerMode::Once));
+                        *message = Message::Success(Timer::new(
+                            Duration::from_secs_f32(10.),
+                            TimerMode::Once,
+                        ));
                     }
                     commands.entity(entity).despawn();
                 }
