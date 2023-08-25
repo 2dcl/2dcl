@@ -6,18 +6,16 @@ That said, we made sure to eliminate as much friction out of the process as we c
 
 ## Overview
 
-The overall process is divided in three main steps:
+The overall process is divided in two main steps:
 
  1. Creating a scene using a `scene.json`.
- 2. Compiling the scene with our provided compiler.
- 3. Uploading the scene using the `dcl` command.
+ 3. Uploading the scene using the `2dcl` command.
 
 ## What knowledge do I need?
 
 Since we're just starting with the project, our tools are a bit rough, that's why there's some knowledge you need to have to successfully deploy a scene:
-  * A minimum level of terminal/console usage knowledge. Mainly how to move across directories and how to call programs in a terminal program. That can be the `Command Prompt` in Windows or `Terminal` in macOS or Linux.
+  * A minimum level of file management & console knowledge. Mainly how to move across directories and how to call programs in a terminal program. That can be the `Command Prompt` in Windows or `Terminal` in macOS or Linux.
   * Experience editing files, and with JSON formatting is also very helpful.
-  * Familiarity with deploying scenes to Decentraland using the `dcl` SDK command.
 
 ## What do I need to download?
 
@@ -70,8 +68,6 @@ And you should see a new window open up.
 
 ![preview window](./images/preview-screenshot.png)
 
-The `preview` mode for `2dcl` will listen for changes in `scene.json` and reload the scene automatically.
-
 ## Editing `scene.json`
 
 The first thing you want to do is to open `scene.json` in a text editor.
@@ -102,13 +98,10 @@ If you hit a number from `1` to `0` you'll jump to that level.
 
 ## Deploying a Scene
 
-Once you're happy with your scene, you can run `2dcl build`.
+Once you're happy with your scene, you can run `2dcl deploy` and follow instructions.
 
-You can now copy the contents of the build folder to a folder called `2dcl` wherever you have the existing code for the 3d version of the scene and then call:
+If you have the previewer open you can also hit `Control + d` and the same process will be fired.
 
-`dcl deploy --skip-build --skip-version-checks`
-
-You'll have to sign the deployment and if everything goes according to plan, you should have your land on 2dcl! Congrats! 
+You'll have to sign the deployment and if everything goes according to plan, you should have your land on 2dcl! Congrats!
 
 Make sure to let us know on Discord if you deployed a land for everyone to check it out :)
-
