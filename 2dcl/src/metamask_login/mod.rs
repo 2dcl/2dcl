@@ -362,7 +362,7 @@ async fn login() -> dcl_common::Result<Option<EthAddress>> {
     }
 
     adapter.stop().await?;
-    
+
     Ok(adapter.address())
 }
 
