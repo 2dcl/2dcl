@@ -8,4 +8,4 @@ cp target/release/ethereum-adapter-webserver build/macos &&
 cp -rf 2dcl/assets build/linux &&
 cp 2dcl/config.toml build/linux &&
 cd build/linux &&
-tar cvzf ../2dcl-linux-0.1.0.tar.gz *
+tar cvzf ../2dcl-linux-0.2.0.tar.gz *
