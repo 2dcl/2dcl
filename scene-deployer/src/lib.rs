@@ -23,7 +23,6 @@ pub struct FileData {
     mime_str: String,
 }
 
-#[tokio::main]
 pub async fn deploy(
     entity_id: EntityId,
     deploy_data: Vec<FileData>,

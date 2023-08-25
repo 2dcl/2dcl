@@ -38,6 +38,8 @@ pub fn setup(mut commands: Commands, asset_server: Res<AssetServer>) {
     let canvas = commands
         .spawn(NodeBundle {
             style: Style {
+                width: Val::Percent(100.),
+                height: Val::Percent(100.),
                 align_items: AlignItems::End,
                 justify_content: JustifyContent::Start,
                 ..default()
@@ -128,13 +130,25 @@ pub fn setup(mut commands: Commands, asset_server: Res<AssetServer>) {
         background,
     );
 
-    let mut image_path = asset_path.clone();
-    image_path.push("ui");
-    image_path.push("button_f4.png");
+    let mut image_path_1 = asset_path.clone();
+    image_path_1.push("ui");
+    image_path_1.push("button_ctrl.png");
+
+    let mut image_path_2 = asset_path.clone();
+    image_path_2.push("ui");
+    image_path_2.push("plus_sign.png");
+
+    let mut image_path_3 = asset_path.clone();
+    image_path_3.push("ui");
+    image_path_3.push("button_p.png");
 
     make_ui_tooltip(
         &mut commands,
-        vec![asset_server.load(image_path)],
+        vec![
+            asset_server.load(image_path_1),
+            asset_server.load(image_path_2),
+            asset_server.load(image_path_3),
+        ],
         &font,
         "deploy",
         background,
@@ -215,8 +229,8 @@ pub fn setup(mut commands: Commands, asset_server: Res<AssetServer>) {
         let node = commands
             .spawn(NodeBundle {
                 style: Style {
-                    align_self: AlignSelf::End,
-                    justify_self: JustifySelf::End,
+                    width: Val::Percent(100.),
+                    justify_content: JustifyContent::FlexEnd,
                     ..default()
                 },
                 ..default()
@@ -229,10 +243,10 @@ pub fn setup(mut commands: Commands, asset_server: Res<AssetServer>) {
                 TextBundle {
                     style: Style {
                         margin: UiRect {
-                            left: Val::Px(50.),
-                            right: Val::Px(0.),
+                            left: Val::Px(0.),
+                            right: Val::Px(10.),
                             top: Val::Px(0.),
-                            bottom: Val::Px(5.),
+                            bottom: Val::Px(10.),
                         },
                         ..default()
                     },
@@ -240,7 +254,7 @@ pub fn setup(mut commands: Commands, asset_server: Res<AssetServer>) {
                         "",
                         TextStyle {
                             font: font.clone(),
-                            font_size: 8.,
+                            font_size: 16.,
                             color: Color::WHITE,
                         },
                     ),

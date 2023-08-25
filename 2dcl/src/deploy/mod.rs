@@ -17,16 +17,15 @@ use ethereum_adapter::EthereumAdapter;
 use scene_deployer::FileData;
 use walkdir::WalkDir;
 
-#[tokio::main]
 pub async fn deploy<T>(deploy_folder: T) -> Result<()>
 where
     T: AsRef<Path>,
 {
     let ephemeral_identity = dcl_crypto::Account::random();
-    let mut chain = sign_ephemeral(&ephemeral_identity, 300)?;
+    let mut chain = sign_ephemeral(&ephemeral_identity, 300).await?;
 
     let server = catalyst::Server::production();
-    let (deploy_data, entity_id) = prepare_deploy_data(deploy_folder, &server)?;
+    let (deploy_data, entity_id) = prepare_deploy_data(deploy_folder, &server).await?;
 
     let payload = &entity_id.0;
     let signature = ephemeral_identity.sign(payload);
@@ -39,7 +38,7 @@ where
 
     println!("Deploying to Catalyst...");
 
-    let response = scene_deployer::deploy(entity_id, deploy_data, chain, server)?;
+    let response = scene_deployer::deploy(entity_id, deploy_data, chain, server).await?;
     if response.status() == 200 {
         println!("Scene deployed");
     } else {
@@ -50,7 +49,6 @@ where
     Ok(())
 }
 
-#[tokio::main]
 pub async fn prepare_deploy_data<T>(
     deploy_folder: T,
     server: &catalyst::Server,
@@ -98,7 +96,6 @@ where
     ))
 }
 
-#[tokio::main]
 pub async fn sign_ephemeral(
     ephemeral_identity: &dcl_crypto::Account,
     duration_in_secs: u64,

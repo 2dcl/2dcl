@@ -15,7 +15,7 @@ mod manual_refresh;
 use manual_refresh::manual_refresh;
 
 mod deploy;
-use deploy::deploy;
+use deploy::deploy_input;
 
 mod ui;
 
@@ -66,7 +66,7 @@ pub fn preview_scene(source_path: std::path::PathBuf, destination_path: std::pat
                 level_switch,
                 collider_debugger,
                 manual_refresh,
-                deploy,
+                deploy_input,
                 ui::toggle_ui,
                 ui::update_messages,
                 deploy::handle_tasks,

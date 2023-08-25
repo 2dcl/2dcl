@@ -49,7 +49,8 @@ enum Action {
     Clean,
 }
 
-fn main() -> Result<()> {
+#[tokio::main]
+pub async fn main() -> Result<()> {
     let args = Cli::parse();
 
     match args.action {
@@ -68,7 +69,7 @@ fn main() -> Result<()> {
         Some(Action::Deploy { source_path }) => {
             let tmp_dir = TempDir::new("temp_build").unwrap();
             scene_compiler::compile(source_path, &tmp_dir).unwrap();
-            deploy::deploy(tmp_dir)?;
+            deploy::deploy(tmp_dir).await?;
         }
         Some(Action::Clean) => {
             let current_path = std::env::current_exe().unwrap();
