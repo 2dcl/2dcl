@@ -1,5 +1,8 @@
 use bevy::prelude::*;
 
+#[derive(Component, Default)]
+pub struct Messages(pub String);
+
 pub fn toggle_ui(keyboard: Res<Input<KeyCode>>, mut ui_query: Query<&mut Visibility, With<Node>>) {
     if keyboard.just_pressed(KeyCode::U) {
         for mut ui_visibility in ui_query.iter_mut() {
@@ -11,20 +14,13 @@ pub fn toggle_ui(keyboard: Res<Input<KeyCode>>, mut ui_query: Query<&mut Visibil
         }
     }
 }
-pub fn setup(mut commands: Commands, asset_server: Res<AssetServer>) {
-    let canvas = commands
-        .spawn(NodeBundle {
-            style: Style {
-                width: Val::Percent(100.0),
-                height: Val::Percent(100.0),
-                align_items: AlignItems::End,
-                justify_content: JustifyContent::Start,
-                ..default()
-            },
-            ..default()
-        })
-        .id();
 
+pub fn update_messages(mut messages_query: Query<(&mut Text, &Messages)>) {
+    for (mut text, message) in messages_query.iter_mut() {
+        text.sections[0].value = message.0.clone();
+    }
+}
+pub fn setup(mut commands: Commands, asset_server: Res<AssetServer>) {
     let mut asset_path = std::env::current_exe().unwrap_or_default();
     asset_path.pop();
     asset_path.push("assets");
@@ -36,6 +32,19 @@ pub fn setup(mut commands: Commands, asset_server: Res<AssetServer>) {
     let mut image_path = asset_path.clone();
     image_path.push("ui");
     image_path.push("background.png");
+
+    let font: Handle<Font> = asset_server.load(font_path);
+
+    let canvas = commands
+        .spawn(NodeBundle {
+            style: Style {
+                align_items: AlignItems::End,
+                justify_content: JustifyContent::Start,
+                ..default()
+            },
+            ..default()
+        })
+        .id();
 
     let background = commands
         .spawn(ImageBundle {
@@ -67,7 +76,7 @@ pub fn setup(mut commands: Commands, asset_server: Res<AssetServer>) {
     make_ui_tooltip(
         &mut commands,
         vec![asset_server.load(image_path)],
-        asset_server.load(font_path.as_path()),
+        &font,
         "reload scene",
         background,
     );
@@ -79,7 +88,7 @@ pub fn setup(mut commands: Commands, asset_server: Res<AssetServer>) {
     make_ui_tooltip(
         &mut commands,
         vec![asset_server.load(image_path)],
-        asset_server.load(font_path.as_path()),
+        &font,
         "show collisions",
         background,
     );
@@ -102,7 +111,7 @@ pub fn setup(mut commands: Commands, asset_server: Res<AssetServer>) {
             asset_server.load(image_path_2),
             asset_server.load(image_path_3),
         ],
-        asset_server.load(font_path.as_path()),
+        &font,
         "change level",
         background,
     );
@@ -114,7 +123,7 @@ pub fn setup(mut commands: Commands, asset_server: Res<AssetServer>) {
     make_ui_tooltip(
         &mut commands,
         vec![asset_server.load(image_path)],
-        asset_server.load(font_path.as_path()),
+        &font,
         "toggle ui",
         background,
     );
@@ -126,15 +135,17 @@ pub fn setup(mut commands: Commands, asset_server: Res<AssetServer>) {
     make_ui_tooltip(
         &mut commands,
         vec![asset_server.load(image_path)],
-        asset_server.load(font_path),
+        &font,
         "deploy",
         background,
     );
 
+    make_messages_ui(&mut commands, &font, canvas);
+
     fn make_ui_tooltip(
         commands: &mut Commands,
         images: Vec<Handle<Image>>,
-        font: Handle<Font>,
+        font: &Handle<Font>,
         display_text: &str,
         parent: Entity,
     ) {
@@ -190,13 +201,53 @@ pub fn setup(mut commands: Commands, asset_server: Res<AssetServer>) {
                 text: Text::from_section(
                     display_text,
                     TextStyle {
-                        font,
+                        font: font.clone(),
                         font_size: 8.,
                         color: Color::WHITE,
                     },
                 ),
                 ..default()
             })
+            .set_parent(node);
+    }
+
+    fn make_messages_ui(commands: &mut Commands, font: &Handle<Font>, parent: Entity) {
+        let node = commands
+            .spawn(NodeBundle {
+                style: Style {
+                    align_self: AlignSelf::End,
+                    justify_self: JustifySelf::End,
+                    ..default()
+                },
+                ..default()
+            })
+            .set_parent(parent)
+            .id();
+
+        commands
+            .spawn((
+                TextBundle {
+                    style: Style {
+                        margin: UiRect {
+                            left: Val::Px(50.),
+                            right: Val::Px(0.),
+                            top: Val::Px(0.),
+                            bottom: Val::Px(5.),
+                        },
+                        ..default()
+                    },
+                    text: Text::from_section(
+                        "",
+                        TextStyle {
+                            font: font.clone(),
+                            font_size: 8.,
+                            color: Color::WHITE,
+                        },
+                    ),
+                    ..default()
+                },
+                Messages::default(),
+            ))
             .set_parent(node);
     }
 }

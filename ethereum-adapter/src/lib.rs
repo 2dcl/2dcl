@@ -1,7 +1,7 @@
 use dcl_common::Result;
 use serde::Deserialize;
 use std::path::PathBuf;
-use tokio::process::{ Command, Child };
+use tokio::process::{Child, Command};
 
 //mod server;
 
@@ -29,7 +29,7 @@ pub struct EthereumAdapter {
     address: Option<EthAddress>,
     deploy_signing_state: DeploySignState,
     signature: Option<Signature>,
-    command: Option<Child>
+    command: Option<Child>,
 }
 
 impl EthereumAdapter {
@@ -50,7 +50,7 @@ impl EthereumAdapter {
         self.command = None;
         Ok(())
     }
-    
+
     pub fn login(&mut self) {
         self.address = None;
         let url = "http://localhost:8000/login";

@@ -157,7 +157,10 @@ pub fn build_entity_scene(
     let mut files_data = Vec::default();
 
     for i in (0..content.len()).rev() {
-        if content[i].filename.starts_with("./2dcl") || content[i].filename.starts_with("/2dcl") || content[i].filename.starts_with("2dcl") {
+        if content[i].filename.starts_with("./2dcl")
+            || content[i].filename.starts_with("/2dcl")
+            || content[i].filename.starts_with("2dcl")
+        {
             content.remove(i);
         }
     }

@@ -68,6 +68,8 @@ pub fn preview_scene(source_path: std::path::PathBuf, destination_path: std::pat
                 manual_refresh,
                 deploy,
                 ui::toggle_ui,
+                ui::update_messages,
+                deploy::handle_tasks,
                 loading_animation,
                 loading_sprites_task_handler,
             ),
