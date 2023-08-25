@@ -1,7 +1,15 @@
 use bevy::prelude::*;
 
 #[derive(Component, Default)]
-pub struct Messages(pub String);
+pub enum Message{
+    #[default]
+    None,
+    AwaitingSignature,
+    PreparingFiles,
+    UploadingFiles,
+    Success(Timer),
+    Error(String)
+}
 
 pub fn toggle_ui(keyboard: Res<Input<KeyCode>>, mut ui_query: Query<&mut Visibility, With<Node>>) {
     if keyboard.just_pressed(KeyCode::U) {
@@ -15,9 +23,43 @@ pub fn toggle_ui(keyboard: Res<Input<KeyCode>>, mut ui_query: Query<&mut Visibil
     }
 }
 
-pub fn update_messages(mut messages_query: Query<(&mut Text, &Messages)>) {
-    for (mut text, message) in messages_query.iter_mut() {
-        text.sections[0].value = message.0.clone();
+pub fn update_messages(mut messages_query: Query<(&mut Text, &mut Message)>, 
+time: Res<Time>) {
+    for (mut text, mut message) in messages_query.iter_mut() {
+        text.sections[0].value = match message.as_mut(){
+            Message::None => String::default(),
+            Message::AwaitingSignature => {
+                format!("Awaiting signature{}", make_elipsis(&time))
+            },
+            Message::PreparingFiles => {
+                format!("Preparing files{}", make_elipsis(&time))
+            },
+            Message::UploadingFiles => {
+                format!("Uploading files{}", make_elipsis(&time))
+            },
+            Message::Success(timer) => {
+                timer.tick(time.delta());
+                if timer.just_finished()
+                {
+                    *message = Message::None;
+                    "".to_string()
+                } else
+                {
+                    "Scene deployed successfully".to_string()
+                }
+            },
+            Message::Error(err) => err.clone(),
+        }
+    }
+
+    fn make_elipsis(time: &Time) -> String
+    {
+        let total_elipsis = time.elapsed().as_secs()%3;
+        let mut elipsis = ".".to_string();
+        for _ in 0..total_elipsis{
+            elipsis += ".";
+        }
+        elipsis
     }
 }
 pub fn setup(mut commands: Commands, asset_server: Res<AssetServer>) {
@@ -260,7 +302,7 @@ pub fn setup(mut commands: Commands, asset_server: Res<AssetServer>) {
                     ),
                     ..default()
                 },
-                Messages::default(),
+                Message::default(),
             ))
             .set_parent(node);
     }

@@ -1,6 +1,6 @@
-use std::path::Path;
+use std::{path::Path, time::Duration};
 
-use super::{manual_refresh::RefreshData, ui::Messages};
+use super::{manual_refresh::RefreshData, ui::Message};
 use bevy::{
     prelude::*,
     tasks::{AsyncComputeTaskPool, Task},
@@ -23,11 +23,11 @@ enum DeployState {
 pub fn deploy_input(
     mut commands: Commands,
     keyboard: Res<Input<KeyCode>>,
-    mut messages: Query<&mut Messages>,
+    mut messages: Query<&mut Message>,
 ) {
     if keyboard.just_pressed(KeyCode::P) && keyboard.pressed(KeyCode::ControlLeft) {
         for mut message in messages.iter_mut() {
-            message.0 = "Waiting for signature...".to_string();
+            *message = Message::AwaitingSignature;
         }
         let thread_pool = AsyncComputeTaskPool::get();
         let task = thread_pool.spawn(async move { sign_ephemeral(300) });
@@ -38,7 +38,7 @@ pub fn deploy_input(
 pub fn handle_tasks(
     mut commands: Commands,
     mut deploying_tasks: Query<(Entity, &mut Deploying)>,
-    mut messages: Query<&mut Messages>,
+    mut messages: Query<&mut Message>,
     refresh_data: Res<RefreshData>,
 ) {
     for (entity, mut task) in &mut deploying_tasks {
@@ -47,7 +47,7 @@ pub fn handle_tasks(
                 DeployState::Signed(ephemeral, chain) => {
                     println!("Preparing files...");
                     for mut message in messages.iter_mut() {
-                        message.0 = "Preparing files...".to_string();
+                        *message = Message::PreparingFiles;
                     }
 
                     let thread_pool = AsyncComputeTaskPool::get();
@@ -60,7 +60,7 @@ pub fn handle_tasks(
                 DeployState::FilesPrepared(ephemeral, mut chain, deploy_data, entity_id) => {
                     println!("Uploading files...");
                     for mut message in messages.iter_mut() {
-                        message.0 = "Uploading files...".to_string();
+                        *message = Message::UploadingFiles;
                     }
 
                     let payload = &entity_id.0;
@@ -81,14 +81,14 @@ pub fn handle_tasks(
                 DeployState::Success => {
                     println!("Scene deployed succesfully.");
                     for mut message in messages.iter_mut() {
-                        message.0 = "Scene deployed succesfully.".to_string();
+                        *message = Message::Success(Timer::new(Duration::from_secs_f32(10.), TimerMode::Once));
                     }
                     commands.entity(entity).despawn();
                 }
                 DeployState::Error(err) => {
                     println!("{}", err);
                     for mut message in messages.iter_mut() {
-                        message.0 = err.clone();
+                        *message = Message::Error(err.clone());
                     }
                     commands.entity(entity).despawn();
                 }
