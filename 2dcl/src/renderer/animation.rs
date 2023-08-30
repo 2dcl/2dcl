@@ -50,7 +50,7 @@ fn animate_sprite(
         current_index > animation.last || current_index < animation.first
     }
 }
-    /*
+/*
 #[cfg(test)]
 mod test {
     use bevy::prelude::*;

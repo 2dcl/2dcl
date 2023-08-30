@@ -43,6 +43,8 @@ use bevy::render::render_resource::{FilterMode, SamplerDescriptor};
 mod console;
 use console::MyConsolePlugin;
 
+mod content_discovery;
+
 use crate::{metamask_login::MetamaskLoginPlugin, resources, states::AppState};
 
 //mod roads_updater;

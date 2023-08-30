@@ -12,15 +12,11 @@ async fn main() -> Result<()> {
     let scene_files = ContentClient::scene_files_for_parcels(&server, &vec![parcel]).await?;
 
     for scene_file in scene_files {
-      let id = scene_file.id.unwrap();
+        let id = scene_file.id.unwrap();
         fs::create_dir_all(format!("./tmp/{}", &id))?;
 
         for downloadable in scene_file.content {
-            let filename = format!(
-                "./tmp/{}/{}",
-                &id,
-                downloadable.filename.to_str().unwrap()
-            );
+            let filename = format!("./tmp/{}/{}", &id, downloadable.filename.to_str().unwrap());
             println!("Downloading {}", filename);
 
             // We're downloading this synchronously, in a production client you want to

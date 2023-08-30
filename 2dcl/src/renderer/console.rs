@@ -7,7 +7,7 @@ use crate::renderer::scene_loader::get_parcel_spawn_point;
 
 use super::player::update_player_scale;
 use super::scenes_io::SceneFilesMap;
-use super::update_avatar;
+use super::{content_discovery, update_avatar};
 use super::{player::update_camera_size, scene_maker::RoadsData};
 use crate::{components, resources};
 
@@ -18,6 +18,7 @@ impl Plugin for MyConsolePlugin {
         app.add_plugins(ConsolePlugin)
             .add_console_command::<TeleportCommand, _>(teleport_command)
             .add_console_command::<ReloadConfig, _>(reload_config)
+            .add_console_command::<DiscoverCommand, _>(discover_command)
             .add_console_command::<WhereCommand, _>(where_command);
     }
 }
@@ -35,9 +36,31 @@ struct TeleportCommand {
 #[command(name = "where")]
 struct WhereCommand;
 
+/// Prints the current parcel
+#[derive(Parser, ConsoleCommand)]
+#[command(name = "discover")]
+struct DiscoverCommand;
+
 #[derive(Parser, ConsoleCommand)]
 #[command(name = "reload")]
 struct ReloadConfig;
+
+fn discover_command(mut discover_cmd: ConsoleCommand<DiscoverCommand>) {
+    if discover_cmd.take().is_some() {
+        let scenes = content_discovery::find_2d_scenes().unwrap();
+        let mut response = String::default();
+        for scene in scenes {
+            let splitted_link: Vec<&str> = scene.link.split('/').collect();
+            let parcel = format!(
+                "{} , {}",
+                splitted_link[splitted_link.len() - 2],
+                splitted_link.last().unwrap()
+            );
+            response += &format!("{}\t{}\t{}\n", scene.title, parcel, scene.pub_date);
+        }
+        reply!(discover_cmd, "{}", response);
+    }
+}
 
 fn where_command(
     mut where_cmd: ConsoleCommand<WhereCommand>,
