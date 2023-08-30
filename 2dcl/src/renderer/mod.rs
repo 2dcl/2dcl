@@ -43,7 +43,9 @@ use bevy::render::render_resource::{FilterMode, SamplerDescriptor};
 mod console;
 use console::MyConsolePlugin;
 
+mod discovery_ui;
 use crate::{metamask_login::MetamaskLoginPlugin, resources, states::AppState};
+use discovery_ui::DiscoveryUiPlugin;
 
 //mod roads_updater;
 //use roads_updater::update_roads;
@@ -97,12 +99,15 @@ where
             })
             .disable::<LogPlugin>(),
     )
-    .add_plugins(DebugPlugin)
-    .add_plugins(ScreenFadePlugin)
-    .add_plugins(AnimationPlugin)
-    .add_plugins(PlayerPlugin)
-    .add_plugins(TransparencyPlugin)
-    .add_plugins(CollisionPlugin)
+    .add_plugins((
+        DebugPlugin,
+        ScreenFadePlugin,
+        AnimationPlugin,
+        PlayerPlugin,
+        TransparencyPlugin,
+        CollisionPlugin,
+        DiscoveryUiPlugin,
+    ))
     .insert_resource(Msaa::Off)
     .add_state::<AppState>()
     .insert_resource(config);
