@@ -3,10 +3,10 @@
 use dcl_common::Result;
 
 mod avatar_spritesheet_maker;
+mod content_discovery;
 mod metamask_login;
 mod previewer;
 mod renderer;
-mod where_command;
 
 pub mod bundles;
 pub mod components;
@@ -81,7 +81,8 @@ pub async fn main() -> Result<()> {
             }
         }
         Some(Action::Where) => {
-            where_command::where_command().unwrap();
+            let scenes = content_discovery::find_2d_scenes_str().await?;
+            println!("{}", scenes);
         }
         Some(Action::ImportAvatar { eth_address }) => {
             avatar_spritesheet_maker::start(&eth_address);

@@ -1,4 +1,3 @@
-use super::dcl_3d_scene;
 use super::error::ScenesIOError;
 use super::scene_maker::make_default_background_entities;
 use super::scene_maker::{is_road, make_road_scene, RoadsData};
@@ -267,21 +266,4 @@ fn is_latest_version(scene: &SceneFileData, scene_files_map: &mut SceneFilesMap)
     }
 
     true
-}
-pub fn read_3dcl_scene<P>(filename: P) -> dcl_common::Result<dcl_3d_scene::DCL3dScene>
-where
-    P: AsRef<Path>,
-{
-    if let Ok(file) = File::open(&filename) {
-        let reader = BufReader::new(file);
-        let result: serde_json::Result<dcl_3d_scene::DCL3dScene> = serde_json::from_reader(reader);
-        match result {
-            Ok(scene) => return Ok(scene),
-            Err(e) => return Err(Box::new(e)),
-        }
-    }
-
-    return Err(Box::new(ScenesIOError::InvalidPath(
-        filename.as_ref().to_path_buf(),
-    )));
 }

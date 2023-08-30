@@ -1,13 +1,14 @@
 use bevy::prelude::*;
 use bevy_console::{reply, AddConsoleCommand, ConsoleCommand, ConsolePlugin};
 use clap::Parser;
-use dcl_common::Parcel;
+use dcl_common::{Parcel, Result};
 
+use crate::content_discovery::find_2d_scenes_str;
 use crate::renderer::scene_loader::get_parcel_spawn_point;
 
 use super::player::update_player_scale;
 use super::scenes_io::SceneFilesMap;
-use super::{content_discovery, update_avatar};
+use super::update_avatar;
 use super::{player::update_camera_size, scene_maker::RoadsData};
 use crate::{components, resources};
 
@@ -47,30 +48,20 @@ struct ReloadConfig;
 
 fn discover_command(mut discover_cmd: ConsoleCommand<DiscoverCommand>) {
     if discover_cmd.take().is_some() {
-        let mut response;
-        match content_discovery::find_2d_scenes() {
+        match get_2d_scenes_str() {
             Ok(scenes) => {
-                response = "Scene\t|\tParcel\t|\tLast Update\n\n".to_string();
-                for scene in scenes {
-                    let splitted_link: Vec<&str> = scene.link.split('/').collect();
-
-                    let parcel = match splitted_link.len() >= 2 {
-                        true => format!(
-                            "{} , {}",
-                            splitted_link[splitted_link.len() - 2],
-                            splitted_link.last().unwrap()
-                        ),
-                        false => String::default(),
-                    };
-                    response += &format!("{}\t|\t{}\t|\t{}\n", scene.title, parcel, scene.pub_date);
-                }
+                reply!(discover_cmd, "{}", scenes);
             }
             Err(err) => {
-                response = format!("{}", err);
+                reply!(discover_cmd, "{}", err);
             }
         }
-        reply!(discover_cmd, "{}", response);
     }
+}
+
+#[tokio::main]
+async fn get_2d_scenes_str() -> Result<String> {
+    find_2d_scenes_str().await
 }
 
 fn where_command(
