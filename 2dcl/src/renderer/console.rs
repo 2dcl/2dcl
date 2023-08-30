@@ -47,16 +47,27 @@ struct ReloadConfig;
 
 fn discover_command(mut discover_cmd: ConsoleCommand<DiscoverCommand>) {
     if discover_cmd.take().is_some() {
-        let scenes = content_discovery::find_2d_scenes().unwrap();
-        let mut response = String::default();
-        for scene in scenes {
-            let splitted_link: Vec<&str> = scene.link.split('/').collect();
-            let parcel = format!(
-                "{} , {}",
-                splitted_link[splitted_link.len() - 2],
-                splitted_link.last().unwrap()
-            );
-            response += &format!("{}\t{}\t{}\n", scene.title, parcel, scene.pub_date);
+        let mut response;
+        match content_discovery::find_2d_scenes() {
+            Ok(scenes) => {
+                response = "Scene\t|\tParcel\t|\tLast Update\n\n".to_string();
+                for scene in scenes {
+                    let splitted_link: Vec<&str> = scene.link.split('/').collect();
+
+                    let parcel = match splitted_link.len() >= 2 {
+                        true => format!(
+                            "{} , {}",
+                            splitted_link[splitted_link.len() - 2],
+                            splitted_link.last().unwrap()
+                        ),
+                        false => String::default(),
+                    };
+                    response += &format!("{}\t|\t{}\t|\t{}\n", scene.title, parcel, scene.pub_date);
+                }
+            }
+            Err(err) => {
+                response = format!("{}", err);
+            }
         }
         reply!(discover_cmd, "{}", response);
     }

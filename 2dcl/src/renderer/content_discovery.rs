@@ -4,7 +4,7 @@ use dcl_common::Result;
 use serde::{Deserialize, Serialize};
 
 #[derive(Debug, Serialize, Deserialize, PartialEq)]
-struct XML {
+struct Xml {
     channel: Channel,
 }
 
@@ -28,7 +28,6 @@ pub async fn find_2d_scenes() -> Result<Vec<SceneDiscoveryData>> {
         .await?
         .text()
         .await?;
-    let xml: XML = serde_xml_rs::from_str(&response).unwrap();
-
+    let xml: Xml = serde_xml_rs::from_str(&response)?;
     Ok(xml.channel.scenes)
 }
