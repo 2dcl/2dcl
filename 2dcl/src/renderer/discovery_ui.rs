@@ -57,7 +57,11 @@ fn setup(mut commands: Commands, asset_server: Res<AssetServer>) {
             style: Style {
                 width: Val::Px(138.),
                 height: Val::Px(50.),
-                margin: UiRect::all(Val::Px(10.)),
+                margin: UiRect {
+                    left: Val::Percent(5.),
+                    top: Val::Px(5.),
+                    ..Default::default()
+                },
                 ..Default::default()
             },
             image: UiImage::new(discover_button.0.default.clone()),
