@@ -89,20 +89,26 @@ fn show_discover_ui(
                 background_color: BackgroundColor(BG_COLOR),
                 style: Style {
                     position_type: PositionType::Absolute,
+                    display: Display::Grid,
+                    grid_auto_flow: GridAutoFlow::Row,
+                    grid_template_columns: vec![RepeatedGridTrack::fr(4, 1.)],
                     margin: UiRect::all(Val::Percent(5.)),
+                    grid_template_rows: vec![RepeatedGridTrack::fr(10, 1.)],
+                    border: UiRect::all(Val::Px(10.)),
                     width: Val::Percent(90.),
                     height: Val::Percent(90.),
-                    flex_direction: FlexDirection::Column,
                     ..Default::default()
                 },
                 ..Default::default()
             },
             DiscoverUI,
+            Name::new("Discover UI"),
         ))
         .id();
 
-    let headers = spawn_entry(
+    spawn_entry(
         commands,
+        discover_ui,
         &font,
         HEADERS_COLOR,
         18.0,
@@ -113,31 +119,26 @@ fn show_discover_ui(
             "Jump".to_string(),
         ],
     );
-    commands.entity(headers).set_parent(discover_ui);
 
     for scene in scenes {
-        let entry = spawn_scene_entry(commands, &font, &scene, button_settings.clone());
-        commands.entity(entry).set_parent(discover_ui);
+        spawn_scene_entry(
+            commands,
+            discover_ui,
+            &font,
+            &scene,
+            button_settings.clone(),
+        );
     }
 }
 
 fn spawn_entry(
     commands: &mut Commands,
+    parent: Entity,
     font: &Handle<Font>,
     color: Color,
     font_size: f32,
     columns: Vec<String>,
-) -> Entity {
-    let entry = commands
-        .spawn(NodeBundle {
-            style: Style {
-                justify_content: JustifyContent::SpaceAround,
-                ..Default::default()
-            },
-            ..Default::default()
-        })
-        .id();
-
+) {
     for column in columns {
         commands
             .spawn(TextBundle {
@@ -150,25 +151,25 @@ fn spawn_entry(
                     },
                 ),
                 style: Style {
-                    margin: UiRect::all(Val::Px(10.)),
+                    justify_self: JustifySelf::Center,
                     ..Default::default()
                 },
                 ..Default::default()
             })
-            .set_parent(entry);
+            .set_parent(parent);
     }
-
-    entry
 }
 
 fn spawn_scene_entry(
     commands: &mut Commands,
+    parent: Entity,
     font: &Handle<Font>,
     scene: &SceneDiscoveryData,
     button_settings: ButtonSettings,
-) -> Entity {
-    let entry = spawn_entry(
+) {
+    spawn_entry(
         commands,
+        parent,
         font,
         TEXT_COLOR,
         16.0,
@@ -186,6 +187,7 @@ fn spawn_scene_entry(
                     style: Style {
                         width: Val::Px(138.),
                         height: Val::Px(50.),
+                        justify_self: JustifySelf::Center,
                         ..Default::default()
                     },
                     image: UiImage::new(button_settings.default.clone()),
@@ -196,10 +198,8 @@ fn spawn_scene_entry(
                     parcel,
                 },
             ))
-            .set_parent(entry);
+            .set_parent(parent);
     };
-
-    entry
 }
 
 fn button_system(
@@ -240,7 +240,14 @@ fn button_system(
     for (interaction, mut image, button) in &mut jump_query {
         match *interaction {
             Interaction::Pressed => {
+                if let Ok(discover_ui) = discover_ui_query.get_single() {
+                    commands.entity(discover_ui).despawn_recursive();
+                }
                 image.texture = button.settings.pressed.clone();
+                let (mut player, mut transform) = player_query.single_mut();
+                player.current_level = 0;
+                transform.translation =
+                    get_parcel_spawn_point(&button.parcel, 0, &mut roads_data, &scene_files_map);
                 let (mut player, mut transform) = player_query.single_mut();
                 player.current_level = 0;
                 transform.translation =

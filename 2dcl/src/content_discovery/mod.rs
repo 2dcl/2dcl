@@ -14,7 +14,7 @@ struct Channel {
     scenes: Vec<SceneDiscoveryData>,
 }
 
-#[derive(Debug, Serialize, Deserialize, PartialEq, Default)]
+#[derive(Debug, Serialize, Deserialize, PartialEq, Default, Clone)]
 #[serde(rename_all = "camelCase")]
 pub struct SceneDiscoveryData {
     pub title: String,
