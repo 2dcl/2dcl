@@ -1,3 +1,4 @@
+use bevy::input::mouse::{MouseScrollUnit, MouseWheel};
 use bevy::prelude::*;
 use dcl_common::{Parcel, Result};
 
@@ -17,7 +18,15 @@ const HOVERED_JUMP_BUTTON: &str = "ui/go_hovered.png";
 const PRESSED_JUMP_BUTTON: &str = "ui/go_hovered.png";
 const BG_COLOR: Color = Color::rgba(1., 1., 1., 0.95);
 const TEXT_COLOR: Color = Color::WHITE;
-const HEADERS_COLOR: Color = Color::RED;
+const HEADER_COLOR: Color = Color::RED;
+const HEADER_FONT_SIZE: f32 = 18.0;
+const SCENES_FONT_SIZE: f32 = 16.0;
+const JUMP_BUTTON_HEIGHT: f32 = 40.0;
+
+#[derive(Component, Default)]
+struct ScrollingList {
+    position: f32,
+}
 
 #[derive(Component)]
 struct DiscoverUI;
@@ -41,7 +50,10 @@ pub struct DiscoveryUiPlugin;
 impl Plugin for DiscoveryUiPlugin {
     fn build(&self, app: &mut App) {
         app.add_systems(OnEnter(AppState::InGame), setup)
-            .add_systems(Update, button_system.run_if(in_state(AppState::InGame)));
+            .add_systems(
+                Update,
+                (button_system, mouse_scroll).run_if(in_state(AppState::InGame)),
+            );
     }
 }
 
@@ -90,16 +102,14 @@ fn show_discover_ui(
                 image: UiImage::new(asset_server.load("ui/back.png")),
                 background_color: BackgroundColor(BG_COLOR),
                 style: Style {
+                    border: UiRect::all(Val::Px(10.)),
                     position_type: PositionType::Absolute,
                     width: Val::Percent(70.),
                     height: Val::Percent(70.),
                     margin: UiRect::all(Val::Percent(15.)),
-                    border: UiRect::all(Val::Px(10.)),
                     align_self: AlignSelf::Center,
-                    display: Display::Grid,
-                    grid_auto_flow: GridAutoFlow::Row,
-                    grid_template_columns: vec![RepeatedGridTrack::fr(4, 1.)],
-                    grid_template_rows: vec![RepeatedGridTrack::fr(10, 1.)],
+                    flex_direction: FlexDirection::Column,
+                    overflow: Overflow::clip_y(),
                     ..Default::default()
                 },
                 ..Default::default()
@@ -109,28 +119,56 @@ fn show_discover_ui(
         ))
         .id();
 
+    let header = commands
+        .spawn((
+            NodeBundle {
+                style: Style {
+                    display: Display::Grid,
+                    grid_auto_flow: GridAutoFlow::Row,
+                    grid_template_columns: vec![RepeatedGridTrack::fr(4, 1.)],
+                    ..Default::default()
+                },
+                ..Default::default()
+            },
+            Name::new("Header"),
+        ))
+        .set_parent(discover_ui)
+        .id();
+
     spawn_entry(
         commands,
-        discover_ui,
+        header,
         &font,
-        HEADERS_COLOR,
-        18.0,
+        HEADER_COLOR,
+        HEADER_FONT_SIZE,
         vec![
             "SCENE".to_string(),
             "PARCEL".to_string(),
             "LAST UPDATE".to_string(),
             "JUMP".to_string(),
         ],
+        false,
     );
+    let scenes_ui = commands
+        .spawn((
+            NodeBundle {
+                style: Style {
+                    display: Display::Grid,
+                    grid_auto_flow: GridAutoFlow::Row,
+                    grid_template_columns: vec![RepeatedGridTrack::fr(4, 1.)],
+                    //  grid_template_rows: vec![RepeatedGridTrack::px(1, SCENES_FONT_SIZE)],
+                    overflow: Overflow::clip_y(),
+                    ..Default::default()
+                },
+                ..Default::default()
+            },
+            Name::new("Scenes"),
+        ))
+        .set_parent(discover_ui)
+        .id();
 
     for scene in scenes {
-        spawn_scene_entry(
-            commands,
-            discover_ui,
-            &font,
-            &scene,
-            button_settings.clone(),
-        );
+        spawn_scene_entry(commands, scenes_ui, &font, &scene, button_settings.clone());
     }
 }
 
@@ -141,9 +179,10 @@ fn spawn_entry(
     color: Color,
     font_size: f32,
     columns: Vec<String>,
+    scrollable: bool,
 ) {
     for column in columns {
-        commands
+        let entry = commands
             .spawn(TextBundle {
                 text: Text::from_section(
                     column.clone(),
@@ -154,13 +193,20 @@ fn spawn_entry(
                     },
                 ),
                 style: Style {
+                    height: Val::Px(SCENES_FONT_SIZE),
+                    margin: UiRect::all(Val::Px(5.)),
                     justify_self: JustifySelf::Center,
                     align_self: AlignSelf::Center,
                     ..Default::default()
                 },
                 ..Default::default()
             })
-            .set_parent(parent);
+            .set_parent(parent)
+            .id();
+
+        if scrollable {
+            commands.entity(entry).insert(ScrollingList::default());
+        }
     }
 }
 
@@ -176,12 +222,13 @@ fn spawn_scene_entry(
         parent,
         font,
         TEXT_COLOR,
-        16.0,
+        SCENES_FONT_SIZE,
         vec![
             scene.title.clone(),
             scene.get_parcel_str(),
             scene.pub_date.clone(),
         ],
+        true,
     );
 
     if let Ok(parcel) = scene.get_parcel() {
@@ -189,8 +236,9 @@ fn spawn_scene_entry(
             .spawn((
                 ButtonBundle {
                     style: Style {
-                        width: Val::Percent(25.),
+                        height: Val::Px(JUMP_BUTTON_HEIGHT),
                         aspect_ratio: Some(1.66),
+                        margin: UiRect::all(Val::Px(5.)),
                         justify_self: JustifySelf::Center,
                         align_self: AlignSelf::Center,
                         ..Default::default()
@@ -202,6 +250,7 @@ fn spawn_scene_entry(
                     settings: button_settings,
                     parcel,
                 },
+                ScrollingList::default(),
             ))
             .set_parent(parent);
     };
@@ -271,4 +320,26 @@ fn button_system(
 #[tokio::main]
 async fn get_2d_scenes() -> Result<Vec<SceneDiscoveryData>> {
     find_2d_scenes().await
+}
+
+fn mouse_scroll(
+    mut mouse_wheel_events: EventReader<MouseWheel>,
+    mut query_list: Query<(&mut ScrollingList, &mut Style, &Parent)>,
+    query_node: Query<&Node>,
+) {
+    for mouse_wheel_event in mouse_wheel_events.iter() {
+        for (mut scrolling_list, mut style, parent) in &mut query_list {
+            let container_height = query_node.get(parent.get()).unwrap().size().y;
+            let entry_height = JUMP_BUTTON_HEIGHT.max(SCENES_FONT_SIZE);
+            let max_scroll = (container_height - entry_height).max(0.);
+
+            let dy = match mouse_wheel_event.unit {
+                MouseScrollUnit::Line => mouse_wheel_event.y * 20.,
+                MouseScrollUnit::Pixel => mouse_wheel_event.y,
+            };
+            scrolling_list.position += dy;
+            scrolling_list.position = scrolling_list.position.clamp(-max_scroll, 0.);
+            style.top = Val::Px(scrolling_list.position);
+        }
+    }
 }
