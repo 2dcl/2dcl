@@ -15,7 +15,7 @@ const PRESSED_DISCOVER_BUTTON: &str = "ui/discover_pressed.png";
 const DEFAULT_JUMP_BUTTON: &str = "ui/go_default.png";
 const HOVERED_JUMP_BUTTON: &str = "ui/go_hovered.png";
 const PRESSED_JUMP_BUTTON: &str = "ui/go_hovered.png";
-const BG_COLOR: Color = Color::rgba(1., 1., 1., 0.9);
+const BG_COLOR: Color = Color::rgba(1., 1., 1., 0.95);
 const TEXT_COLOR: Color = Color::WHITE;
 const HEADERS_COLOR: Color = Color::RED;
 
