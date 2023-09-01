@@ -12,10 +12,10 @@ use super::scenes_io::SceneFilesMap;
 const DEFAULT_DISCOVER_BUTTON: &str = "ui/discover_default.png";
 const HOVERED_DISCOVER_BUTTON: &str = "ui/discover_hovered.png";
 const PRESSED_DISCOVER_BUTTON: &str = "ui/discover_pressed.png";
-const DEFAULT_JUMP_BUTTON: &str = "ui/discover_default.png";
-const HOVERED_JUMP_BUTTON: &str = "ui/discover_hovered.png";
-const PRESSED_JUMP_BUTTON: &str = "ui/discover_pressed.png";
-const BG_COLOR: Color = Color::rgb(0.098, 0.075, 0.102);
+const DEFAULT_JUMP_BUTTON: &str = "ui/go_default.png";
+const HOVERED_JUMP_BUTTON: &str = "ui/go_hovered.png";
+const PRESSED_JUMP_BUTTON: &str = "ui/go_hovered.png";
+const BG_COLOR: Color = Color::rgba(1., 1., 1., 0.9);
 const TEXT_COLOR: Color = Color::WHITE;
 const HEADERS_COLOR: Color = Color::RED;
 
@@ -55,11 +55,11 @@ fn setup(mut commands: Commands, asset_server: Res<AssetServer>) {
     commands.spawn((
         ButtonBundle {
             style: Style {
-                width: Val::Px(138.),
-                height: Val::Px(50.),
+                height: Val::Percent(5.),
+                aspect_ratio: Some(2.76),
                 margin: UiRect {
-                    left: Val::Percent(5.),
-                    top: Val::Px(5.),
+                    left: Val::Px(8.),
+                    top: Val::Px(8.),
                     ..Default::default()
                 },
                 ..Default::default()
@@ -68,6 +68,7 @@ fn setup(mut commands: Commands, asset_server: Res<AssetServer>) {
             ..Default::default()
         },
         discover_button,
+        Name::new("Discover button"),
     ));
 }
 
@@ -85,18 +86,20 @@ fn show_discover_ui(
     let font = asset_server.load("fonts/Arcadepix Plus.ttf");
     let discover_ui = commands
         .spawn((
-            NodeBundle {
+            ImageBundle {
+                image: UiImage::new(asset_server.load("ui/back.png")),
                 background_color: BackgroundColor(BG_COLOR),
                 style: Style {
                     position_type: PositionType::Absolute,
+                    width: Val::Percent(70.),
+                    height: Val::Percent(70.),
+                    margin: UiRect::all(Val::Percent(15.)),
+                    border: UiRect::all(Val::Px(10.)),
+                    align_self: AlignSelf::Center,
                     display: Display::Grid,
                     grid_auto_flow: GridAutoFlow::Row,
                     grid_template_columns: vec![RepeatedGridTrack::fr(4, 1.)],
-                    margin: UiRect::all(Val::Percent(5.)),
                     grid_template_rows: vec![RepeatedGridTrack::fr(10, 1.)],
-                    border: UiRect::all(Val::Px(10.)),
-                    width: Val::Percent(90.),
-                    height: Val::Percent(90.),
                     ..Default::default()
                 },
                 ..Default::default()
@@ -113,10 +116,10 @@ fn show_discover_ui(
         HEADERS_COLOR,
         18.0,
         vec![
-            "Scene".to_string(),
-            "Parcel".to_string(),
-            "Last Update".to_string(),
-            "Jump".to_string(),
+            "SCENE".to_string(),
+            "PARCEL".to_string(),
+            "LAST UPDATE".to_string(),
+            "JUMP".to_string(),
         ],
     );
 
@@ -152,6 +155,7 @@ fn spawn_entry(
                 ),
                 style: Style {
                     justify_self: JustifySelf::Center,
+                    align_self: AlignSelf::Center,
                     ..Default::default()
                 },
                 ..Default::default()
@@ -185,9 +189,10 @@ fn spawn_scene_entry(
             .spawn((
                 ButtonBundle {
                     style: Style {
-                        width: Val::Px(138.),
-                        height: Val::Px(50.),
+                        width: Val::Percent(25.),
+                        aspect_ratio: Some(1.66),
                         justify_self: JustifySelf::Center,
+                        align_self: AlignSelf::Center,
                         ..Default::default()
                     },
                     image: UiImage::new(button_settings.default.clone()),
