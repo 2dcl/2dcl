@@ -15,6 +15,9 @@ pub use entity::Entity;
 pub use entity::EntityId;
 pub use entity::EntityType;
 
+mod challenge;
+pub use challenge::Challenge;
+
 mod content_id;
 pub use content_id::ContentId;
 

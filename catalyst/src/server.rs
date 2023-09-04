@@ -121,6 +121,20 @@ impl Server {
             .await?)
     }
 
+    /// Executes a `HEAD` request to `path`.
+    /// The response is returned as is using `reqwest::Response`.
+    /// For automatic deserialization of JSON response see `get`.
+    pub async fn raw_head<U>(&self, path: U) -> Result<reqwest::Response>
+    where
+        U: AsRef<str> + std::fmt::Display,
+    {
+        Ok(self
+            .http_client
+            .head(format!("{}{}", self.base_url, path))
+            .send()
+            .await?)
+    }
+
     /// Executes a `POST` request to `path` with body `body`.
     /// The response is parsed as JSON and deserialized in the result.
     /// If you need to deal with the result by hand, use `get_raw`.

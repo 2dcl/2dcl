@@ -1,3 +1,4 @@
+use reqwest::StatusCode;
 use serde::{Deserialize, Serialize};
 use std::fs::{self, File};
 use std::io::Write;
@@ -35,6 +36,23 @@ impl ContentClient {
             .get(format!("/content/contents/{}/active-entities", content_id))
             .await?;
         Ok(result)
+    }
+
+    ///Used by the Server to figure out their identity on the DAO by themselves, so they will generate a random challenge text, and then query each server for it. If the text matches, then they have found themselves.
+    ///[See on Catalyst API Docs](https://decentraland.github.io/catalyst-api-specs/#tag/Content-Server/operation/getContentFile)
+    pub async fn challenge(server: &Server) -> Result<Challenge> {
+        let result = server.get("/content/challenge").await?;
+        Ok(result)
+    }
+
+    ///
+    ///[See on Catalyst API Docs](https://decentraland.github.io/catalyst-api-specs/#tag/Content-Server/operation/headContentFile)    pub async fn challenge(server: &Server) -> Result<Challenge> {
+    pub async fn content_file_exists(server: &Server, content: &ContentId) -> Result<bool> {
+        let result = server
+            .raw_head(format!("/content/contents/{}", content.hash()))
+            .await?;
+
+        Ok(result.status() == StatusCode::OK)
     }
 
     /// Returns the availability state for all the given ContentIds.
@@ -151,9 +169,11 @@ impl ContentClient {
 
 #[cfg(test)]
 mod tests {
+
     use super::*;
     use dcl_common::Parcel;
     use httpmock::prelude::*;
+    use httpmock::Method::HEAD;
     use std::fs;
     use tempdir::TempDir;
 
@@ -180,6 +200,50 @@ mod tests {
 
         let expected: Vec<SceneFile> = serde_json::from_str(response).unwrap();
         assert_eq!(result, expected);
+    }
+
+    #[test]
+    fn it_implements_challenges() {
+        let response = include_str!("../fixtures/challenge.json");
+        let server = MockServer::start();
+
+        let m = server.mock(|when, then| {
+            when.method(GET).path("/content/challenge");
+            then.status(200).body(response);
+        });
+
+        let server = Server::new(server.url(""));
+
+        let result = tokio_test::block_on(ContentClient::challenge(&server)).unwrap();
+
+        m.assert();
+
+        let expected: Challenge = serde_json::from_str(response).unwrap();
+        assert_eq!(result, expected);
+    }
+
+    #[test]
+    fn it_implements_content_file_exists() {
+        let server = MockServer::start();
+
+        let m = server.mock(|when, then| {
+            when.method(HEAD).path("/content/contents/a-cid");
+            then.status(200);
+        });
+
+        let server = Server::new(server.url(""));
+        let content_id = ContentId::new("a-cid".to_string());
+        let result =
+            tokio_test::block_on(ContentClient::content_file_exists(&server, &content_id)).unwrap();
+
+        m.assert();
+        assert!(result);
+
+        let content_id = ContentId::new("invalid_cid".to_string());
+        let result =
+            tokio_test::block_on(ContentClient::content_file_exists(&server, &content_id)).unwrap();
+
+        assert!(!result);
     }
 
     #[test]
