@@ -5,8 +5,7 @@
 //!
 
 mod content_client;
-pub use content_client::ContentClient;
-
+pub use content_client::*;
 // mod lambda_client;
 // pub use lambda_client::LambdaClient;
 

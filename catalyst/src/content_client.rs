@@ -1,6 +1,7 @@
 use reqwest::multipart::Form;
 use reqwest::StatusCode;
 use serde::{Deserialize, Serialize};
+use std::fmt;
 use std::fs::{self, File};
 use std::io::Write;
 use std::path::Path;
@@ -34,6 +35,7 @@ pub struct DeployResponse {
     pub creation_timestamp: u64,
 }
 
+//Missing some fields
 #[derive(Debug, Deserialize, Eq, PartialEq)]
 #[serde(rename_all = "camelCase")]
 pub struct EntityData {
@@ -41,6 +43,7 @@ pub struct EntityData {
     pub entity_id: String,
 }
 
+//Missing some fields
 #[derive(Debug, Deserialize, Eq, PartialEq)]
 #[serde(rename_all = "camelCase")]
 pub struct FailedDeployment {
@@ -56,6 +59,79 @@ pub struct ContentFileStatus {
     #[serde(rename = "cid")]
     pub id: ContentId,
     pub available: bool,
+}
+
+#[derive(Debug, Default, Eq, PartialEq)]
+pub struct ChangesSearchParameters {
+    from: Option<u64>,
+    to: Option<u64>,
+    last_id: Option<EntityId>,
+    limit: Option<u64>,
+    entity_type: Option<EntityType>,
+    sorting_field: Option<SortingField>,
+    sorting_order: Option<SortingOrder>,
+}
+
+impl ChangesSearchParameters {
+    pub fn to_query_string(&self) -> String {
+        let mut query_string = "?".to_string();
+        if let Some(from) = &self.from {
+            query_string += &format!("from={}&", from);
+        }
+        if let Some(to) = &self.to {
+            query_string += &format!("to={}&", to);
+        }
+        if let Some(last_id) = &self.last_id {
+            query_string += &format!("lastId={}&", last_id.0);
+        }
+        if let Some(limit) = &self.limit {
+            query_string += &format!("limit={}&", limit);
+        }
+        if let Some(entity_type) = &self.entity_type {
+            query_string += &format!("entityType={}&", entity_type);
+        }
+        if let Some(sorting_field) = &self.sorting_field {
+            query_string += &format!("sortingField={}&", sorting_field);
+        }
+        if let Some(sorting_order) = &self.sorting_order {
+            query_string += &format!("sortingField={}", sorting_order);
+        }
+        query_string
+    }
+}
+
+#[derive(Debug, Default, Eq, PartialEq)]
+pub enum SortingOrder {
+    #[default]
+    Ascending,
+    Descending,
+}
+
+impl fmt::Display for SortingOrder {
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+        let serialization = match self {
+            SortingOrder::Ascending => "ASC",
+            SortingOrder::Descending => "DESC",
+        };
+        write!(f, "{}", serialization)
+    }
+}
+
+#[derive(Debug, Default, Eq, PartialEq)]
+pub enum SortingField {
+    #[default]
+    LocalTimestamp,
+    EntityTimestamp,
+}
+
+impl fmt::Display for SortingField {
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+        let serialization = match self {
+            SortingField::LocalTimestamp => "local_timestamp",
+            SortingField::EntityTimestamp => "entity_timestamp",
+        };
+        write!(f, "{}", serialization)
+    }
 }
 
 impl ContentClient {
@@ -119,9 +195,22 @@ impl ContentClient {
     /// Retrieves a list of the failed deployments
     ///[See on Catalyst API Docs](https://decentraland.github.io/catalyst-api-specs/#tag/Content-Server/operation/getFailedDeployments)
     pub async fn failed_deployments(server: &Server) -> Result<Vec<FailedDeployment>> {
-        let result: Vec<FailedDeployment> =
-            server.get(format!("/content/failed-deployments")).await?;
+        let result: Vec<FailedDeployment> = server
+            .get("/content/failed-deployments".to_string())
+            .await?;
         Ok(result)
+    }
+
+    /// It returns a list of changes with the before field (the entity that was overridden with this deployment) and after (the entity that overrides the current one if present).
+    ///[See on Catalyst API Docs](https://decentraland.github.io/catalyst-api-specs/#tag/Content-Server/operation/getPointerChanges)
+    pub async fn changes(server: &Server, parameters: ChangesSearchParameters) -> Result<()> {
+        server
+            .get(format!(
+                "/content/pointer-changes/{}",
+                parameters.to_query_string()
+            ))
+            .await
+        //Deserialize result
     }
 
     /// Returns the availability state for all the given ContentIds.

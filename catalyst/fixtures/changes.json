@@ -1,0 +1,51 @@
+{
+    "deltas": [
+      {
+        "entityType": "scene",
+        "entityId": "QmWBMqDmFebLr4pJWxBpXdtToqTNxqeefzkerQ1C35cGeb",
+        "localTimestamp": 1628614712569,
+        "pointers": [
+          "0,0",
+          "0,1"
+        ],
+        "authChain": [
+          {
+            "type": "SIGNER",
+            "payload": "0x5dB41e2b949a60D60Ae203CdAdabF1c0f0759985",
+            "signature": ""
+          }
+        ]
+      },
+      {
+        "entityType": "scene",
+        "entityId": "QmT3EYh8cGtB8oHMEgCc5GuRMPofkHNwb936ZhRocwgrAL",
+        "localTimestamp": 1628612595680,
+        "pointers": [
+          "1,1",
+          "1,2"
+        ],
+        "authChain": [
+          {
+            "type": "SIGNER",
+            "payload": "0x5dB41e2b949a60D60Ae203CdAdabF1c0f0759985",
+            "signature": ""
+          }
+        ]
+      },
+      {
+        "entityType": "scene",
+        "entityId": "QmQSBke1rXUtPYHLJvJdrfX85n68YMSRgb4KeGhNL8w8KL",
+        "localTimestamp": 1628612397349,
+        "pointers": [
+          "3,3"
+        ],
+        "authChain": [
+          {
+            "type": "SIGNER",
+            "payload": "0x5dB41e2b949a60D60Ae203CdAdabF1c0f0759985",
+            "signature": ""
+          }
+        ]
+      }
+    ]
+  }
