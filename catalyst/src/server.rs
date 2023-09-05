@@ -1,5 +1,5 @@
 use dcl_common::Result;
-use reqwest::Client as ReqwestClient;
+use reqwest::{multipart::Form, Client as ReqwestClient};
 use serde::{Deserialize, Serialize};
 
 /// A *single* catalyst server.
@@ -167,11 +167,25 @@ impl Server {
             .await?)
     }
 
-    pub async fn raw_post_form<U>(
-        &self,
-        path: U,
-        form: reqwest::multipart::Form,
-    ) -> Result<reqwest::Response>
+    /// Executes a `POST` request to `path` with a multipart form `form`.
+    /// The response is parsed as JSON and deserialized in the result.
+    /// If you need to deal with the result by hand, use `get_raw`.
+    ///
+    pub async fn post_form<U, R>(&self, path: U, form: Form) -> Result<R>
+    where
+        U: AsRef<str> + std::fmt::Display,
+        R: for<'a> Deserialize<'a>,
+    {
+        let response = self.raw_post_form(path, form).await?;
+        let text = response.text().await?;
+        let status: R = serde_json::from_str(text.as_str())?;
+        Ok(status)
+    }
+
+    /// Executes a `POST` request to `path` with a multipart form `form`.
+    /// The response is returned as is using `reqwest::Response`.
+    /// For automatic deserialization of JSON response see `post`.
+    pub async fn raw_post_form<U>(&self, path: U, form: Form) -> Result<reqwest::Response>
     where
         U: AsRef<str> + std::fmt::Display,
     {

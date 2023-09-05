@@ -1,3 +1,4 @@
+use reqwest::multipart::Form;
 use reqwest::StatusCode;
 use serde::{Deserialize, Serialize};
 use std::fs::{self, File};
@@ -19,6 +20,35 @@ pub struct ContentClient {}
 #[derive(Serialize)]
 struct ParcelPointer<'a> {
     pointers: &'a Vec<Parcel>,
+}
+
+#[derive(Debug, Deserialize, Eq, PartialEq)]
+#[serde(rename_all = "camelCase")]
+pub struct Challenge {
+    pub challenge_text: String,
+}
+
+#[derive(Debug, Deserialize, Eq, PartialEq)]
+#[serde(rename_all = "camelCase")]
+pub struct DeployResponse {
+    pub creation_timestamp: u64,
+}
+
+#[derive(Debug, Deserialize, Eq, PartialEq)]
+#[serde(rename_all = "camelCase")]
+pub struct EntityData {
+    pub pointer: String,
+    pub entity_id: String,
+}
+
+#[derive(Debug, Deserialize, Eq, PartialEq)]
+#[serde(rename_all = "camelCase")]
+pub struct FailedDeployment {
+    pub failed_deployments_repo: String,
+    pub entity_type: EntityType,
+    pub entity_id: String,
+    pub reason: String,
+    pub error_description: String,
 }
 
 #[derive(Debug, Deserialize, Eq, PartialEq)]
@@ -45,7 +75,7 @@ impl ContentClient {
         Ok(result)
     }
 
-    ///
+    /// Returns true if the content exists and false if it doesnt.
     ///[See on Catalyst API Docs](https://decentraland.github.io/catalyst-api-specs/#tag/Content-Server/operation/headContentFile)    pub async fn challenge(server: &Server) -> Result<Challenge> {
     pub async fn content_file_exists(server: &Server, content: &ContentId) -> Result<bool> {
         let result = server
@@ -53,6 +83,45 @@ impl ContentClient {
             .await?;
 
         Ok(result.status() == StatusCode::OK)
+    }
+
+    /// Returns the entity ids whose deployments are associated with the specified content hash.
+    ///[See on Catalyst API Docs](https://decentraland.github.io/catalyst-api-specs/#tag/Content-Server/operation/getEntityIdsByHashId)
+    pub async fn entity_ids_by_hash(server: &Server, hash: &HashId) -> Result<Vec<ContentId>> {
+        let result: Vec<ContentId> = server
+            .get(format!("/content/contents/{}/entities", hash))
+            .await?;
+        Ok(result)
+    }
+
+    /// Deploys an entity in the content server.
+    ///[See on Catalyst API Docs](https://decentraland.github.io/catalyst-api-specs/#tag/Content-Server/operation/postEntity)
+    pub async fn deploy_entity(server: &Server, form: Form) -> Result<DeployResponse> {
+        let result = server.post_form("/content/entities", form).await?;
+        Ok(result)
+    }
+
+    /// Returns the list of active entities which have at least one pointer that matches the prefix given
+    ///[See on Catalyst API Docs](https://decentraland.github.io/catalyst-api-specs/#tag/Content-Server/operation/getEntitiesByPointerPrefix)
+    pub async fn entities_by_urn<T>(server: &Server, urn: T) -> Result<Vec<EntityData>>
+    where
+        T: AsRef<str>,
+    {
+        let result = server
+            .get(format!(
+                "/content/entities/active/collections/{}",
+                urn.as_ref()
+            ))
+            .await?;
+        Ok(result)
+    }
+
+    /// Retrieves a list of the failed deployments
+    ///[See on Catalyst API Docs](https://decentraland.github.io/catalyst-api-specs/#tag/Content-Server/operation/getFailedDeployments)
+    pub async fn failed_deployments(server: &Server) -> Result<Vec<FailedDeployment>> {
+        let result: Vec<FailedDeployment> =
+            server.get(format!("/content/failed-deployments")).await?;
+        Ok(result)
     }
 
     /// Returns the availability state for all the given ContentIds.
@@ -244,6 +313,94 @@ mod tests {
             tokio_test::block_on(ContentClient::content_file_exists(&server, &content_id)).unwrap();
 
         assert!(!result);
+    }
+
+    #[test]
+    fn it_gets_entitiy_ids_by_hash() {
+        let response = include_str!("../fixtures/entities_by_hash.json");
+        let server = MockServer::start();
+
+        let m = server.mock(|when, then| {
+            when.method(GET).path("/content/contents/a-cid/entities");
+            then.status(200).body(response);
+        });
+
+        let server = Server::new(server.url(""));
+
+        let result = tokio_test::block_on(ContentClient::entity_ids_by_hash(
+            &server,
+            &"a-cid".to_string(),
+        ))
+        .unwrap();
+
+        m.assert();
+
+        let expected: Vec<ContentId> = serde_json::from_str(response).unwrap();
+        assert_eq!(result, expected);
+    }
+
+    #[test]
+    fn it_deploy() {
+        let response = include_str!("../fixtures/deploy_timestamp.json");
+
+        let server = MockServer::start();
+
+        let m = server.mock(|when, then| {
+            when.method(POST).path("/content/entities");
+            then.status(200).body(response);
+        });
+
+        let server = Server::new(server.url(""));
+
+        let result =
+            tokio_test::block_on(ContentClient::deploy_entity(&server, Form::default())).unwrap();
+
+        m.assert();
+
+        let expected: DeployResponse = serde_json::from_str(response).unwrap();
+        assert_eq!(result, expected);
+    }
+
+    #[test]
+    fn it_gets_entities_by_urn() {
+        let response = include_str!("../fixtures/entities_by_urn.json");
+        let server = MockServer::start();
+
+        let m = server.mock(|when, then| {
+            when.method(GET)
+                .path("/content/entities/active/collections/a-urn");
+            then.status(200).body(response);
+        });
+
+        let server = Server::new(server.url(""));
+
+        let result =
+            tokio_test::block_on(ContentClient::entities_by_urn(&server, "a-urn")).unwrap();
+
+        m.assert();
+
+        let expected: Vec<EntityData> = serde_json::from_str(response).unwrap();
+        assert_eq!(result, expected);
+    }
+
+    #[test]
+    fn it_implements_failed_deployments() {
+        let response = include_str!("../fixtures/failed_deployments.json");
+        let server = MockServer::start();
+
+        let m = server.mock(|when, then| {
+            when.method(GET).path("/content/failed-deployments");
+            then.status(200).body(response);
+        });
+
+        let server = Server::new(server.url(""));
+
+        let result = tokio_test::block_on(ContentClient::failed_deployments(&server)).unwrap();
+
+        m.assert();
+
+        let expected: Vec<FailedDeployment> = serde_json::from_str(response).unwrap();
+        assert_eq!(result, expected);
     }
 
     #[test]
