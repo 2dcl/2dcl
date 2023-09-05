@@ -19,8 +19,10 @@ const PRESSED_JUMP_BUTTON: &str = "ui/go_hovered.png";
 const BG_COLOR: Color = Color::rgba(1., 1., 1., 0.95);
 const TEXT_COLOR: Color = Color::WHITE;
 const HEADER_COLOR: Color = Color::RED;
+const ERROR_COLOR: Color = Color::RED;
 const HEADER_FONT_SIZE: f32 = 18.0;
 const SCENES_FONT_SIZE: f32 = 16.0;
+const ERROR_FONT_SIZE: f32 = 18.0;
 const JUMP_BUTTON_HEIGHT: f32 = 40.0;
 
 #[derive(Component, Default)]
@@ -172,6 +174,49 @@ fn show_discover_ui(
     }
 }
 
+fn show_error_message(commands: &mut Commands, asset_server: &AssetServer, error_message: String) {
+    let font = asset_server.load("fonts/Arcadepix Plus.ttf");
+    let discover_ui = commands
+        .spawn((
+            ImageBundle {
+                image: UiImage::new(asset_server.load("ui/back.png")),
+                background_color: BackgroundColor(BG_COLOR),
+                style: Style {
+                    border: UiRect::all(Val::Px(10.)),
+                    position_type: PositionType::Absolute,
+                    width: Val::Percent(70.),
+                    height: Val::Percent(70.),
+                    margin: UiRect::all(Val::Percent(15.)),
+                    align_self: AlignSelf::Center,
+                    flex_direction: FlexDirection::Column,
+                    overflow: Overflow::clip_y(),
+                    ..Default::default()
+                },
+                ..Default::default()
+            },
+            DiscoverUI,
+            Name::new("Discover UI"),
+        ))
+        .id();
+
+    commands
+        .spawn((
+            TextBundle {
+                text: Text::from_section(
+                    error_message,
+                    TextStyle {
+                        font,
+                        font_size: ERROR_FONT_SIZE,
+                        color: ERROR_COLOR,
+                    },
+                ),
+                ..Default::default()
+            },
+            Name::new("Scenes"),
+        ))
+        .set_parent(discover_ui);
+}
+
 fn spawn_entry(
     commands: &mut Commands,
     parent: Entity,
@@ -278,8 +323,13 @@ fn button_system(
                 image.texture = button.0.pressed.clone();
                 if let Ok(discover_ui) = discover_ui_query.get_single() {
                     commands.entity(discover_ui).despawn_recursive();
-                } else if let Ok(scenes) = get_2d_scenes() {
-                    show_discover_ui(&mut commands, &asset_server, scenes);
+                } else {
+                    match get_2d_scenes() {
+                        Ok(scenes) => show_discover_ui(&mut commands, &asset_server, scenes),
+                        Err(err) => {
+                            show_error_message(&mut commands, &asset_server, format!("{}", err))
+                        }
+                    };
                 }
             }
             Interaction::Hovered => {
