@@ -1,14 +1,165 @@
-[
-  {
-    "pointer": "urn:decentraland:polygon:collections-thirdparty:cryptohats:0xc04528c14c8ffd84c7c1fb6719b4a89853035cdd",
-    "entityId": "QmeA8RpAtqU6gCebNaWRXtM9nQs3ugzzbeQm3L7uKrP4Jp"
-  },
-  {
-    "pointer": "urn:decentraland:polygon:collections-thirdparty:cryptohats:0xabcdefghijk",
-    "entityId": "QmdajbrYt4pdkkW2R2PcZ8iLz55uzgGceo4hJMCirHEpPK"
-  },
-  {
-    "pointer": "urn:decentraland:polygon:collections-thirdparty:cryptohats:0xlmnopqrst",
-    "entityId": "QmXokfUunNwLY9hw7U9x2Q3NJ7VFXt65rVDRGzFzPzEXvX"
-  }
-]
+{
+  "total": 2,
+  "entities": [
+      {
+          "version": "v3",
+          "id": "QmTsxcz23rGWA4WxXVhnbC4QbK1BTTK3jhFfjNRBorCrsr",
+          "type": "wearable",
+          "pointers": [
+              "urn:decentraland:matic:collections-v2:0x8e674db9b2fc0759b2d94cace9c4bae334a8f0c3:1"
+          ],
+          "timestamp": 1643277379976,
+          "content": [
+              {
+                  "file": "female/GOLD.glb",
+                  "hash": "QmPHqNzFq8eWZGDdyeqCiMgzxGieQTeRxWBddKXDffkqeS"
+              },
+              {
+                  "file": "image.png",
+                  "hash": "QmPZVyrgLkcefqNKfzLskgXDtSVvN7YU2EjYQM66ZXjArS"
+              },
+              {
+                  "file": "male/GOLD.glb",
+                  "hash": "QmPHqNzFq8eWZGDdyeqCiMgzxGieQTeRxWBddKXDffkqeS"
+              },
+              {
+                  "file": "thumbnail.png",
+                  "hash": "QmSbUFkcqcn7XYSpSikcywMh3Fvcyz4jG73czCsvr6uCJe"
+              }
+          ],
+          "metadata": {
+              "id": "urn:decentraland:matic:collections-v2:0x8e674db9b2fc0759b2d94cace9c4bae334a8f0c3:1",
+              "name": "META VARBARIAN 003",
+              "description": "",
+              "collectionAddress": "0x8e674db9b2fc0759b2d94cace9c4bae334a8f0c3",
+              "rarity": "legendary",
+              "i18n": [
+                  {
+                      "code": "en",
+                      "text": "META VARBARIAN 003"
+                  }
+              ],
+              "data": {
+                  "replaces": [],
+                  "hides": [],
+                  "tags": [],
+                  "category": "feet",
+                  "representations": [
+                      {
+                          "bodyShapes": [
+                              "urn:decentraland:off-chain:base-avatars:BaseMale"
+                          ],
+                          "mainFile": "male/GOLD.glb",
+                          "contents": [
+                              "male/GOLD.glb"
+                          ],
+                          "overrideHides": [],
+                          "overrideReplaces": []
+                      },
+                      {
+                          "bodyShapes": [
+                              "urn:decentraland:off-chain:base-avatars:BaseFemale"
+                          ],
+                          "mainFile": "female/GOLD.glb",
+                          "contents": [
+                              "female/GOLD.glb"
+                          ],
+                          "overrideHides": [],
+                          "overrideReplaces": []
+                      }
+                  ]
+              },
+              "image": "image.png",
+              "thumbnail": "thumbnail.png",
+              "metrics": {
+                  "triangles": 1458,
+                  "materials": 2,
+                  "textures": 2,
+                  "meshes": 2,
+                  "bodies": 2,
+                  "entities": 1
+              }
+          }
+      },
+      {
+          "version": "v3",
+          "id": "QmdajbrYt4pdkkW2R2PcZ8iLz55uzgGceo4hJMCirHEpPK",
+          "type": "wearable",
+          "pointers": [
+              "urn:decentraland:matic:collections-v2:0x8e674db9b2fc0759b2d94cace9c4bae334a8f0c3:0"
+          ],
+          "timestamp": 1643277379253,
+          "content": [
+              {
+                  "file": "female/PINK.glb",
+                  "hash": "QmTJhtpapwyBfnJckXpYUjo9jU7hoMEqgic3oKzH6BR7Ca"
+              },
+              {
+                  "file": "image.png",
+                  "hash": "QmRW86WYf7wNz5SJqC2kjdFR2LK5jzS38inQq4wSE1xNbk"
+              },
+              {
+                  "file": "male/PINK.glb",
+                  "hash": "QmTJhtpapwyBfnJckXpYUjo9jU7hoMEqgic3oKzH6BR7Ca"
+              },
+              {
+                  "file": "thumbnail.png",
+                  "hash": "QmeD1fWwT9Gu3MZGTxjcnmmwLYWesEt6sGR8u899mpzYzn"
+              }
+          ],
+          "metadata": {
+              "id": "urn:decentraland:matic:collections-v2:0x8e674db9b2fc0759b2d94cace9c4bae334a8f0c3:0",
+              "name": "META VARBARIAN 002",
+              "description": "",
+              "collectionAddress": "0x8e674db9b2fc0759b2d94cace9c4bae334a8f0c3",
+              "rarity": "legendary",
+              "i18n": [
+                  {
+                      "code": "en",
+                      "text": "META VARBARIAN 002"
+                  }
+              ],
+              "data": {
+                  "replaces": [],
+                  "hides": [],
+                  "tags": [],
+                  "category": "feet",
+                  "representations": [
+                      {
+                          "bodyShapes": [
+                              "urn:decentraland:off-chain:base-avatars:BaseMale"
+                          ],
+                          "mainFile": "male/PINK.glb",
+                          "contents": [
+                              "male/PINK.glb"
+                          ],
+                          "overrideHides": [],
+                          "overrideReplaces": []
+                      },
+                      {
+                          "bodyShapes": [
+                              "urn:decentraland:off-chain:base-avatars:BaseFemale"
+                          ],
+                          "mainFile": "female/PINK.glb",
+                          "contents": [
+                              "female/PINK.glb"
+                          ],
+                          "overrideHides": [],
+                          "overrideReplaces": []
+                      }
+                  ]
+              },
+              "image": "image.png",
+              "thumbnail": "thumbnail.png",
+              "metrics": {
+                  "triangles": 1458,
+                  "materials": 2,
+                  "textures": 2,
+                  "meshes": 2,
+                  "bodies": 2,
+                  "entities": 1
+              }
+          }
+      }
+  ]
+}

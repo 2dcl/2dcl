@@ -1,14 +1,56 @@
 use serde::{Deserialize, Serialize};
-use std::fmt;
+use std::{fmt, path::PathBuf};
 
-use crate::HashId;
+use crate::{emote::Emote, profile::Profile, scene::Scene, wearable::Wearable, ContentId, HashId};
 
 /// Represents an entity from the server (scene, wearable, profile)
 ///
-#[derive(Debug, Deserialize, Eq, PartialEq)]
+#[derive(Debug, Serialize, Deserialize, PartialEq, Clone)]
 pub struct Entity {
-    pub kind: EntityType,
     pub id: EntityId,
+    pub version: String,
+    #[serde(rename(deserialize = "type", serialize = "type"))]
+    pub kind: EntityType,
+    pub pointers: Vec<String>,
+    pub timestamp: u128,
+    pub content: Vec<ContentFile>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub metadata: Option<Metadata>,
+}
+
+#[derive(Debug, Serialize, Deserialize, PartialEq, Clone)]
+pub struct ContentFile {
+    #[serde(rename(deserialize = "file", serialize = "file"))]
+    pub filename: PathBuf,
+    #[serde(rename(deserialize = "hash", serialize = "hash"))]
+    pub cid: ContentId,
+}
+
+#[derive(Debug, Serialize, Deserialize, PartialEq, Clone)]
+#[serde(untagged)]
+pub enum Metadata {
+    #[serde(rename = "profile")]
+    Profile(Profile),
+    #[serde(rename = "scene")]
+    Scene(Box<Scene>),
+    #[serde(rename = "wearable")]
+    Wearable(Wearable),
+    #[serde(rename = "emote")]
+    Emote(Emote),
+}
+
+impl Default for Entity {
+    fn default() -> Self {
+        Self {
+            id: EntityId(String::default()),
+            version: Default::default(),
+            kind: EntityType::Scene,
+            pointers: Default::default(),
+            timestamp: Default::default(),
+            content: Default::default(),
+            metadata: Default::default(),
+        }
+    }
 }
 
 impl Entity {
@@ -31,6 +73,7 @@ impl Entity {
         Entity {
             kind,
             id: EntityId::new(id),
+            ..Default::default()
         }
     }
 

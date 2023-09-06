@@ -9,6 +9,12 @@ pub use content_client::*;
 // mod lambda_client;
 // pub use lambda_client::LambdaClient;
 
+pub mod deployment;
+pub mod emote;
+pub mod profile;
+pub mod scene;
+pub mod wearable;
+
 mod entity;
 pub use entity::Entity;
 pub use entity::EntityId;

@@ -1,9 +1,139 @@
 [
   {
-    "failedDeploymentsRepo": "https://peer.dclnodes.io/content",
-    "entityType": "profile",
-    "entityId": "Qmej2ASCw4ubcjd2KHyMkcQz8HbMUfLqGbtheWoxykBt38",
-    "reason": "No entity or audit",
-    "errorDescription": "During sync, we couldn't fetch the entity or the audit info"
+      "entityId": "bafkreifygbsqxshncy2eurmgduhgaoljjkr754werocxd5iu6nsj2dwe3m",
+      "entityType": "profile",
+      "failureTimestamp": 1692883616781,
+      "reason": "Deployment error",
+      "authChain": [
+          {
+              "payload": "0xb71f6a45e742366ce3ef7eff4fe9b942498d2719",
+              "signature": "",
+              "type": "SIGNER"
+          },
+          {
+              "payload": "Decentraland Login\r\nEphemeral address: 0x225595aF9e990f1f01B4eE21E4209B1946f0c77e\r\nExpiration: 2023-08-23T09:22:41.482Z",
+              "signature": "0x5c7256817ae2a781a34b9e27b407f81884fab5f17017e3b0f3be758ded09dfa1261fbfa82ced8ee1a2c7a32958e24ad5da5e35c4f6e3ac633cb5c9192a8a45b91c",
+              "type": "ECDSA_EPHEMERAL"
+          },
+          {
+              "payload": "bafkreifygbsqxshncy2eurmgduhgaoljjkr754werocxd5iu6nsj2dwe3m",
+              "signature": "0x1998c4f12133c426428736c6b1195cf37c1b87dc4c0508b30ae793a90fa9bd276ded2774d3b1d8c950d4f020d75f6f3e2bc1908c9371f236fa7843fd0e5d535f1b",
+              "type": "ECDSA_SIGNED_ENTITY"
+          }
+      ],
+      "errorDescription": "Errors deploying entity(bafkreifygbsqxshncy2eurmgduhgaoljjkr754werocxd5iu6nsj2dwe3m):\n - The metadata for this entity type (profile) is not valid.\n - must match pattern \"^[(http(s)?):\\/\\/(www\\.)?a-zA-Z0-9@:%._\\+~#=]{2,256}\\.[a-z]{2,6}\\b([-a-zA-Z0-9@:%_\\+.~#?&//=]*)$\"",
+      "snapshotHash": "bafybeid73lurlgm6ftf5iqafpfcrmlhcwiqs5taj3ghwkidc2j4tumpdiq"
+  },
+  {
+      "entityId": "QmZcMnzLyR31pKaehBXg2EgBca91angVMkaHWtjjhDw8DP",
+      "entityType": "wearable",
+      "failureTimestamp": 1680194211493,
+      "reason": "Deployment error",
+      "authChain": [
+          {
+              "type": "SIGNER",
+              "payload": "0x82d54417fc69681dc74a6c0c68c6dbad5a2857b9",
+              "signature": ""
+          },
+          {
+              "type": "ECDSA_EPHEMERAL",
+              "payload": "Decentraland Login\r\nEphemeral address: 0xB7b30B61E66d0177D2F408A84e9fd18e4d59BA42\r\nExpiration: 2021-12-02T09:28:57.084Z",
+              "signature": "0x9ed977afeecbc4dac6aa7d1b749bd87e285015daa8687a12c9a6e6b39e00cdf06d8dec20d7939221fb56f8d112ded0e12741a288c7d76c857039a0e6b56e79681c"
+          },
+          {
+              "type": "ECDSA_SIGNED_ENTITY",
+              "payload": "QmZcMnzLyR31pKaehBXg2EgBca91angVMkaHWtjjhDw8DP",
+              "signature": "0x5a54ad6b80b04d8e8d262734f91ef3adad44c80327eb48c99b6a029330b0d97b41e689096b9bd5829c597c08e75c2c5ed326e94722fadeb2865660ecbc3437d51c"
+          }
+      ],
+      "errorDescription": "Errors deploying entity(QmZcMnzLyR31pKaehBXg2EgBca91angVMkaHWtjjhDw8DP):\n - Representation content: 'male/f_dapp_awhornsy_mask.glb' is not one of the content files",
+      "snapshotHash": "bafybeifk7gjk73r5vbhvtlqptfy4evamigdixexhgpjam3grvygn2v4pua"
+  },
+  {
+      "entityType": "scene",
+      "entityId": "bafkreibdygcq7ustbqr3dbonqojfmb52uluv7q6ty7ytksltcwiyjjdbom",
+      "reason": "Deployment error",
+      "authChain": [
+          {
+              "payload": "0xc2877b05cfe462e585fe3de8046f7528998af6f1",
+              "signature": "",
+              "type": "SIGNER"
+          },
+          {
+              "payload": "bafkreibdygcq7ustbqr3dbonqojfmb52uluv7q6ty7ytksltcwiyjjdbom",
+              "signature": "0x3b85297e948eb3ffc81a60fd6c185b2ffa815a5085b1e2ddeb9c58d3fe130fa36cbdeb6b561a58542459a5d5bf36cf861712f1e70b82e7eb848c0f118438af841b",
+              "type": "ECDSA_SIGNED_ENTITY"
+          }
+      ],
+      "errorDescription": "Errors deploying entity(bafkreibdygcq7ustbqr3dbonqojfmb52uluv7q6ty7ytksltcwiyjjdbom):\n - The metadata for this entity type (scene) is not valid.\n - must be equal to one of the allowed values",
+      "failureTimestamp": 1693506325815,
+      "snapshotHash": "bafybeif4vnqclbrcmcrtyzexxxircdpjcwuydcuhfmsxq5brpcwsk327ye"
+  },
+  {
+      "entityType": "profile",
+      "entityId": "bafkreih6bo4ihiyzrnmix2cvta2hjubr66a6kcahaeykqph7btqfew7guu",
+      "reason": "Deployment error",
+      "authChain": [
+          {
+              "payload": "0xb6fb483c07d45e80d9a4fdd13cef8147540092d5",
+              "signature": "",
+              "type": "SIGNER"
+          },
+          {
+              "payload": "Decentraland Login\r\nEphemeral address: 0x2791D9e12611aC827F1dB60e59a0e9C7f21Fd37C\r\nExpiration: 2023-09-06T00:31:00.762Z",
+              "signature": "0x80016f88240cfb26f689ed167fe833409d66474e2f6a35338c3978670cc7dc2e750e7e7963ce305a111db527d7d83976bd4c98e725cf4fbf72fc732cc5ffab961b",
+              "type": "ECDSA_EPHEMERAL"
+          },
+          {
+              "payload": "bafkreih6bo4ihiyzrnmix2cvta2hjubr66a6kcahaeykqph7btqfew7guu",
+              "signature": "0x262f77ae8547db95f8a818d951851be462d68bf97c2c7be3ffca41e770bd21f35e90e2216d5174d0c5380a2e95a4a711c5c24e6c4325e24746ec064dae4661f01c",
+              "type": "ECDSA_SIGNED_ENTITY"
+          }
+      ],
+      "errorDescription": "Errors deploying entity(bafkreih6bo4ihiyzrnmix2cvta2hjubr66a6kcahaeykqph7btqfew7guu):\n - There was an error deploying the entity",
+      "failureTimestamp": 1693994352201
+  },
+  {
+      "entityType": "scene",
+      "entityId": "bafkreiaqamngo3mml7my2y4efp4b6qqkr6r2s3fucif4rfj62ib2iaybke",
+      "reason": "Deployment error",
+      "authChain": [
+          {
+              "payload": "0xc2877b05cfe462e585fe3de8046f7528998af6f1",
+              "signature": "",
+              "type": "SIGNER"
+          },
+          {
+              "payload": "bafkreiaqamngo3mml7my2y4efp4b6qqkr6r2s3fucif4rfj62ib2iaybke",
+              "signature": "0xcd15de272df4d8442dadf4c830562f9eb6d96798ab3f79d3e94ab9dbd38d11992506e188c5a483785217faa72a9cf7d5b701dccde82f9a64bf721b24da0cd4411c",
+              "type": "ECDSA_SIGNED_ENTITY"
+          }
+      ],
+      "errorDescription": "Errors deploying entity(bafkreiaqamngo3mml7my2y4efp4b6qqkr6r2s3fucif4rfj62ib2iaybke):\n - The metadata for this entity type (scene) is not valid.\n - must be equal to one of the allowed values",
+      "failureTimestamp": 1693994751377
+  },
+  {
+      "entityType": "profile",
+      "entityId": "bafkreihkt3arfhd5or2zuihl25uxfci34qwck2r5vgw2gpndyoyqlbqjma",
+      "reason": "Deployment error",
+      "authChain": [
+          {
+              "payload": "0x68c86c2a1edfbf93ef160fb61bcd174f9ce4e649",
+              "signature": "",
+              "type": "SIGNER"
+          },
+          {
+              "payload": "Decentraland Login\r\nEphemeral address: 0x923FAC0A98766916BBc9DdeD7530Dae926A73B80\r\nExpiration: 2023-09-13T09:42:39.113Z",
+              "signature": "0x7ff87247be84c03e9fad9ed520e165ca0b52ca6c0f42c606909555bf22fbeef327d526d2f8a5d378beae96602836b9fe4de931f35a0cefb97b8591b6e011f5a01c",
+              "type": "ECDSA_EPHEMERAL"
+          },
+          {
+              "payload": "bafkreihkt3arfhd5or2zuihl25uxfci34qwck2r5vgw2gpndyoyqlbqjma",
+              "signature": "0xa65c76c9cdd90756478b3dc9c5bc63a37e52eca4f001d270cc4c448bf3c368667c0d73fde2e5f5eba870dbfc4bd659c9dfe5f4709d5d493529c8dca07a05d30b1c",
+              "type": "ECDSA_SIGNED_ENTITY"
+          }
+      ],
+      "errorDescription": "Errors deploying entity(bafkreihkt3arfhd5or2zuihl25uxfci34qwck2r5vgw2gpndyoyqlbqjma):\n - There was an error deploying the entity",
+      "failureTimestamp": 1694026544165
   }
 ]

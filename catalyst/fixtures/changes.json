@@ -1,51 +1,517 @@
 {
-    "deltas": [
+  "deltas": [
       {
-        "entityType": "scene",
-        "entityId": "QmWBMqDmFebLr4pJWxBpXdtToqTNxqeefzkerQ1C35cGeb",
-        "localTimestamp": 1628614712569,
-        "pointers": [
-          "0,0",
-          "0,1"
-        ],
-        "authChain": [
-          {
-            "type": "SIGNER",
-            "payload": "0x5dB41e2b949a60D60Ae203CdAdabF1c0f0759985",
-            "signature": ""
-          }
-        ]
+          "deploymentId": 4282506,
+          "entityType": "wearable",
+          "entityId": "bafkreiadhg3za247y53arr4lelrr2vwm63csa5ztyuqtvsadkosovzczre",
+          "pointers": [
+              "urn:decentraland:matic:collections-v2:0xe3c1e26029061f7c689c36508fc6be11f34b009b:1"
+          ],
+          "entityTimestamp": 1694028053598,
+          "metadata": {
+              "id": "urn:decentraland:matic:collections-v2:0xe3c1e26029061f7c689c36508fc6be11f34b009b:1",
+              "name": "Folded concrete",
+              "description": "Folded concrete case for the First Metaverse Architecture Bienna",
+              "collectionAddress": "0xe3c1e26029061f7c689c36508fc6be11f34b009b",
+              "rarity": "uncommon",
+              "i18n": [
+                  {
+                      "code": "en",
+                      "text": "Folded concrete"
+                  }
+              ],
+              "data": {
+                  "replaces": [],
+                  "hides": [],
+                  "removesDefaultHiding": [],
+                  "tags": [],
+                  "category": "skin",
+                  "representations": [
+                      {
+                          "bodyShapes": [
+                              "urn:decentraland:off-chain:base-avatars:BaseMale"
+                          ],
+                          "mainFile": "male/02.glb",
+                          "contents": [
+                              "male/02.glb"
+                          ],
+                          "overrideHides": [],
+                          "overrideReplaces": []
+                      },
+                      {
+                          "bodyShapes": [
+                              "urn:decentraland:off-chain:base-avatars:BaseFemale"
+                          ],
+                          "mainFile": "female/02.glb",
+                          "contents": [
+                              "female/02.glb"
+                          ],
+                          "overrideHides": [],
+                          "overrideReplaces": []
+                      }
+                  ]
+              },
+              "image": "image.png",
+              "thumbnail": "thumbnail.png",
+              "metrics": {
+                  "triangles": 3978,
+                  "materials": 4,
+                  "meshes": 6,
+                  "textures": 4,
+                  "bodies": 6,
+                  "entities": 1
+              }
+          },
+          "deployerAddress": "0x5ce9fb617333b8c5a8f7787710f7c07002cb3516",
+          "version": "v3",
+          "authChain": [
+              {
+                  "payload": "0x5ce9fb617333b8c5a8f7787710f7c07002cb3516",
+                  "signature": "",
+                  "type": "SIGNER"
+              },
+              {
+                  "payload": "Decentraland Login\r\nEphemeral address: 0xcF33bFcf8e9Fba7d24cd7Ae98E7233bD820a326b\r\nExpiration: 2023-09-09T12:23:07.648Z",
+                  "signature": "0x3ed76cdc0b565c0cfacd8e90aa661ce5296a0ca4e04c65f6d3bf46ce635c003d343a817dd33133442f9766c9b521fbec45c5e02320b80e873b0f7bf9ad6f5c721b",
+                  "type": "ECDSA_EPHEMERAL"
+              },
+              {
+                  "payload": "bafkreiadhg3za247y53arr4lelrr2vwm63csa5ztyuqtvsadkosovzczre",
+                  "signature": "0x386464097a64b22b70b3f391a8368998ea7428d6b1be80bb4104f5c6be48129f4a192b6b0da4cd02a6be36eefa831968879d9c727a5efd71eb63222bc489d4a81b",
+                  "type": "ECDSA_SIGNED_ENTITY"
+              }
+          ],
+          "localTimestamp": 1694028151992
       },
       {
-        "entityType": "scene",
-        "entityId": "QmT3EYh8cGtB8oHMEgCc5GuRMPofkHNwb936ZhRocwgrAL",
-        "localTimestamp": 1628612595680,
-        "pointers": [
-          "1,1",
-          "1,2"
-        ],
-        "authChain": [
-          {
-            "type": "SIGNER",
-            "payload": "0x5dB41e2b949a60D60Ae203CdAdabF1c0f0759985",
-            "signature": ""
-          }
-        ]
+          "deploymentId": 4282505,
+          "entityType": "wearable",
+          "entityId": "bafkreiasr7tlbamocwnxagyx6r5wxun2xms4m6jw6xojqqvljjddm5bwjm",
+          "pointers": [
+              "urn:decentraland:matic:collections-v2:0xe3c1e26029061f7c689c36508fc6be11f34b009b:0"
+          ],
+          "entityTimestamp": 1694028040241,
+          "metadata": {
+              "id": "urn:decentraland:matic:collections-v2:0xe3c1e26029061f7c689c36508fc6be11f34b009b:0",
+              "name": "Pitched roof house ",
+              "description": "Pitched roof house look for the First Metaverse Architecture Bie",
+              "collectionAddress": "0xe3c1e26029061f7c689c36508fc6be11f34b009b",
+              "rarity": "unique",
+              "i18n": [
+                  {
+                      "code": "en",
+                      "text": "Pitched roof house "
+                  }
+              ],
+              "data": {
+                  "replaces": [],
+                  "hides": [],
+                  "removesDefaultHiding": [],
+                  "tags": [],
+                  "category": "skin",
+                  "representations": [
+                      {
+                          "bodyShapes": [
+                              "urn:decentraland:off-chain:base-avatars:BaseMale"
+                          ],
+                          "mainFile": "male/01.glb",
+                          "contents": [
+                              "male/01.glb"
+                          ],
+                          "overrideHides": [],
+                          "overrideReplaces": []
+                      },
+                      {
+                          "bodyShapes": [
+                              "urn:decentraland:off-chain:base-avatars:BaseFemale"
+                          ],
+                          "mainFile": "female/01.glb",
+                          "contents": [
+                              "female/01.glb"
+                          ],
+                          "overrideHides": [],
+                          "overrideReplaces": []
+                      }
+                  ]
+              },
+              "image": "image.png",
+              "thumbnail": "thumbnail.png",
+              "metrics": {
+                  "triangles": 3656,
+                  "materials": 4,
+                  "meshes": 6,
+                  "textures": 4,
+                  "bodies": 6,
+                  "entities": 1
+              }
+          },
+          "deployerAddress": "0x5ce9fb617333b8c5a8f7787710f7c07002cb3516",
+          "version": "v3",
+          "authChain": [
+              {
+                  "payload": "0x5ce9fb617333b8c5a8f7787710f7c07002cb3516",
+                  "signature": "",
+                  "type": "SIGNER"
+              },
+              {
+                  "payload": "Decentraland Login\r\nEphemeral address: 0xcF33bFcf8e9Fba7d24cd7Ae98E7233bD820a326b\r\nExpiration: 2023-09-09T12:23:07.648Z",
+                  "signature": "0x3ed76cdc0b565c0cfacd8e90aa661ce5296a0ca4e04c65f6d3bf46ce635c003d343a817dd33133442f9766c9b521fbec45c5e02320b80e873b0f7bf9ad6f5c721b",
+                  "type": "ECDSA_EPHEMERAL"
+              },
+              {
+                  "payload": "bafkreiasr7tlbamocwnxagyx6r5wxun2xms4m6jw6xojqqvljjddm5bwjm",
+                  "signature": "0x5d0af32b52c5166169611fd536d9f53c35b418eae7bb1893b9249ca1891823095037eb47da2a167d1fd8c411ced7761be0473ab81f80a0876c157e531dffe6071c",
+                  "type": "ECDSA_SIGNED_ENTITY"
+              }
+          ],
+          "localTimestamp": 1694028147346
       },
       {
-        "entityType": "scene",
-        "entityId": "QmQSBke1rXUtPYHLJvJdrfX85n68YMSRgb4KeGhNL8w8KL",
-        "localTimestamp": 1628612397349,
-        "pointers": [
-          "3,3"
-        ],
-        "authChain": [
-          {
-            "type": "SIGNER",
-            "payload": "0x5dB41e2b949a60D60Ae203CdAdabF1c0f0759985",
-            "signature": ""
-          }
-        ]
+          "deploymentId": 4282504,
+          "entityType": "wearable",
+          "entityId": "bafkreicb5eqmyxqtdbevcf3v5bkzfuhf7tc27cbvt4y5frh7hhjsug5sia",
+          "pointers": [
+              "urn:decentraland:matic:collections-v2:0xe3c1e26029061f7c689c36508fc6be11f34b009b:3"
+          ],
+          "entityTimestamp": 1694028063241,
+          "metadata": {
+              "id": "urn:decentraland:matic:collections-v2:0xe3c1e26029061f7c689c36508fc6be11f34b009b:3",
+              "name": "ARTISANT x MAB long-sleeve",
+              "description": "High Digital Fashion long sleeve by ARTISANT. Designed and dropp",
+              "collectionAddress": "0xe3c1e26029061f7c689c36508fc6be11f34b009b",
+              "rarity": "epic",
+              "i18n": [
+                  {
+                      "code": "en",
+                      "text": "ARTISANT x MAB long-sleeve"
+                  }
+              ],
+              "data": {
+                  "replaces": [],
+                  "hides": [],
+                  "removesDefaultHiding": [
+                      "hands"
+                  ],
+                  "tags": [],
+                  "category": "upper_body",
+                  "representations": [
+                      {
+                          "bodyShapes": [
+                              "urn:decentraland:off-chain:base-avatars:BaseMale"
+                          ],
+                          "mainFile": "male/07.glb",
+                          "contents": [
+                              "male/07.glb"
+                          ],
+                          "overrideHides": [],
+                          "overrideReplaces": []
+                      },
+                      {
+                          "bodyShapes": [
+                              "urn:decentraland:off-chain:base-avatars:BaseFemale"
+                          ],
+                          "mainFile": "female/07.glb",
+                          "contents": [
+                              "female/07.glb"
+                          ],
+                          "overrideHides": [],
+                          "overrideReplaces": []
+                      }
+                  ]
+              },
+              "image": "image.png",
+              "thumbnail": "thumbnail.png",
+              "metrics": {
+                  "triangles": 1472,
+                  "materials": 1,
+                  "meshes": 3,
+                  "textures": 1,
+                  "bodies": 3,
+                  "entities": 1
+              }
+          },
+          "deployerAddress": "0x5ce9fb617333b8c5a8f7787710f7c07002cb3516",
+          "version": "v3",
+          "authChain": [
+              {
+                  "payload": "0x5ce9fb617333b8c5a8f7787710f7c07002cb3516",
+                  "signature": "",
+                  "type": "SIGNER"
+              },
+              {
+                  "payload": "Decentraland Login\r\nEphemeral address: 0xcF33bFcf8e9Fba7d24cd7Ae98E7233bD820a326b\r\nExpiration: 2023-09-09T12:23:07.648Z",
+                  "signature": "0x3ed76cdc0b565c0cfacd8e90aa661ce5296a0ca4e04c65f6d3bf46ce635c003d343a817dd33133442f9766c9b521fbec45c5e02320b80e873b0f7bf9ad6f5c721b",
+                  "type": "ECDSA_EPHEMERAL"
+              },
+              {
+                  "payload": "bafkreicb5eqmyxqtdbevcf3v5bkzfuhf7tc27cbvt4y5frh7hhjsug5sia",
+                  "signature": "0xda857223f0e991e5ce61dfd753b8f26937682a8cb697261aaccef1986029fd5e1831afb5212c6da27f5b65bd1f2399591a7c3e397fd71e01ab4c42e10667ac781b",
+                  "type": "ECDSA_SIGNED_ENTITY"
+              }
+          ],
+          "localTimestamp": 1694028147291
+      },
+      {
+          "deploymentId": 4282503,
+          "entityType": "wearable",
+          "entityId": "bafkreibnfx5ph2zeyt5jm5moewalawwi6jyzvoef73aq7i66qofhwjxw7u",
+          "pointers": [
+              "urn:decentraland:matic:collections-v2:0xe3c1e26029061f7c689c36508fc6be11f34b009b:4"
+          ],
+          "entityTimestamp": 1694028076308,
+          "metadata": {
+              "id": "urn:decentraland:matic:collections-v2:0xe3c1e26029061f7c689c36508fc6be11f34b009b:4",
+              "name": "METATREKKERS x MAB Catwoman",
+              "description": "Transforming wearable created for collaboration of the MetaTrekk",
+              "collectionAddress": "0xe3c1e26029061f7c689c36508fc6be11f34b009b",
+              "rarity": "uncommon",
+              "i18n": [
+                  {
+                      "code": "en",
+                      "text": "METATREKKERS x MAB Catwoman"
+                  }
+              ],
+              "data": {
+                  "replaces": [],
+                  "hides": [],
+                  "removesDefaultHiding": [],
+                  "tags": [],
+                  "category": "skin",
+                  "representations": [
+                      {
+                          "bodyShapes": [
+                              "urn:decentraland:off-chain:base-avatars:BaseMale"
+                          ],
+                          "mainFile": "male/CatWoman.glb",
+                          "contents": [
+                              "male/CatWoman.glb"
+                          ],
+                          "overrideHides": [],
+                          "overrideReplaces": []
+                      },
+                      {
+                          "bodyShapes": [
+                              "urn:decentraland:off-chain:base-avatars:BaseFemale"
+                          ],
+                          "mainFile": "female/CatWoman.glb",
+                          "contents": [
+                              "female/CatWoman.glb"
+                          ],
+                          "overrideHides": [],
+                          "overrideReplaces": []
+                      }
+                  ]
+              },
+              "image": "image.png",
+              "thumbnail": "thumbnail.png",
+              "metrics": {
+                  "triangles": 4686,
+                  "materials": 5,
+                  "meshes": 7,
+                  "textures": 5,
+                  "bodies": 7,
+                  "entities": 1
+              }
+          },
+          "deployerAddress": "0x5ce9fb617333b8c5a8f7787710f7c07002cb3516",
+          "version": "v3",
+          "authChain": [
+              {
+                  "payload": "0x5ce9fb617333b8c5a8f7787710f7c07002cb3516",
+                  "signature": "",
+                  "type": "SIGNER"
+              },
+              {
+                  "payload": "Decentraland Login\r\nEphemeral address: 0xcF33bFcf8e9Fba7d24cd7Ae98E7233bD820a326b\r\nExpiration: 2023-09-09T12:23:07.648Z",
+                  "signature": "0x3ed76cdc0b565c0cfacd8e90aa661ce5296a0ca4e04c65f6d3bf46ce635c003d343a817dd33133442f9766c9b521fbec45c5e02320b80e873b0f7bf9ad6f5c721b",
+                  "type": "ECDSA_EPHEMERAL"
+              },
+              {
+                  "payload": "bafkreibnfx5ph2zeyt5jm5moewalawwi6jyzvoef73aq7i66qofhwjxw7u",
+                  "signature": "0xfd18c94d52f195fbd48c4a8a895bc38797214981661306bdaab77069fdaca81065bf7b018080f7c51edb6f89c2cf34beb8cecebe306ae4439fb6ed10048bb1bd1b",
+                  "type": "ECDSA_SIGNED_ENTITY"
+              }
+          ],
+          "localTimestamp": 1694028147170
+      },
+      {
+          "deploymentId": 4282502,
+          "entityType": "wearable",
+          "entityId": "bafkreihe7atnw3lkgqju3g2dxeyrrrn6elhofjdvafle4g2uvnt5zi5acy",
+          "pointers": [
+              "urn:decentraland:matic:collections-v2:0xe3c1e26029061f7c689c36508fc6be11f34b009b:5"
+          ],
+          "entityTimestamp": 1694028086521,
+          "metadata": {
+              "id": "urn:decentraland:matic:collections-v2:0xe3c1e26029061f7c689c36508fc6be11f34b009b:5",
+              "name": "Boggart",
+              "description": "",
+              "collectionAddress": "0xe3c1e26029061f7c689c36508fc6be11f34b009b",
+              "rarity": "common",
+              "i18n": [
+                  {
+                      "code": "en",
+                      "text": "Boggart"
+                  }
+              ],
+              "data": {
+                  "replaces": [],
+                  "hides": [],
+                  "removesDefaultHiding": [],
+                  "tags": [],
+                  "category": "skin",
+                  "representations": [
+                      {
+                          "bodyShapes": [
+                              "urn:decentraland:off-chain:base-avatars:BaseMale"
+                          ],
+                          "mainFile": "male/cat_003.glb",
+                          "contents": [
+                              "male/cat_003.glb"
+                          ],
+                          "overrideHides": [],
+                          "overrideReplaces": []
+                      },
+                      {
+                          "bodyShapes": [
+                              "urn:decentraland:off-chain:base-avatars:BaseFemale"
+                          ],
+                          "mainFile": "female/cat_003.glb",
+                          "contents": [
+                              "female/cat_003.glb"
+                          ],
+                          "overrideHides": [],
+                          "overrideReplaces": []
+                      }
+                  ]
+              },
+              "image": "image.png",
+              "thumbnail": "thumbnail.png",
+              "metrics": {
+                  "triangles": 4758,
+                  "materials": 1,
+                  "meshes": 3,
+                  "textures": 1,
+                  "bodies": 3,
+                  "entities": 1
+              }
+          },
+          "deployerAddress": "0x5ce9fb617333b8c5a8f7787710f7c07002cb3516",
+          "version": "v3",
+          "authChain": [
+              {
+                  "payload": "0x5ce9fb617333b8c5a8f7787710f7c07002cb3516",
+                  "signature": "",
+                  "type": "SIGNER"
+              },
+              {
+                  "payload": "Decentraland Login\r\nEphemeral address: 0xcF33bFcf8e9Fba7d24cd7Ae98E7233bD820a326b\r\nExpiration: 2023-09-09T12:23:07.648Z",
+                  "signature": "0x3ed76cdc0b565c0cfacd8e90aa661ce5296a0ca4e04c65f6d3bf46ce635c003d343a817dd33133442f9766c9b521fbec45c5e02320b80e873b0f7bf9ad6f5c721b",
+                  "type": "ECDSA_EPHEMERAL"
+              },
+              {
+                  "payload": "bafkreihe7atnw3lkgqju3g2dxeyrrrn6elhofjdvafle4g2uvnt5zi5acy",
+                  "signature": "0xb0ed1b32a790d336d058825d3b9280e24030cc2efe701b7fd52a5f61a9c4c1975791d4fae9c5f59295f5585fedfee0bd521657eb056186cba8238cfe7b6391ab1c",
+                  "type": "ECDSA_SIGNED_ENTITY"
+              }
+          ],
+          "localTimestamp": 1694028147025
+      },
+      {
+          "deploymentId": 4282501,
+          "entityType": "wearable",
+          "entityId": "bafkreiaublz3cs3sgn2nmh6bghcmgu2bmo77oowcduquzv3n2kaprekbbm",
+          "pointers": [
+              "urn:decentraland:matic:collections-v2:0xe3c1e26029061f7c689c36508fc6be11f34b009b:2"
+          ],
+          "entityTimestamp": 1694028055824,
+          "metadata": {
+              "id": "urn:decentraland:matic:collections-v2:0xe3c1e26029061f7c689c36508fc6be11f34b009b:2",
+              "name": "Ziggurat",
+              "description": "Ziggurat as the official head wearable for the First Metaverse A",
+              "collectionAddress": "0xe3c1e26029061f7c689c36508fc6be11f34b009b",
+              "rarity": "rare",
+              "i18n": [
+                  {
+                      "code": "en",
+                      "text": "Ziggurat"
+                  }
+              ],
+              "data": {
+                  "replaces": [],
+                  "hides": [],
+                  "removesDefaultHiding": [],
+                  "tags": [],
+                  "category": "top_head",
+                  "representations": [
+                      {
+                          "bodyShapes": [
+                              "urn:decentraland:off-chain:base-avatars:BaseMale"
+                          ],
+                          "mainFile": "male/05.glb",
+                          "contents": [
+                              "male/05.glb"
+                          ],
+                          "overrideHides": [],
+                          "overrideReplaces": []
+                      },
+                      {
+                          "bodyShapes": [
+                              "urn:decentraland:off-chain:base-avatars:BaseFemale"
+                          ],
+                          "mainFile": "female/05.glb",
+                          "contents": [
+                              "female/05.glb"
+                          ],
+                          "overrideHides": [],
+                          "overrideReplaces": []
+                      }
+                  ]
+              },
+              "image": "image.png",
+              "thumbnail": "thumbnail.png",
+              "metrics": {
+                  "triangles": 148,
+                  "materials": 1,
+                  "meshes": 3,
+                  "textures": 1,
+                  "bodies": 3,
+                  "entities": 1
+              }
+          },
+          "deployerAddress": "0x5ce9fb617333b8c5a8f7787710f7c07002cb3516",
+          "version": "v3",
+          "authChain": [
+              {
+                  "payload": "0x5ce9fb617333b8c5a8f7787710f7c07002cb3516",
+                  "signature": "",
+                  "type": "SIGNER"
+              },
+              {
+                  "payload": "Decentraland Login\r\nEphemeral address: 0xcF33bFcf8e9Fba7d24cd7Ae98E7233bD820a326b\r\nExpiration: 2023-09-09T12:23:07.648Z",
+                  "signature": "0x3ed76cdc0b565c0cfacd8e90aa661ce5296a0ca4e04c65f6d3bf46ce635c003d343a817dd33133442f9766c9b521fbec45c5e02320b80e873b0f7bf9ad6f5c721b",
+                  "type": "ECDSA_EPHEMERAL"
+              },
+              {
+                  "payload": "bafkreiaublz3cs3sgn2nmh6bghcmgu2bmo77oowcduquzv3n2kaprekbbm",
+                  "signature": "0x76d2daf5af1b982e62b664122d9112de40ae3b54aa99322a9fd61980979eca4c47e66ca52fe3b7a95cacc45aaaaa9e5c3ee552c00ec0bff58a530f812bbb2e951b",
+                  "type": "ECDSA_SIGNED_ENTITY"
+              }
+          ],
+          "localTimestamp": 1694028142003
       }
-    ]
+  ],
+  "filters": {
+      "entityTypes": [
+          "wearable"
+      ],
+      "from": 1694028141992,
+      "to": 2795029151992,
+      "includeAuthChain": false
+  },
+  "pagination": {
+      "offset": 0,
+      "limit": 500,
+      "moreData": false
   }
+}

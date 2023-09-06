@@ -1,3 +1,4 @@
+use dcl_crypto::AuthChain;
 use reqwest::multipart::Form;
 use reqwest::StatusCode;
 use serde::{Deserialize, Serialize};
@@ -6,6 +7,7 @@ use std::fs::{self, File};
 use std::io::Write;
 use std::path::Path;
 
+use crate::deployment::Deployment;
 use crate::entity_files::SceneFile;
 use crate::entity_information::EntityInformation;
 use crate::snapshot::{EntitySnapshot, Snapshot};
@@ -35,23 +37,30 @@ pub struct DeployResponse {
     pub creation_timestamp: u64,
 }
 
-//Missing some fields
-#[derive(Debug, Deserialize, Eq, PartialEq)]
+#[derive(Debug, Deserialize, PartialEq)]
 #[serde(rename_all = "camelCase")]
-pub struct EntityData {
-    pub pointer: String,
-    pub entity_id: String,
+pub struct EntitiesByUrnResponse {
+    pub total: u64,
+    pub entities: Vec<Entity>,
 }
 
-//Missing some fields
-#[derive(Debug, Deserialize, Eq, PartialEq)]
+#[derive(Debug, Deserialize, PartialEq)]
+#[serde(rename_all = "camelCase")]
+pub struct ChangesResponse {
+    pub deltas: Vec<Deployment>,
+}
+
+#[derive(Debug, Deserialize, PartialEq)]
 #[serde(rename_all = "camelCase")]
 pub struct FailedDeployment {
-    pub failed_deployments_repo: String,
     pub entity_type: EntityType,
     pub entity_id: String,
+    pub failure_timestamp: u64,
     pub reason: String,
+    pub auth_chain: AuthChain,
     pub error_description: String,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub snapshot_hash: Option<String>,
 }
 
 #[derive(Debug, Deserialize, Eq, PartialEq)]
@@ -179,7 +188,7 @@ impl ContentClient {
 
     /// Returns the list of active entities which have at least one pointer that matches the prefix given
     ///[See on Catalyst API Docs](https://decentraland.github.io/catalyst-api-specs/#tag/Content-Server/operation/getEntitiesByPointerPrefix)
-    pub async fn entities_by_urn<T>(server: &Server, urn: T) -> Result<Vec<EntityData>>
+    pub async fn entities_by_urn<T>(server: &Server, urn: T) -> Result<EntitiesByUrnResponse>
     where
         T: AsRef<str>,
     {
@@ -203,14 +212,18 @@ impl ContentClient {
 
     /// It returns a list of changes with the before field (the entity that was overridden with this deployment) and after (the entity that overrides the current one if present).
     ///[See on Catalyst API Docs](https://decentraland.github.io/catalyst-api-specs/#tag/Content-Server/operation/getPointerChanges)
-    pub async fn changes(server: &Server, parameters: ChangesSearchParameters) -> Result<()> {
-        server
+    pub async fn changes(
+        server: &Server,
+        parameters: ChangesSearchParameters,
+    ) -> Result<ChangesResponse> {
+        println!("/content/pointer-changes/{}", parameters.to_query_string());
+        let result = server
             .get(format!(
                 "/content/pointer-changes/{}",
                 parameters.to_query_string()
             ))
-            .await
-        //Deserialize result
+            .await?;
+        Ok(result)
     }
 
     /// Returns the availability state for all the given ContentIds.
@@ -313,7 +326,7 @@ impl ContentClient {
     /// Returns a snapshot that includes the content ids for the entities available in the snapshot.
     /// [See on Catalyst API Docs](https://decentraland.github.io/catalyst-api-specs/#operation/getActiveEntities)
     pub async fn snapshot(server: &Server) -> Result<Snapshot> {
-        let result = server.get("/content/snapshot").await?;
+        let result = server.get("/content/snapshots").await?;
         Ok(result)
     }
 
@@ -429,7 +442,7 @@ mod tests {
     }
 
     #[test]
-    fn it_deploy() {
+    fn it_deploys() {
         let response = include_str!("../fixtures/deploy_timestamp.json");
 
         let server = MockServer::start();
@@ -451,6 +464,30 @@ mod tests {
     }
 
     #[test]
+    fn it_implement_changes() {
+        let response = include_str!("../fixtures/changes.json");
+        let server = MockServer::start();
+
+        let m = server.mock(|when, then| {
+            when.method(GET).path("/content/pointer-changes/");
+            then.status(200).body(response);
+        });
+
+        let server = Server::new(server.url(""));
+
+        let result = tokio_test::block_on(ContentClient::changes(
+            &server,
+            ChangesSearchParameters::default(),
+        ))
+        .unwrap();
+
+        m.assert();
+
+        let expected: ChangesResponse = serde_json::from_str(response).unwrap();
+        assert_eq!(result, expected);
+    }
+
+    #[test]
     fn it_gets_entities_by_urn() {
         let response = include_str!("../fixtures/entities_by_urn.json");
         let server = MockServer::start();
@@ -468,7 +505,7 @@ mod tests {
 
         m.assert();
 
-        let expected: Vec<EntityData> = serde_json::from_str(response).unwrap();
+        let expected: EntitiesByUrnResponse = serde_json::from_str(response).unwrap();
         assert_eq!(result, expected);
     }
 
@@ -595,7 +632,7 @@ mod tests {
         let server = MockServer::start();
 
         let m = server.mock(|when, then| {
-            when.method(GET).path("/content/snapshot");
+            when.method(GET).path("/content/snapshots");
             then.status(200).body(response);
         });
 
