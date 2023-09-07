@@ -12,7 +12,7 @@ pub struct Entity {
     #[serde(rename(deserialize = "type", serialize = "type"))]
     pub kind: EntityType,
     pub pointers: Vec<String>,
-    pub timestamp: u128,
+    pub timestamp: u64,
     pub content: Vec<ContentFile>,
     #[serde(skip_serializing_if = "Option::is_none")]
     pub metadata: Option<Metadata>,
@@ -214,6 +214,12 @@ impl fmt::Display for EntityId {
 
 #[cfg(test)]
 mod test {
+    use std::str::FromStr;
+
+    use dcl_common::Parcel;
+
+    use crate::scene::SceneParcels;
+
     use super::*;
 
     #[test]
@@ -264,5 +270,45 @@ mod test {
             EntityType::Wearable,
             serde_json::from_str("\"wearable\"").unwrap()
         );
+    }
+
+    #[test]
+    fn entity_deserializes_correctly() {
+        let response = include_str!("../fixtures/entity.json");
+        let entity: Entity = serde_json::from_str(response).unwrap();
+        let expected = Entity {
+            id: EntityId("id".to_string()),
+            version: "v3".to_string(),
+            kind: EntityType::Scene,
+            pointers: vec!["0,0".to_string()],
+            timestamp: 1694091129392,
+            content: vec![ContentFile {
+                filename: PathBuf::from_str("a-file").unwrap(),
+                cid: ContentId::new("a-cid"),
+            }],
+            metadata: Some(Metadata::Scene(Box::new(Scene {
+                menu_bar_icon: None,
+                is_portable_experience: None,
+                main: None,
+                scene: SceneParcels {
+                    base: Parcel(0, 0),
+                    parcels: vec![Parcel(0, 0)],
+                },
+                display: None,
+                owner: None,
+                contact: None,
+                tags: None,
+                source: None,
+                spawn_points: None,
+                required_permissions: None,
+                feature_toggles: None,
+                world_configuration: None,
+                policy: None,
+                allowed_media_hostnames: None,
+                communications: None,
+            }))),
+        };
+
+        assert_eq!(entity, expected);
     }
 }

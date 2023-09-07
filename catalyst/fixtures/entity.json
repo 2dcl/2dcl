@@ -1,0 +1,17 @@
+{
+	"id": "id",
+	"type": "scene",
+	"pointers": ["0,0"],
+	"content": [{
+		"file": "a-file",
+		"hash": "a-cid"
+	}],
+	"version": "v3",
+	"timestamp": 1694091129392,
+	"metadata": {
+		"scene": {
+			"parcels": ["0,0"],
+			"base": "0,0"
+		}
+	}
+}

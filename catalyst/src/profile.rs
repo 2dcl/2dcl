@@ -33,14 +33,14 @@ pub struct Avatar {
     #[serde(skip_serializing_if = "Option::is_none")]
     pub profession: Option<String>,
     #[serde(skip_serializing_if = "Option::is_none")]
-    pub birthdate: Option<String>,
+    pub birthdate: Option<f32>,
     #[serde(skip_serializing_if = "Option::is_none")]
     pub real_name: Option<String>,
     #[serde(skip_serializing_if = "Option::is_none")]
     pub hobbies: Option<String>,
     pub eth_address: String,
-    pub version: String,
-    pub tutorial_step: String,
+    pub version: f32,
+    pub tutorial_step: f32,
     #[serde(skip_serializing_if = "Option::is_none")]
     pub email: Option<String>,
     #[serde(skip_serializing_if = "Option::is_none")]
@@ -96,4 +96,74 @@ pub struct EmoteData {
 pub struct SnapshotsData {
     pub face256: String,
     pub body: String,
+}
+
+#[cfg(test)]
+mod test {
+    use crate::profile::{Avatar, AvatarInfo, Color, ColoredAvatarPart, Profile, SnapshotsData};
+
+    #[test]
+    fn profile_deserializes_correctly() {
+        let response = include_str!("../fixtures/profile.json");
+        let profile: Profile = serde_json::from_str(response).unwrap();
+        let expected = Profile {
+            avatars: vec![Avatar {
+                user_id: "id".to_string(),
+                name: "name".to_string(),
+                description: "description".to_string(),
+                links: None,
+                country: None,
+                employment_status: None,
+                gender: None,
+                pronouns: None,
+                relationship_status: None,
+                sexual_orientation: None,
+                language: None,
+                profession: None,
+                birthdate: None,
+                real_name: None,
+                hobbies: None,
+                eth_address: "address".to_string(),
+                version: 1.,
+                tutorial_step: 1.,
+                email: None,
+                blocked: None,
+                muted: None,
+                interests: None,
+                has_claimed_name: true,
+                avatar: AvatarInfo {
+                    body_shape: "body_shape".to_string(),
+                    eyes: ColoredAvatarPart {
+                        color: Color {
+                            r: 1.,
+                            g: 1.,
+                            b: 1.,
+                        },
+                    },
+                    hair: ColoredAvatarPart {
+                        color: Color {
+                            r: 1.,
+                            g: 1.,
+                            b: 1.,
+                        },
+                    },
+                    skin: ColoredAvatarPart {
+                        color: Color {
+                            r: 1.,
+                            g: 1.,
+                            b: 1.,
+                        },
+                    },
+                    wearables: Vec::default(),
+                    force_render: None,
+                    emotes: None,
+                    snapshots: SnapshotsData {
+                        face256: "face".to_string(),
+                        body: "body".to_string(),
+                    },
+                },
+            }],
+        };
+        assert_eq!(profile, expected);
+    }
 }

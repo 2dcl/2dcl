@@ -14,16 +14,16 @@ pub struct Wearable {
     pub image: String,
     #[serde(skip_serializing_if = "Option::is_none")]
     pub metrics: Option<Metrics>,
-
     #[serde(flatten)]
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub third_party_props: Option<ThirdPartyProps>,
-
-    #[serde(flatten)]
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub standard_props: Option<StandardProps>,
-
+    pub props: Props,
     pub data: WearableData,
+}
+
+#[derive(Debug, Deserialize, Serialize, Clone, PartialEq)]
+#[serde(untagged)]
+pub enum Props {
+    ThirdParty(ThirdPartyProps),
+    Standard(StandardProps),
 }
 
 #[derive(Debug, Deserialize, Serialize, Clone, PartialEq)]

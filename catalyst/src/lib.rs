@@ -23,8 +23,6 @@ pub use entity::EntityType;
 mod content_id;
 pub use content_id::ContentId;
 
-pub mod entity_files;
-
 mod server;
 pub use server::Server;
 

@@ -12,7 +12,7 @@ async fn main() -> Result<()> {
     let scene_files = ContentClient::scene_files_for_parcels(&server, &vec![parcel]).await?;
 
     for scene_file in scene_files {
-        let id = scene_file.id.unwrap();
+        let id = scene_file.id;
         fs::create_dir_all(format!("./tmp/{}", &id))?;
 
         for downloadable in scene_file.content {

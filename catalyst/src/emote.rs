@@ -4,8 +4,7 @@ use serde::Serialize;
 use crate::wearable::BodyShape;
 use crate::wearable::I18n;
 use crate::wearable::Metrics;
-use crate::wearable::StandardProps;
-use crate::wearable::ThirdPartyProps;
+use crate::wearable::Props;
 
 #[derive(Debug, Deserialize, Serialize, Clone, PartialEq)]
 #[serde(rename_all = "camelCase")]
@@ -20,15 +19,9 @@ pub struct Emote {
     pub image: String,
     #[serde(skip_serializing_if = "Option::is_none")]
     pub metrics: Option<Metrics>,
-
     #[serde(flatten)]
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub third_party_props: Option<ThirdPartyProps>,
-
-    #[serde(flatten)]
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub standard_props: Option<StandardProps>,
-
+    pub props: Props,
+    #[serde(rename = "emoteDataADR74")]
     pub emote_data_adr74: EmoteDataADR74,
 }
 
@@ -59,4 +52,39 @@ pub enum EmoteCategory {
     Reactions,
     Horror,
     Miscellaneuos,
+}
+
+#[cfg(test)]
+mod test {
+    use crate::{
+        emote::{Emote, EmoteCategory, EmoteDataADR74},
+        wearable::{Props, Rarity, StandardProps},
+    };
+
+    #[test]
+    fn emote_deserializes_correctly() {
+        let response = include_str!("../fixtures/emote.json");
+        let emote: Emote = serde_json::from_str(response).unwrap();
+        let expected = Emote {
+            menu_bar_icon: None,
+            id: "id".to_string(),
+            name: "name".to_string(),
+            description: "description".to_string(),
+            i18n: Vec::default(),
+            thumbnail: "thumbnail.png".to_string(),
+            image: "image.png".to_string(),
+            metrics: None,
+            props: Props::Standard(StandardProps {
+                collection_address: "address".to_string(),
+                rarity: Rarity::Common,
+            }),
+            emote_data_adr74: EmoteDataADR74 {
+                category: EmoteCategory::Dance,
+                representations: Vec::default(),
+                tags: Vec::default(),
+                it_loops: true,
+            },
+        };
+        assert_eq!(emote, expected);
+    }
 }

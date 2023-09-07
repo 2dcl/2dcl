@@ -8,7 +8,6 @@ use std::io::Write;
 use std::path::Path;
 
 use crate::deployment::Deployment;
-use crate::entity_files::SceneFile;
 use crate::entity_information::EntityInformation;
 use crate::snapshot::{EntitySnapshot, Snapshot};
 use crate::status::ContentServerStatus;
@@ -283,9 +282,9 @@ impl ContentClient {
     pub async fn scene_files_for_parcels(
         server: &Server,
         parcels: &Vec<Parcel>,
-    ) -> Result<Vec<SceneFile>> {
+    ) -> Result<Vec<Entity>> {
         let pointers = ParcelPointer { pointers: parcels };
-        let result: Vec<SceneFile> = server.post("/content/entities/active", &pointers).await?;
+        let result: Vec<Entity> = server.post("/content/entities/active", &pointers).await?;
         Ok(result)
     }
 
@@ -363,13 +362,13 @@ mod tests {
         let server = Server::new(server.url(""));
 
         let parcels = vec![Parcel(0, 0)];
-        let result: Vec<SceneFile> =
+        let result: Vec<Entity> =
             tokio_test::block_on(ContentClient::scene_files_for_parcels(&server, &parcels))
                 .unwrap();
 
         m.assert();
 
-        let expected: Vec<SceneFile> = serde_json::from_str(response).unwrap();
+        let expected: Vec<Entity> = serde_json::from_str(response).unwrap();
         assert_eq!(result, expected);
     }
 

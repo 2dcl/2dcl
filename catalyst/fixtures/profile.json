@@ -1,0 +1,43 @@
+{
+	"avatars": [{
+		"hasClaimedName": true,
+		"description": "description",
+		"tutorialStep": 1,
+		"userId": "id",
+		"version": 1,
+		"ethAddress": "address",
+		"name": "name",
+		"avatar": {
+			"bodyShape": "body_shape",
+			"wearables": [],
+			"snapshots": {
+				"body": "body",
+				"face256": "face"
+			},
+			"eyes": {
+				"color": {
+					"r": 1,
+					"g": 1,
+					"b": 1,
+					"a": 1
+				}
+			},
+			"hair": {
+				"color": {
+					"r": 1,
+					"g": 1,
+					"b": 1,
+					"a": 1
+				}
+			},
+			"skin": {
+				"color": {
+					"r": 1,
+					"g": 1,
+					"b": 1,
+					"a": 1
+				}
+			}
+		}
+	}]
+}

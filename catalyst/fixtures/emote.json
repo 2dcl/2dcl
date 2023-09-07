@@ -1,0 +1,16 @@
+{
+	"id": "id",
+	"name": "name",
+	"description": "description",
+	"collectionAddress": "address",
+	"rarity": "common",
+	"i18n": [],
+	"emoteDataADR74": {
+		"category": "dance",
+		"representations": [],
+		"tags": [],
+		"loop": true
+	},
+	"image": "image.png",
+	"thumbnail": "thumbnail.png"
+}

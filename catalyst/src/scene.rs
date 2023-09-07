@@ -296,3 +296,38 @@ pub struct CameraTarget {
     pub y: i16,
     pub z: i16,
 }
+
+#[cfg(test)]
+mod test {
+    use dcl_common::Parcel;
+
+    use crate::scene::{Scene, SceneParcels};
+
+    #[test]
+    fn scene_deserializes_correctly() {
+        let response = include_str!("../fixtures/scene.json");
+        let scene: Scene = serde_json::from_str(response).unwrap();
+        let expected = Scene {
+            menu_bar_icon: None,
+            is_portable_experience: None,
+            main: None,
+            scene: SceneParcels {
+                base: Parcel(0, 0),
+                parcels: vec![Parcel(0, 0)],
+            },
+            display: None,
+            owner: None,
+            contact: None,
+            tags: None,
+            source: None,
+            spawn_points: None,
+            required_permissions: None,
+            feature_toggles: None,
+            world_configuration: None,
+            policy: None,
+            allowed_media_hostnames: None,
+            communications: None,
+        };
+        assert_eq!(scene, expected);
+    }
+}
