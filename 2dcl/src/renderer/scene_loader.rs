@@ -365,7 +365,7 @@ pub async fn get_newest_scene_files_for_parcels(
     let mut parcels_to_download: Vec<Parcel> = Vec::new();
 
     let server = Server::production();
-    let scene_files = ContentClient::scene_files_for_parcels(&server, &parcels).await?;
+    let scene_files = ContentClient::scene_entities_for_parcels(&server, &parcels).await?;
     for scene_file in scene_files {
         let id_str = match &scene_file.id {
             Some(id) => id.to_string(),
@@ -447,7 +447,7 @@ pub async fn get_newest_scene_files_for_parcels(
 pub async fn download_level_spawn_point(parcel: &Parcel, level_id: usize) -> Vec3 {
     let server = Server::production();
     let scene_files =
-        match ContentClient::scene_files_for_parcels(&server, &vec![parcel.clone()]).await {
+        match ContentClient::scene_entities_for_parcels(&server, &vec![parcel.clone()]).await {
             Ok(v) => v,
             Err(_) => {
                 let scene_data = SceneData { ..default() };

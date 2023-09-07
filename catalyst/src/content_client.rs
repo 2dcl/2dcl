@@ -20,8 +20,23 @@ use dcl_common::{Parcel, Result};
 pub struct ContentClient {}
 
 #[derive(Serialize)]
-struct ParcelPointer<'a> {
-    pointers: &'a Vec<Parcel>,
+pub struct Pointers {
+    pub pointers: Vec<String>,
+}
+
+impl Pointers {
+    pub fn from_parcels(parcels: &Vec<Parcel>) -> Self {
+        let mut pointers = Vec::default();
+        for parcel in parcels {
+            pointers.push(format!("{},{}", parcel.0, parcel.1));
+        }
+        Pointers { pointers }
+    }
+}
+
+#[derive(Serialize)]
+pub struct Ids {
+    pub ids: Vec<String>,
 }
 
 #[derive(Debug, Deserialize, Eq, PartialEq)]
@@ -277,14 +292,31 @@ impl ContentClient {
         Ok(result)
     }
 
-    /// Returns the scene content files for all the scenes that own the given `parcels`.
+    /// Returns the entities for all the given `pointers`.
     /// [See on Catalyst API Docs](https://decentraland.github.io/catalyst-api-specs/#operation/getListOfEntities)
-    pub async fn scene_files_for_parcels(
+    pub async fn entities_for_pointers(
+        server: &Server,
+        pointers: &Pointers,
+    ) -> Result<Vec<Entity>> {
+        let result: Vec<Entity> = server.post("/content/entities/active", pointers).await?;
+        Ok(result)
+    }
+
+    /// Returns the entities for all the given `ids`.
+    /// [See on Catalyst API Docs](https://decentraland.github.io/catalyst-api-specs/#operation/getListOfEntities)
+    pub async fn entities_for_ids(server: &Server, ids: &Ids) -> Result<Vec<Entity>> {
+        let result: Vec<Entity> = server.post("/content/entities/active", ids).await?;
+        Ok(result)
+    }
+
+    /// Returns the scene entities for all the scenes that own the given `parcels`.
+    /// [See on Catalyst API Docs](https://decentraland.github.io/catalyst-api-specs/#operation/getListOfEntities)
+    pub async fn scene_entities_for_parcels(
         server: &Server,
         parcels: &Vec<Parcel>,
     ) -> Result<Vec<Entity>> {
-        let pointers = ParcelPointer { pointers: parcels };
-        let result: Vec<Entity> = server.post("/content/entities/active", &pointers).await?;
+        let pointers = Pointers::from_parcels(parcels);
+        let result: Vec<Entity> = Self::entities_for_pointers(server, &pointers).await?;
         Ok(result)
     }
 
@@ -348,7 +380,57 @@ mod tests {
     use tempdir::TempDir;
 
     #[test]
-    fn it_gets_scene_files_from_parcels() {
+    fn it_gets_entities_from_ids() {
+        let response = include_str!("../fixtures/scenes_from_parcels.json");
+        let server = MockServer::start();
+
+        let m = server.mock(|when, then| {
+            when.method(POST)
+                .path("/content/entities/active")
+                .body_contains("{\"ids\":[\"id\"]}");
+            then.status(200).body(response);
+        });
+
+        let server = Server::new(server.url(""));
+        let ids = Ids {
+            ids: vec!["id".to_string()],
+        };
+        let result: Vec<Entity> =
+            tokio_test::block_on(ContentClient::entities_for_ids(&server, &ids)).unwrap();
+
+        m.assert();
+
+        let expected: Vec<Entity> = serde_json::from_str(response).unwrap();
+        assert_eq!(result, expected);
+    }
+
+    #[test]
+    fn it_gets_entities_from_pointers() {
+        let response = include_str!("../fixtures/scenes_from_parcels.json");
+        let server = MockServer::start();
+
+        let m = server.mock(|when, then| {
+            when.method(POST)
+                .path("/content/entities/active")
+                .body_contains("{\"pointers\":[\"a-pointer\"]}");
+            then.status(200).body(response);
+        });
+
+        let server = Server::new(server.url(""));
+        let pointers = Pointers {
+            pointers: vec!["a-pointer".to_string()],
+        };
+        let result: Vec<Entity> =
+            tokio_test::block_on(ContentClient::entities_for_pointers(&server, &pointers)).unwrap();
+
+        m.assert();
+
+        let expected: Vec<Entity> = serde_json::from_str(response).unwrap();
+        assert_eq!(result, expected);
+    }
+
+    #[test]
+    fn it_gets_entities_from_parcels() {
         let response = include_str!("../fixtures/scenes_from_parcels.json");
         let server = MockServer::start();
 
@@ -363,7 +445,7 @@ mod tests {
 
         let parcels = vec![Parcel(0, 0)];
         let result: Vec<Entity> =
-            tokio_test::block_on(ContentClient::scene_files_for_parcels(&server, &parcels))
+            tokio_test::block_on(ContentClient::scene_entities_for_parcels(&server, &parcels))
                 .unwrap();
 
         m.assert();

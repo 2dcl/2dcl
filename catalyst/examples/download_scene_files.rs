@@ -9,7 +9,7 @@ async fn main() -> Result<()> {
 
     // We will download the assets for the Genesis Plaza,
     let parcel = Parcel(0, 0);
-    let scene_files = ContentClient::scene_files_for_parcels(&server, &vec![parcel]).await?;
+    let scene_files = ContentClient::scene_entities_for_parcels(&server, &vec![parcel]).await?;
 
     for scene_file in scene_files {
         let id = scene_file.id;

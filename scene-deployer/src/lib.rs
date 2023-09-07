@@ -40,7 +40,7 @@ pub async fn deploy(
             }
 
             let scene_files =
-                catalyst::ContentClient::scene_files_for_parcels(&server, &scene_3d.scene.parcels)
+                catalyst::ContentClient::scene_entities_for_parcels(&server, &scene_3d.scene.parcels)
                     .await?;
             if !scene_files.is_empty()
                 && (scene_files.len() > 1 || scene_files[0].pointers != entity.pointers)
