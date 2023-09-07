@@ -1,5 +1,6 @@
+use crate::entity::{EntityId, EntityType};
 use crate::entity_information::AuthChain;
-use crate::{ContentId, EntityId, EntityType};
+use crate::ContentId;
 use serde::Deserialize;
 
 #[derive(Debug, Deserialize, Eq, PartialEq)]

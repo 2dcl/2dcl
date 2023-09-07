@@ -8,6 +8,7 @@ use std::io::Write;
 use std::path::Path;
 
 use crate::deployment::Deployment;
+use crate::entity::{Entity, EntityId, EntityType};
 use crate::entity_information::EntityInformation;
 use crate::snapshot::{EntitySnapshot, Snapshot};
 use crate::status::ContentServerStatus;

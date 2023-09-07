@@ -2,9 +2,9 @@ use dcl_crypto::AuthChain;
 use serde::Deserialize;
 use serde::Serialize;
 
+use crate::entity::EntityId;
+use crate::entity::EntityType;
 use crate::entity::Metadata;
-use crate::EntityId;
-use crate::EntityType;
 
 #[derive(Debug, Deserialize, Serialize, Clone, PartialEq)]
 #[serde(rename_all = "camelCase")]
