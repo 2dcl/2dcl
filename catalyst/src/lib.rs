@@ -14,11 +14,11 @@ pub use archipelago_client::*;
 
 pub mod deployment;
 pub mod emote;
+pub mod entity;
 pub mod island;
 pub mod profile;
 pub mod scene;
 pub mod wearable;
-pub mod entity;
 
 mod content_id;
 pub use content_id::ContentId;

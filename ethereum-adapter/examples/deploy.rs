@@ -42,7 +42,8 @@ async fn main() -> Result<()> {
 
     let parcels = scene.parcels;
 
-    let scene_files = catalyst::ContentClient::scene_entities_for_parcels(&server, &parcels).await?;
+    let scene_files =
+        catalyst::ContentClient::scene_entities_for_parcels(&server, &parcels).await?;
 
     // Create list of files to deploy
     let mut files: HashMap<String, Vec<u8>> = HashMap::default();

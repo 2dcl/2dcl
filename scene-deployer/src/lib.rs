@@ -7,10 +7,7 @@ use std::{
     time::{SystemTime, UNIX_EPOCH},
 };
 
-use catalyst::{
-    entity_files::{ContentFile, SceneFile},
-    ContentId, EntityId, EntityType,
-};
+use catalyst::{ContentFile, ContentId, Entity, EntityId, EntityType};
 use cid::{multihash::MultihashDigest, Cid};
 use dcl_common::{Parcel, Result};
 use dcl_crypto::{AuthChain, AuthLink};
@@ -39,9 +36,11 @@ pub async fn deploy(
                 }) as Box<dyn Error>);
             }
 
-            let scene_files =
-                catalyst::ContentClient::scene_entities_for_parcels(&server, &scene_3d.scene.parcels)
-                    .await?;
+            let scene_files = catalyst::ContentClient::scene_entities_for_parcels(
+                &server,
+                &scene_3d.scene.parcels,
+            )
+            .await?;
             if !scene_files.is_empty()
                 && (scene_files.len() > 1 || scene_files[0].pointers != entity.pointers)
             {
@@ -151,9 +150,9 @@ fn get_cid(content: &[u8]) -> String {
 pub fn build_entity_scene(
     pointers: Vec<String>,
     files: HashMap<String, Vec<u8>>,
-    scene_file: &SceneFile,
+    entity: &Entity,
 ) -> (Vec<FileData>, EntityId) {
-    let mut content = scene_file.content.clone();
+    let mut content = entity.content.clone();
     let mut files_data = Vec::default();
 
     for i in (0..content.len()).rev() {
@@ -188,14 +187,14 @@ pub fn build_entity_scene(
         .duration_since(UNIX_EPOCH)
         .unwrap()
         .as_millis();
-    let mut entity = SceneFile {
-        id: None,
+    let mut entity = Entity {
+        id: EntityId(String::default()),
         version: "v3".to_string(),
         kind: EntityType::Scene,
         pointers,
         timestamp,
         content,
-        metadata: scene_file.metadata.clone(),
+        metadata: entity.metadata.clone(),
     };
 
     let entity_file = serde_json::to_string(&entity).unwrap();
