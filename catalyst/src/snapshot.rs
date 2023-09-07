@@ -6,7 +6,7 @@ use serde::Deserialize;
 #[serde(rename_all = "camelCase")]
 pub struct Snapshot {
     pub hash: ContentId,
-    pub last_included_deployment_timestamp: u64, // TODO(fran): use chrono?
+    pub last_included_deployment_timestamp: u128, // TODO(fran): use chrono?
     pub entities: EntitySnapshots,
 }
 
@@ -23,7 +23,7 @@ pub struct EntitySnapshots {
 #[serde(rename_all = "camelCase")]
 pub struct EntityTypeSnapshot {
     pub hash: ContentId,
-    pub last_included_deployment_timestamp: u64, // TODO(fran): use chrono?
+    pub last_included_deployment_timestamp: u128, // TODO(fran): use chrono?
 }
 
 #[derive(Debug, Deserialize)]
@@ -32,7 +32,7 @@ pub struct EntitySnapshot<T> {
     pub entity_id: EntityId,
     pub entity_type: EntityType,
     pub pointers: Vec<T>,
-    pub local_timestamp: u64, // TODO(fran): use chrono?
+    pub local_timestamp: u128, // TODO(fran): use chrono?
     pub auth_chain: Vec<AuthChain>,
 }
 

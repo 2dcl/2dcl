@@ -12,7 +12,7 @@ pub struct Entity {
     #[serde(rename(deserialize = "type", serialize = "type"))]
     pub kind: EntityType,
     pub pointers: Vec<String>,
-    pub timestamp: u64,
+    pub timestamp: u128,
     pub content: Vec<ContentFile>,
     #[serde(skip_serializing_if = "Option::is_none")]
     pub metadata: Option<Metadata>,

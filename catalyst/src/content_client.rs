@@ -48,7 +48,7 @@ pub struct Challenge {
 #[derive(Debug, Deserialize, Eq, PartialEq)]
 #[serde(rename_all = "camelCase")]
 pub struct DeployResponse {
-    pub creation_timestamp: u64,
+    pub creation_timestamp: u128,
 }
 
 #[derive(Debug, Deserialize, PartialEq)]
@@ -69,7 +69,7 @@ pub struct ChangesResponse {
 pub struct FailedDeployment {
     pub entity_type: EntityType,
     pub entity_id: String,
-    pub failure_timestamp: u64,
+    pub failure_timestamp: u128,
     pub reason: String,
     pub auth_chain: AuthChain,
     pub error_description: String,

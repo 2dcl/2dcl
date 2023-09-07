@@ -4,7 +4,7 @@ use serde::Deserialize;
 #[serde(rename_all = "camelCase")]
 pub struct EntityInformation {
     pub version: String,
-    pub local_timestamp: u64, // TODO(fran): use chrono?
+    pub local_timestamp: u128, // TODO(fran): use chrono?
     pub auth_chain: Vec<AuthChain>,
 }
 

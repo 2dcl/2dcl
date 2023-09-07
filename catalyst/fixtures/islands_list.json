@@ -1,0 +1,31 @@
+{
+    "ok": true,
+    "islands": [
+        {
+            "id": "id",
+            "maxPeers": 100,
+            "center": [
+                0,
+                0,
+                0
+            ],
+            "radius": 0,
+            "peers": [
+                {
+                    "id": "0x5d30d01e92fcfde549042e25fe78c65bfd4789cc",
+                    "address": "0x5d30d01e92fcfde549042e25fe78c65bfd4789cc",
+                    "lastPing": 1694119904797,
+                    "parcel": [
+                        0,
+                        0
+                    ],
+                    "position": [
+                        0,
+                        0,
+                        0
+                    ]
+                }
+            ]
+        }
+    ]
+}
