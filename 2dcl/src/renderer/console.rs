@@ -1,8 +1,9 @@
 use bevy::prelude::*;
 use bevy_console::{reply, AddConsoleCommand, ConsoleCommand, ConsolePlugin};
 use clap::Parser;
-use dcl_common::Parcel;
+use dcl_common::{Parcel, Result};
 
+use crate::content_discovery::find_2d_scenes_str;
 use crate::renderer::scene_loader::get_parcel_spawn_point;
 
 use super::player::update_player_scale;
@@ -18,6 +19,7 @@ impl Plugin for MyConsolePlugin {
         app.add_plugins(ConsolePlugin)
             .add_console_command::<TeleportCommand, _>(teleport_command)
             .add_console_command::<ReloadConfig, _>(reload_config)
+            .add_console_command::<DiscoverCommand, _>(discover_command)
             .add_console_command::<WhereCommand, _>(where_command);
     }
 }
@@ -35,9 +37,32 @@ struct TeleportCommand {
 #[command(name = "where")]
 struct WhereCommand;
 
+/// Prints the current parcel
+#[derive(Parser, ConsoleCommand)]
+#[command(name = "discover")]
+struct DiscoverCommand;
+
 #[derive(Parser, ConsoleCommand)]
 #[command(name = "reload")]
 struct ReloadConfig;
+
+fn discover_command(mut discover_cmd: ConsoleCommand<DiscoverCommand>) {
+    if discover_cmd.take().is_some() {
+        match get_2d_scenes_str() {
+            Ok(scenes) => {
+                reply!(discover_cmd, "{}", scenes);
+            }
+            Err(err) => {
+                reply!(discover_cmd, "{}", err);
+            }
+        }
+    }
+}
+
+#[tokio::main]
+async fn get_2d_scenes_str() -> Result<String> {
+    find_2d_scenes_str().await
+}
 
 fn where_command(
     mut where_cmd: ConsoleCommand<WhereCommand>,
