@@ -1,9 +1,9 @@
 use crate::*;
 use dcl_common::Result;
 use serde::Deserialize;
-use std::path::Path;
 use std::fs::File;
 use std::io::Write;
+use std::path::Path;
 
 #[derive(Debug, Deserialize, Eq, PartialEq)]
 pub struct CollectionsResponse {
@@ -15,6 +15,60 @@ pub struct CollectionData {
     pub id: String,
     pub name: String,
 }
+
+#[derive(Debug, Deserialize, Eq, PartialEq)]
+pub struct Erc721Entity {
+    pub id: String,
+    pub name: String,
+    pub description: String,
+    pub language: String,
+    pub image: String,
+    pub thumbnail: String,
+    pub attributes: Vec<Erc721Attribute>,
+}
+
+#[derive(Debug, Deserialize, Eq, PartialEq)]
+pub struct Erc721Attribute {
+    pub trait_type: String,
+    pub value: String,
+}
+
+#[derive(Debug, Deserialize, PartialEq)]
+#[serde(rename_all = "camelCase")]
+pub struct Items {
+    pub total_amount: u16,
+    pub page_num: u16,
+    pub page_size: u16,
+    pub elements: Vec<Element>,
+}
+
+#[derive(Debug, Deserialize, PartialEq)]
+#[serde(rename_all = "camelCase")]
+pub struct Element {
+    pub urn: String,
+    pub name: String,
+    pub category: ItemCategory,
+    pub rarity: Rarity,
+    pub amount: u16,
+    pub individual_data: Vec<IndividualData>,
+}
+
+#[derive(Debug, Deserialize, PartialEq)]
+#[serde(rename_all = "camelCase")]
+pub struct IndividualData {
+    pub id: String,
+    pub token_id: String,
+    pub transferred_at: String,
+    pub price: String,
+}
+
+#[derive(Debug, Deserialize, Clone, PartialEq)]
+#[serde(untagged)]
+pub enum ItemCategory {
+    Wearable(WearableCategory),
+    Emote(EmoteCategory),
+}
+
 /// `LambdaClient` implements all the request to interact with [Catalyst Lambda](https://decentraland.github.io/catalyst-api-specs/#tag/Lambdas).
 ///
 #[derive(Default)]
@@ -32,14 +86,21 @@ impl LambdaClient {
         Ok(collections)
     }
 
-    /// Implements [`/lambdas/collections/contents/{urn}/thumbnail`](https://decentraland.github.io/catalyst-api-specs/#tag/    
-    pub async fn collection_thumbnail<V, T>(server: &Server, urn: T, filename: V) -> Result<()>
+    /// Implements [`/lambdas/collections/contents/{urn}/thumbnail`](https://decentraland.github.io/catalyst-api-specs/#tag/Lambdas/operation/getThumbnail)
+    pub async fn download_collection_thumbnail<V, T>(
+        server: &Server,
+        urn: T,
+        filename: V,
+    ) -> Result<()>
     where
         V: AsRef<Path>,
         T: AsRef<str>,
     {
         let response = server
-            .raw_get(format!("/lambdas/collections/{}/thumbnail", urn.as_ref()))
+            .raw_get(format!(
+                "/lambdas/collections/contents/{}/thumbnail",
+                urn.as_ref()
+            ))
             .await?;
         if let Some(parent) = filename.as_ref().parent() {
             std::fs::create_dir_all(parent)?;
@@ -48,6 +109,79 @@ impl LambdaClient {
         let content = response.bytes().await?;
         dest.write_all(&content)?;
         Ok(())
+    }
+
+    /// Implements [`/lambdas/collections/contents/{urn}/image`](https://decentraland.github.io/catalyst-api-specs/#tag/Lambdas/operation/getImage)
+    pub async fn download_collection_image<V, T>(server: &Server, urn: T, filename: V) -> Result<()>
+    where
+        V: AsRef<Path>,
+        T: AsRef<str>,
+    {
+        let response = server
+            .raw_get(format!(
+                "/lambdas/collections/contents/{}/image",
+                urn.as_ref()
+            ))
+            .await?;
+        if let Some(parent) = filename.as_ref().parent() {
+            std::fs::create_dir_all(parent)?;
+        }
+        let mut dest = File::create(filename)?;
+        let content = response.bytes().await?;
+        dest.write_all(&content)?;
+        Ok(())
+    }
+
+    /// Implements [`/lambdas/collections/standard/erc721/{chainId}/{contract}/{option}/{emission}`](https://decentraland.github.io/catalyst-api-specs/#tag/Lambdas/operation/getStandardErc721)
+    pub async fn erc721_entity<W, X, Y>(
+        server: &Server,
+        chain_id: W,
+        contract_hash: X,
+        token_identifier: Y,
+        rarity: Option<Rarity>,
+    ) -> Result<Erc721Entity>
+    where
+        W: AsRef<str>,
+        X: AsRef<str>,
+        Y: AsRef<str>,
+    {
+        let rarity = match rarity {
+            Some(rarity) => format!("{}", rarity),
+            None => String::default(),
+        };
+
+        let collections = server
+            .get(format!(
+                "/lambdas/collections/standard/erc721/{}/{}/{}/{}",
+                chain_id.as_ref(),
+                contract_hash.as_ref(),
+                token_identifier.as_ref(),
+                rarity
+            ))
+            .await?;
+        Ok(collections)
+    }
+
+    /// Implements [`/lambdas/users/{address}/wearables`](https://decentraland.github.io/catalyst-api-specs/#tag/Lambdas/operation/getWearables)
+    pub async fn wearables_for_address<T>(server: &Server, address: T) -> Result<Items>
+    where
+        T: AsRef<str>,
+    {
+        let response = server
+            .get(format!("/lambdas/users/{}/wearables", address.as_ref()))
+            .await?;
+        Ok(response)
+    }
+
+    /// Implements [`/lambdas/users/{address}/emotes`](https://decentraland.github.io/catalyst-api-specs/#tag/Lambdas/operation/getEmotes)
+    pub async fn emotes_for_address<T>(server: &Server, address: T) -> Result<Items>
+    where
+        T: AsRef<str>,
+    {
+        let response = server
+            .get(format!("/lambdas/users/{}/emotes", address.as_ref()))
+            .await?;
+        Ok(response)
     }
 
     /*    /// Implements [`/lambda/contracts/servers`](https://decentraland.github.io/catalyst-api-specs/#operation/getServers)
@@ -152,16 +286,16 @@ mod tests {
         let server = MockServer::start();
 
         let m = server.mock(|when, then| {
-            when.path("/lambdas/collections/a-urn/thumbnail");
+            when.path("/lambdas/collections/contents/a-urn/thumbnail");
             then.status(200).body(response);
         });
 
         let server = Server::new(server.url(""));
 
-        let tmp_dir = TempDir::new("content-client-test").unwrap();
+        let tmp_dir = TempDir::new("lambda-client-test").unwrap();
         let filename = tmp_dir.path().join("thumbnail.png");
 
-        tokio_test::block_on(LambdaClient::collection_thumbnail(
+        tokio_test::block_on(LambdaClient::download_collection_thumbnail(
             &server,
             &"a-urn".to_string(),
             filename.clone(),
@@ -170,7 +304,116 @@ mod tests {
 
         m.assert();
 
-        assert_eq!(std::fs::read_to_string(filename).unwrap(), "Collection thumbnail");
+        assert_eq!(
+            std::fs::read_to_string(filename).unwrap(),
+            "Collection thumbnail"
+        );
+    }
+
+    #[test]
+    fn it_downloads_collections_image() {
+        let response = "Collection image";
+
+        let server = MockServer::start();
+
+        let m = server.mock(|when, then| {
+            when.path("/lambdas/collections/contents/a-urn/image");
+            then.status(200).body(response);
+        });
+
+        let server = Server::new(server.url(""));
+
+        let tmp_dir = TempDir::new("lambda-client-test").unwrap();
+        let filename = tmp_dir.path().join("image.png");
+
+        tokio_test::block_on(LambdaClient::download_collection_image(
+            &server,
+            &"a-urn".to_string(),
+            filename.clone(),
+        ))
+        .unwrap();
+
+        m.assert();
+
+        assert_eq!(
+            std::fs::read_to_string(filename).unwrap(),
+            "Collection image"
+        );
+    }
+
+    #[test]
+    fn it_gets_erc721_entities() {
+        let response = include_str!("../fixtures/erc721_entity.json");
+
+        let server = MockServer::start();
+
+        let m = server.mock(|when, then| {
+            when.method(GET).path(
+                "/lambdas/collections/standard/erc721/chain_id/contract_hash/token_identifier/",
+            );
+            then.status(200).body(response);
+        });
+
+        let server = Server::new(server.url(""));
+
+        let result = tokio_test::block_on(LambdaClient::erc721_entity(
+            &server,
+            "chain_id",
+            "contract_hash",
+            "token_identifier",
+            None,
+        ))
+        .unwrap();
+
+        m.assert();
+
+        let expected: Erc721Entity = serde_json::from_str(response).unwrap();
+        assert_eq!(result, expected);
+    }
+
+    #[test]
+    fn it_implements_wearables_for_address() {
+        let response = include_str!("../fixtures/wearables_for_address.json");
+
+        let server = MockServer::start();
+
+        let m = server.mock(|when, then| {
+            when.method(GET).path("/lambdas/users/an-address/wearables");
+            then.status(200).body(response);
+        });
+
+        let server = Server::new(server.url(""));
+
+        let result =
+            tokio_test::block_on(LambdaClient::wearables_for_address(&server, "an-address"))
+                .unwrap();
+
+        m.assert();
+
+        let expected: Items = serde_json::from_str(response).unwrap();
+        assert_eq!(result, expected);
+    }
+
+    #[test]
+    fn it_implements_emotes_for_address() {
+        let response = include_str!("../fixtures/emotes_for_address.json");
+
+        let server = MockServer::start();
+
+        let m = server.mock(|when, then| {
+            when.method(GET).path("/lambdas/users/an-address/emotes");
+            then.status(200).body(response);
+        });
+
+        let server = Server::new(server.url(""));
+
+        let result =
+            tokio_test::block_on(LambdaClient::emotes_for_address(&server, "an-address")).unwrap();
+
+        m.assert();
+
+        let expected: Items = serde_json::from_str(response).unwrap();
+        assert_eq!(result, expected);
     }
     /*
 

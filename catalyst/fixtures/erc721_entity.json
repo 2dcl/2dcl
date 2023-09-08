@@ -1,0 +1,18 @@
+{
+    "id": "urn:decentraland:matic:collections-v2:0x123db7844eaf7da11d88cf1754945bbd020742ef:3",
+    "name": "4Skin Libre Upper Body",
+    "description": "DCL Wearable legendary/100",
+    "language": "en-US",
+    "image": "https://peer-ec2.decentraland.org/content/contents/Qmbcs6tGSYtikJB3d5QEWP3uKD9XXnrUfsrYDzL3kVaAee",
+    "thumbnail": "https://peer-ec2.decentraland.org/content/contents/QmW1JmHYXZLRqpzTMmA6MZKi6AFNeYpWRGTqr7pgoyeG11",
+    "attributes": [
+        {
+            "trait_type": "Rarity",
+            "value": "legendary"
+        },
+        {
+            "trait_type": "Category",
+            "value": "upper_body"
+        }
+    ]
+}

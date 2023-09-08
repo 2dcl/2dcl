@@ -142,6 +142,20 @@ pub enum Rarity {
     Common,
 }
 
+impl std::fmt::Display for Rarity {
+    fn fmt(&self, f: &mut std::fmt::Formatter) -> std::fmt::Result {
+        match self {
+            Rarity::Unique => write!(f, "unique"),
+            Rarity::Mythic => write!(f, "mythic"),
+            Rarity::Legendary => write!(f, "legendary"),
+            Rarity::Epic => write!(f, "epic"),
+            Rarity::Rare => write!(f, "rare"),
+            Rarity::Uncommon => write!(f, "uncommon"),
+            Rarity::Common => write!(f, "common"),
+        }
+    }
+}
+
 #[derive(Debug, Deserialize, Serialize, Clone, PartialEq)]
 pub struct I18n {
     pub code: String,
