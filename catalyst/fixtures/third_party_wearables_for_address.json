@@ -1,0 +1,124 @@
+{
+    "elements": [
+        {
+            "urn": "urn:decentraland:matic:collections-thirdparty:ntr1-meta:ntr1-meta-1ef79e7b:98ac122c-523f-403f-9730-f09c992f386f",
+            "individualData": [
+                {
+                    "id": "ntr1-meta-1ef79e7b:98ac122c-523f-403f-9730-f09c992f386f"
+                }
+            ],
+            "amount": 1,
+            "name": "Decentraland Sneakers",
+            "category": "feet",
+            "entity": {
+                "version": "v3",
+                "id": "bafkreighvcitibubnnzg56s7xpjagod5t3xojyxt6fp2alqow422tycaky",
+                "type": "wearable",
+                "pointers": [
+                    "urn:decentraland:matic:collections-thirdparty:ntr1-meta:ntr1-meta-1ef79e7b:98ac122c-523f-403f-9730-f09c992f386f"
+                ],
+                "timestamp": 1655829699383,
+                "content": [
+                    {
+                        "file": "female/all_dapp_decentraland_shoes.glb",
+                        "hash": "bafybeib54g2tdus4czqdzffjcxdx34czorlhgoeaov7lluku2inni3a6fe"
+                    },
+                    {
+                        "file": "image.png",
+                        "hash": "bafkreihhgwzaqzzo42hgcmd6xbjjzk2azc4zk5yusgpaj6bwjbxd4nn4yu"
+                    },
+                    {
+                        "file": "male/all_dapp_decentraland_shoes.glb",
+                        "hash": "bafybeib54g2tdus4czqdzffjcxdx34czorlhgoeaov7lluku2inni3a6fe"
+                    },
+                    {
+                        "file": "thumbnail.png",
+                        "hash": "bafybeiczmvaig5vylxa6spko2z6is4tysevm6533c3kpa75fzdxpdscx4i"
+                    }
+                ],
+                "metadata": {
+                    "id": "urn:decentraland:matic:collections-thirdparty:ntr1-meta:ntr1-meta-1ef79e7b:98ac122c-523f-403f-9730-f09c992f386f",
+                    "name": "Decentraland Sneakers",
+                    "description": "The Decentraland NTR1-META phygital sneakers.",
+                    "i18n": [
+                        {
+                            "code": "en",
+                            "text": "Decentraland Sneakers"
+                        }
+                    ],
+                    "data": {
+                        "replaces": [],
+                        "hides": [],
+                        "tags": [],
+                        "category": "feet",
+                        "representations": [
+                            {
+                                "bodyShapes": [
+                                    "urn:decentraland:off-chain:base-avatars:BaseMale"
+                                ],
+                                "mainFile": "male/all_dapp_decentraland_shoes.glb",
+                                "contents": [
+                                    "male/all_dapp_decentraland_shoes.glb"
+                                ],
+                                "overrideHides": [],
+                                "overrideReplaces": []
+                            },
+                            {
+                                "bodyShapes": [
+                                    "urn:decentraland:off-chain:base-avatars:BaseFemale"
+                                ],
+                                "mainFile": "female/all_dapp_decentraland_shoes.glb",
+                                "contents": [
+                                    "female/all_dapp_decentraland_shoes.glb"
+                                ],
+                                "overrideHides": [],
+                                "overrideReplaces": []
+                            }
+                        ]
+                    },
+                    "image": "image.png",
+                    "thumbnail": "thumbnail.png",
+                    "metrics": {
+                        "triangles": 1120,
+                        "materials": 3,
+                        "textures": 3,
+                        "meshes": 3,
+                        "bodies": 3,
+                        "entities": 1
+                    },
+                    "content": {
+                        "thumbnail.png": "bafybeiczmvaig5vylxa6spko2z6is4tysevm6533c3kpa75fzdxpdscx4i",
+                        "male/all_dapp_decentraland_shoes.glb": "bafybeib54g2tdus4czqdzffjcxdx34czorlhgoeaov7lluku2inni3a6fe",
+                        "female/all_dapp_decentraland_shoes.glb": "bafybeib54g2tdus4czqdzffjcxdx34czorlhgoeaov7lluku2inni3a6fe",
+                        "image.png": "bafkreihhgwzaqzzo42hgcmd6xbjjzk2azc4zk5yusgpaj6bwjbxd4nn4yu"
+                    },
+                    "merkleProof": {
+                        "index": 17,
+                        "proof": [
+                            "0x798f2b94abd467e57fb7ddca293347c48d75df572e6fad480af95808e8be0610",
+                            "0x4a907192ab66787eaeda042b2247477ef6f564c7f065b5f9afd044749f206a9b",
+                            "0x1b1aaef5ad736580c93da8362103504fa26eabfe91199920398e01e5d33f09a7",
+                            "0x02de24982849f29de3019cc6ba471f4231fa8c1d3a7de2973838795f59bdf868",
+                            "0xec768112861252de30fca8d0be78f107196c51afc1b10de16032e4f0f86ef277"
+                        ],
+                        "hashingKeys": [
+                            "id",
+                            "name",
+                            "description",
+                            "i18n",
+                            "data",
+                            "image",
+                            "thumbnail",
+                            "metrics",
+                            "content"
+                        ],
+                        "entityHash": "b76ea4f04e76c4f94d9556cb0ef3adf3d229115a6099b14a8ddecdc8945715a9"
+                    }
+                }
+            }
+        }
+    ],
+    "totalAmount": 1,
+    "pageNum": 1,
+    "pageSize": 100
+}

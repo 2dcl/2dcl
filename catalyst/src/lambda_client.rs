@@ -35,7 +35,7 @@ pub struct Erc721Attribute {
 
 #[derive(Debug, Deserialize, PartialEq)]
 #[serde(rename_all = "camelCase")]
-pub struct Items {
+pub struct ItemsResponse {
     pub total_amount: u16,
     pub page_num: u16,
     pub page_size: u16,
@@ -51,6 +51,7 @@ pub struct Element {
     pub rarity: Rarity,
     pub amount: u16,
     pub individual_data: Vec<IndividualData>,
+    pub entity: Option<Entity>
 }
 
 #[derive(Debug, Deserialize, PartialEq)]
@@ -67,6 +68,44 @@ pub struct IndividualData {
 pub enum ItemCategory {
     Wearable(WearableCategory),
     Emote(EmoteCategory),
+}
+
+#[derive(Debug, Deserialize, PartialEq)]
+#[serde(rename_all = "camelCase")]
+pub struct NamesResponse {
+    pub total_amount: u16,
+    pub page_num: u16,
+    pub page_size: u16,
+    pub elements: Vec<Name>,
+}
+
+#[derive(Debug, Deserialize, PartialEq)]
+#[serde(rename_all = "camelCase")]
+pub struct Name {
+    pub name: String,
+    pub contract_address: String,
+    pub token_id: String,
+}
+
+#[derive(Debug, Deserialize, PartialEq)]
+#[serde(rename_all = "camelCase")]
+pub struct LandsResponse {
+    pub total_amount: u16,
+    pub page_num: u16,
+    pub page_size: u16,
+    pub elements: Vec<Land>,
+}
+
+#[derive(Debug, Deserialize, PartialEq)]
+#[serde(rename_all = "camelCase")]
+pub struct Land {
+    pub name: String,
+    pub contract_address: String,
+    pub token_id: String,
+    pub category: String,
+    pub description: String,
+    pub price: String,
+    pub image: String,
 }
 
 /// `LambdaClient` implements all the request to interact with [Catalyst Lambda](https://decentraland.github.io/catalyst-api-specs/#tag/Lambdas).
@@ -163,7 +202,7 @@ impl LambdaClient {
     }
 
     /// Implements [`/lambdas/users/{address}/wearables`](https://decentraland.github.io/catalyst-api-specs/#tag/Lambdas/operation/getWearables)
-    pub async fn wearables_for_address<T>(server: &Server, address: T) -> Result<Items>
+    pub async fn wearables_for_address<T>(server: &Server, address: T ) -> Result<ItemsResponse>
     where
         T: AsRef<str>,
     {
@@ -174,7 +213,7 @@ impl LambdaClient {
     }
 
     /// Implements [`/lambdas/users/{address}/emotes`](https://decentraland.github.io/catalyst-api-specs/#tag/Lambdas/operation/getEmotes)
-    pub async fn emotes_for_address<T>(server: &Server, address: T) -> Result<Items>
+    pub async fn emotes_for_address<T>(server: &Server, address: T) -> Result<ItemsResponse>
     where
         T: AsRef<str>,
     {
@@ -184,6 +223,27 @@ impl LambdaClient {
         Ok(response)
     }
 
+    /// Implements [`/lambdas/users/{address}/names`](https://decentraland.github.io/catalyst-api-specs/#tag/Lambdas/operation/getNames)
+    pub async fn names_for_address<T>(server: &Server, address: T) -> Result<NamesResponse>
+    where
+        T: AsRef<str>,
+    {
+        let response = server
+            .get(format!("/lambdas/users/{}/names", address.as_ref()))
+            .await?;
+        Ok(response)
+    }
+
+    /// Implements [`/lambdas/users/{address}/lands`](https://decentraland.github.io/catalyst-api-specs/#tag/Lambdas/operation/getLands)
+    pub async fn lands_for_address<T>(server: &Server, address: T) -> Result<LandsResponse>
+    where
+        T: AsRef<str>,
+    {
+        let response = server
+            .get(format!("/lambdas/users/{}/lands", address.as_ref()))
+            .await?;
+        Ok(response)
+    }
     /*    /// Implements [`/lambda/contracts/servers`](https://decentraland.github.io/catalyst-api-specs/#operation/getServers)
     pub async fn servers(server: &Server) -> Result<Vec<Server>> {
         let servers: Vec<Server> = server.get("/lambdas/contracts/servers").await?;
@@ -390,7 +450,7 @@ mod tests {
 
         m.assert();
 
-        let expected: Items = serde_json::from_str(response).unwrap();
+        let expected: ItemsResponse = serde_json::from_str(response).unwrap();
         assert_eq!(result, expected);
     }
 
@@ -412,7 +472,51 @@ mod tests {
 
         m.assert();
 
-        let expected: Items = serde_json::from_str(response).unwrap();
+        let expected: ItemsResponse = serde_json::from_str(response).unwrap();
+        assert_eq!(result, expected);
+    }
+
+    #[test]
+    fn it_implements_names_for_address() {
+        let response = include_str!("../fixtures/names_for_address.json");
+
+        let server = MockServer::start();
+
+        let m = server.mock(|when, then| {
+            when.method(GET).path("/lambdas/users/an-address/names");
+            then.status(200).body(response);
+        });
+
+        let server = Server::new(server.url(""));
+
+        let result =
+            tokio_test::block_on(LambdaClient::names_for_address(&server, "an-address")).unwrap();
+
+        m.assert();
+
+        let expected: NamesResponse = serde_json::from_str(response).unwrap();
+        assert_eq!(result, expected);
+    }
+
+    #[test]
+    fn it_implements_lands_for_address() {
+        let response = include_str!("../fixtures/lands_for_address.json");
+
+        let server = MockServer::start();
+
+        let m = server.mock(|when, then| {
+            when.method(GET).path("/lambdas/users/an-address/lands");
+            then.status(200).body(response);
+        });
+
+        let server = Server::new(server.url(""));
+
+        let result =
+            tokio_test::block_on(LambdaClient::lands_for_address(&server, "an-address")).unwrap();
+
+        m.assert();
+
+        let expected: LandsResponse = serde_json::from_str(response).unwrap();
         assert_eq!(result, expected);
     }
     /*

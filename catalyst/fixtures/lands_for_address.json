@@ -1,0 +1,25 @@
+{
+    "elements": [
+        {
+            "name": " ",
+            "contractAddress": "0x959e104e1a4db6317fa58f8295f586e1a978c297",
+            "tokenId": "2993",
+            "category": "estate",
+            "description": "Inquires  AceDecentra@gmail.com",
+            "price": "30000000000000000000000",
+            "image": "https://api.decentraland.org/v1/estates/2993/map.png"
+        },
+        {
+            "name": "Cheapest Road and District Estate with Free Gallery!",
+            "contractAddress": "0x959e104e1a4db6317fa58f8295f586e1a978c297",
+            "tokenId": "3164",
+            "category": "estate",
+            "description": "Will dissolve and sell separately if needed. Inquires Discord:GustavoBlanco#6320",
+            "price": "25000000000000000000000",
+            "image": "https://api.decentraland.org/v1/estates/3164/map.png"
+        }
+    ],
+    "totalAmount": 2,
+    "pageNum": 1,
+    "pageSize": 100
+}
