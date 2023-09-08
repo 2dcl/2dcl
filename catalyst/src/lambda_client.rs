@@ -48,19 +48,19 @@ pub struct Element {
     pub urn: String,
     pub name: String,
     pub category: ItemCategory,
-    pub rarity: Rarity,
+    pub rarity: Option<Rarity>,
     pub amount: u16,
     pub individual_data: Vec<IndividualData>,
-    pub entity: Option<Entity>
+    pub entity: Option<Entity>,
 }
 
 #[derive(Debug, Deserialize, PartialEq)]
 #[serde(rename_all = "camelCase")]
 pub struct IndividualData {
     pub id: String,
-    pub token_id: String,
-    pub transferred_at: String,
-    pub price: String,
+    pub token_id: Option<String>,
+    pub transferred_at: Option<String>,
+    pub price: Option<String>,
 }
 
 #[derive(Debug, Deserialize, Clone, PartialEq)]
@@ -68,6 +68,7 @@ pub struct IndividualData {
 pub enum ItemCategory {
     Wearable(WearableCategory),
     Emote(EmoteCategory),
+    ThirdParty(String),
 }
 
 #[derive(Debug, Deserialize, PartialEq)]
@@ -106,6 +107,97 @@ pub struct Land {
     pub description: String,
     pub price: String,
     pub image: String,
+}
+
+#[derive(Debug, Eq, PartialEq)]
+pub enum WearableSortingOrder {
+    TransferredAt,
+    Rarity,
+}
+
+impl std::fmt::Display for WearableSortingOrder {
+    fn fmt(&self, f: &mut std::fmt::Formatter) -> std::fmt::Result {
+        let serialization = match self {
+            WearableSortingOrder::TransferredAt => "transferredAt",
+            WearableSortingOrder::Rarity => "rarity",
+        };
+        write!(f, "{}", serialization)
+    }
+}
+
+#[derive(Debug, Default, Eq, PartialEq)]
+pub struct WearablesSearchParameters {
+    include_entities: Option<bool>,
+    include_third_party: Option<bool>,
+    page_parameters: PageParameters,
+    order_by: Option<WearableSortingOrder>,
+}
+
+impl WearablesSearchParameters {
+    pub fn to_query_string(&self) -> String {
+        let mut query_string = "?".to_string();
+        if let Some(include_entities) = &self.include_entities {
+            query_string += &format!("includeEntities={}&", include_entities);
+        }
+        if let Some(include_third_party) = &self.include_third_party {
+            query_string += &format!("include_third_party={}&", include_third_party);
+        }
+        if let Some(page_num) = &self.page_parameters.page_num {
+            query_string += &format!("pageNum={}&", page_num);
+        }
+        if let Some(page_size) = &self.page_parameters.page_size {
+            query_string += &format!("pageSize={}&", page_size);
+        }
+        if let Some(order_by) = &self.order_by {
+            query_string += &format!("orderBy={}", order_by);
+        }
+        query_string
+    }
+}
+
+#[derive(Debug, Default, Eq, PartialEq)]
+pub struct EmotesSearchParameters {
+    collection_id: Option<String>,
+    include_entities: Option<bool>,
+    page_parameters: PageParameters,
+}
+
+impl EmotesSearchParameters {
+    pub fn to_query_string(&self) -> String {
+        let mut query_string = "?".to_string();
+        if let Some(include_entities) = &self.include_entities {
+            query_string += &format!("includeEntities={}&", include_entities);
+        }
+        if let Some(collection_id) = &self.collection_id {
+            query_string += &format!("collectionId={}&", collection_id);
+        }
+        if let Some(page_num) = &self.page_parameters.page_num {
+            query_string += &format!("pageNum={}&", page_num);
+        }
+        if let Some(page_size) = &self.page_parameters.page_size {
+            query_string += &format!("pageSize={}", page_size);
+        }
+        query_string
+    }
+}
+
+#[derive(Debug, Default, Eq, PartialEq)]
+pub struct PageParameters {
+    page_num: Option<u16>,
+    page_size: Option<u16>,
+}
+
+impl PageParameters {
+    pub fn to_query_string(&self) -> String {
+        let mut query_string = "?".to_string();
+        if let Some(page_num) = &self.page_num {
+            query_string += &format!("pageNum={}&", page_num);
+        }
+        if let Some(page_size) = &self.page_size {
+            query_string += &format!("pageSize={}", page_size);
+        }
+        query_string
+    }
 }
 
 /// `LambdaClient` implements all the request to interact with [Catalyst Lambda](https://decentraland.github.io/catalyst-api-specs/#tag/Lambdas).
@@ -202,45 +294,118 @@ impl LambdaClient {
     }
 
     /// Implements [`/lambdas/users/{address}/wearables`](https://decentraland.github.io/catalyst-api-specs/#tag/Lambdas/operation/getWearables)
-    pub async fn wearables_for_address<T>(server: &Server, address: T ) -> Result<ItemsResponse>
+    pub async fn wearables_for_address<T>(
+        server: &Server,
+        address: T,
+        parameters: WearablesSearchParameters,
+    ) -> Result<ItemsResponse>
     where
         T: AsRef<str>,
     {
         let response = server
-            .get(format!("/lambdas/users/{}/wearables", address.as_ref()))
+            .get(format!(
+                "/lambdas/users/{}/wearables{}",
+                address.as_ref(),
+                parameters.to_query_string()
+            ))
             .await?;
         Ok(response)
     }
 
     /// Implements [`/lambdas/users/{address}/emotes`](https://decentraland.github.io/catalyst-api-specs/#tag/Lambdas/operation/getEmotes)
-    pub async fn emotes_for_address<T>(server: &Server, address: T) -> Result<ItemsResponse>
+    pub async fn emotes_for_address<T>(
+        server: &Server,
+        address: T,
+        parameters: EmotesSearchParameters,
+    ) -> Result<ItemsResponse>
     where
         T: AsRef<str>,
     {
         let response = server
-            .get(format!("/lambdas/users/{}/emotes", address.as_ref()))
+            .get(format!(
+                "/lambdas/users/{}/emotes{}",
+                address.as_ref(),
+                parameters.to_query_string()
+            ))
             .await?;
         Ok(response)
     }
 
     /// Implements [`/lambdas/users/{address}/names`](https://decentraland.github.io/catalyst-api-specs/#tag/Lambdas/operation/getNames)
-    pub async fn names_for_address<T>(server: &Server, address: T) -> Result<NamesResponse>
+    pub async fn names_for_address<T>(
+        server: &Server,
+        address: T,
+        parameters: PageParameters,
+    ) -> Result<NamesResponse>
     where
         T: AsRef<str>,
     {
         let response = server
-            .get(format!("/lambdas/users/{}/names", address.as_ref()))
+            .get(format!(
+                "/lambdas/users/{}/names{}",
+                address.as_ref(),
+                parameters.to_query_string()
+            ))
             .await?;
         Ok(response)
     }
 
     /// Implements [`/lambdas/users/{address}/lands`](https://decentraland.github.io/catalyst-api-specs/#tag/Lambdas/operation/getLands)
-    pub async fn lands_for_address<T>(server: &Server, address: T) -> Result<LandsResponse>
+    pub async fn lands_for_address<T>(
+        server: &Server,
+        address: T,
+        parameters: PageParameters,
+    ) -> Result<LandsResponse>
     where
         T: AsRef<str>,
     {
         let response = server
-            .get(format!("/lambdas/users/{}/lands", address.as_ref()))
+            .get(format!(
+                "/lambdas/users/{}/lands{}",
+                address.as_ref(),
+                parameters.to_query_string()
+            ))
+            .await?;
+        Ok(response)
+    }
+
+    /// Implements [`/lambdas/users/{address}/third-party-wearables`](https://decentraland.github.io/catalyst-api-specs/#tag/Lambdas/operation/getThirdPartyWearables)
+    pub async fn third_party_wearables_for_address<T>(
+        server: &Server,
+        address: T,
+        parameters: PageParameters,
+    ) -> Result<ItemsResponse>
+    where
+        T: AsRef<str>,
+    {
+        let response = server
+            .get(format!(
+                "/lambdas/users/{}/third-party-wearables{}",
+                address.as_ref(),
+                parameters.to_query_string()
+            ))
+            .await?;
+        Ok(response)
+    }
+
+    /// Implements [`/lambdas/users/{address}/third-party-wearables/{collectionId}`](https://decentraland.github.io/catalyst-api-specs/#tag/Lambdas/operation/getThirdPartyCollection)
+    pub async fn third_party_wearables_of_collection_for_address<T, V>(
+        server: &Server,
+        address: T,
+        collection_id: V,
+        parameters: PageParameters,
+    ) -> Result<ItemsResponse>
+    where
+        T: AsRef<str>,
+        V: AsRef<str>,
+    {
+        let response = server
+            .get(format!(
+                "/lambdas/users/{}/third-party-wearables/{}{}",
+                address.as_ref(),
+                collection_id.as_ref(),
+                parameters.to_query_string()
+            ))
             .await?;
         Ok(response)
     }
@@ -444,9 +609,12 @@ mod tests {
 
         let server = Server::new(server.url(""));
 
-        let result =
-            tokio_test::block_on(LambdaClient::wearables_for_address(&server, "an-address"))
-                .unwrap();
+        let result = tokio_test::block_on(LambdaClient::wearables_for_address(
+            &server,
+            "an-address",
+            WearablesSearchParameters::default(),
+        ))
+        .unwrap();
 
         m.assert();
 
@@ -467,8 +635,12 @@ mod tests {
 
         let server = Server::new(server.url(""));
 
-        let result =
-            tokio_test::block_on(LambdaClient::emotes_for_address(&server, "an-address")).unwrap();
+        let result = tokio_test::block_on(LambdaClient::emotes_for_address(
+            &server,
+            "an-address",
+            EmotesSearchParameters::default(),
+        ))
+        .unwrap();
 
         m.assert();
 
@@ -489,8 +661,12 @@ mod tests {
 
         let server = Server::new(server.url(""));
 
-        let result =
-            tokio_test::block_on(LambdaClient::names_for_address(&server, "an-address")).unwrap();
+        let result = tokio_test::block_on(LambdaClient::names_for_address(
+            &server,
+            "an-address",
+            PageParameters::default(),
+        ))
+        .unwrap();
 
         m.assert();
 
@@ -511,12 +687,73 @@ mod tests {
 
         let server = Server::new(server.url(""));
 
-        let result =
-            tokio_test::block_on(LambdaClient::lands_for_address(&server, "an-address")).unwrap();
+        let result = tokio_test::block_on(LambdaClient::lands_for_address(
+            &server,
+            "an-address",
+            PageParameters::default(),
+        ))
+        .unwrap();
 
         m.assert();
 
         let expected: LandsResponse = serde_json::from_str(response).unwrap();
+        assert_eq!(result, expected);
+    }
+
+    #[test]
+    fn it_implements_third_party_wearables_for_address() {
+        let response = include_str!("../fixtures/third_party_wearables_for_address.json");
+
+        let server = MockServer::start();
+
+        let m = server.mock(|when, then| {
+            when.method(GET)
+                .path("/lambdas/users/an-address/third-party-wearables");
+            then.status(200).body(response);
+        });
+
+        let server = Server::new(server.url(""));
+
+        let result = tokio_test::block_on(LambdaClient::third_party_wearables_for_address(
+            &server,
+            "an-address",
+            PageParameters::default(),
+        ))
+        .unwrap();
+
+        m.assert();
+
+        let expected: ItemsResponse = serde_json::from_str(response).unwrap();
+        assert_eq!(result, expected);
+    }
+
+    #[test]
+    fn it_implements_third_party_wearables_of_collection_for_address() {
+        let response = include_str!("../fixtures/third_party_wearables_for_address.json");
+
+        let server = MockServer::start();
+
+        let m = server.mock(|when, then| {
+            when.method(GET)
+                .path("/lambdas/users/an-address/third-party-wearables/a-collection");
+            then.status(200).body(response);
+        });
+
+        let server = Server::new(server.url(""));
+
+        let result = tokio_test::block_on(
+            LambdaClient::third_party_wearables_of_collection_for_address(
+                &server,
+                "an-address",
+                "a-collection",
+                PageParameters::default(),
+            ),
+        )
+        .unwrap();
+
+        m.assert();
+
+        let expected: ItemsResponse = serde_json::from_str(response).unwrap();
         assert_eq!(result, expected);
     }
     /*

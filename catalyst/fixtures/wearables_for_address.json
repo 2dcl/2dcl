@@ -1,1048 +1,208 @@
 {
     "elements": [
         {
-            "urn": "urn:decentraland:matic:collections-v2:0x21aa54b72247e8b02a8eb7669a68698930c00c90:0",
+            "urn": "urn:decentraland:matic:collections-v2:0x177535a421e7867ec52f2cc19b7dfed4f289a2bb:0",
             "amount": 1,
             "individualData": [
                 {
-                    "id": "0x21aa54b72247e8b02a8eb7669a68698930c00c90-18",
-                    "tokenId": "18",
-                    "transferredAt": "1689165984",
-                    "price": "15000000000000000000"
-                }
-            ],
-            "name": "Neo Gaucho Pants x DCL Argentina",
-            "category": "lower_body",
-            "rarity": "legendary"
-        },
-        {
-            "urn": "urn:decentraland:matic:collections-v2:0x21aa54b72247e8b02a8eb7669a68698930c00c90:1",
-            "amount": 1,
-            "individualData": [
-                {
-                    "id": "0x21aa54b72247e8b02a8eb7669a68698930c00c90-105312291668557186697918027683670432318895095400549111254310977554",
-                    "tokenId": "105312291668557186697918027683670432318895095400549111254310977554",
-                    "transferredAt": "1689165984",
-                    "price": "15000000000000000000"
-                }
-            ],
-            "name": "Solar Pampas Top x DCL Argentina",
-            "category": "upper_body",
-            "rarity": "legendary"
-        },
-        {
-            "urn": "urn:decentraland:matic:collections-v2:0x21aa54b72247e8b02a8eb7669a68698930c00c90:2",
-            "amount": 1,
-            "individualData": [
-                {
-                    "id": "0x21aa54b72247e8b02a8eb7669a68698930c00c90-210624583337114373395836055367340864637790190801098222508621955090",
-                    "tokenId": "210624583337114373395836055367340864637790190801098222508621955090",
-                    "transferredAt": "1689165984",
-                    "price": "25000000000000000000"
-                }
-            ],
-            "name": "Champion Boots x DCL Argentina",
-            "category": "feet",
-            "rarity": "legendary"
-        },
-        {
-            "urn": "urn:decentraland:matic:collections-v2:0x0fe44691ec836b18b688ea145845983e7db7e435:1",
-            "amount": 1,
-            "individualData": [
-                {
-                    "id": "0x0fe44691ec836b18b688ea145845983e7db7e435-105312291668557186697918027683670432318895095400549111254310977860",
-                    "tokenId": "105312291668557186697918027683670432318895095400549111254310977860",
-                    "transferredAt": "1687966930",
+                    "id": "0x177535a421e7867ec52f2cc19b7dfed4f289a2bb-2842",
+                    "tokenId": "2842",
+                    "transferredAt": "1656011073",
                     "price": "0"
                 }
             ],
-            "name": "No Labels Black Tee",
-            "category": "skin",
-            "rarity": "epic"
-        },
-        {
-            "urn": "urn:decentraland:matic:collections-v2:0x14459c4a641dc944afa4bb0eb82e015d7d9386fe:1",
-            "amount": 1,
-            "individualData": [
-                {
-                    "id": "0x14459c4a641dc944afa4bb0eb82e015d7d9386fe-105312291668557186697918027683670432318895095400549111254310977613",
-                    "tokenId": "105312291668557186697918027683670432318895095400549111254310977613",
-                    "transferredAt": "1687966930",
-                    "price": "0"
-                }
-            ],
-            "name": "TP Brown Sneakers",
-            "category": "feet",
-            "rarity": "epic"
-        },
-        {
-            "urn": "urn:decentraland:matic:collections-v2:0x1ed5e004889f00d26fb519a9b931efb959b403b2:0",
-            "amount": 1,
-            "individualData": [
-                {
-                    "id": "0x1ed5e004889f00d26fb519a9b931efb959b403b2-115",
-                    "tokenId": "115",
-                    "transferredAt": "1689972331",
-                    "price": "240000000000000000000"
-                }
-            ],
-            "name": "MHAD 2023 TRU Attendee Jacket",
-            "category": "upper_body",
-            "rarity": "epic"
-        },
-        {
-            "urn": "urn:decentraland:matic:collections-v2:0x4895d7cdd99636563d5be589647f134925e603ed:2",
-            "amount": 1,
-            "individualData": [
-                {
-                    "id": "0x4895d7cdd99636563d5be589647f134925e603ed-210624583337114373395836055367340864637790190801098222508621955262",
-                    "tokenId": "210624583337114373395836055367340864637790190801098222508621955262",
-                    "transferredAt": "1679053875",
-                    "price": "0"
-                }
-            ],
-            "name": "Giants Jersey",
-            "category": "upper_body",
-            "rarity": "epic"
-        },
-        {
-            "urn": "urn:decentraland:matic:collections-v2:0x4895d7cdd99636563d5be589647f134925e603ed:5",
-            "amount": 1,
-            "individualData": [
-                {
-                    "id": "0x4895d7cdd99636563d5be589647f134925e603ed-526561458342785933489590138418352161594475477002745556271554888006",
-                    "tokenId": "526561458342785933489590138418352161594475477002745556271554888006",
-                    "transferredAt": "1679053815",
-                    "price": "0"
-                }
-            ],
-            "name": "KUN Hat-trick",
-            "category": "feet",
-            "rarity": "epic"
-        },
-        {
-            "urn": "urn:decentraland:matic:collections-v2:0x4895d7cdd99636563d5be589647f134925e603ed:7",
-            "amount": 1,
-            "individualData": [
-                {
-                    "id": "0x4895d7cdd99636563d5be589647f134925e603ed-737186041679900306885426193785693026232265667803843778780176842927",
-                    "tokenId": "737186041679900306885426193785693026232265667803843778780176842927",
-                    "transferredAt": "1679054133",
-                    "price": "0"
-                }
-            ],
-            "name": "FITCHIN Jetpack",
-            "category": "helmet",
-            "rarity": "epic"
-        },
-        {
-            "urn": "urn:decentraland:matic:collections-v2:0x61ce6d94caceaee27f694d3798a370fd2bfde7c4:0",
-            "amount": 1,
-            "individualData": [
-                {
-                    "id": "0x61ce6d94caceaee27f694d3798a370fd2bfde7c4-159",
-                    "tokenId": "159",
-                    "transferredAt": "1688990344",
-                    "price": "2000000000000000000"
-                }
-            ],
-            "name": "Glow Pants ",
-            "category": "lower_body",
-            "rarity": "epic"
-        },
-        {
-            "urn": "urn:decentraland:matic:collections-v2:0x6eeda0dd7d5c2079d392691f366a00dc7d83234b:1",
-            "amount": 2,
-            "individualData": [
-                {
-                    "id": "0x6eeda0dd7d5c2079d392691f366a00dc7d83234b-105312291668557186697918027683670432318895095400549111254310977639",
-                    "tokenId": "105312291668557186697918027683670432318895095400549111254310977639",
-                    "transferredAt": "1648145887",
-                    "price": "0"
-                },
-                {
-                    "id": "0x6eeda0dd7d5c2079d392691f366a00dc7d83234b-105312291668557186697918027683670432318895095400549111254310977924",
-                    "tokenId": "105312291668557186697918027683670432318895095400549111254310977924",
-                    "transferredAt": "1648210000",
-                    "price": "0"
-                }
-            ],
-            "name": "M1 Helmet",
-            "category": "helmet",
-            "rarity": "epic"
-        },
-        {
-            "urn": "urn:decentraland:matic:collections-v2:0x6eeda0dd7d5c2079d392691f366a00dc7d83234b:2",
-            "amount": 1,
-            "individualData": [
-                {
-                    "id": "0x6eeda0dd7d5c2079d392691f366a00dc7d83234b-210624583337114373395836055367340864637790190801098222508621955834",
-                    "tokenId": "210624583337114373395836055367340864637790190801098222508621955834",
-                    "transferredAt": "1648272393",
-                    "price": "0"
-                }
-            ],
-            "name": "M2 Eyewear",
-            "category": "eyewear",
-            "rarity": "epic"
-        },
-        {
-            "urn": "urn:decentraland:matic:collections-v2:0x710dce41dceace2f0e06c0cffee25fe65ad6f64c:0",
-            "amount": 1,
-            "individualData": [
-                {
-                    "id": "0x710dce41dceace2f0e06c0cffee25fe65ad6f64c-339",
-                    "tokenId": "339",
-                    "transferredAt": "1662040423",
-                    "price": "500000000000000000"
-                }
-            ],
-            "name": "Throne of the Quantum Dictator",
-            "category": "upper_body",
-            "rarity": "epic"
-        },
-        {
-            "urn": "urn:decentraland:matic:collections-v2:0x74786778c018a683d45ad1bf61e94767dbefbbe7:1",
-            "amount": 1,
-            "individualData": [
-                {
-                    "id": "0x74786778c018a683d45ad1bf61e94767dbefbbe7-105312291668557186697918027683670432318895095400549111254310977570",
-                    "tokenId": "105312291668557186697918027683670432318895095400549111254310977570",
-                    "transferredAt": "1650131185",
-                    "price": "15000000000000000000"
-                }
-            ],
-            "name": "Neo-Raver Pants",
-            "category": "lower_body",
-            "rarity": "epic"
-        },
-        {
-            "urn": "urn:decentraland:matic:collections-v2:0x77942c2830721e243f585cef01477198af9ecf57:0",
-            "amount": 1,
-            "individualData": [
-                {
-                    "id": "0x77942c2830721e243f585cef01477198af9ecf57-141",
-                    "tokenId": "141",
-                    "transferredAt": "1670516064",
-                    "price": "1000000000000000000"
-                }
-            ],
-            "name": "DCL_Brasil x DCL_Argentina 1 ",
-            "category": "upper_body",
-            "rarity": "epic"
-        },
-        {
-            "urn": "urn:decentraland:matic:collections-v2:0x7f56a18941d987e3a4835f37cdc6532272454509:0",
-            "amount": 1,
-            "individualData": [
-                {
-                    "id": "0x7f56a18941d987e3a4835f37cdc6532272454509-556",
-                    "tokenId": "556",
-                    "transferredAt": "1690186035",
-                    "price": "20000000000000000000"
-                }
-            ],
-            "name": "Cherry Blossoms",
+            "name": "Pride Plaza Floating Mirror Ball",
             "category": "top_head",
-            "rarity": "epic"
-        },
-        {
-            "urn": "urn:decentraland:matic:collections-v2:0x90a7982d7029008c1feaf4e79edc4144ee69556c:0",
-            "amount": 1,
-            "individualData": [
-                {
-                    "id": "0x90a7982d7029008c1feaf4e79edc4144ee69556c-84",
-                    "tokenId": "84",
-                    "transferredAt": "1688656560",
-                    "price": "1000000000000000000"
+            "rarity": "rare",
+            "entity": {
+                "version": "v3",
+                "id": "bafkreify7reb4aiplvfj5g5rc5odppnbsoww5cxgzdtprjdnxmy3qczo3u",
+                "type": "wearable",
+                "pointers": [
+                    "urn:decentraland:matic:collections-v2:0x177535a421e7867ec52f2cc19b7dfed4f289a2bb:0"
+                ],
+                "timestamp": 1654867757956,
+                "content": [
+                    {
+                        "file": "female/mc_discoball.glb",
+                        "hash": "bafybeifhg77qzbyfc2gp6myydok5qzda4fugxqqc6w7zsln3mt3f32vfrm"
+                    },
+                    {
+                        "file": "image.png",
+                        "hash": "bafkreiaqlhycxfffexszdw3oejrj5py7hh5bxyhuwtcsdtakpdftewhlmm"
+                    },
+                    {
+                        "file": "male/mc_discoball.glb",
+                        "hash": "bafybeifhg77qzbyfc2gp6myydok5qzda4fugxqqc6w7zsln3mt3f32vfrm"
+                    },
+                    {
+                        "file": "thumbnail.png",
+                        "hash": "bafkreicnvtzhsq52r2xycjpb3a2svkaz2dbvjw3dmd5ox3zjyg65fwojju"
+                    }
+                ],
+                "metadata": {
+                    "id": "urn:decentraland:matic:collections-v2:0x177535a421e7867ec52f2cc19b7dfed4f289a2bb:0",
+                    "name": "Pride Plaza Floating Mirror Ball",
+                    "description": "Your true self is Priceless",
+                    "collectionAddress": "0x177535a421e7867ec52f2cc19b7dfed4f289a2bb",
+                    "rarity": "rare",
+                    "i18n": [
+                        {
+                            "code": "en",
+                            "text": "Pride Plaza Floating Mirror Ball"
+                        }
+                    ],
+                    "data": {
+                        "replaces": [],
+                        "hides": [],
+                        "tags": [],
+                        "category": "top_head",
+                        "representations": [
+                            {
+                                "bodyShapes": [
+                                    "urn:decentraland:off-chain:base-avatars:BaseMale"
+                                ],
+                                "mainFile": "male/mc_discoball.glb",
+                                "contents": [
+                                    "male/mc_discoball.glb"
+                                ],
+                                "overrideHides": [],
+                                "overrideReplaces": []
+                            },
+                            {
+                                "bodyShapes": [
+                                    "urn:decentraland:off-chain:base-avatars:BaseFemale"
+                                ],
+                                "mainFile": "female/mc_discoball.glb",
+                                "contents": [
+                                    "female/mc_discoball.glb"
+                                ],
+                                "overrideHides": [],
+                                "overrideReplaces": []
+                            }
+                        ]
+                    },
+                    "image": "image.png",
+                    "thumbnail": "thumbnail.png",
+                    "metrics": {
+                        "triangles": 440,
+                        "materials": 2,
+                        "textures": 3,
+                        "meshes": 2,
+                        "bodies": 2,
+                        "entities": 1
+                    }
                 }
-            ],
-            "name": "Black Paisley Ski Mask",
-            "category": "mask",
-            "rarity": "epic"
-        },
-        {
-            "urn": "urn:decentraland:matic:collections-v2:0x93d2c265957cd7924260193c288a8ecfc785c0d1:1",
-            "amount": 1,
-            "individualData": [
-                {
-                    "id": "0x93d2c265957cd7924260193c288a8ecfc785c0d1-105312291668557186697918027683670432318895095400549111254310978057",
-                    "tokenId": "105312291668557186697918027683670432318895095400549111254310978057",
-                    "transferredAt": "1640636236",
-                    "price": "20000000000000000000"
-                }
-            ],
-            "name": "DG GM Sweater",
-            "category": "upper_body",
-            "rarity": "epic"
-        },
-        {
-            "urn": "urn:decentraland:matic:collections-v2:0xce47d15776b92a16038843e41493d41da65ea6dd:0",
-            "amount": 1,
-            "individualData": [
-                {
-                    "id": "0xce47d15776b92a16038843e41493d41da65ea6dd-152",
-                    "tokenId": "152",
-                    "transferredAt": "1690534219",
-                    "price": "490000000000000000"
-                }
-            ],
-            "name": "SV Classic Cigar",
-            "category": "mask",
-            "rarity": "epic"
-        },
-        {
-            "urn": "urn:decentraland:matic:collections-v2:0xdb1db5ffc64430474c2de25dcbc271b592f04d6b:1",
-            "amount": 1,
-            "individualData": [
-                {
-                    "id": "0xdb1db5ffc64430474c2de25dcbc271b592f04d6b-105312291668557186697918027683670432318895095400549111254310977715",
-                    "tokenId": "105312291668557186697918027683670432318895095400549111254310977715",
-                    "transferredAt": "1687966930",
-                    "price": "0"
-                }
-            ],
-            "name": "HoloBeam Suit",
-            "category": "upper_body",
-            "rarity": "epic"
-        },
-        {
-            "urn": "urn:decentraland:matic:collections-v2:0xe79cadd6fb15a626a48d2bbb60d4450eb196c84d:1",
-            "amount": 1,
-            "individualData": [
-                {
-                    "id": "0xe79cadd6fb15a626a48d2bbb60d4450eb196c84d-105312291668557186697918027683670432318895095400549111254310978139",
-                    "tokenId": "105312291668557186697918027683670432318895095400549111254310978139",
-                    "transferredAt": "1675934506",
-                    "price": "0"
-                }
-            ],
-            "name": "Trois Angles Set ",
-            "category": "skin",
-            "rarity": "epic"
-        },
-        {
-            "urn": "urn:decentraland:matic:collections-v2:0x177535a421e7867ec52f2cc19b7dfed4f289a2bb:1",
-            "amount": 1,
-            "individualData": [
-                {
-                    "id": "0x177535a421e7867ec52f2cc19b7dfed4f289a2bb-105312291668557186697918027683670432318895095400549111254310978325",
-                    "tokenId": "105312291668557186697918027683670432318895095400549111254310978325",
-                    "transferredAt": "1656019164",
-                    "price": "0"
-                }
-            ],
-            "name": "Pride Plaza Festival Jacket",
-            "category": "upper_body",
-            "rarity": "rare"
-        },
-        {
-            "urn": "urn:decentraland:matic:collections-v2:0x26ea2f6a7273a2f28b410406d1c13ff7d4c9a162:0",
-            "amount": 1,
-            "individualData": [
-                {
-                    "id": "0x26ea2f6a7273a2f28b410406d1c13ff7d4c9a162-559",
-                    "tokenId": "559",
-                    "transferredAt": "1680035249",
-                    "price": "0"
-                }
-            ],
-            "name": "MVFW23 Bucket Hat",
-            "category": "hat",
-            "rarity": "rare"
-        },
-        {
-            "urn": "urn:decentraland:matic:collections-v2:0x26ea2f6a7273a2f28b410406d1c13ff7d4c9a162:1",
-            "amount": 1,
-            "individualData": [
-                {
-                    "id": "0x26ea2f6a7273a2f28b410406d1c13ff7d4c9a162-105312291668557186697918027683670432318895095400549111254310978100",
-                    "tokenId": "105312291668557186697918027683670432318895095400549111254310978100",
-                    "transferredAt": "1680035249",
-                    "price": "0"
-                }
-            ],
-            "name": "MVFW23 Cap",
-            "category": "hat",
-            "rarity": "rare"
-        },
-        {
-            "urn": "urn:decentraland:matic:collections-v2:0x26ea2f6a7273a2f28b410406d1c13ff7d4c9a162:2",
-            "amount": 1,
-            "individualData": [
-                {
-                    "id": "0x26ea2f6a7273a2f28b410406d1c13ff7d4c9a162-210624583337114373395836055367340864637790190801098222508621955648",
-                    "tokenId": "210624583337114373395836055367340864637790190801098222508621955648",
-                    "transferredAt": "1680035567",
-                    "price": "0"
-                }
-            ],
-            "name": "MVFW23 Tech Glasses",
-            "category": "eyewear",
-            "rarity": "rare"
-        },
-        {
-            "urn": "urn:decentraland:matic:collections-v2:0x26ea2f6a7273a2f28b410406d1c13ff7d4c9a162:3",
-            "amount": 1,
-            "individualData": [
-                {
-                    "id": "0x26ea2f6a7273a2f28b410406d1c13ff7d4c9a162-315936875005671560093754083051011296956685286201647333762932933199",
-                    "tokenId": "315936875005671560093754083051011296956685286201647333762932933199",
-                    "transferredAt": "1680035249",
-                    "price": "0"
-                }
-            ],
-            "name": "MVFW23 Air Neo",
-            "category": "feet",
-            "rarity": "rare"
-        },
-        {
-            "urn": "urn:decentraland:matic:collections-v2:0x26ea2f6a7273a2f28b410406d1c13ff7d4c9a162:4",
-            "amount": 1,
-            "individualData": [
-                {
-                    "id": "0x26ea2f6a7273a2f28b410406d1c13ff7d4c9a162-421249166674228746791672110734681729275580381602196445017243910742",
-                    "tokenId": "421249166674228746791672110734681729275580381602196445017243910742",
-                    "transferredAt": "1680035567",
-                    "price": "0"
-                }
-            ],
-            "name": "MVFW23 Neo Hoodie",
-            "category": "upper_body",
-            "rarity": "rare"
-        },
-        {
-            "urn": "urn:decentraland:matic:collections-v2:0x26ea2f6a7273a2f28b410406d1c13ff7d4c9a162:5",
-            "amount": 1,
-            "individualData": [
-                {
-                    "id": "0x26ea2f6a7273a2f28b410406d1c13ff7d4c9a162-526561458342785933489590138418352161594475477002745556271554888287",
-                    "tokenId": "526561458342785933489590138418352161594475477002745556271554888287",
-                    "transferredAt": "1680035249",
-                    "price": "0"
-                }
-            ],
-            "name": "MVFW23 Neo Pants",
-            "category": "lower_body",
-            "rarity": "rare"
-        },
-        {
-            "urn": "urn:decentraland:matic:collections-v2:0x2b436700a2c885f4ecf304d57cf7a10eb06fa49f:0",
-            "amount": 1,
-            "individualData": [
-                {
-                    "id": "0x2b436700a2c885f4ecf304d57cf7a10eb06fa49f-131",
-                    "tokenId": "131",
-                    "transferredAt": "1685701111",
-                    "price": "0"
-                }
-            ],
-            "name": "TP Cycling Helmet",
-            "category": "hat",
-            "rarity": "rare"
-        },
-        {
-            "urn": "urn:decentraland:matic:collections-v2:0x37d6fa1df63975056d444f72f268cd7c1251a053:1",
-            "amount": 1,
-            "individualData": [
-                {
-                    "id": "0x37d6fa1df63975056d444f72f268cd7c1251a053-105312291668557186697918027683670432318895095400549111254310977840",
-                    "tokenId": "105312291668557186697918027683670432318895095400549111254310977840",
-                    "transferredAt": "1680030575",
-                    "price": "30000000000000000000"
-                }
-            ],
-            "name": "Bubble Babes Space Bow",
-            "category": "tiara",
-            "rarity": "rare"
-        },
-        {
-            "urn": "urn:decentraland:matic:collections-v2:0x534349266a5958c59e7cc600b0de8aeb4de8b5a3:0",
-            "amount": 1,
-            "individualData": [
-                {
-                    "id": "0x534349266a5958c59e7cc600b0de8aeb4de8b5a3-902",
-                    "tokenId": "902",
-                    "transferredAt": "1685700976",
-                    "price": "0"
-                }
-            ],
-            "name": "TP Ropes",
-            "category": "upper_body",
-            "rarity": "rare"
-        },
-        {
-            "urn": "urn:decentraland:matic:collections-v2:0x7f6fdeadba24d5e3419ed77f3ea19bced64ddcf3:0",
-            "amount": 1,
-            "individualData": [
-                {
-                    "id": "0x7f6fdeadba24d5e3419ed77f3ea19bced64ddcf3-10",
-                    "tokenId": "10",
-                    "transferredAt": "1680119381",
-                    "price": "10000000000000000000000000"
-                }
-            ],
-            "name": "DIESEL DCL MVFW23 HAT ",
-            "category": "hat",
-            "rarity": "rare"
-        },
-        {
-            "urn": "urn:decentraland:matic:collections-v2:0x92e99608d311842eafad39b7e974ac4e108307c9:1",
-            "amount": 1,
-            "individualData": [
-                {
-                    "id": "0x92e99608d311842eafad39b7e974ac4e108307c9-105312291668557186697918027683670432318895095400549111254310977835",
-                    "tokenId": "105312291668557186697918027683670432318895095400549111254310977835",
-                    "transferredAt": "1680030331",
-                    "price": "1000000000000000000000"
-                }
-            ],
-            "name": "Vroomin Foam Finger",
-            "category": "hands_wear",
-            "rarity": "rare"
-        },
-        {
-            "urn": "urn:decentraland:matic:collections-v2:0x956b8d57066fc3d2562de22efd63624a1ba56e35:11",
-            "amount": 1,
-            "individualData": [
-                {
-                    "id": "0x956b8d57066fc3d2562de22efd63624a1ba56e35-1158435208354129053677098304520374755507846049406040223797420753135",
-                    "tokenId": "1158435208354129053677098304520374755507846049406040223797420753135",
-                    "transferredAt": "1668163507",
-                    "price": "0"
-                }
-            ],
-            "name": "MVMF22 White Rabbit Legs",
-            "category": "lower_body",
-            "rarity": "rare"
-        },
-        {
-            "urn": "urn:decentraland:matic:collections-v2:0xbdbee960fb7ce6267c467665dea046d0a4849cda:0",
-            "amount": 1,
-            "individualData": [
-                {
-                    "id": "0xbdbee960fb7ce6267c467665dea046d0a4849cda-2891",
-                    "tokenId": "2891",
-                    "transferredAt": "1680192904",
-                    "price": "100000000000000000000"
-                }
-            ],
-            "name": "Adidas Virtual Gear MVFW23",
-            "category": "upper_body",
-            "rarity": "rare"
-        },
-        {
-            "urn": "urn:decentraland:matic:collections-v2:0xc659b3fa440ab4a38366799e0288384fdb9a1c87:1",
-            "amount": 1,
-            "individualData": [
-                {
-                    "id": "0xc659b3fa440ab4a38366799e0288384fdb9a1c87-105312291668557186697918027683670432318895095400549111254310977622",
-                    "tokenId": "105312291668557186697918027683670432318895095400549111254310977622",
-                    "transferredAt": "1689259692",
-                    "price": "15000000000000000000"
-                }
-            ],
-            "name": "The Regular Goose",
-            "category": "top_head",
-            "rarity": "rare"
-        },
-        {
-            "urn": "urn:decentraland:matic:collections-v2:0xc8aa8d482882b0c6e026f19030a6f0f7d93d87cc:0",
-            "amount": 1,
-            "individualData": [
-                {
-                    "id": "0xc8aa8d482882b0c6e026f19030a6f0f7d93d87cc-942",
-                    "tokenId": "942",
-                    "transferredAt": "1656410133",
-                    "price": "0"
-                }
-            ],
-            "name": "Free to Love Shirt (Multi)",
-            "category": "upper_body",
-            "rarity": "rare"
-        },
-        {
-            "urn": "urn:decentraland:matic:collections-v2:0xca7c347ffdeee480092f3b1268550b60ea031077:4",
-            "amount": 1,
-            "individualData": [
-                {
-                    "id": "0xca7c347ffdeee480092f3b1268550b60ea031077-421249166674228746791672110734681729275580381602196445017243910536",
-                    "tokenId": "421249166674228746791672110734681729275580381602196445017243910536",
-                    "transferredAt": "1680030331",
-                    "price": "5000000000000000000"
-                }
-            ],
-            "name": "GAIAN Footwear",
-            "category": "feet",
-            "rarity": "rare"
-        },
-        {
-            "urn": "urn:decentraland:matic:collections-v2:0xdb1db5ffc64430474c2de25dcbc271b592f04d6b:2",
-            "amount": 1,
-            "individualData": [
-                {
-                    "id": "0xdb1db5ffc64430474c2de25dcbc271b592f04d6b-210624583337114373395836055367340864637790190801098222508621955423",
-                    "tokenId": "210624583337114373395836055367340864637790190801098222508621955423",
-                    "transferredAt": "1687966930",
-                    "price": "0"
-                }
-            ],
-            "name": "Prideful Mantle",
-            "category": "earring",
-            "rarity": "rare"
-        },
-        {
-            "urn": "urn:decentraland:matic:collections-v2:0xe79cadd6fb15a626a48d2bbb60d4450eb196c84d:0",
-            "amount": 1,
-            "individualData": [
-                {
-                    "id": "0xe79cadd6fb15a626a48d2bbb60d4450eb196c84d-147",
-                    "tokenId": "147",
-                    "transferredAt": "1675870182",
-                    "price": "0"
-                }
-            ],
-            "name": "BBQ TangyPack",
-            "category": "tiara",
-            "rarity": "rare"
-        },
-        {
-            "urn": "urn:decentraland:matic:collections-v2:0xe79cadd6fb15a626a48d2bbb60d4450eb196c84d:3",
-            "amount": 1,
-            "individualData": [
-                {
-                    "id": "0xe79cadd6fb15a626a48d2bbb60d4450eb196c84d-315936875005671560093754083051011296956685286201647333762932932715",
-                    "tokenId": "315936875005671560093754083051011296956685286201647333762932932715",
-                    "transferredAt": "1675934506",
-                    "price": "0"
-                }
-            ],
-            "name": "Triangle Topbun",
-            "category": "hair",
-            "rarity": "rare"
-        },
-        {
-            "urn": "urn:decentraland:matic:collections-v2:0xe79cadd6fb15a626a48d2bbb60d4450eb196c84d:4",
-            "amount": 1,
-            "individualData": [
-                {
-                    "id": "0xe79cadd6fb15a626a48d2bbb60d4450eb196c84d-421249166674228746791672110734681729275580381602196445017243910805",
-                    "tokenId": "421249166674228746791672110734681729275580381602196445017243910805",
-                    "transferredAt": "1675934148",
-                    "price": "0"
-                }
-            ],
-            "name": "Na-cho Headset",
-            "category": "top_head",
-            "rarity": "rare"
-        },
-        {
-            "urn": "urn:decentraland:matic:collections-v2:0x2a3a6d0c92b18102ed189233976c974473a59c87:0",
-            "amount": 2,
-            "individualData": [
-                {
-                    "id": "0x2a3a6d0c92b18102ed189233976c974473a59c87-1995",
-                    "tokenId": "1995",
-                    "transferredAt": "1648168995",
-                    "price": "0"
-                },
-                {
-                    "id": "0x2a3a6d0c92b18102ed189233976c974473a59c87-3221",
-                    "tokenId": "3221",
-                    "transferredAt": "1648196004",
-                    "price": "0"
-                }
-            ],
-            "name": "Estée Lauder Radiance Aura ",
-            "category": "top_head",
-            "rarity": "uncommon"
-        },
-        {
-            "urn": "urn:decentraland:matic:collections-v2:0x2f7c1373b82ba1b85ad70793da9a11324c700170:0",
-            "amount": 1,
-            "individualData": [
-                {
-                    "id": "0x2f7c1373b82ba1b85ad70793da9a11324c700170-86",
-                    "tokenId": "86",
-                    "transferredAt": "1686588309",
-                    "price": "0"
-                }
-            ],
-            "name": "Glossydrop Backpack",
-            "category": "earring",
-            "rarity": "uncommon"
-        },
-        {
-            "urn": "urn:decentraland:matic:collections-v2:0x37a21dcf21120af16da54542720abbe351670af8:0",
-            "amount": 1,
-            "individualData": [
-                {
-                    "id": "0x37a21dcf21120af16da54542720abbe351670af8-150",
-                    "tokenId": "150",
-                    "transferredAt": "1686589045",
-                    "price": "0"
-                }
-            ],
-            "name": "Neutrogena - Dynamic Barrier",
-            "category": "earring",
-            "rarity": "uncommon"
-        },
-        {
-            "urn": "urn:decentraland:matic:collections-v2:0x37a21dcf21120af16da54542720abbe351670af8:1",
-            "amount": 1,
-            "individualData": [
-                {
-                    "id": "0x37a21dcf21120af16da54542720abbe351670af8-105312291668557186697918027683670432318895095400549111254310977678",
-                    "tokenId": "105312291668557186697918027683670432318895095400549111254310977678",
-                    "transferredAt": "1686589163",
-                    "price": "0"
-                }
-            ],
-            "name": "Neutrogena - Cellular Activity",
-            "category": "earring",
-            "rarity": "uncommon"
-        },
-        {
-            "urn": "urn:decentraland:matic:collections-v2:0x3fb215f9fedc8cb4baeb89f54273fb54716b073a:2",
-            "amount": 1,
-            "individualData": [
-                {
-                    "id": "0x3fb215f9fedc8cb4baeb89f54273fb54716b073a-210624583337114373395836055367340864637790190801098222508621959322",
-                    "tokenId": "210624583337114373395836055367340864637790190801098222508621959322",
-                    "transferredAt": "1662038646",
-                    "price": "0"
-                }
-            ],
-            "name": "GREY GOOSE® Honey Deuce Cocktail",
-            "category": "earring",
-            "rarity": "uncommon"
-        },
-        {
-            "urn": "urn:decentraland:matic:collections-v2:0x50f4d59172ec5edc54b7fd05350372d00b154ccf:6",
-            "amount": 1,
-            "individualData": [
-                {
-                    "id": "0x50f4d59172ec5edc54b7fd05350372d00b154ccf-631873750011343120187508166102022593913370572403294667525865865467",
-                    "tokenId": "631873750011343120187508166102022593913370572403294667525865865467",
-                    "transferredAt": "1645409406",
-                    "price": "0"
-                }
-            ],
-            "name": "OG Grey Fox",
-            "category": "skin",
-            "rarity": "uncommon"
-        },
-        {
-            "urn": "urn:decentraland:matic:collections-v2:0x6d83706836e820e79252edd48da419d2d03592d4:0",
-            "amount": 7,
-            "individualData": [
-                {
-                    "id": "0x6d83706836e820e79252edd48da419d2d03592d4-1632",
-                    "tokenId": "1632",
-                    "transferredAt": "1662736881",
-                    "price": "10000000000000000000000000"
-                },
-                {
-                    "id": "0x6d83706836e820e79252edd48da419d2d03592d4-2587",
-                    "tokenId": "2587",
-                    "transferredAt": "1662737239",
-                    "price": "10000000000000000000000000"
-                },
-                {
-                    "id": "0x6d83706836e820e79252edd48da419d2d03592d4-3542",
-                    "tokenId": "3542",
-                    "transferredAt": "1662737595",
-                    "price": "10000000000000000000000000"
-                },
-                {
-                    "id": "0x6d83706836e820e79252edd48da419d2d03592d4-4497",
-                    "tokenId": "4497",
-                    "transferredAt": "1662737945",
-                    "price": "10000000000000000000000000"
-                },
-                {
-                    "id": "0x6d83706836e820e79252edd48da419d2d03592d4-5452",
-                    "tokenId": "5452",
-                    "transferredAt": "1662738325",
-                    "price": "10000000000000000000000000"
-                },
-                {
-                    "id": "0x6d83706836e820e79252edd48da419d2d03592d4-6407",
-                    "tokenId": "6407",
-                    "transferredAt": "1662738697",
-                    "price": "10000000000000000000000000"
-                },
-                {
-                    "id": "0x6d83706836e820e79252edd48da419d2d03592d4-677",
-                    "tokenId": "677",
-                    "transferredAt": "1662736515",
-                    "price": "10000000000000000000000000"
-                }
-            ],
-            "name": "TerraZero Tuxedo Jacket",
-            "category": "upper_body",
-            "rarity": "uncommon"
-        },
-        {
-            "urn": "urn:decentraland:matic:collections-v2:0xa25c20f58ac447621a5f854067b857709cbd60eb:6",
-            "amount": 1,
-            "individualData": [
-                {
-                    "id": "0xa25c20f58ac447621a5f854067b857709cbd60eb-631873750011343120187508166102022593913370572403294667525865868717",
-                    "tokenId": "631873750011343120187508166102022593913370572403294667525865868717",
-                    "transferredAt": "1656019352",
-                    "price": "0"
-                }
-            ],
-            "name": "Thalia Pride Teddy Bear Earrings",
-            "category": "earring",
-            "rarity": "uncommon"
-        },
-        {
-            "urn": "urn:decentraland:matic:collections-v2:0xe29d8fb0ef5a1f77394c664fe62d068c05040a1b:0",
-            "amount": 1,
-            "individualData": [
-                {
-                    "id": "0xe29d8fb0ef5a1f77394c664fe62d068c05040a1b-842",
-                    "tokenId": "842",
-                    "transferredAt": "1685701263",
-                    "price": "0"
-                }
-            ],
-            "name": "TP VR Goggles",
-            "category": "eyewear",
-            "rarity": "uncommon"
-        },
-        {
-            "urn": "urn:decentraland:matic:collections-v2:0xe29d8fb0ef5a1f77394c664fe62d068c05040a1b:1",
-            "amount": 1,
-            "individualData": [
-                {
-                    "id": "0xe29d8fb0ef5a1f77394c664fe62d068c05040a1b-105312291668557186697918027683670432318895095400549111254310978439",
-                    "tokenId": "105312291668557186697918027683670432318895095400549111254310978439",
-                    "transferredAt": "1685700844",
-                    "price": "0"
-                }
-            ],
-            "name": "TP Party Jacket",
-            "category": "upper_body",
-            "rarity": "uncommon"
-        },
-        {
-            "urn": "urn:decentraland:matic:collections-v2:0x0a83fe7d555d25ffe384714cc9d54c9f66231f5e:0",
-            "amount": 1,
-            "individualData": [
-                {
-                    "id": "0x0a83fe7d555d25ffe384714cc9d54c9f66231f5e-174",
-                    "tokenId": "174",
-                    "transferredAt": "1679053963",
-                    "price": "0"
-                }
-            ],
-            "name": "FITCHIN Black Jersey",
-            "category": "upper_body",
-            "rarity": "common"
-        },
-        {
-            "urn": "urn:decentraland:matic:collections-v2:0x167d6b63511a7b5062d1f7b07722fccbbffb5105:1",
-            "amount": 1,
-            "individualData": [
-                {
-                    "id": "0x167d6b63511a7b5062d1f7b07722fccbbffb5105-105312291668557186697918027683670432318895095400549111254310977663",
-                    "tokenId": "105312291668557186697918027683670432318895095400549111254310977663",
-                    "transferredAt": "1678267912",
-                    "price": "0"
-                }
-            ],
-            "name": "Vest - Mat Quest",
-            "category": "upper_body",
-            "rarity": "common"
-        },
-        {
-            "urn": "urn:decentraland:matic:collections-v2:0x167d6b63511a7b5062d1f7b07722fccbbffb5105:2",
-            "amount": 1,
-            "individualData": [
-                {
-                    "id": "0x167d6b63511a7b5062d1f7b07722fccbbffb5105-210624583337114373395836055367340864637790190801098222508621955187",
-                    "tokenId": "210624583337114373395836055367340864637790190801098222508621955187",
-                    "transferredAt": "1678267912",
-                    "price": "0"
-                }
-            ],
-            "name": "Tobor Cap - Kit Quest",
-            "category": "hat",
-            "rarity": "common"
-        },
-        {
-            "urn": "urn:decentraland:matic:collections-v2:0x1df3011a14ea736314df6cdab4fff824c5d46ec1:0",
-            "amount": 3,
-            "individualData": [
-                {
-                    "id": "0x1df3011a14ea736314df6cdab4fff824c5d46ec1-2119",
-                    "tokenId": "2119",
-                    "transferredAt": "1656019104",
-                    "price": "0"
-                },
-                {
-                    "id": "0x1df3011a14ea736314df6cdab4fff824c5d46ec1-4516",
-                    "tokenId": "4516",
-                    "transferredAt": "1656410089",
-                    "price": "0"
-                },
-                {
-                    "id": "0x1df3011a14ea736314df6cdab4fff824c5d46ec1-900",
-                    "tokenId": "900",
-                    "transferredAt": "1655149418",
-                    "price": "0"
-                }
-            ],
-            "name": "Blade of Transcendance",
-            "category": "earring",
-            "rarity": "common"
-        },
-        {
-            "urn": "urn:decentraland:matic:collections-v2:0x1df3011a14ea736314df6cdab4fff824c5d46ec1:2",
-            "amount": 1,
-            "individualData": [
-                {
-                    "id": "0x1df3011a14ea736314df6cdab4fff824c5d46ec1-210624583337114373395836055367340864637790190801098222508621956382",
-                    "tokenId": "210624583337114373395836055367340864637790190801098222508621956382",
-                    "transferredAt": "1655233827",
-                    "price": "0"
-                }
-            ],
-            "name": "Pride Rainbow Aura",
-            "category": "tiara",
-            "rarity": "common"
-        },
-        {
-            "urn": "urn:decentraland:matic:collections-v2:0x26676a456bca88e418f9ea4b33a707364c0b5876:0",
-            "amount": 1,
-            "individualData": [
-                {
-                    "id": "0x26676a456bca88e418f9ea4b33a707364c0b5876-66",
-                    "tokenId": "66",
-                    "transferredAt": "1648072483",
-                    "price": "0"
-                }
-            ],
-            "name": "Bodysuit",
-            "category": "upper_body",
-            "rarity": "common"
-        },
-        {
-            "urn": "urn:decentraland:matic:collections-v2:0x26676a456bca88e418f9ea4b33a707364c0b5876:1",
-            "amount": 1,
-            "individualData": [
-                {
-                    "id": "0x26676a456bca88e418f9ea4b33a707364c0b5876-105312291668557186697918027683670432318895095400549111254310977609",
-                    "tokenId": "105312291668557186697918027683670432318895095400549111254310977609",
-                    "transferredAt": "1648072331",
-                    "price": "0"
-                }
-            ],
-            "name": "ParcelVision TM",
-            "category": "eyewear",
-            "rarity": "common"
-        },
-        {
-            "urn": "urn:decentraland:matic:collections-v2:0x293d1ae40b28c39d7b013d4a1fe3c5a8c016bf19:1",
-            "amount": 1,
-            "individualData": [
-                {
-                    "id": "0x293d1ae40b28c39d7b013d4a1fe3c5a8c016bf19-105312291668557186697918027683670432318895095400549111254310977722",
-                    "tokenId": "105312291668557186697918027683670432318895095400549111254310977722",
-                    "transferredAt": "1662040329",
-                    "price": "100000000000000000"
-                }
-            ],
-            "name": "Lion's Robe Morning Wear",
-            "category": "upper_body",
-            "rarity": "common"
-        },
-        {
-            "urn": "urn:decentraland:matic:collections-v2:0x475abb52a7e925209b1334e52bfb62e1da9ebf62:1",
-            "amount": 1,
-            "individualData": [
-                {
-                    "id": "0x475abb52a7e925209b1334e52bfb62e1da9ebf62-105312291668557186697918027683670432318895095400549111254310977681",
-                    "tokenId": "105312291668557186697918027683670432318895095400549111254310977681",
-                    "transferredAt": "1662040489",
-                    "price": "1000000000000000000"
-                }
-            ],
-            "name": "Invisible Rastas (Lucky)",
-            "category": "skin",
-            "rarity": "common"
-        },
-        {
-            "urn": "urn:decentraland:matic:collections-v2:0x956b8d57066fc3d2562de22efd63624a1ba56e35:3",
-            "amount": 1,
-            "individualData": [
-                {
-                    "id": "0x956b8d57066fc3d2562de22efd63624a1ba56e35-315936875005671560093754083051011296956685286201647333762932934270",
-                    "tokenId": "315936875005671560093754083051011296956685286201647333762932934270",
-                    "transferredAt": "1668109966",
-                    "price": "0"
-                }
-            ],
-            "name": "MVMF22 T-Shirt Day 1",
-            "category": "upper_body",
-            "rarity": "common"
-        },
-        {
-            "urn": "urn:decentraland:matic:collections-v2:0x956b8d57066fc3d2562de22efd63624a1ba56e35:5",
-            "amount": 1,
-            "individualData": [
-                {
-                    "id": "0x956b8d57066fc3d2562de22efd63624a1ba56e35-526561458342785933489590138418352161594475477002745556271554888505",
-                    "tokenId": "526561458342785933489590138418352161594475477002745556271554888505",
-                    "transferredAt": "1668292168",
-                    "price": "0"
-                }
-            ],
-            "name": "MVMF22 T-Shirt Day 3",
-            "category": "upper_body",
-            "rarity": "common"
-        },
-        {
-            "urn": "urn:decentraland:matic:collections-v2:0xa8145f5e50f8ed88ba335262baf44a83c7c0c23f:0",
-            "amount": 1,
-            "individualData": [
-                {
-                    "id": "0xa8145f5e50f8ed88ba335262baf44a83c7c0c23f-8",
-                    "tokenId": "8",
-                    "transferredAt": "1687423950",
-                    "price": "4200000000000000000"
-                }
-            ],
-            "name": "Katmandu - Phygital Hippie",
-            "category": "skin",
-            "rarity": "common"
+            }
         },
         {
             "urn": "urn:decentraland:matic:collections-v2:0xc73b75640bac8bced8829d07aa57e694b446b3f9:4",
-            "amount": 2,
+            "amount": 1,
             "individualData": [
                 {
-                    "id": "0xc73b75640bac8bced8829d07aa57e694b446b3f9-421249166674228746791672110734681729275580381602196445017243928717",
-                    "tokenId": "421249166674228746791672110734681729275580381602196445017243928717",
-                    "transferredAt": "1655233799",
-                    "price": "0"
-                },
-                {
-                    "id": "0xc73b75640bac8bced8829d07aa57e694b446b3f9-421249166674228746791672110734681729275580381602196445017243936297",
-                    "tokenId": "421249166674228746791672110734681729275580381602196445017243936297",
-                    "transferredAt": "1656019068",
+                    "id": "0xc73b75640bac8bced8829d07aa57e694b446b3f9-421249166674228746791672110734681729275580381602196445017243937518",
+                    "tokenId": "421249166674228746791672110734681729275580381602196445017243937518",
+                    "transferredAt": "1656011269",
                     "price": "0"
                 }
             ],
             "name": "Pride Rainbow Earrings",
             "category": "earring",
-            "rarity": "common"
+            "rarity": "common",
+            "entity": {
+                "version": "v3",
+                "id": "QmQzqjZF7vjrGbkM3i6nqyppWinxDQSSHJQQjCF4xb2Nef",
+                "type": "wearable",
+                "pointers": [
+                    "urn:decentraland:matic:collections-v2:0xc73b75640bac8bced8829d07aa57e694b446b3f9:4"
+                ],
+                "timestamp": 1623280306778,
+                "content": [
+                    {
+                        "file": "image.png",
+                        "hash": "Qmck4zjwjTVDR3gpnU7dwWHyTKgrgDZBHcc8wguvAKm1on"
+                    },
+                    {
+                        "file": "pride_rainbow_earrings.glb",
+                        "hash": "QmdPS258xFZG2QYNzxxqYo6ns8nn4LgHTNSxP3v1KXzWmK"
+                    },
+                    {
+                        "file": "thumbnail.png",
+                        "hash": "QmXxV7fYaBS9Rj9AmwE8VF5tHcCePccHzJDZdpUMPVFBWA"
+                    }
+                ],
+                "metadata": {
+                    "id": "urn:decentraland:matic:collections-v2:0xc73b75640bac8bced8829d07aa57e694b446b3f9:4",
+                    "name": "Pride Rainbow Earrings",
+                    "description": "🌈 Dangly rainbow earrings 🦄 ",
+                    "collectionAddress": "0xc73b75640bac8bced8829d07aa57e694b446b3f9",
+                    "rarity": "common",
+                    "i18n": [
+                        {
+                            "code": "en",
+                            "text": "Pride Rainbow Earrings"
+                        }
+                    ],
+                    "data": {
+                        "replaces": [],
+                        "hides": [],
+                        "tags": [
+                            "earrings",
+                            "rainbow",
+                            "pride",
+                            "clouds",
+                            "2021",
+                            "parade"
+                        ],
+                        "representations": [
+                            {
+                                "bodyShapes": [
+                                    "urn:decentraland:off-chain:base-avatars:BaseMale"
+                                ],
+                                "mainFile": "pride_rainbow_earrings.glb",
+                                "contents": [
+                                    "pride_rainbow_earrings.glb",
+                                    "thumbnail.png"
+                                ],
+                                "overrideHides": [],
+                                "overrideReplaces": []
+                            },
+                            {
+                                "bodyShapes": [
+                                    "urn:decentraland:off-chain:base-avatars:BaseFemale"
+                                ],
+                                "mainFile": "pride_rainbow_earrings.glb",
+                                "contents": [
+                                    "pride_rainbow_earrings.glb",
+                                    "thumbnail.png"
+                                ],
+                                "overrideHides": [],
+                                "overrideReplaces": []
+                            }
+                        ],
+                        "category": "earring"
+                    },
+                    "image": "image.png",
+                    "thumbnail": "thumbnail.png",
+                    "contents": {
+                        "pride_rainbow_earrings.glb": "QmdPS258xFZG2QYNzxxqYo6ns8nn4LgHTNSxP3v1KXzWmK",
+                        "thumbnail.png": "QmXxV7fYaBS9Rj9AmwE8VF5tHcCePccHzJDZdpUMPVFBWA"
+                    },
+                    "metrics": {
+                        "triangles": 752,
+                        "materials": 1,
+                        "textures": 2,
+                        "meshes": 1,
+                        "bodies": 1,
+                        "entities": 1
+                    },
+                    "createdAt": 1623280306776,
+                    "updatedAt": 1623280306776
+                }
+            }
         }
     ],
-    "totalAmount": 65,
+    "totalAmount": 2,
     "pageNum": 1,
     "pageSize": 100
 }

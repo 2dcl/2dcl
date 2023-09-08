@@ -14,7 +14,7 @@ mod global_client;
 pub use global_client::*;
 
 mod lambda_client;
-pub use lambda_client::LambdaClient;
+pub use lambda_client::*;
 
 mod deployment;
 pub use deployment::*;

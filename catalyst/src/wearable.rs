@@ -8,6 +8,7 @@ pub struct Wearable {
     #[serde(skip_serializing_if = "Option::is_none")]
     pub menu_bar_icon: Option<String>,
     pub id: String,
+    pub name: String,
     pub description: String,
     pub i18n: Vec<I18n>,
     pub thumbnail: String,
@@ -29,7 +30,7 @@ pub enum Props {
 #[derive(Debug, Deserialize, Serialize, Clone, PartialEq)]
 #[serde(rename_all = "camelCase")]
 pub struct ThirdPartyProps {
-    pub merkle_roof: MerkleProof,
+    pub merkle_proof: MerkleProof,
     pub content: HashMap<String, String>,
 }
 
@@ -170,4 +171,38 @@ pub struct Metrics {
     pub meshes: f32,
     pub bodies: f32,
     pub entities: f32,
+}
+
+#[cfg(test)]
+mod test {
+    use crate::{Props, Rarity, StandardProps, Wearable, WearableCategory, WearableData};
+
+    #[test]
+    fn wearable_deserializes_correctly() {
+        let response = include_str!("../fixtures/wearable.json");
+        let wearable: Wearable = serde_json::from_str(response).unwrap();
+        let expected = Wearable {
+            menu_bar_icon: None,
+            id: "id".to_string(),
+            name: "name".to_string(),
+            description: "description".to_string(),
+            i18n: Vec::default(),
+            thumbnail: "thumbnail.png".to_string(),
+            image: "image.png".to_string(),
+            metrics: None,
+            props: Props::Standard(StandardProps {
+                collection_address: "address".to_string(),
+                rarity: Rarity::Common,
+            }),
+            data: WearableData {
+                replaces: Vec::default(),
+                hides: Vec::default(),
+                tags: Vec::default(),
+                representations: Vec::default(),
+                category: WearableCategory::LowerBody,
+                removes_default_hiding: None,
+            },
+        };
+        assert_eq!(wearable, expected);
+    }
 }
