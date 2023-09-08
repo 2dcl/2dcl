@@ -5,7 +5,7 @@ use crate::wearable::WearableCategory;
 
 #[derive(Debug, Deserialize, Serialize, Clone, PartialEq)]
 pub struct Profile {
-    avatars: Vec<Avatar>,
+    pub avatars: Vec<Avatar>,
 }
 
 #[derive(Debug, Deserialize, Serialize, Clone, PartialEq)]

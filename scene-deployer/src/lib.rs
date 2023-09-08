@@ -7,7 +7,7 @@ use std::{
     time::{SystemTime, UNIX_EPOCH},
 };
 
-use catalyst::{ContentFile, ContentId, Entity, EntityId, EntityType};
+use catalyst::{ContentFile, ContentId, Entity, EntityId, EntityType, Metadata};
 use cid::{multihash::MultihashDigest, Cid};
 use dcl_common::{Parcel, Result};
 use dcl_crypto::{AuthChain, AuthLink};
@@ -27,7 +27,7 @@ pub async fn deploy(
     server: catalyst::Server,
 ) -> Result<Response> {
     if let Some(entity) = find_entity(&deploy_data) {
-        if let Some(scene_3d) = entity.metadata {
+        if let Some(Metadata::Scene(scene_3d)) = entity.metadata {
             let expected_parcels = parcels_vec_to_strings_vec(&scene_3d.scene.parcels);
             if expected_parcels != entity.pointers {
                 return Err(Box::new(SceneDeployError::InvalidPointers {
@@ -199,7 +199,7 @@ pub fn build_entity_scene(
 
     let entity_file = serde_json::to_string(&entity).unwrap();
     let entity_id = get_cid(entity_file.as_bytes());
-    entity.id = Some(EntityId(entity_id.clone()));
+    entity.id = EntityId(entity_id.clone());
 
     files_data.push(FileData {
         cid: entity_id.clone(),
@@ -209,10 +209,10 @@ pub fn build_entity_scene(
     (files_data, EntityId(entity_id))
 }
 
-fn find_entity(files_data: &Vec<FileData>) -> Option<SceneFile> {
+fn find_entity(files_data: &Vec<FileData>) -> Option<Entity> {
     for file in files_data {
         if file.mime_str == *"application/octet-stream" {
-            if let Ok(scene_file) = serde_json::from_slice::<SceneFile>(&file.bytes) {
+            if let Ok(scene_file) = serde_json::from_slice::<Entity>(&file.bytes) {
                 return Some(scene_file);
             };
         }
