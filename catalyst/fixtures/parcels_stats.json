@@ -1,0 +1,74 @@
+{
+    "parcels": [
+        {
+            "peersCount": 1,
+            "parcel": {
+                "x": -26,
+                "y": 59
+            }
+        },
+        {
+            "peersCount": 1,
+            "parcel": {
+                "x": 141,
+                "y": -9
+            }
+        },
+        {
+            "peersCount": 1,
+            "parcel": {
+                "x": 146,
+                "y": 61
+            }
+        },
+        {
+            "peersCount": 1,
+            "parcel": {
+                "x": 143,
+                "y": -144
+            }
+        },
+        {
+            "peersCount": 1,
+            "parcel": {
+                "x": -28,
+                "y": -45
+            }
+        },
+        {
+            "peersCount": 1,
+            "parcel": {
+                "x": 149,
+                "y": 63
+            }
+        },
+        {
+            "peersCount": 1,
+            "parcel": {
+                "x": -26,
+                "y": 57
+            }
+        },
+        {
+            "peersCount": 1,
+            "parcel": {
+                "x": -26,
+                "y": -46
+            }
+        },
+        {
+            "peersCount": 1,
+            "parcel": {
+                "x": 0,
+                "y": 0
+            }
+        },
+        {
+            "peersCount": 1,
+            "parcel": {
+                "x": 143,
+                "y": -10
+            }
+        }
+    ]
+}
