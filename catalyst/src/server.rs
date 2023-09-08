@@ -14,7 +14,7 @@ pub struct Server {
     http_client: ReqwestClient,
 }
 
-#[derive(Deserialize, Debug)]
+#[derive(Deserialize, Debug, PartialEq)]
 #[serde(rename_all = "camelCase")]
 pub struct Status {
     pub version: String,

@@ -1,0 +1,4176 @@
+{
+    "collections": [
+        {
+            "id": "urn:decentraland:off-chain:base-avatars",
+            "name": "Base Wearables"
+        },
+        {
+            "id": "urn:decentraland:ethereum:collections-v1:3lau_basics",
+            "name": "dcl://3lau_basics"
+        },
+        {
+            "id": "urn:decentraland:ethereum:collections-v1:atari_launch",
+            "name": "dcl://atari_launch"
+        },
+        {
+            "id": "urn:decentraland:ethereum:collections-v1:binance_us_collection",
+            "name": "dcl://binance_us_collection"
+        },
+        {
+            "id": "urn:decentraland:ethereum:collections-v1:china_flying",
+            "name": "dcl://china_flying"
+        },
+        {
+            "id": "urn:decentraland:ethereum:collections-v1:community_contest",
+            "name": "dcl://community_contest"
+        },
+        {
+            "id": "urn:decentraland:ethereum:collections-v1:cybermike_cybersoldier_set",
+            "name": "dcl://cybermike_cybersoldier_set"
+        },
+        {
+            "id": "urn:decentraland:ethereum:collections-v1:cz_mercenary_mtz",
+            "name": "dcl://cz_mercenary_mtz"
+        },
+        {
+            "id": "urn:decentraland:ethereum:collections-v1:dappcraft_moonminer",
+            "name": "dcl://dappcraft_moonminer"
+        },
+        {
+            "id": "urn:decentraland:ethereum:collections-v1:dcg_collection",
+            "name": "dcl://dcg_collection"
+        },
+        {
+            "id": "urn:decentraland:ethereum:collections-v1:dcl_launch",
+            "name": "dcl://dcl_launch"
+        },
+        {
+            "id": "urn:decentraland:ethereum:collections-v1:dc_meta",
+            "name": "dcl://dc_meta"
+        },
+        {
+            "id": "urn:decentraland:ethereum:collections-v1:dc_niftyblocksmith",
+            "name": "dcl://dc_niftyblocksmith"
+        },
+        {
+            "id": "urn:decentraland:ethereum:collections-v1:dg_atari_dillon_francis",
+            "name": "dcl://dg_atari_dillon_francis"
+        },
+        {
+            "id": "urn:decentraland:ethereum:collections-v1:dg_fall_2020",
+            "name": "dcl://dg_fall_2020"
+        },
+        {
+            "id": "urn:decentraland:ethereum:collections-v1:dg_summer_2020",
+            "name": "dcl://dg_summer_2020"
+        },
+        {
+            "id": "urn:decentraland:ethereum:collections-v1:dgtble_headspace",
+            "name": "dcl://dgtble_headspace"
+        },
+        {
+            "id": "urn:decentraland:ethereum:collections-v1:digital_alchemy",
+            "name": "dcl://digital_alchemy"
+        },
+        {
+            "id": "urn:decentraland:ethereum:collections-v1:ethermon_wearables",
+            "name": "dcl://ethermon_wearables"
+        },
+        {
+            "id": "urn:decentraland:ethereum:collections-v1:exclusive_masks",
+            "name": "dcl://exclusive_masks"
+        },
+        {
+            "id": "urn:decentraland:ethereum:collections-v1:halloween_2019",
+            "name": "dcl://halloween_2019"
+        },
+        {
+            "id": "urn:decentraland:ethereum:collections-v1:halloween_2020",
+            "name": "dcl://halloween_2020"
+        },
+        {
+            "id": "urn:decentraland:ethereum:collections-v1:mch_collection",
+            "name": "dcl://mch_collection"
+        },
+        {
+            "id": "urn:decentraland:ethereum:collections-v1:meme_dontbuythis",
+            "name": "dcl://meme_dontbuythis"
+        },
+        {
+            "id": "urn:decentraland:ethereum:collections-v1:mf_sammichgamer",
+            "name": "dcl://mf_sammichgamer"
+        },
+        {
+            "id": "urn:decentraland:ethereum:collections-v1:ml_liondance",
+            "name": "dcl://ml_liondance"
+        },
+        {
+            "id": "urn:decentraland:ethereum:collections-v1:ml_pekingopera",
+            "name": "dcl://ml_pekingopera"
+        },
+        {
+            "id": "urn:decentraland:ethereum:collections-v1:moonshot_2020",
+            "name": "dcl://moonshot_2020"
+        },
+        {
+            "id": "urn:decentraland:ethereum:collections-v1:pm_dreamverse_eminence",
+            "name": "dcl://pm_dreamverse_eminence"
+        },
+        {
+            "id": "urn:decentraland:ethereum:collections-v1:pm_outtathisworld",
+            "name": "dcl://pm_outtathisworld"
+        },
+        {
+            "id": "urn:decentraland:ethereum:collections-v1:rac_basics",
+            "name": "dcl://rac_basics"
+        },
+        {
+            "id": "urn:decentraland:ethereum:collections-v1:release_the_kraken",
+            "name": "dcl://release_the_kraken"
+        },
+        {
+            "id": "urn:decentraland:ethereum:collections-v1:rtfkt_x_atari",
+            "name": "dcl://rtfkt_x_atari"
+        },
+        {
+            "id": "urn:decentraland:ethereum:collections-v1:stay_safe",
+            "name": "dcl://stay_safe"
+        },
+        {
+            "id": "urn:decentraland:ethereum:collections-v1:sugarclub_yumi",
+            "name": "dcl://sugarclub_yumi"
+        },
+        {
+            "id": "urn:decentraland:ethereum:collections-v1:tech_tribal_marc0matic",
+            "name": "dcl://tech_tribal_marc0matic"
+        },
+        {
+            "id": "urn:decentraland:ethereum:collections-v1:winklevoss_capital",
+            "name": "dcl://winklevoss_capital"
+        },
+        {
+            "id": "urn:decentraland:ethereum:collections-v1:wonderzone_meteorchaser",
+            "name": "dcl://wonderzone_meteorchaser"
+        },
+        {
+            "id": "urn:decentraland:ethereum:collections-v1:wonderzone_steampunk",
+            "name": "dcl://wonderzone_steampunk"
+        },
+        {
+            "id": "urn:decentraland:ethereum:collections-v1:wz_wonderbot",
+            "name": "dcl://wz_wonderbot"
+        },
+        {
+            "id": "urn:decentraland:ethereum:collections-v1:xmas_2019",
+            "name": "dcl://xmas_2019"
+        },
+        {
+            "id": "urn:decentraland:ethereum:collections-v1:xmas_2020",
+            "name": "dcl://xmas_2020"
+        },
+        {
+            "id": "urn:decentraland:ethereum:collections-v1:xmash_up_2020",
+            "name": "dcl://xmash_up_2020"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x0023693cd7f5ac9931ce9fc482c5c328198bc819",
+            "name": "TODAK Official"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x002ed6d733c000ec8a23d720e06e229a1754a08d",
+            "name": "MST GYATSO NFT x RMA"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x0031117212a5849c87efc4fc32b91ba6a02fdbc0",
+            "name": "Shroom Trip"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x004dd1904b75b7e8a46711dde8a0c608578e0302",
+            "name": "JetPack420"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x0058dd614af70a9c1da18048709ec20f06815f4a",
+            "name": "KBH BW 23"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x005d4450035a8deca37b969bd858da6f15ea21dd",
+            "name": "FMF365 Halloween Costumes 2022"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x0068f4b8e5d23f317151328bc0d9a82454ab29bc",
+            "name": "Big Bad Smoke Shop"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x006de6cd90f03d4b0a68f0288ba16992b006556c",
+            "name": "i luv snow"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x007d4fd51047a33846bf83764dd77af409d04e32",
+            "name": "MVMF22 VIP Access"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x00925b9b061b314d5fd2b35b1720c932d03ee132",
+            "name": "JTV Designs"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x009f0ab4ba6273a47ca12856b7a36887e9f30ab3",
+            "name": "StoneyEye x Roots"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x00a5bc5f91eb440072bce4c584bc021cb7346753",
+            "name": "Mango DCL Fashion Week 2022"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x00a815162564d416520ad4d1a415e1c50ba4d944",
+            "name": "OnEarth Collection"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x00ad507b62679ba42ebefd8bb6fea2ede29b56fa",
+            "name": "Drone - Quantum X Gear Edition"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x00c1f53e8e1b97e619bdf555fff187521b3e3e17",
+            "name": "Anime Mom Hair"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x00c55b25bdd3a815a48e76d5a9eb61b68a3c1d23",
+            "name": "Petaverse Pride"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x00e0efaec8a56918104e88c4839c1d7a656a4355",
+            "name": "PEA  COLLECTION"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x00ea0379451527a5cd56e2c4bb0eac950ccb79fa",
+            "name": "Amruta & Sheel's Guest Wearables"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x011a572970538448337b402df23db53ab75bad19",
+            "name": "ALLIΞ’S GAMΞ 💎"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x0152b29c6d47f5c5b69efc278b733a5ffbbd6ecc",
+            "name": "Brass Knuckle Rings"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x0162ba693322bcc4c9198547fe7fbb4fa751db95",
+            "name": "Icy Pimp 002"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x016a61feb6377239e34425b82e5c4b367e52457f",
+            "name": "Metaverse Art Week 2022"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x016a6995783e21ad92d88627fbe6e0d8bc658b1e",
+            "name": "MERRY MEEPLES"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x018af5671d8d6ddc84dd5edaf0539f3a8376779e",
+            "name": "MEW EMOTE COLLECTION 1"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x019021b4ada231b3fcb56144b9c0224a51f67f6a",
+            "name": "DCL Brasil Carnival"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x019a4d4a284c5c85f52d7d142244b91489efcaaf",
+            "name": "Mouse Hat"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x01b35f5ed8a2d01d5746ec691165eceb64517202",
+            "name": "Cloudy City #1"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x01b57f06581a9890e286f6cd4802d15ac192b92d",
+            "name": "Boss Babe Black Suit"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x01b655ff069a8f0a10caea1d5daf1105c2c82f43",
+            "name": "Uniqly.io Sample Pack"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x01bd66c11d792a8354b530245c6e14a9b3ec1194",
+            "name": "SixthRéseau Metaverse Wearable"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x01c871cb8735c8aae575036aeef0dfa1f7ae9495",
+            "name": "Bread Bottoms"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x01cbd43f97f9f2ba0e749f946e0b073a81487271",
+            "name": "Crazy Panthers"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x01cc9871ef405b71dd797c1423c7771942fd8258",
+            "name": "MetaPride Land Festival 2022"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x01daf03e2980b1acbddc1d30fb270de8d2c1d731",
+            "name": "Official Duo"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x01eb68633e3dccd9949bf053df79202d288b8ba3",
+            "name": "Luxury-Twirl!"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x01f1a881fef401cc702db49895ce4e71e80b72cf",
+            "name": "Beta Puppy Night"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x01f1f8287282a13b9e24e49dd5976a525008f530",
+            "name": "hiroXmack"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x01fdbd1d51ccb8a4a26b66d268b44a6ca5349092",
+            "name": "Metasharks X Sugar Club"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x02048643e32f893406dc2012a2f48a3023645612",
+            "name": "Wealth Hat by Only 90s Kids Know"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x020bf15ba3b275ad7ae1f63c5eba1d6981666377",
+            "name": "Vertual King Mask"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x021159005cda2bbaf591c061a69d890725804855",
+            "name": "Space Jockey"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x021bdcfd3e210f54276417d1c3ab0df9a458144f",
+            "name": "Spaz Gang \"OG\" Trousers"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x02205a2238b8aa0218b6a6bb2376bdfe5b1cc3c6",
+            "name": "DCL Cowboy Hats"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x0228aece0b8691d855286ed02c1fadc856966599",
+            "name": "Benji Bananas x ICE Poker"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x022faa0a04b371796366b71284b5ab4e7847994d",
+            "name": "RAP"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x0230ca425cd975e1f94fba2d3a3b84285a6c1bd3",
+            "name": "Dizzy Dragons Letterman Jacket"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x023a73d1cf10ed196f39700312a498b27c36e88e",
+            "name": " DAPPCRAFT Collection MVFW'23"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x023d684ea6a1be6d07c03da9738b83959e4d2fa7",
+            "name": "The LBP x Jägermeister"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x024641ab134a82d94c79a4f0dc468b5812f25c4e",
+            "name": "Facemoon Genesis"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x02716e9855f9f0b561fecaec3d96b17b74a0b66d",
+            "name": "Moondogs Odyssey"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x02ae0c012684031e2db800168ae6c4274d4c0006",
+            "name": "NFT DOLPHIN"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x02b9cb5e66f9ac49154d778f1b251e7589ef8947",
+            "name": "Rare Shoe Fashion Week"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x02bc8e5dd56546593812a4b9497b5cdd68bc503b",
+            "name": "EgonLab x Galeries Lafayette"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x02de2e4fd8dee5868c6e7ea8d6502c9bca4d5d3d",
+            "name": "Poppy Jumpsuit"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x02e1ad42ea52572757faad31c564a870b8b18b1d",
+            "name": "Goblin VoxBoarder"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x02e1d9de6b3fe43a34c92bd88e4e333135b2a496",
+            "name": "GIRA #1"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x02efc4b55bc723a51f1d59ef84940760010a59f2",
+            "name": "Orica Pass Membership"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x02f0233018817b3133f22ac3940b518d3dd97c39",
+            "name": "BNV Tops"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x031620183c00870d6a38de39c50e9f4dc8fe36e5",
+            "name": "#Monster Hall Magic Scholar"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x032ccffd847bbf5ba85912c4104c2c4a747f314e",
+            "name": "Finder Fedora"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x032ebae2a3942270689f0c188ed690e65d73ada0",
+            "name": "NFTeacher Student Wearables 2"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x03388973f1b6b34067ea955d72ca22b9d606252e",
+            "name": "Angel's Envy"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x033d83564b55afd16bda2a66dd3d42652e8416af",
+            "name": "DeepFaith Genesis"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x035af350298d150aadcbe7388b8a34b0f72938c4",
+            "name": "Anima Plasma Season 1 (4)"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x0360ac2c08f5299b4ebdae1e729872870de8bcbb",
+            "name": "Latin Kong Club"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x038dee3bb8e59db70a287ed576b34577b5d3bec5",
+            "name": "MetaDrip - Rebirth"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x039222ab023e19434f5bfae3fe35885fd2b7bd7e",
+            "name": "Colorful Halo"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x03966e213623ec7d74345774ecc6a8ff9a5aa956",
+            "name": "Yahoo HK Buzzland Collection"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x039c988761ac52622f68736557fb30b0567cb467",
+            "name": "Asus X Colbert "
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x03b8df94fd8bb6101539ac82fa7cd0b783b4d8f8",
+            "name": "Rolmax Pride"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x03ee0a82bd0a85dc485c2624f8f809d87fb66c31",
+            "name": "Galactic Glare Blockers"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x04019fb9dca686b3d1501fb877acebf9ea08adf6",
+            "name": "Muumba SDG Origins 2022"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x044c00210f642bcb783cab79c1e452fad0e6cf90",
+            "name": "Bong Head by Only 90s Kids Know"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x049717db554b96157447d4be5c3975ca19ab16dd",
+            "name": "Accessories "
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x049e043fda9dfc09dbc86029e6af9118390dfa88",
+            "name": "V-Wings by 1620"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x04e43281f36e1f1bfae6f38bc276cb48fb8ac632",
+            "name": "Phetta Verse"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x04e7f74e73e951c61edd80910e46c3fece5ebe80",
+            "name": "MetaZoo Intl. Big Brother Bot"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x04ec9cacb47c7b599af1ddf9a490fec95d0d28c5",
+            "name": "Wisher Music"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x04ef5dd5b658cd637a6f3194987f46e9df690af2",
+            "name": "Hhnms T"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x04fa04a7e61a02673e0666092efb2817848fd5a0",
+            "name": "Galaxy Tripper by TEOZ"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x04fb6b191e71e614fa882bf9a176c1b2fd1d36dd",
+            "name": "Fade Away Bunny"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x04fc6e2c660ff86f621fa0322bfdedbccb56ac77",
+            "name": "Axie Sisters x Uniqly.io"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x050103646e91b52f655a9ee50eb993787cd530d2",
+            "name": "The Chrome-X Suit"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x0517699276edcafd6e8a17b728f92e7f769ec168",
+            "name": "I have a scream - Babi Badalov"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x05401253d95a7cf07fb1c37809a2678f182dfca0",
+            "name": "Boson x Metafactory Collection"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x054c6b4fbb4dca92257082d84dc7a3411cb9205d",
+            "name": "Daybed Swimwear 2022 Collection"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x0555106adfd3fd64dd67b9bf937f3a9c689d9258",
+            "name": "BE THE SPONGE"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x055b1ba77ec82da43ba7502a25f88abb86cd4acc",
+            "name": "SaTVerse Wearables No. 2"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x0562f298fe5fe90739023bb8fe88d8d0c71a2a24",
+            "name": "Chang Gang Legendary Suit"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x0563daaab6f0f985ff9511e40ae268dd239cf4ba",
+            "name": "Crypto Bloxs"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x0575c33bf81b0bde87c671b58b6cdacdfa76307c",
+            "name": "The Chrysalis"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x0578dec7225ef1b175571c5f226b1a7e4134946e",
+            "name": "BEE HUMAN by Acool55"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x057fe18640ba60458a5a5a64e715cad61e4bacef",
+            "name": "Roustan Tiny Pixie"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x058269616a83cc5f12c92326542329f013c4ab1b",
+            "name": "Samsung House Of Sam Team Galaxy"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x058bd869182c72a72202dcd2e2d39bfee71e61ec",
+            "name": "MakunaPotata"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x05a98a06fa4d41027a9256527c3a3fe6c9a5aca0",
+            "name": "Volker Hermes Ears"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x05b66169001ee73dda0678550884febc093752c2",
+            "name": "Maskulinity"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x05c67bea23cc0879b07e2d74534395869f314013",
+            "name": "Taiwan #1"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x05d682bc6c9fc6aa7ed74ce66c198032b9f31aef",
+            "name": "CryptoJeweler Wearables Vol. 1"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x05dbe64f42b652da95b89fe6c79a7e2b84f1c905",
+            "name": "Panda Head"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x05e4a4f220674c441682a2a9d1975544d181083c",
+            "name": "Inferno Room Grand Opening"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x05eb641c7bd017de92ee943938f99844a9e345b3",
+            "name": "Soul Meditation"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x05fc71d3e1b0921af1a230cd91fe9b32ba3cf4d3",
+            "name": "Gauntlet"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x061fcfe59ad17927cfbd8331d4cd6f199ed3e0e5",
+            "name": "Easter 2022"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x06350901317394fa9d581d10b4f72910020f337e",
+            "name": "TRIUMPH Dusk Wings"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x06392188d39efb1a15c178846122f18140e8945d",
+            "name": "METATIGER DCL"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x06648393cacb665611db139cc43db9a1b226724f",
+            "name": "MetaVerseFashionWeek '22"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x066658d23324e232078a2fedb01637bb8c76425d",
+            "name": "SutenQuest - Adventurer's Armor"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x0666e34e136364869f62ee44807022d9fb83cd97",
+            "name": "névrosé - s.s 22 "
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x0675c621fedb3104d80df43bd3e5a137c2dda46a",
+            "name": "The Next-Gen Integra Wearables"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x067aacc803f9a37f6a00adde3647fcaf508659c9",
+            "name": "NOX COLLECTION"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x0699189ac32c8e404d900786317c93c23fe6f209",
+            "name": "Daddy Chang's 2nd X File"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x06a014265e735c424edaa8d2ea9746c1ce9b8763",
+            "name": "HeadAttire"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x06a48b030073e5bcce7171b45025582badf13433",
+            "name": "Lokelani Rose Lei (Maui Strong)"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x06a6e507c0d893bb81606a53098b10ef5c1d42c9",
+            "name": "MovieShots - Genesis Wearables"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x06b558705bb42790e3784335cbf5e0002890fac4",
+            "name": "LFM Alpha"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x06b8819b2c05b3c6f934ed968aa223051a471efa",
+            "name": "Daybed BAYC #6328 "
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x06c0a302a9c00bfb9ac3a3ce3efcfcc83f03dfe5",
+            "name": "Ukraine <3 Puffer Jacket"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x06c18abdf441813f9140e52fa8eb466294ddde7c",
+            "name": "Exclusible Fashion"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x06c2a4fdc7200430f3ee17559d1c705a64a325e7",
+            "name": "Avalanche Temple Fair Lollipop "
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x06caa6bec9efa4b2021e3ddbbd6ba234bcbbc18c",
+            "name": "ToonToonToon_Helmet"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x06d1052fe9a7e6c6ae397e8682143990ada9c5e8",
+            "name": "Meta Helmet"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x06e2ee8c334886d3be756b1ae52c0638beda174f",
+            "name": "420 In Decentraland"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x06ec69efbb531fe7e4e93b9968db3ba89f7512fb",
+            "name": "Daddy Chang's Mythic Kaiju Parts"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x06fa460506997a1f1be486a6149b32e9498d1f8e",
+            "name": "CAMOUFLAGE SNEAKERS NEON SOLES"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x0703589706634e31f5c6115cc2c90c3760d31731",
+            "name": "Driptor"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x070bfff0090381796a0643a824bb779ff4614475",
+            "name": "ckbubbles Face Fashion Grant"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x070c92958ffb5e7d11cebc5141ba2b1483d2ac51",
+            "name": "Gekoloniseerd"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x070fa43d0fcbec94494b0c66104edbe96ec913d1",
+            "name": "Phoenix"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x071a1f28ac0b922cd4b43fa241da56c0cf3e53a3",
+            "name": "Normal Eyewear"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x07290b1359ffb5addfdba7c0be8a3c4426f8002a",
+            "name": "Slacker Duck Pond"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x072b9a3cf4af40f12cfc611842f482b09705c5cc",
+            "name": "Higher Life Gecko"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x0735565d703e01a895c7b251731aeba31f746ce9",
+            "name": "RarePepe"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x073d4db5d136ee705225b1a42f3895feedf00340",
+            "name": "Paris NFT Day"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x0742b4a48a6fcbe828e6bf6eb450ebcd15ecbcad",
+            "name": "SEVEN HEADLY SINS"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x0753f2460785c7d20b63773372fe1c44736adb5b",
+            "name": "California Daddy - styleXchange"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x0768847951fddd4e73e670800da26d953a77059b",
+            "name": "PolygonPunks Hoodie"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x077a9154778a4bfa0cb2662b2de9b36d4d93c68b",
+            "name": "IOC X LYNSEY ADDARIO"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x077f1053f135b38bb96e4145fce3208a8b194db5",
+            "name": "World of Women X The Fabricant"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x07899fe3c061a4485d11d8d81bcb9f98bbb13d68",
+            "name": "Rainbowsaurus-Rex Pyjama Set"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x078e97db984e5ddda4cd5753bdf9cf2fc87b1422",
+            "name": "Vollebak Mars Jacket"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x07904fbe7be2d663abf5febdc04c1d6937b4c713",
+            "name": "ENPOSH ITALIA"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x0798748d52728a70d6c567383a648c1214f3ec33",
+            "name": "Skeleton Costume // FBRN"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x07b966e144863daad210619cd8943c0941ff6062",
+            "name": "Metasharks Collabs"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x07cbf68a033c41a44047d1a1a26ea5f1bd84a2f2",
+            "name": "Punk Battle Jacket"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x07d03ca2c27f29ec3c4cf3afad857c5af13f61cd",
+            "name": "WonderZone Season 1 Wearables"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x07e1a2ac8df165bd0c485615a6b1549bbdebbbd9",
+            "name": "Hiroto Kai Golden Girl"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x07e888da4d937ba90ae66f3a4e6cbd63fc01ce04",
+            "name": "EmoTop"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x07f1af6f1d0876d9da3b620af973e8c2b37cdbc8",
+            "name": "ALFIE WORLD Wearable"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x07f39e0da074944b86e8f417f4a8d0d2158088da",
+            "name": "HypeX "
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x07f70720dbb6c244987c7af2cf4c3d82e3bc23b1",
+            "name": "Backward Shoes"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x07fec78e97ba36fb00d6dba0dd1953556417bd5d",
+            "name": "Raptor City Rascals"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x08247a63a38c52bf5612ebf6fada5bb8f494e8b8",
+            "name": "ICE Crowns"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x082d812fc702929ba4b2e629b8f50f3a8564db50",
+            "name": "Scouts of BARC"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x08439463e6afa54bb5e4a559bfa0f10dfc27e0d9",
+            "name": "CoinGecko"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x085e4efed4ff7dce97fadce8d0b6a4c73a4709f3",
+            "name": "Glow Suit"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x08630d0af507b91502cc272f9216cc6a6ebc297c",
+            "name": "ArtWalk's DrG x Stoney x Hiro"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x088af69feca9964470258b37a309e2c8d00a828e",
+            "name": "GossApe Girl Collection 1"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x08927f894da194f041e0648eda94f8263d9bb41d",
+            "name": "Aliens Are Real"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x08956a6958c5e007624f6dcde76fc8c520cb0b5c",
+            "name": "MetaWear x SkinnyBandit"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x0897430acd7bfc81bdcf51e815db8f0f53c94878",
+            "name": "Frosty Shield"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x089a7f97878f19709c3fedb8809e6d5617001a38",
+            "name": "Little DDDemons 1 (red)"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x089f332e73ee2a7b7c455d365c8d1f3b81bee751",
+            "name": "Tiny Fly King"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x08b3dfc00b77b07e9f77ceab313481469421a3aa",
+            "name": "Metaverse Festival Techno Stage"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x08cbc78c1b2e2eea7627c39c8adf660d52e3d82c",
+            "name": "Blue santa hat"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x08d131cfa304c3b47f9c57f95e6c4e5548d25bb4",
+            "name": "Red Bottom Loafers "
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x08de0de733cc11081d43569b809c00e6ddf314fb",
+            "name": "Puuurs // FBRN"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x08e4986d11e4746c8811e21c646e933fe2bbb818",
+            "name": "Punks Not Dead"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x09018df7ab66acd48c4ae25d1a7e9392190b1d86",
+            "name": "Metaverse Monday Polo"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x093d33acdb9653b6b768beb1a008b21506083802",
+            "name": "BRAVE | Just for Kicks"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x098bbaf097ff040aea730f89870a70213421c49c",
+            "name": "GanjaSmokers Mask + Blunt"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x0992e83f41837eff00c88d2e6fc9591dbb42e572",
+            "name": "Axolittles x Uniqly.io"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x099c493ed36b18b661df222a679fb47c5e1ec2c9",
+            "name": "StoneyEye - Crimson"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x09b316127cea59bb767ed8daa9a93da3c63d19bf",
+            "name": "DCL Curations Black C1s"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x09c19170f77c35cb95b386a0d279b4c763383a4b",
+            "name": "When in Rome"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x09c58b015a1f34e1546056811e60d5abcc14771d",
+            "name": "Salt Gesture // FBRN "
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x09d4ff98bdf09d3ee1fd88d31f8bdedfdf79c121",
+            "name": "DG Space Suit"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x09e474b9f6caace23f665bc5afc65f47cb6d02ea",
+            "name": "Metaverse Festival Soundr"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x09ec967c5310af6d298bb1fb409c6080a126764d",
+            "name": "GANG GANG 420"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x09eeac7dff0dc304e25cbb7bdbfae798488fc34f",
+            "name": "Founding Fathers"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x09fda6c529e8bffe3a1b7c04eb14e909b3d6d619",
+            "name": "Punk Rave Girl "
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x0a04cca75b74c69ac5ad2e219d1b9c180d8fc746",
+            "name": "MrDhingia"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x0a04d86536aff5ef0b8b1931e42cdcd1ae7d00b0",
+            "name": "Big Mouth"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x0a1050192fa580020856f7fb9625da5a4c9ba248",
+            "name": "Boson Protocol x IKKS"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x0a1aca24ce834c6ebf6b317f4f0e885bc882cc0e",
+            "name": "Soultry Ultra Light Wave"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x0a2568fde974948cfa6541193d3e018d9451a932",
+            "name": "ICE x Mutant Cartel"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x0a2924a8aaeadb438322328b95a9d2dffe8b90ba",
+            "name": "Daddy Chang's Mythic X File"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x0a2d76633ef46c56b9d8513f7430b3cbd3d4062f",
+            "name": "PEACEFUL DRIP"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x0a2fcb0ac695ed546ea77f8e97bc119bee710ab4",
+            "name": "TGMC CAP"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x0a31cbfbd365aab8616a22fbf13a47443086bdc8",
+            "name": "ICE Poker Emotes II"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x0a4806a3be09793c00ad90c95137bbdd9666311b",
+            "name": "Redshilliz Penguin Collection"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x0a5447cf12037e4401179e823390fd469f86812c",
+            "name": "T4Y"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x0a57252ccbb31443f3deb2de64389ce6720e06b7",
+            "name": "Golden M4"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x0a5a12e6f6484dbd813e298af99de65faceaa69a",
+            "name": "APE GANG"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x0a6c168f1080e2d0969bb7b6c92c93f3fda26cc0",
+            "name": "Bernertracht"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x0a71d33441c96afa398e36d2212d295ee1d55bc7",
+            "name": "Matt"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x0a740c5975d23e0d28ef1117135be8ca00a2974b",
+            "name": "Cyberware"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x0a7c18f4f3e62044e3dfed2aae580c66a2e37677",
+            "name": "Altcoin Aviators"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x0a7cc18420af5aa3b3d938994c45389896390df8",
+            "name": "Mammoth Beard Horns 2022"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x0a83fe7d555d25ffe384714cc9d54c9f66231f5e",
+            "name": "FITCHIN Communities Party V1"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x0a8806054d0a6823d02ca63728869e40e7dc851b",
+            "name": "chinix"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x0a8e6d02aeaa63fbe38041bf4e8eb05b181f0e4a",
+            "name": "RGT Tee"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x0a8ecd4f7072d83e1579a8d659ad57a1145892c3",
+            "name": "Strictly 4 the Breakers ($RAP)"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x0a92f166d5e030dacd5c33fd5fc810d9b14c0802",
+            "name": "Wolf Pack"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x0aa0f992d58019a632e41ea27ee6dc511b71752a",
+            "name": "Gold Ape"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x0ab36659c6bd43ecd9892f878647f80c0a494940",
+            "name": "Metamoon led"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x0ae9bfce31a5c9530ee6b7b35799a0dae029cd00",
+            "name": "AaronLeupp.com 404 Dino Pants"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x0aece05f986a3ea7ea7467bf581f43bf61fa7781",
+            "name": "Dahlia X M1D"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x0af0ae1abc26cef6ea90ced1a942153438f69c9c",
+            "name": "Battle of the UNTZ-Random Ravers"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x0b05e50e4b3dccbbc8b14a07ecf6d36741c9bb34",
+            "name": "KalbenTek"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x0b1f11d3f1075b4fc4b8981bce305b4a88497905",
+            "name": "MetaDojo Light"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x0b2c12c80f6efb52ad35ae971951e09a8128e1c5",
+            "name": "Bershka Amnesia Steve Aoki POAP"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x0b30eb7e6d33a10ebcdc5c78d94b4bf4947d1165",
+            "name": "Mission ’22 by Blanc de Blanc"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x0b34c6f794e1881092c0878ad182a9ef18548cb2",
+            "name": "Bully Bashers"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x0b34d6ec7f0468aa199025c176ed7613575923d0",
+            "name": "GamesOnChain -- MVFW"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x0b3ab4b53afe0ab44f757ce6b57f30b954c76596",
+            "name": "Billionaire Drip by MetaWera"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x0b4d2c814e8e9739c5a31139c0c949a0a854767e",
+            "name": "FQ Decentralized Hoodie"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x0b53dde55fbd1f95ea292cc7e9d62e070e8d7437",
+            "name": "TEMPLE MEMOR!ES HOODIE"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x0b657b8b1ea4ba749b226f7ff25b93b8c6a2eb71",
+            "name": "Christofle's Crown"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x0b6d6b49fef808f32b22061f1194160b5e0934da",
+            "name": "Bored Vibes Ape Head"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x0b701b904d63dda382f02c284823bb6e021f2fa9",
+            "name": "Ombré Tan and White Sweatpants"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x0b8a890d84b5689e3ba99fd802cf31abc1ea15f1",
+            "name": "Straw Hat"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x0b90cb52d74129df89da32a1fa581406bca0eec9",
+            "name": "Amruta’s Lehenga and Sheeshpatti"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x0b9caa480a3fb78c3355a0be07449c85bbc3cc0f",
+            "name": "Doki Y2K - Part 1"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x0ba77c90a1bc18868bcea741fe3f01d47d53e005",
+            "name": "LaLigaLand Art Event Collection"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x0bae2e414e2faf11983ab5442f0bc7fbf3855173",
+            "name": "ckbubbles × DigiFun"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x0bcb4082966241342d3984341bba6c2e56be4ef2",
+            "name": "Neon x Lace "
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x0bcf8746b13b8ef0a3923c8911eb0e8046af67ff",
+            "name": "Gold 2 Chainz Sunglasses"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x0bdde955839a9f65d3628918981862dd04cad2e5",
+            "name": "Crowd Surfing "
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x0be429aa3c8fa39a82a005f97c7913ee669c7675",
+            "name": "Megacube 2 Miner Set"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x0bf150e96d2da9eef74c98ca33b0e046b88212f7",
+            "name": "Mythico Glasses by M.S."
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x0bf8870be2d6cd80c814b70738e8d0648fe0f86f",
+            "name": "KOKO KRUNCH"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x0bfd2a487958d85cfe05040b291fc9974559f122",
+            "name": "Make a Heart"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x0c01dcfb974443f1c0be44b856ab5f189e20a7fd",
+            "name": "Diverge for Ukraine"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x0c03ac17a33d5125d20921de1783df4e45c08f08",
+            "name": "Beattrekkers X Soul Magic Mic"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x0c0b580352eb8c7d38a6b6447cbdee79bac83f4d",
+            "name": "OnChain Pumpkins"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x0c0de214ab1ceae679c757249868ac656cf51f32",
+            "name": "Mindful Pants"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x0c11579170131b49a1b4e80c31d4f6e551edf0cc",
+            "name": "Brycent x Uniqly.io"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x0c1fe8c2cfae5e4efa07835292f6220c9ada8ab5",
+            "name": "No Signal - Limited Edition"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x0c2efee363b4d464f4ec242a6657cf4291f2e7ad",
+            "name": "VentureBeat"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x0c3a49fe58be09f2eaffd0123986b06df19e76d4",
+            "name": "NF Studio Series 4"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x0c48b3b83676707dfd92577ad72969dfe6ff7505",
+            "name": "Official Spaz Static"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x0c5453e431deab2a51de4a6190578aaabd2c7215",
+            "name": "TP​ Digital Influencer"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x0c797b4ea1d668192611808171b14d2b80bd3bc4",
+            "name": "Samurai Sword Nasty"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x0c7b975177e02c18cff0a355643cef8fe2c27ee0",
+            "name": "MOODLAW"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x0c861e408400c031f20ece5aa87aed5b73a351df",
+            "name": "Plastic Surgery"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x0c86f3ea65cc3c607e15549e5a1fd66060c02053",
+            "name": "Vertual Octopus Pants"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x0c8ab8651694e0f86e1bc031a07a3072f7e7a066",
+            "name": "Golden Koala Helmet"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x0ca248e0f72ce7a58ea195b49ca21d70caa17bb2",
+            "name": "Panda Club"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x0ca59079daf72a75895e38aec1171c4c49f6c076",
+            "name": "Ninja -Cherry Blossoms-"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x0cce837d2e6902f4d4c574cdd3b2f8393170770a",
+            "name": "Set Yourself Free Tee"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x0cdf35da3bd47ba531102383baba60a47f658e56",
+            "name": "Star Pet 2022 by Oltecs"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x0cf133efb3c311277005f9585ebd2e6835c185f6",
+            "name": "DeFi Drip - Circuit Board Shoes"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x0cf3d779ac71276106578a3a8951846f3e2daa77",
+            "name": "NemCat Wear"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x0cff8c7b290fa38429a4df03ba13ccba6e65bec0",
+            "name": "K.O Eyes .dcl Tattoo Edition"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x0d0770348bb1414e35eaf503df83f6926a78cbeb",
+            "name": "Silver Meta Mask"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x0d102dc959c1cd26bc90ac88167c9c0c57ab2e3b",
+            "name": "Free Skins"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x0d2687979492cf13804c846ef536a0823e56f4fb",
+            "name": "Brow Common"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x0d2a8f1dc036ebfffaec5a1a48958a8666a74be3",
+            "name": "Bangkok United 21/22 Kit"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x0d3c4b7e9a22e1a0ed31b8e22b3ff0921644d913",
+            "name": "CULT&RAIN X WOMEN TRIBE AVATAR"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x0d40513b35c8f4510615476c26187f511e6ec4c5",
+            "name": "Christmas in Antrom"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x0d49a53de47907f257ff43100c1a37cddee4561a",
+            "name": "Roustan Acid Wash Jean Jacket"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x0d56b429f93f34468b41606b956d042108ccb238",
+            "name": "HODL VUITTON T Shirt Collection"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x0d93279435adf0cebb70e91ae738ffb58b414de1",
+            "name": "Sweetest Hat in the Metaverse"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x0da85cb8ab54177176499cb8f7a8d51d101d9c21",
+            "name": "DigiFun × YiYiYi"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x0dc28547b88100eb6b3f3890f0501607aa5dd6be",
+            "name": "The Future Is Now | DG x BBD"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x0de00d1d548c0ff2766754cedf695fd5c9e753dd",
+            "name": "MVFW 23 Backpack"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x0df57584dd420a83054db6d78c48d49b94c1bd9c",
+            "name": "Fashion Trend Clothes"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x0e045adb72febb3d60baa9bcc43e512fbb76dafa",
+            "name": "Heal Festival"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x0e075b87aad63920bdb5a0d4a07b2e026d106462",
+            "name": "AO 2022 - 10s"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x0e0ab7275849d4a1f2952d83df6467af6ec521b5",
+            "name": "EmpressRaeon x ICE Poker"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x0e10d33c3aac8b6146211e95709eb07034dcf918",
+            "name": "SneakerHeads x Uniqly.io"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x0e1224e0a1b509575ad1db214fbc595cdbb11647",
+            "name": "FLS Hoodie"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x0e128bd3f06339e688c90912bb2b67e63ebb1831",
+            "name": "[W]Hole"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x0e135a34a943f87be76674bf16665ba3e2d650ef",
+            "name": "Holy Rail Fam"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x0e398d5b062f6e05f8ab594512df5a3a534933ce",
+            "name": "Deezys 1"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x0e4f31c0c0d4cefa34b624c6ad09e4c04af624fa",
+            "name": "Waifumon 3D"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x0e53c7bb622558089f59537f6a2dca9509a8f078",
+            "name": "ThePolacy x Uniqly"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x0e82d64ffc59a638f14572efc60aa4ddd40876ef",
+            "name": "Bored Ape #6205 X Metaskins"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x0e859150ff9308b9a40cbaeb30b04b3d114257d8",
+            "name": "Mr4Bet's Hoodie"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x0e9663c4b53ed79b343739b5bafab89666ee8ba3",
+            "name": "Frost Monacrh"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x0ea87b53db6a9815fe4166e1f1a7371eff561d0e",
+            "name": "MetaJewels x Doki Buns"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x0eaf0e52b223dc2cac590fbebb1273a64a38cb26",
+            "name": "MoMana"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x0ec68c65e5104f6868ec5fbbe373e541faf68cbd",
+            "name": "FLOODED OGs"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x0eddafae6fd2730271c3bc74067a836c90499d0b",
+            "name": "Snowman Body"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x0ee7db458f59bb9422e570a43ab5211dd6d9176e",
+            "name": "DCL News Crew"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x0f05d6899686a0bb927b93739ae124ea25e6224c",
+            "name": "DogMan X DCLDating Mecha  Dog"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x0f1dbe2f94578ca6bad7783a30d49c21ca70086c",
+            "name": "DripWatch"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x0f1f8243b2f8f25828a55c3aef8366bd8920b500",
+            "name": "BAYC 4081"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x0f424a0150e50f26b45aec0c3d6a2acb36e9a436",
+            "name": "C5 Gallon Cowboy Hat "
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x0f4f4e20cf5260e10da584fa8ef90b83da5e6e5a",
+            "name": "Mango Loves 5th Avenue 2022"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x0f5524f41a64529dc853f5dce434369ba4584353",
+            "name": "Big Flex Drip"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x0f6429c9c8a8ba3261bc507eccd5356b3fbfd8c6",
+            "name": "Blvck Paris x ICE Poker"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x0f76cda5cf7b7ea90d97e28a14eec5912a9db139",
+            "name": "Acura Metaverse"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x0f8a49cec2e5be622c0828a14917de8b8b5ee5cf",
+            "name": "PoroLand"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x0fa443910416e9d0a19576df5e8326c975a09ce0",
+            "name": "ToonPals Drop #1"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x0fa71d08572a444cae6b5a30f5edc3f71f27a8fe",
+            "name": "G.I. Toadz Armory V2"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x0fe18b43af3cf2f72bd716a4f2d58ace54fb343c",
+            "name": "Phoenix Crypto Collectibles"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x0fe18dd6f025882712a13583ab0903e326d047d9",
+            "name": "xDai Tigers - Cosmonauts"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x0fe3272decdc45b79736db9b730e459899bdbd25",
+            "name": "The Sevens Genisis Collection"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x0fe44691ec836b18b688ea145845983e7db7e435",
+            "name": "Pride 23 - Love with No Labels"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x0ff41be9991ebc62855ad80bf86155c4df56f2ff",
+            "name": "Bufalo Western Spaghetti Plate"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x0ffa97a13a8c342259619ee06e3320a6bd55c0d5",
+            "name": "Stoney Collection"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x0ffc9ec27156d05ede669ef19e5f3a0451a90968",
+            "name": "GM Supply Co. - Clothes"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x10021efd7fecbe66cc0da000d9e494052d21751f",
+            "name": "Classically Stylish"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x1007cd7a9288f215afb2f15d30352bdf195d72ba",
+            "name": "Clarks Torhill Amusements"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x1010900618c0706a5ba1003bcf0be05bf1f9cf19",
+            "name": "Fairy Little Waifumon "
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x10157ee092c874ccacdb72ab4b7db0206e2119da",
+            "name": "Bulbheads by Durart"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x1018692d09c611f6c5f95f3eaf9d619d0fa56928",
+            "name": "BLACK WIDOWS "
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x1024a374dffd09614429ba409e55df4b13621284",
+            "name": "MetaWear x MrDingha"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x10309dae5dc32907f155775d8cb2c87f72d7d9ca",
+            "name": "Kaloscope Hoodies"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x10311deb1ea3f7adce2c97622ed297321ffe56aa",
+            "name": "Synergy of Serra - Bagni Mask"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x1042e36304013668eec3def67df9719be2a2913b",
+            "name": "Hipster's backpack"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x105aa274141bdd5747a0d5236604af3d8a10cfd8",
+            "name": "RAC Genesis Collection"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x10625502460bf2d6d037ecdc0618548d775fcf89",
+            "name": "METATIGER Soccer"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x1064f6c7dfbce9ac1851ff0dc71e25ed743a3607",
+            "name": "I did it first! Meta Skate Drip!"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x10657bc41e7f74c496e3f68b71b86dcaa3d60632",
+            "name": "Bird Gang"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x10710bfea722c69206f4c45a07bb0a0a0e7e86f7",
+            "name": "Skull Wear"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x10713f0cd93321cb05b7d907a7d9ef9528fd41df",
+            "name": "Wonder Aura"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x1083fa78254333ccd3d48301bbc4ebe238498ab7",
+            "name": "All are Welcome Always"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x1089b56b2674a5cb5b18367e40c883ba065f9702",
+            "name": "G.G. Limited Pink Shoes"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x108a599314584e71a7e870a67aff3768e5d5962b",
+            "name": "ケモノ先生 Kemono Sensei"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x1091adb899c73075af0e5742d2aa24fd35a7cefd",
+            "name": "Doki Doll Face V1"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x10b7830b4ea4c9f21ee2dc58e1339e2ec2d18610",
+            "name": "MultiverseDAO Super Man"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x10bf0de04360d9d4b6187a0a44699eb97b6d572c",
+            "name": "Terra_Series_Greetings"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x10d5ce0bf4bd77f5f79ec770302fdfaaecbb3dc0",
+            "name": "Fenix Armor"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x10e6eb4974841956c6f9ada4ab58277ff6ccc33c",
+            "name": "mgnr"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x10e8abc1b85a826cff547579c53da68a405d8c66",
+            "name": "Admiral Jacket - High Rank"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x11018bdefe5c51b126b1fdbd6daf660f98761395",
+            "name": "Slumdoge Cosmos Swag"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x1104a70028200041eabec52fab19651283844a82",
+            "name": "DripAdin"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x1104eee7dd0304cf899d87b64103d6e195976215",
+            "name": "21K San Nicolás"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x1114ec4eb1d1f37fc68a9382ea668b2a3aa20071",
+            "name": "3DMetaDress SS23"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x1125bd977cbd52e2e98822c78bcc005128f4098e",
+            "name": "Matau fade"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x112ccc3c50b364d42c6969508ba0ec6ecee7c3ab",
+            "name": "Black  Label Wearables"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x11412ed0d39c8c833b71b66e422cb123db987ce5",
+            "name": "Roller Skate"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x1147104624f32b26e5ee27fbcc8d38842a3dc70f",
+            "name": "C-01 Collection 1"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x114b0dd9911cf73604d3d0b0574df1ab1a514dae",
+            "name": "Durags x OVDWP"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x115035d249604f767ff6795827a4bba06b1c332c",
+            "name": "Apes 3D Decentraland Wearables"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x117383306d4e9af3df62eb7833cbc951b8e61a06",
+            "name": "Sugar Based Jersey"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x117eab0985745ec2116cdf0913fc8f20b0ed362b",
+            "name": "DG Joker"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x1190ad1cda0d2b0793ea00b61f46df78b001409c",
+            "name": "WAGMI Jacket"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x11a6879861f36cbad632a4e7226816a16139fb33",
+            "name": "DigiFun X Tao Virtual Lab"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x11b087df9beda11a42d6acfe0cd3d2c1f2d4fec2",
+            "name": "BB Glasses "
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x11b804bec37cddc70aef6eab0b88d6c6c59c4621",
+            "name": "Potions Maker Set"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x11b9120e9c2057b687da12ef4fba525a6b6b8eb1",
+            "name": "Crypto Rich"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x11c59ac0a8a4c3f92b40433a540615191588b6e9",
+            "name": "VIRTEWEL x Walt Adler #13"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x11cfe2f76627f8d22fd7eca8fec7e58820bcacc8",
+            "name": "Doki Doll Face - Droffo"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x11d9eb9660930e3bc01289035dbb7f2b4d635ac3",
+            "name": "Fly Health Mask"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x11de63789d0d523d207f3220021dda502b5df7ae",
+            "name": "styleXchange Drops"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x11ee60bf9620036180ae18e340de15bea1bf9f7a",
+            "name": "Elite Waver"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x122756ac93d34e96dd9f9804d63d883337860a58",
+            "name": "Nouns × Me+🌏JAPAN #002"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x122cc40fd82e277193cc02e8df4a9dc84ceece93",
+            "name": "Lottie"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x123331ddc29d35f07d0b53f77e8c442748c898b0",
+            "name": "Hiroto Kai's AOI Kimono"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x12352bb0a6944153100cb5641cf7012f19cf976f",
+            "name": "QuizZone Halloween Edition"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x123c396d3d6ededba79238138b644e1b1adafebb",
+            "name": "HEXROID Military Jacket"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x123db7844eaf7da11d88cf1754945bbd020742ef",
+            "name": "The Aquarium X MMAtv Collection"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x12422cdd10d1869aa4c5d98924987bda953c85de",
+            "name": "Follower - The Movie"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x125d5119972bb6b045b52781de4e601942278a45",
+            "name": "VERTEX - First Edition Jacket"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x125f51bf2a07e7be62ec3516c24082887ec71d45",
+            "name": "MetaTrip Season 3"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x1264078e7ac68491bda3f2d6da1a918198132211",
+            "name": "Halloween SUIT"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x12645fe6b12b45f868d0a1c5cc6dc7b093a10d1c",
+            "name": "WAR ON HUMANITY!"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x1266923cc510f7dff102402ea5d88122ef9c3644",
+            "name": "camiseta molino de viento"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x1277fc1ff5f5537dab1381e9707fef53c91ba79f",
+            "name": "Token High Tops"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x127f8dc3d7dd91c66dc96958df1f0edb14511f84",
+            "name": "Flamingo Party Outfit"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x1286dad1da5233a63a5d55fcf9e834feb14e1d6d",
+            "name": "Aquarium Hosts"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x1299ec95ec6c040e1f68d66b1f914af01e1be9d3",
+            "name": "MYRANI// "
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x12b4ee054322a08167c0ee4d6f7d3c3d753d959d",
+            "name": "Vintage Intellectuals"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x12c2e56a2066b005713fa93af286e2e1dc9c3dbf",
+            "name": "MUSE Headband S1"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x12cbb53b824b8249af0babebccdb8daf6437bfa0",
+            "name": "Oni Jester Mask"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x12d5b367c1d93a1920162d4fe21c1fafefcc6cc5",
+            "name": "Vroomway Season 2 Winner"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x12fedcf4e359b56e7677e0ddb6512c64b94a3167",
+            "name": "Cutter for a Cause ®"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x1306d694871ec48aa03dd36f384afa1605cce900",
+            "name": "VroomVroom Model O"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x1309db00988ea8a3186b31208392c9ddff16db34",
+            "name": "VISION 2024"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x131115c14687e28ce29fd4ed9c1f8c1fe34b32b1",
+            "name": "True Self is Priceless x RL"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x13166638ad246fc02cf2c264d1776aefc8431b76",
+            "name": "Green Dragon"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x133132a1a61a7142a8445258e56a2d1184f1461c",
+            "name": "Keep A Breast"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x13473d78d158fb33ddfe5ec643f246d2c28d06d0",
+            "name": "DIAMOND CRYTPO DUNKS"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x137c20246319302df1bdf3bb047befc95b071bfd",
+            "name": "DODO New Year 2"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x138a343e5f2e614ae44f5e4bf177aeea07c58b64",
+            "name": "colorfull things"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x138a4abeace1e8dab62151f42895de6fe34183af",
+            "name": "WCC WEARABLE DROP"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x139681457f291e35f9f7f1709ad9c1132b8a0242",
+            "name": "Space Monster"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x139687b1f7f083bd7598fcc5c9b62029a8225c4c",
+            "name": "Claire's Cloths"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x139b7a50c287ccdf6f1e6d9ddb2936a80e2029e1",
+            "name": "Snapple Elements"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x13a330af04443f302f3da36dbe10e5c4be5b216c",
+            "name": "Emerald Mage (Level 2)"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x13aaef765f07e3beaae4e70b882fd6db0c8dc74d",
+            "name": "DeFi Drip - #MetaversePride23"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x13aeef02ff705ebd0279e536bbda8c36f4af7207",
+            "name": "Degree Metathon 2022"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x13c7bd5909c9e735811fe10653f60d217ceb705c",
+            "name": "Kujira No Konton Wearable"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x13cd5204887afb19549c5821a4f76d38abfdca74",
+            "name": "Transformative Airdrops Vol. 3.2"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x13d0d68659e2fe16baa59e4c5a69a75cedf3691f",
+            "name": "Voxel Architects Wearables"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x13ec29504d120a0ed2d06965e1f6fe6778bcb88e",
+            "name": "Premium Bath Water"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x13ee51b5f343ffa009c1fb3666c9897fec462e43",
+            "name": "ReDefiningLimits"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x13f0e983aaf506a1adcaeca4ab808419b2276c20",
+            "name": " NRVerse x MGH DAO x Moon Bash"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x13f40fb321f3986636d0d4b7ff98ed4324e5cea4",
+            "name": "The Ladys Cut-out Dress"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x13fe5bfee67e5bdaf7aea6f92ca10794d97e47c4",
+            "name": "Prager Metis Genesis Jacket"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x1403f7d9f7e22c94b981f201e3f78f3b458a1621",
+            "name": "SF x Kloudi"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x1409582a6b6467562493dec2373f9a4c018f4394",
+            "name": "MetaPoly × MetaMine"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x140d6abc9048d4cde9057e59b916adb03fb8434b",
+            "name": "Crypto Animals"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x1411282fadb590a4e11d79df5f014bbe77cf3e86",
+            "name": "Sunstaff"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x1415f178fa9e4393f7b03a4561469753e5f9ae2c",
+            "name": "Tokusatsu Rabbit"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x141e91044b4600aa4a5b3095ef9762698d994128",
+            "name": "Satoshi - OneBlueLand"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x142f12642072a675e3f9d5024816894f1efb3040",
+            "name": "Designer Wedding Dress Debut"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x1441f163fc9c531bc95cbe9534935fe8f3aa4881",
+            "name": "Doki Sitting Emote - Elegant"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x1444941428d275a1529be44e220baea0ed6333e1",
+            "name": "Remarkable Wearables | Season 1"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x14459c4a641dc944afa4bb0eb82e015d7d9386fe",
+            "name": "Teleperformance Sneakers"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x14487cadc990b19fe529da04b63d7be091d1c166",
+            "name": "QuizZone Season 2 Prizes"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x144f941ceb55570e6e0065e756f9856846f2f42f",
+            "name": "Skelebits"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x14505a4b84a63a4c661dff61efad370f0cb23d8f",
+            "name": "Maple Aura"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x14680f1833303d31b968d54af3c493894be5564a",
+            "name": "QuizZone S01Q05"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x14708c54b1a4d921ecb9e027bdf8a946f7059f36",
+            "name": "Fancy Eyepieces "
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x148ae40af3ded011f5515d2cd16bedae171cdc8b",
+            "name": "New Years 2023 @ One Time Square"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x1499ecc8a54a8606ebe9a5dcd2814693d0a9b5e8",
+            "name": "Deformed Boy Head"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x14a64266037e363aa5a9da98645a848c07cff716",
+            "name": "Degen Assistance Shoes"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x14b6c80a2f4cfc1cc1d7c25a1b0d2037a59b5f99",
+            "name": "Long hair don't care"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x14dbc1e6f1e33c06ef2785dfffa17dd89bbc7938",
+            "name": "837x Halloween 2022"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x150279bdddd599e316d8a64dc032345c7754923f",
+            "name": "Pride Parade 2022 Collection"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x15157d78dafbf9f9e4c8b588fdd268d1cc524fcd",
+            "name": "Assassin's Hood"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x152dff5bb85d6692ec742be0789352b41f7a7d86",
+            "name": "+Love"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x156495fcf0c3c9aed4b0bdfc99f3692fe74fbb09",
+            "name": "4SkinStudios x Potcoin Wear2Earn"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x1568fbd1a14746924d91c953a786ea0ceb8a010f",
+            "name": "J2LS Cyber Droid"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x156a026b2bfa173a8f82fb67d131cb98ba542602",
+            "name": "Digital factory"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x15805a33ec44f498861a700ef2db81172de84bfa",
+            "name": "KingX | Dino Collection"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x15b0b386662586ba843030c74edeb5867cab5bb1",
+            "name": "Rizzle's Fire Helmet"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x15b120343928019be964a353cf4f7dae474fb579",
+            "name": "MIAMI ESPORTS"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x15c4a4a7b09d485d7b14f1451bbc424628f79cf6",
+            "name": "Saudi Woman"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x161642537a070f6e764fdd3232e1d22175e33ab8",
+            "name": "Play4"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x161dc101ec5c13b5069e0b6fac10598b16301c64",
+            "name": "DigiTomoe- ParcelParty x SknyLou"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x1628fcce52a0d2c671fe828bea0102c76d27c73e",
+            "name": "VroomVroom Model D"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x163035bace66b49b918fc7742a6fc07df6d1ac2a",
+            "name": "SaTVerse Wearables"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x1636ad3f33fe066c275d7229339180760e7bf74f",
+            "name": "The Family Uniform Set"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x163972b30f5f8cfdb929b8c0432b77c326c828f7",
+            "name": "MEW WEARABLE COLLECTION 1"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x1643f8210f4f66a860a1f841a5718ba4ada2efb4",
+            "name": "MODA  GOLD"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x164e2436da14b00567d4043d8bf9b68e0e964f97",
+            "name": "On Fire"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x1654b6dcd481cc76ea0188269a7a245e7ae3c08b",
+            "name": "Funky Fungi - 8 Ball Fireball"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x167ae793f9a674531054c3f9631b130b91f89477",
+            "name": "Metakay - Metaverse Festival"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x167d6b63511a7b5062d1f7b07722fccbbffb5105",
+            "name": "Decentraland Tutorial Wearables"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x167f8ac6e7c280d9f7f6ce40c6b1c6fbd7796a19",
+            "name": "SPAZ GANG X TrapKingPlays V2"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x1682e68c0fc58716e24949ae72f6ca331dedf21b",
+            "name": "Flock Fits - Fuego"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x168ea124480bee0caa6673a8b761ae02b98b758d",
+            "name": "Boss Babe Knee High Black Boots"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x1690bd41ac04d942a232ebf1b635faff2ebd6f59",
+            "name": "T_VertSix"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x16a3e3df44ce53ba4e11dee803596797ebfdfdf5",
+            "name": "Sannin's Ninja OG Hat"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x16a7e1f4c41f515131acb5dda4fcf0edf85cdb7c",
+            "name": "Precision X Wearables"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x16b11d2fd5efefcb86117a6b927f37c72a59b86f",
+            "name": "squid game collection"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x16c6c95eb2219fb67e3ac849e4db46f9137a85de",
+            "name": "Metaskins-Yellow PolkaDot Bikini"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x16c8b5e8014eae2884d694b7f5a920605d8a488b",
+            "name": "IoDF 01"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x16d985a126807fa19175c6c6c3690b2b699dd0d4",
+            "name": "VARBARIAN 2022 Autumn"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x16dfc19095644da474110742486242d1da234abd",
+            "name": "XPLCT x GIULIO GOMES | DCL 1/12"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x1701faf9a845b7adb5b7c39356684e5139987497",
+            "name": "Lottie Set ( Crown + Corsage )"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x17205960652a2155d62c93eb19d66323bdac045e",
+            "name": "Ethereum God Mask"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x17245310a13a8139f652c9454107529edf49e523",
+            "name": "Hashkey Capital"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x1763bd81087958c9fd458150d1313253199dd19d",
+            "name": "Virtewel x WaltAdler  1st Collab"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x1769b4d4c1a65e51a8d08b5e5189b939c0083b86",
+            "name": "Apes 3D 0453 "
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x177535a421e7867ec52f2cc19b7dfed4f289a2bb",
+            "name": "True Self Collection"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x177dd1ea132a82710fe178ca6756c176f180a514",
+            "name": "r3dWolf (Unversed x MetaParty)"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x178fc25d739d234721ca2e8a4800354cb99900f0",
+            "name": "Golden Brush ~ TrickStar x Zom"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x1792177a25b07e453083705655692c29a5f2087d",
+            "name": "Vitalik Buterin Mask"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x179a0e323a4a7a8bf5fddfc723103232e49bc3e7",
+            "name": "Beautiful Dress"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x179ff6f9d64194a0ecb9f2cdc832dac7100fcc60",
+            "name": "MetaWearing Astronaut"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x17a009bc2a642711a2e0eb58bc760fa520f9ca91",
+            "name": "AnyMagik RP2EG | Villager Suits"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x17b1c970b5f2f5f2917d6e195a7587f51c1a3033",
+            "name": "The Voice Studios NBC Coach Gift"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x17bcf7ad4755ace3111303307ff02790595a862e",
+            "name": "ØNES Fan Gear"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x17cc8ca6d7d30721bce419d3ac43d9f0b1e7fbe2",
+            "name": "The CerealKillerz"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x17cff0e45eeb3d7e48b937c4e751dd548495c07d",
+            "name": "Neon Party - by Cielo"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x17dd5ece0ee7a28aac7b6213011c4a5f76e90933",
+            "name": "GossApe Girl Collection 3"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x17de223fb3df3221bffe384dc65706934cfc28a8",
+            "name": "Wonder Wall Crew 23'"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x17eefc20521695476f2c2c6633d10692fd803013",
+            "name": "Scavenger Hunt"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x17f292552677631e50acf58cb35170a56be5d438",
+            "name": "Mana Knight"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x17f8520f1c1b78b92d3d059210c2abf2c34b1656",
+            "name": "Genesis Sliders Shoes FBRN "
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x180fe56efea7128ab619a0134145e2c1f8ec010f",
+            "name": "Highness Crown"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x1828ef0fdc685ace059483663749a7026f021d96",
+            "name": "Atomics Godly Vendetta"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x183031417953be6f4d982f9c3d792844eda155b3",
+            "name": "Sea Creatures"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x183a4abb4350af37cb554f827333d623fdd4b053",
+            "name": "Cherub Wings"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x1844fdd04a868a5151353ec8b87d843eafab2ee1",
+            "name": "Sexy Recline"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x184f801fdb8aa6adf68c1f6db5f612eb0e886bc7",
+            "name": "MetaZoo Intl. Mariachi Band"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x1853d72a05fa4597cbe566946cc68ed5f2ede288",
+            "name": "It's Hammy Time"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x1856cb0abe34b6b7ad38f5d04ff12d74612e687c",
+            "name": "BeymenVerse"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x18625825d7f658dac3863abf05a0ddac35d1b219",
+            "name": "Biologists of BARC"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x18654aaab0af9b8d13afdc69783a446aeb618043",
+            "name": "F VIN E"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x186c788f9c172934b790b868faf3b78b84e34e89",
+            "name": "Bear Love"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x1871496264fe272af3b1e0e3a2e77ce840a96716",
+            "name": "Meta Party Fashion Week Glasses "
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x18736485ee3e7a4ee9b7fa14fe2017e69d0d8bf1",
+            "name": "TensaiStudio Emotes"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x187ed24d04130c88f6e9109130d49b3073d47590",
+            "name": "BAYC #8043"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x189e481389dec43d33c735712b5f1fa4b2c9dd63",
+            "name": "Doki Doll Faces SS22"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x18b570bcf30be4948d7a598b3ceaea1874f239f7",
+            "name": "Anima Plasma Season 1"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x190d01d5433f12fb81ddd840f230079c75c5e371",
+            "name": "SUPERMIND Denim MVFW23 SUPERNINA"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x190d662572c69ed53ac7d3b85770f78211306d3b",
+            "name": "Classic Striped Shirts"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x190d6ffb2ad987c68f5375e87d4b5754a92fc3ab",
+            "name": "G.G. 90s Overalls"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x192336a6962e7603cba3f8adba4f67ec1e9f2076",
+            "name": "NPH Leisure Suit"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x1923f5bc8328796b57438cc068f5b26680f81fe8",
+            "name": "Overcoat Staking Good Vibes BTC"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x1925eb9b1a0924a14c8dfd3e441765ff1b6753b1",
+            "name": "Soul Magic Cyberpunk"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x19272c29ec326686191e353b0ba9648a74665870",
+            "name": "DMG MetaBoard"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x1929055309d46fa89eae91bae2653ab5299ad5b7",
+            "name": "Rich Homie Gang Gang Accessories"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x193a596a60cee45c948d41f1b0c9b6ab545ad468",
+            "name": "Dána Project | Metaverse Jewelry"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x1958fdfb06b6e7894aff30bc27597c456357c20d",
+            "name": "WHATSTHEMINIMUM ACCESSIORES"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x196411ae06169f81e680feddaaa6c4daef68cedf",
+            "name": "VIRTEWEL x Walt Adler #8"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x198621993584d6bac36486485e3521ff0b10401c",
+            "name": "Gyrfalcon "
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x199c20d3cd178abd23e3e62c91cfce5aeb1ff52f",
+            "name": "Decentral Games×Digifun For Meta"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x199e07c7315b7eabced819de5da39f61032bd1e7",
+            "name": "SVS Collection"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x19b662a311dcae9f0807ce266a42088014b72c0e",
+            "name": "JayLyn Jewellers"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x19ba9e930c975d264a7989d18cfe5e92012927bc",
+            "name": "casual friday"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x19c068d957b8f95e3935ad63a07c0c3c4a66a703",
+            "name": "MetaMine Cyber-Glass #1"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x19cc30002e8b5d2cfc214af9549e85c1a7c82acc",
+            "name": "Anime Hair"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x19f3a2e14ef3f35c7402304ff02b26bef7f31235",
+            "name": "FantasyMetaCollection"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x19f41eff3b24ad2c5ef0cdda9927f697927816bf",
+            "name": "Empowerment"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x19fb8129502a2a617cc84140944eafbbda6c2ed0",
+            "name": "Sheel’s Suit + Turban"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x19fd61e2281cac0ca42ea50a52174f451e966cf2",
+            "name": "Kuble Shirts"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x1a0a97ccf04e822716114b3f22fd44241a9d45bf",
+            "name": "Queen Bee Collection"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x1a1f3b5c1849683b9cdf4b0c35fe6e9a1af87062",
+            "name": "LOLX™ MetaDrip for MetaVerse."
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x1a2a555fcd601f20f9bad0b8888fe6ca0349dd8b",
+            "name": "MetaZoo Intl. Boat Party"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x1a3c458077772e678bbbcf2fd74a0b3284a412ce",
+            "name": "Pride Wings DigiFun × MOCHIC"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x1a3de32afa8d26cb378b9cf99df72a81026baa65",
+            "name": "Meta Jacket"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x1a57b773bed4c6ab63980c067e439e8085e4b3d6",
+            "name": "LUX Eyewear 1"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x1a97d17833e4dcc3ca3b4f80e2d6f1aa9339ff50",
+            "name": "My Precioussss Gold Band"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x1aa2e6de4a6d727f85ddae10a52ae6a16789eb2f",
+            "name": "Bipolar - Hippy Collection Shirt"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x1aa56b324513c26f8d7a0a70f3691098df8e87b9",
+            "name": "Miller Lite Holiday Collection"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x1aaf23bce5b07f4cd75219ad3b04281093c68565",
+            "name": "Blood Sword"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x1ab3e2975c501cd82b2daab8fbed5389b9182439",
+            "name": "Jan Błachowicz x Uniqly.io"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x1ab875dfca8d73d173295897f858733fbfa059c7",
+            "name": "Golfcraft - Halloween 2022"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x1abce719b990a94c500874ce7dc07d450c3f0ef6",
+            "name": "Wings by MOYA"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x1ac887fec48bbc52885014b2b3960c54bba2e9ff",
+            "name": "feetshoes"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x1ad53cce925b96fd723a4515da35ac3d19f9a9af",
+            "name": "MetaMine Cyber-HeadPhone"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x1adb126e76942f2ce697d0e670b3e54eb8238593",
+            "name": "ROUSTAN x KIRA BONES"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x1aea06e166aaaba49c1f22d47ada97ecdb9d7e01",
+            "name": "Cyborg Head Augmentation"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x1aeb7d9536193a3a25c74d462ec2dc88da9e50dd",
+            "name": "Golfcraft Doki Hair Set"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x1afe7712b3f7684ff8472323237b8e760eec44bc",
+            "name": "KewZweapons"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x1b15bad4f4e6e41d7baf96abd3b9cfa22b993a63",
+            "name": "Friendly Fingers"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x1b175cdc339755e8f226cf517cb668cf22faef1e",
+            "name": "MetaZombie"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x1b1b94975ff6b87013f20e2ff8fe0460e6b18b2b",
+            "name": "Samsung 837X Collection"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x1b4538f43997e1f2aadde515f65696fdff1cf714",
+            "name": "CCC - GOLD - Drop #1"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x1b5b1295c92960e4aebeceffea0103c444095637",
+            "name": "Easter Egg Walker"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x1b63aab12f6b5562a0388115243ef1aa54a4ab75",
+            "name": "Meta Masks"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x1b855e715f38b64f08970231a7a83bd2b94135d5",
+            "name": "SpanishMuseum Morrion"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x1ba05b07531f1fcf7e559d81e724d5d7a2c7edad",
+            "name": "KrakenTeach's Nightmare"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x1bb0af4a380c107e94046a4ff6cab2b442f886c4",
+            "name": "G.G Lime Green Jeans"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x1bed3c8e8ad5aebfdc97a5f1abed7fa46038b09c",
+            "name": "MetaRay Suit"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x1c0721d7698c9e289f97de2ca108a83e08e4d2ec",
+            "name": "CyberStrife"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x1c374b3d44a72ac4cc287a4674ece6386eccfbb6",
+            "name": "The Voice Studios x Pride ‘23"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x1c39de8135f9c824477291e1a9bc242f224fa5b6",
+            "name": "Awesome Winged Shoes"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x1c478665dbf905278ee6af63397ea470d8af7266",
+            "name": "Skrantz FACE Fashion Grant"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x1c4e21a6b3451dd2aca5efa71fe2069bd8bdc9be",
+            "name": "Xalax Emotes"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x1c50a5455b1f2b36b852fa8e5fb935b9c77d9d13",
+            "name": "Oae Sankofa Sneaker Collection"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x1c5dc8bd76023f606a2e499271627230f31e73bc",
+            "name": "SOD by AlphaAngels.eth"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x1c60a84c6d5d948e09d6f6c011d1bedf98640e0a",
+            "name": "HOT Pink Neon Babydoll Set"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x1c694dee097b8d463f4bbee4372c26ea59eb49a7",
+            "name": "IOC GENESIS"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x1c6e42f92e6474eccb5467be21ad2a50209e402c",
+            "name": "iMining Wearables"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x1c755f85cdcca4356e7911e84f7796257f6e893a",
+            "name": "Skull Basquiat Tribute"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x1ca493716cbdf584a6f70d99f3d0d339c4466c23",
+            "name": "BrOKen"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x1cad4f9247cdf5cce129c621bff7dbb5d0bd15e8",
+            "name": "OnTheRise in Paradise"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x1cca9c9d9d0148ebeeb3b69522adec9c489df473",
+            "name": "Crooked Colours "
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x1ccb8187c518a8cb8454533558ba9b681065a4ec",
+            "name": "Alterage <> STYLE Protocol"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x1ccb998465d12d0c43d02f9b8ee4762849489f30",
+            "name": "Crypto Animals 2"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x1cd179550ba43839301e7a8a38404c6be345860a",
+            "name": "DRESSX MVFW23"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x1cd3244bbfc0a988b842c3441c4f035b6321e594",
+            "name": "No Signal"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x1cdac76ddebea4c9b8d004074684ea7dbfec195e",
+            "name": "Personal Spaceship"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x1cdfbec7840348ec226508081f432253e1d4f671",
+            "name": "The Wonderquest"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x1ce82c360fbe9f88d227780ee085eb41b5f10009",
+            "name": "Party Samurai"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x1cf028020e8d77df0f4b934a308f67e6f11333ff",
+            "name": "Ben Bridge MVFW 2023"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x1cf67ce7e0a92eb28771b654f5b02e78fdc61bf2",
+            "name": "I Stand With Ukraine"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x1d0f011d0ab221c87b3047140395a0c2510e8067",
+            "name": "Coca-Cola Christmas  Jumper"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x1d285fa9b75fe9c8ecf565db71a221c2a0ea44d2",
+            "name": "Summer of Phygitals"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x1d30377fe076d67f573179a6800d5cff1d5b3187",
+            "name": "Jack Frost \"Nightfall\""
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x1d3885a48d440ef278fdd5bce20851b060eab733",
+            "name": "GT Old School Raver Pants"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x1d4407a98597f9107500c021753ce5ca5fd4a09c",
+            "name": "Pink Stargirl Hair by Sera"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x1d69e7f498cae0b9be0ee15ceb06d68c66255bda",
+            "name": "Roustan Tiny Pixie II"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x1d6a7e9b55162cfe85c75df1b59f34ebc64f2bd9",
+            "name": "RTFKT"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x1d7099bdc6fe2d5f54b846c910122cde861a731e",
+            "name": "CLTRVLTR // Genesis Collection"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x1d878f1c63c78728eab9a0e3fd4d200449976c55",
+            "name": "ARTISANT MVFW23"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x1d95b6101113eb13078f78ab5e52b0d96d7a69b0",
+            "name": "DJ MetaMoves"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x1d9e8b282709bb373f6040c890f2311d1a809a9a",
+            "name": "Wayable | RainBlow Weird Clothes"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x1da67db5cfad7211281ec9c9ece1585bc1f180eb",
+            "name": "Sparkles Butt Bounce"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x1daaee6ff60df09849c050c06db5330c6171b0a7",
+            "name": "EDOLENABLE  MVFW23"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x1de393d0d71e263be94cfabb5209d67fef8baca0",
+            "name": "Metafox Samurai 侍"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x1dea63646457a6ddc716169f89fa738c43c90ccb",
+            "name": "Neon Reaper Rave Hair"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x1df3011a14ea736314df6cdab4fff824c5d46ec1",
+            "name": "Celebrating LGBTQ+ Pride 2022 "
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x1e11372d7a318c38cc0ace61d5f974409b3455b7",
+            "name": "Roustan Skull Dove Top"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x1e13f3cdc5ddee46e3773021aef0882d0018d931",
+            "name": "Samsung Collection House Of Sam"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x1e210eac6c121c54756cf02cf9217d761836865b",
+            "name": "Boson Protocol x Hogan"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x1e2173c85c1fc1e5245b8c4bedfef41d1e2bf326",
+            "name": "VENTEO GENESIS"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x1e301599123bbc907c3f01369d7a33642db318e8",
+            "name": "Hunnys Royal Bunny"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x1e337f7b1aeb1eb3190e2a438399f52807ab192e",
+            "name": "Death By Jose Delbo"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x1e3506f47998d8c3da19bf1552c9db43735e5109",
+            "name": "Blacknode Helloween Ryuk"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x1e36e2b1153511eaf9d93ed20001bf1a4a97c0a1",
+            "name": "WZ Ukraine charity collection"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x1e3b37bb952614f54a4694a0b7db387c33079962",
+            "name": "Women's Right Metaverse March"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x1e3d0d395eb6f3d763feb0b1324b165ac498071a",
+            "name": "Meta Smokers Cigarettes"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x1e5c7f7bd7bc0cf32f9739a31e6930ae09f02b59",
+            "name": "MetaMineS3 × SXBet #1"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x1e63f512b938411ae29c5b2b8ddd98b58bc39b5c",
+            "name": "Pool Together x ICE Poker"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x1e6c79a640d2d9b02464a7f5ea034d1b59a5b5b7",
+            "name": "DripWalk"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x1e7ff4b6ceb00584253ed1b9cbe3027d0195fa81",
+            "name": "Popsicle & Heart Tattoo"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x1e90182a408bf84f131f2dda010932c826e2cc93",
+            "name": "TAS "
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x1e9d72c887f1b49a87007cb2dd1fd77b64cf111c",
+            "name": "FantasticLand 2022-Kiko"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x1ea351ab1410a85558670c3d95cc1a649f034b84",
+            "name": "Ben Dover"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x1eacbcff55d894cfe60d70885afd9a21ab35f7ee",
+            "name": "Kalt Colection"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x1ec3c6fadc2b36c5406fe5e85da9247eb52c3fdb",
+            "name": "Stoney Flannels"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x1ecfa784359c2ff4e151304c641d2d93dd519c66",
+            "name": "Djenerates Spirit Animals"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x1ed5e004889f00d26fb519a9b931efb959b403b2",
+            "name": "Mental Health Action Day TRU 23"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x1eddfa00dcb2039a6b5469596d3b08986069b961",
+            "name": "AaronLeupp.com 2k Dino Lava Shoe"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x1ee73ae89595c1ff6208ebb41786835f48714596",
+            "name": "PepeUnaGoods"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x1ee96022aba7775f53107f83562f35cd60a852cd",
+            "name": "C137"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x1f0dd28d79af69dcb7ec7f1f7ee5af2edb176cc1",
+            "name": "Franky Needles First Edition"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x1f1032c7673f133331217c5024149e8e6f535e87",
+            "name": "The Rebels x Boson Protocol "
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x1f1e6d9c7310980f66509490541dc884ded57617",
+            "name": "SPD-a2301f97fa2009efd3cbe86c72db"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x1f1f94a754d42c2a0718579a3f04e1b7470230b5",
+            "name": "Crows Nest"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x1f29690df9e9733881a299398d47c706ac465093",
+            "name": "Kate Stoltz Natural Phenomenons"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x1f2e7aaf98738dfc045870608543081094bbc944",
+            "name": "German Kartoffel Collection #02"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x1f309b5afb6a77f87d598e600783706de198a416",
+            "name": "Coca-Cola T Shirts"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x1f32da76ce7e4fe7818ae7fefb29eedde35e6db1",
+            "name": "Punk Shorts With Ribbons"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x1f4a5f8af7dbf4bd7ec7aeab5b4895ddd9c30f82",
+            "name": "Running Blades"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x1f4ada368790b91172252b457d7b032a993d49f0",
+            "name": "Skeleton Onesie"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x1f67fdad1a2a4edc89c2dc75212a0f011d56248d",
+            "name": "Wildfires Projekt Smart Wearable"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x1f74810ba986289d82c623847835591995f4941f",
+            "name": "Tegridy Farms - Ice Collection"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x1f788b87435bc396b76243546c44b98062a352ea",
+            "name": "WEDDING UPCYCLED"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x1f821d179bdc205db78563902a71237a0a29cf72",
+            "name": "Stickmen Toys"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x1f8f2a1c7a5555e5be8bece987cb8737355af89f",
+            "name": "Doki Pastel Patched Hoodie"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x1f9169fd4e665347103a900d975a9684ee334178",
+            "name": "Template"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x1fce785e9a0ae42ed46208482951706834c3efd5",
+            "name": "Studs & Hawk"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x1fd2922a5807cf738d8fead9ecb3d12cd1fd1f95",
+            "name": "Bathwater Series - Yannakis"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x1fe5ab42e423b11d5680b1fdbff181b2c23cf399",
+            "name": "Meases Cryptic Owl Masks"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x1fe6666ff40581318c982ead4eca1ca68902c402",
+            "name": "WJ Hallow's Eve  Limited Edition"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x20055cbc1c2156a8e5b6ead64c2d852be7fc7cba",
+            "name": "Roach Racing Club – DW01"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x2006aeec65fadb3854a30c47f3e50027d1bb540f",
+            "name": "Premium Selections"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x201fb41fec0e31021b22b9bd175de6fb2089e578",
+            "name": "Astro Pink (First landing)"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x2024da708c59dde50c194eee065fb3d3747c8ad2",
+            "name": "Cool Kimono"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x204d55735990ded4405d200a16a4d24c38cbe5cf",
+            "name": "Bufalo Cowboy Bandana & Colts"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x2051983b815d847a8e3037eca29dafd1f1e92ad9",
+            "name": "Ufomania's Wizard Gear"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x2053389e7b45864c386a47f3f61328d26c6dbf72",
+            "name": "Metakey Collection"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x205f74b54459647294c003b2acc0c59e49e0661a",
+            "name": "Xhyndre First Edition"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x2061f1af8f42577332d3206beb079ea7e42b75b2",
+            "name": "LaLigaLand Winners Pack #1"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x207861b5febcb4341c790b9beb1d357906fa0791",
+            "name": "Maison Lycan Pink T-Shirt"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x208b02bc1cdce7691fe3d45d2d7c06cf9effed4d",
+            "name": "World Bath Bomb Day 2023"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x20963133d0ada0d3f768f7557abb37d0917f0ecb",
+            "name": "Hallowe'en 2021"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x2097389da7dd64e237eb92fc5ceadcdcc03213d3",
+            "name": "Green santa hat"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x20a7cd2f4ec8738b247129b7d15e157f91d2a077",
+            "name": "BD Airdrops"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x20ad6a01108ff5b54ea00abe4c5627ca640f9f5a",
+            "name": "Playboy Legend"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x20b99200c6e130ab5ceb380cc7dc34c3afc85ba7",
+            "name": "Shawar Kamees - Pink Waist Coat"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x20bc33911b4baac8951e1c78bba6459a721340d1",
+            "name": "MetaWearing Military"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x20c39e66992301bba9a25695f311b9c03cc3e802",
+            "name": "On the Edge emote"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x20c51431c43f17f56b52dee27c1c1e7679578bd0",
+            "name": "AtlasCorp Development"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x20ca2be53888fbdf253b5cdba13ac903433b391d",
+            "name": "😂"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x20cdd2f28541f9793af007587680cbbe3374d3a5",
+            "name": "Cloudy City #5 - CNY 2022"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x20d0600e1a8d6a7603a63cef819e322bf78e0052",
+            "name": "Toshirt"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x20fef2eb0b0606e4da6d3f5972cae1488ea4db3d",
+            "name": "CapitaVerse"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x21049e499b3fca45820f144e5e2a6cc99c7bc27f",
+            "name": "DizzyAlien UFO"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x210cf28a18306e136eb0908ad68f14b6e1e756c6",
+            "name": "Dojo Fish Wearables"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x2113853d20f7b6d08fa756c294fb6f36e9108b22",
+            "name": "Sand Rogue Gilded Armor"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x2119c27c97506c4aa5bd565dce6b627cf3d3856f",
+            "name": "Soultry Gypsy Jewels"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x211e7ccdb49044ee5220774d290ef54e78ea0d57",
+            "name": "Meet48 Pink Breeze"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x212240c9d7c1cdc896dfe355692c8bb4f60a368c",
+            "name": "HEARTTHROB"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x212836e2b45b51f9ee25c6859a09cee37ea54e0c",
+            "name": "Meta Pet One "
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x2129d160b9fcd48862861977bea38156800609d4",
+            "name": "CRPCE x RLTY"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x2132485363132f5939641e4f7292135a4b342f29",
+            "name": "LadyLove Collection"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x213c430dc07781e924898fc200e7ae4e69c437d8",
+            "name": "Just being a Dude"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x213efc9acb3f51cdb7ca208fb28b49e792441107",
+            "name": "ICE Poker - Casino Collection"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x216551bf2c015ca4ecdb6cf111ecff0d14827296",
+            "name": "Zevi G - Collection Q4 2022"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x21774b3caab0b089f54952f758e363925349c0fe",
+            "name": "CurationStation - Apprenticeship"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x217e5f6e879c103cc599e4fd1f06bcced9ee45c8",
+            "name": "Pocket Goat Collection"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x217ec5306a3c0d9f3ae9a151259b146cafa24a0d",
+            "name": "Rhythmical Meta Crew"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x218608d83160736f9a31538a22b1d510942523f9",
+            "name": "Z1NKX"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x219d62f29682bbfd5379a08943f60738c8b2f0c3",
+            "name": "Vroomway SS Tournament 2"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x21a16fc49d1c6ba8d26b58bbb74fb81619bd3328",
+            "name": "Nicki Nicole FW Collection 2022 "
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x21aa54b72247e8b02a8eb7669a68698930c00c90",
+            "name": "Pilcha Tech x DCL Argentina"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x21abd3f0cb1bcc8973c55b559eab8c6e2ad52ae5",
+            "name": "MetaSkinz Christmas All Year"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x21ad1dff0b85bb4f6b97c13dbcc10ed7122a9eec",
+            "name": "CurationStation - Stewardship"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x21b51c8164e515b5b23715d595feee8fea562755",
+            "name": "Mutant"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x21b5523f9a7435b4f4f2de8ed7f5c8c54f8e6560",
+            "name": "EMOJI SUPER MANA SPIDER-BLACK"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x21c83e786fbb013727f2f4bde04fa0827cdd598f",
+            "name": "Reaper Hideout Collection 2021"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x21caaae1b84f235ef05a9eeecfceb4a23a68ed74",
+            "name": "Devil's Tail"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x21d920bca86af6e001a0870cafa40b56b52776b4",
+            "name": "Daemon"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x21e663d536d1f3a2d580c4b6bd0add5c19fdf88b",
+            "name": "Apes 3D Backpack"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x21edb2f1bfef829ff04b08638a28cbf7671d401f",
+            "name": "RZRblock Hackathon 2022"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x221a2fc6c95ee03be6ff45fbf9c9978aaeb9c7f7",
+            "name": "Haunted Fork Halloween 2022"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x221fc3e6627f4c1d8ad7037f4786ae2406cdc8b7",
+            "name": "Oh Whale Fanny Pack"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x222deaa90399023e707abd3f81b268493bdc891a",
+            "name": "TheDude"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x224d4f37472fb9f1e428a16f7b09e4b38199f372",
+            "name": "Dog Head 2 "
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x2258a6726fabe0f7e60f9df111b8813ed341e56b",
+            "name": "Gum Leaf Aura"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x2269db9b0bc42f1a3c35b9d962d384f54ccf7b32",
+            "name": "The Coolest Wearables @ArtCebola"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x226c6cebce03a9877bf598e5e7421c8d3154700d",
+            "name": "Tempel Tuttle  X  Max Capacity"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x228281f7385f2353162d09bb66d05bc17aa7db13",
+            "name": "Motvind"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x22b0603743d3ebe7e0289d6aedaf77f22d00cff3",
+            "name": "The Bettor Chance Cane"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x22bc74bd1147a560b794887393db02eda899e19c",
+            "name": "Taiwan #1 Forever"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x22bd72c5f79a1b4633a21a58df66260452093089",
+            "name": "Witches & Wizards"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x22c4c62577eace85c692bc2284a6b07d283964b5",
+            "name": "Weed Aura"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x22eeeb7f9956be5ffaeb98561e3052052f0d502c",
+            "name": "XU Meditate Hoodie Noir"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x230feebcaac52481357197aad270f2d4486a147a",
+            "name": "Seamm Collection vol.1"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x23125d677cbd90f7f08884d5a18c78c34932cd65",
+            "name": "ISDI 2022"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x231b94a9f169c8a7853d082690fd08758184f040",
+            "name": "Metaverse Festival Artist merch"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x233582b19c36e02b385cdf605e41ab9bb5bb9c45",
+            "name": "Prince Black Dragon pet "
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x23378328b71bcf13c0c82d4c8e08f83978bb4e66",
+            "name": "Sneakerfreakz"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x233a0ebc04948ace2348bb7191beee1fb54e0276",
+            "name": "KingX | Metaglasses Collection"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x236e967829423d36529e40df5c61da739528f6c7",
+            "name": "Box Bunny - Beanie Edition"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x2371015f90f14b64f79e280577a7152a4797ff14",
+            "name": "FilmrareCineplex Access Wearable"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x23779ffdf1233e04e727280c55bc333d458030a9",
+            "name": "Space Travelers Club "
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x23a4eedc1c82331133e67f7c24fc86da2678a3b7",
+            "name": "2022 T-Shirt Design"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x23a56dae46d8e34d2ed0123f6b1714edfed40046",
+            "name": "Gigi Gorlova "
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x23b9eb75d1fddcdaf32185ea2f0178cf6ff07ad9",
+            "name": "ICE Poker Emotes IV "
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x23c76931bf4de03f04942496616699870b4c8b1f",
+            "name": "Animal Print Shoes"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x23cb55abd000d185782c7c8d960805b90002a8f9",
+            "name": "The Fabricant Exclusive"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x23e620c2e7311278c783c34cfadceb0b70100992",
+            "name": "Nouns × Me+🌏JAPAN "
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x23ec6017d07a31ea0c6e185ad9f7bc22eaa75270",
+            "name": "ML VermilionBird"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x23f32e22ec0a051673bafe8687de34ba2a410b29",
+            "name": "CANS Club"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x23f9aa062f5ac78c3198d4ec042933b49942a007",
+            "name": "G.G. Cyan Distressed Jeans"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x23fa6e1cf2f7117f823eb3f488089166ace78859",
+            "name": "Starstruck Shades"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x23fbdf48f50d5bfc432b2ae3a0e1c23c0553380a",
+            "name": "Basik Boards 2021"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x23fe4a16f8459d9b99d8793e57cd74bf5ab1ff27",
+            "name": "Metaverse Festival Spottie Wifi"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x240354369a838bda66ff22b6c7c5415f98e8ec51",
+            "name": "VoxBox Robot"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x2416bca2beca1f77fce6bc134b463e0537445915",
+            "name": "FantasticLand 2022-Nancy"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x2417b243d942e4af7d720a2bc7d37be00f31fa34",
+            "name": "Diamond Aura"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x2418edc451e6b7c3339c7b953d5b14d606993a14",
+            "name": "Flamenco Dance"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x241cd25c7b7bfc8f57e71cb324307bb1abd8b915",
+            "name": "G.G Gold Jacket"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x243150e9917661f19e4499f4eed1dc337cb5de2d",
+            "name": "We’re Cooking Up Something Big 2"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x2446291de7975872a93ecbdaaf229156362300f1",
+            "name": "AO 2022 - 00s"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x2489350aa13246287b139f99e620da7f5cff572a",
+            "name": "Menstrualverse Project"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x249c3fe43d035ae2a19ab0dd3bb6bf13dd8d70a5",
+            "name": "SPD Pants and Boots"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x249cd129de6e90a7757913b170c04df32305bdeb",
+            "name": "Genesis Cracker Hat"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x249e0d16b9266a598d6a298b7eccd4d864b1837e",
+            "name": "Dove of Peace"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x249fa51d1e2db238b75788923d3f0e122628fd07",
+            "name": "Bizzle Wear Characters"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x24a0998aea873f617d8125888022f229e2d01a33",
+            "name": "Tommy Hilfiger MVFW23 AI Creator"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x24b8e81b98740181473dcb77eba77075708c1b41",
+            "name": "KINGWEN x DigiFun"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x24bceab7fbb2ae8b30536818e192449bfaa1c3cf",
+            "name": "QUANTUM x NFC"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x24ceb843aa88280993f77970c121e72426743055",
+            "name": "Set \"At war with BTC\""
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x24e6e4129277f0053aae3203b0f7f3e290cbd953",
+            "name": "Star Gazing"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x25049824911479f3bbbe7ac0c78d21d1097f5f8f",
+            "name": "AvatarLife"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x2504cc4edf0700dbcf3270b0e21665e13847f68f",
+            "name": "Metafox Bounty Hunter "
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x2504f274f053d0669eca03117d1c5db79e0cb648",
+            "name": "Mummified Walkman"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x25106af3d2f97f2ad26464d9f032fcfa45e82118",
+            "name": "Earrings"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x2519a9e8ca938682b53d870163264b79ff026b23",
+            "name": "Spaz Gang \"Double OG\" "
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x251ff88797bff230070e8be685baecbb9977cd4f",
+            "name": "VARBARIAN "
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x2522eda9d4ca4e84f7110990cc8f9245fb941b85",
+            "name": "Dominatrix"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x2529135a77d440f253e088f1e79cdcae9a354406",
+            "name": "Suav Watch"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x253dc2bf5817f7043bc1f6a5bf85e805ec108df4",
+            "name": "Shadow People"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x25489f47bde5c8b3fac9533ffec6cf973c83d53a",
+            "name": "FOXXY MVFW23"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x2550159992f6ea90f1187bd803d60613e9c1a4d1",
+            "name": "High Roller Gear"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x2555a974177d05b50472343701e74594e14af5fc",
+            "name": "Fuego x SlideOnClay FW 2022"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x256018584ffdf590d36d57c456edd3e20ace1c3a",
+            "name": "Sacred Stoner Hoodie"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x2572895b940bf6aae0f22786571c87400001c0cc",
+            "name": "Vintage Bay Media Hoodie"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x2577389b86e41f9728faf40654cc0675169dc042",
+            "name": "MVMF22 - Hyprplane"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x257fe095f35877587dcd29431e3008b3a8fe7c1c",
+            "name": "Tangpoko x Doki Doll Face"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x2596aa76d20d911b591e8c5f24a55c3c5a5d75c0",
+            "name": "MANA Vision"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x25a1d66891d44cdf7b8d45802489c1dea7aadf8b",
+            "name": "FluxArt"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x25bb3d2856169248b4a21dd7500eed156e5e893b",
+            "name": "HirotoKai x PB"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x25cb13e6607baf2cd6fe82ab65022bfaf5524bab",
+            "name": "Roach Spray"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x25cb28f19368d421857272133aac7933eb9efac4",
+            "name": "Tha Mustache"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x25dbef03a998c7b14085021b315fbde455f1cab7",
+            "name": "Sneakers LOWP"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x260003f2a2dc3b9fafc112c631d3d40e484f1c13",
+            "name": "Meta Apocalypse "
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x26294e873f69a25d6ae2321e9042118eca689112",
+            "name": "Golf Head"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x26448edd017ec689b3e468bcda8367bf8ab14f1c",
+            "name": "Aybills x Wavy - Volcanic Wear"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x264c97418cb81ce329bf5c35efe10a57ae4bb453",
+            "name": "Mythic Weed Wings"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x2655607dd307e84148ea48bf3806f8c02bcaebd2",
+            "name": "DecentralWear FREE NFTS"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x265f723a1ca3c83742781c1ebfd5cd3fbfca68f0",
+            "name": "Open Liquor"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x266665625d5d43990fcc062dfc8ac2f3bcfdba1e",
+            "name": "Instant Metawear - Technology"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x26676a456bca88e418f9ea4b33a707364c0b5876",
+            "name": "Parcel MVFW Wearables"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x2674472fd734da3316c01a9ba467adee020b2a79",
+            "name": "G.G. X DrDCL Fall Jacket 2023"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x267c938e47ea166fe246f4c2526c1d9e2a3d7af8",
+            "name": "G.G. Bomber Jacket"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x2681286eccfcd8499889af505e2b830ff2829687",
+            "name": "Meet48 Petal Rain"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x26891958d0ad054c360f06c3ce10e10b6db21a56",
+            "name": "Futuristic Fashion Items"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x2691f0feaa0137af3edb3acaf83ca5d6a3cfdf32",
+            "name": "Spaz Gang \"Trust Yourself\" V1"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x269d5aa718998a02f55fa5825d159dd5970889b2",
+            "name": "Black Panther"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x26b456c24f243b5996dedac9682636d3999a96a7",
+            "name": "METANAVI Collection１"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x26b4cf5519cbff1b0396a9d56f335f8e740040ae",
+            "name": "Neon Oni Samurai"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x26b6392ae89c6df1101ff37d05bb1d42af327acc",
+            "name": "Better Bear Gummy Bears"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x26d17a098524dec16b334b362ab3defc00a6af57",
+            "name": "Access Glasses"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x26d486f4139a2a33e753cca6daa51884022a3e36",
+            "name": "The Absolut x Susan Alexandra"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x26d58ac3676d4d12909a888d06db1f138b41bf35",
+            "name": "Consensys Wearables, NAVH 2023"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x26d9cae25076d2776f42cfe1cf97bfedb70174ae",
+            "name": "Superheroes By Jose Delbo"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x26e5cc28d5af85b28e06eb13b9faffd04147ffc2",
+            "name": "Oxya Origin Metaverse Wearable"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x26ea2f6a7273a2f28b410406d1c13ff7d4c9a162",
+            "name": "MVFW23 - Neo Threads"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x26f916d0288439d60d6205bee89b063ec5cb93aa",
+            "name": "The Atklás Collection - 001"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x270231aa9b6c6134f03b98f3c58dc25b744fb646",
+            "name": "Pixel to Passion - part II"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x272714afe95651035ebaec93915c2b7f397155df",
+            "name": "DT Pack"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x272cf708c5c66e798a661169a1f7a3cb29ca1cc7",
+            "name": "Sminem Boy Cool"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x2738f72d79eb13ca3bf4adef62c5482419d7fc66",
+            "name": "SPD"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x27430a73695c982c615150911767d802a00b100b",
+            "name": "LPF Robot Lobster"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x27559c3c03fb4902a47b9f32046cd94ba8e338d4",
+            "name": "Ketchup x Mustard"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x27569b3e23229d63efa262e852b3b09085b5e48a",
+            "name": "Bitcoin Pizza Day Mask"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x27576ccd9446d80db43258bb79139e922fdc6da0",
+            "name": "WhopperCollection"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x27637f88b881538c7148c78ccaae10d6f2bf22a2",
+            "name": "Spottie WiFi Tracksuit"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x2766a4215c2a2715c8f021dd09f1602a63030843",
+            "name": "8MetaBalls T-Shirts"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x276a2c1dd553573bbb3f5cb61183572283d1ed63",
+            "name": "Banana Suit"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x278a1fa13e67174beb18ca17c393103436de7b26",
+            "name": "Spaz Gang \"Utility\" Sneakers V1"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x2793bf3057468258b0bb2af4daf4af3189daa96d",
+            "name": "WARRIOR of the MYSTIC KINGDOM"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x27a77bf72448f870e2b0d1b08ff9e85472ab49ca",
+            "name": "Broken ICE Collection "
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x27c474895ee6bb20deb00a4f7b2d63bc3ff09bfb",
+            "name": "Hater Blockers"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x27cb1aea3c86c20a569cd9328cef37b71841af2f",
+            "name": "Colbert Headwear"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x27d33da28f31627c98290e401eb22b6bc6b41edd",
+            "name": "BULL Mount"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x27dc4dc3dd450497aa12d64dde6ba73d4afe2786",
+            "name": "Soultry Sativa"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x28188b10d622d6cf0c1b913ddecb1d8c454df5f9",
+            "name": "Uniqly.io x Sandbox NFT.NYC 2022"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x28280eee597eb8ae4d8baa56332e0322acb8f7bc",
+            "name": "Wonderzone Cybertorian Coat"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x2828c2c9e08862f2f0ee4c089f5203a431caec33",
+            "name": "Baskerville Club Wearable"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x2834c956c5c7a1e2b47a4b94b68aa1fd193c8758",
+            "name": "Knight by MOYA x Ecoolska"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x284f8e78be5039fb6b964ddeb734a693045436b0",
+            "name": "Roustan"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x2853bcc6161106b4d7fa353372c0c224f8dbbd1f",
+            "name": "Be-Enby Eyewear - Etta Style"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x2856177ae51f65b3f4d42717aaedd85e4b6b2a91",
+            "name": "Meta Party  Vox Boards"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x285ca35b7fe7ac958e7fcc8c8ae666d1e30c5c5c",
+            "name": "Follow yourt heart"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x28779b197f6c7be641f2e288adf303adb37a2a9d",
+            "name": "SuperchiefNFT METAWEARABLES"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x287ffe49e72f66d85874ce0ba8278de41fd1d3fc",
+            "name": "RGB MEEPLE"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x2895a36d6ef7faa2f288209b7e526c8863dd36ac",
+            "name": "TrekBoot"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x289f3374440eae1224910bad726b6421fc0be66d",
+            "name": "Santa hats"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x28b43eadf23b75409e3b81332f11c22d23ee0ecd",
+            "name": "MetaPals Female Power Suit"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x28b7096cdbef123b4fa5d26a1a4e5769a84ad2e2",
+            "name": "DCLDating Mecha Cupid Alpha"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x28bc2b6eeb4312190eefc3323029caad96eae6b7",
+            "name": "SBQ ITEMS"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x28bf90fe4bfe15d29253019edbc8e2f41ccbe1ba",
+            "name": "MWDxCCC Collection II"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x28c58049fb6675a4c51424d3c4a55783ae3dd32c",
+            "name": "Visionary Inc. Series #1"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x28d241804ff5861db7bba0901ecb3648de8a74d6",
+            "name": "Suit"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x28d7cf2eaa45352f0c48145a4b25aff9f07a145b",
+            "name": "Fashion Week"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x28e16e69e8df44224713558555d898faba2d1aef",
+            "name": "DODO New Year"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x28ececc25d44e9ad04aa3f68895138f9dd7ca2ed",
+            "name": "Crypto Unicorns x ICE Poker"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x28f8f3c2ec7d7fb85b52bd7a25c71481577fa265",
+            "name": "Gowns"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x290907b18fdbc02985d37516eda0f957f628cf58",
+            "name": "DeFi Drip - Merry Dripmas"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x292023d53d8d01e2a43fcc93da5eb7238f025cf9",
+            "name": "VIRTEWEL x Walt Adler #14"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x292115e2c633820010d1f374100217c3287b7062",
+            "name": "CyberARA"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x2929bbb4f18b40ac52a7f0b91629c695e3f96504",
+            "name": "Celestial Berserker (Level 3)"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x293d1ae40b28c39d7b013d4a1fe3c5a8c016bf19",
+            "name": "3Dium x Lion MVFW"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x29470eea1ec37f25669879d0aaf9bebcaf0f92c1",
+            "name": "#Monster Hall"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x29554fa157672de7236021b1eefbc5f991fb17e7",
+            "name": "Alice ‘23"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x295975ac13e48e558b4d74fad99306f503a8ab91",
+            "name": "Emotes by SingleEyeCreations 1"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x2963cd5878c642360620f866cbe731c9acb0cf22",
+            "name": "Enfrentar a los muertos"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x297a7f90ef61674468fc45c565eb5056288634b0",
+            "name": "PolygonPunks - T-Shirt"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x297d0bbefd729813bc3ef8f68818fa4f320386a4",
+            "name": "NFTRIBU 2022"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x29960f2b32802373e4de756990ab058c5dae46bf",
+            "name": "The Oracle Set"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x29a29f9cf7ca9f6906b46e1fcd1a1016bfa6cbcc",
+            "name": "MetaOptics"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x29a9fff7b7af9e94f317c481bf3a44851e946e7f",
+            "name": "Fit AF"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x29ac8fc4dfda92ef7601b8d0df27f50971f6d617",
+            "name": "Bufalo Futuristic Bandit Boots"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x29b9295ccee76f24ebe10ab8cc7a9e3d6d2a3720",
+            "name": "Glory Angel ROBOT WARRIOR KZ99"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x29c2aa7445c646ac0e01f00e0511db90abc3dfe0",
+            "name": "Helmet of Death"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x29e6fbeb47902b1d54ba40dc5b2b1ec5d73ddd89",
+            "name": "Samsung House Of Sam ECO RUN S23"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x29e9065e3d77e841a81d7f247a49e77b7e88fb7a",
+            "name": "SHEW"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x2a00a0f5b4a683c4cec098a129683f0173730e25",
+            "name": "Fox Tails"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x2a36e540582a4c3dd1f5f91360e53ca6dd0d1bbc",
+            "name": "EY US Digital Ambassadors"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x2a3a6d0c92b18102ed189233976c974473a59c87",
+            "name": "EL Wearable"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x2a4a43b5a33db4b94f2ce8413b6b25dd2f23c1f7",
+            "name": "The Kingdom Of Mali Collection"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x2a794dadbe79c7c6ba79f917e0c439f71e3a58c5",
+            "name": "Dogman X Michi Todd Clown"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x2a80e877c24bf9bd7952e819a87eb3efeed1acda",
+            "name": "Devious Nation Helmet"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x2a867765a779caba015b6aa7b421b224016f8808",
+            "name": "Kinetix Dance Emotes"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x2a9c582a602d8c25367633ff0821d1f7c405311e",
+            "name": "METATIGER Aztec"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x2ad616fef1968a16fad581ed7317d417cdd1c9d1",
+            "name": "El Toro"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x2ad7743e560498080960fb81a55142402c246a61",
+            "name": "Lazy Bucks"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x2ae75a330b2e22c23f4a0765b2847eed444f38fa",
+            "name": "Rainbow Budman"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x2b054ecbe524de08341b104e2fcb0273d95cda17",
+            "name": "Alpha Angels"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x2b0b58cddce48c6a44c7e48e39d629dcf9fdb41a",
+            "name": "Engineers of BARC"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x2b14264b10765ca77d383224ef75436a5f83bb5d",
+            "name": "AO 2022 - Futuristic"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x2b153feaafb38ada4070dd21215a423fc6db66ae",
+            "name": "AF-Genesis Drop"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x2b1a61367cc8081645187c4b534776f5293c1401",
+            "name": " B-Verse Hoodie"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x2b27ca16e48a6254268c750acc153522f1f326da",
+            "name": "MANAMANIA MARKETING"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x2b3a39191548d831d56259d2eb82b8211445ddfa",
+            "name": "SUNGLASSES META"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x2b436700a2c885f4ecf304d57cf7a10eb06fa49f",
+            "name": "TP Athletes"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x2b5210fc4a851a7d278457b057e33722f542a0a7",
+            "name": "Gloria"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x2b52d26e16297936ab5acbd51e2736ed070096f4",
+            "name": "DASH ELite's"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x2b5e68e51dd54fe100150a6f52547f4f0b3d32aa",
+            "name": "Antrom 1 2023"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x2b8e09583832281b14116f31b198870747531f44",
+            "name": "BEYOND COLLABS"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x2b99e8ef084e354883b6a1f9177515c6c766c3c7",
+            "name": "VIRTEWEL x WaltAdler #5"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x2ba788993f4a308e0aaea4e91e694097f7bf2a43",
+            "name": "Mishka Keep Watch Fitted Cap"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x2bb515badebd0f03f179fa53b7d876fbed419d5b",
+            "name": "Future Pants"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x2bbc221248b6a67582804271561c132755dd4041",
+            "name": "Secondland"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x2bc21a786011f281247077b8ff6d02be8f0a3f2f",
+            "name": "Metakey x Uniqly.io"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x2bc79304b68dbc3288423f4c4b203df17f8d8744",
+            "name": "QuizZone - Decentraland quiz"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x2bda6a791b18086627c327d21e74a29195d1cddf",
+            "name": "NFTokers Hoodies"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x2c0c1f26fe4c2316850b294dc17ea18a3bb2281f",
+            "name": "Blockchain Camouflage Guardian"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x2c0c62396b1a1b27bd2f4b399d300cac83322a62",
+            "name": "MoZeus T-Shirt"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x2c0da165c4f4a9052ec5f3aaadedd68f2356a02c",
+            "name": "Elite Apes BAYC Collection 1"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x2c1c79d83b00cea2dbfe6c35b787c65cb22accba",
+            "name": "Super Kicks v1.0"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x2c23f42a04d0cd8c46c6d2b4cec382c88428ad7b",
+            "name": "ARTISANT x Meta Angels"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x2c26aa21f2a194d33356b95f4869f289e8347969",
+            "name": "Ethernals"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x2c2a460b7ebb9e1d53439f6e75e192e48a49a019",
+            "name": "Me+🌏JAPAN #003"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x2c363fb15c0f98e26add137dcacf24463915095b",
+            "name": "Crypto Chicks SS22"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x2c44799fda19fe807abe8e3df7c789d13b49e754",
+            "name": "CYCLOPets"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x2c4b5c627ed91136a1e87d597e1066879844833b",
+            "name": "Invisibility Ring"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x2c4ebe0f33acbe48eea8bc452dd7077de5e717c4",
+            "name": "Light it Up! "
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x2c6f9c231ed4f4195ab8349cdb47bb63aebc0cb4",
+            "name": "Envied FutuR MVFW23"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x2c8d4c6218bbe9c3cb128bc48f1f8e48714a45a0",
+            "name": "Metasharks 2021 Collection"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x2c935fac9267e5f2c2dd21a3434b149c2ff8e430",
+            "name": "Anon Mask"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x2c958cbd5c73cbfcd389e4e08d0f45a367937d0f",
+            "name": "Dollar Pump x Decentraland"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x2c9bebf5ece6abc2060b7ee842b31d9cd7bb742b",
+            "name": "Royal Knight (Level 4)"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x2ca30c41d259868d329d3c877f91bf723ed15430",
+            "name": "MVFW2022 by MTA x DRESSX"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x2cab40d48ebafbb10041b189e739f9cd8da2363c",
+            "name": "CryptoMinotaur Accessories"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x2cb577b91b00c81eee1f7d3b2c5fd7aae63059e7",
+            "name": "Universe Vibes"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x2cdada9435c976c5e2d13b0b48a90b4086f32580",
+            "name": "META DRIP Phase 1"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x2cdc260c2b80fe7eb0044ffae4d546f7a346f2fa",
+            "name": "VAULT.swiss V1-X Luxury Watches "
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x2cee5fce13f786b2ffaec119eec6764b04e706cb",
+            "name": "NFT NYC by MWD"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x2cf453793f9a3cff15a3bc009d56871b16904cd1",
+            "name": "Rhino Wearables Culture"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x2cfded5f9526f42683d5fd7dd149a82d64620c52",
+            "name": "Amnesia Gear "
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x2d15e28eeeebb49daaaed0353de9d807919c39d2",
+            "name": "G.G. Purple Majestic Jeans"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x2d2004f2edff17688d12373db7649742060d7644",
+            "name": "Golfcraft - Xmas 2022"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x2d298ea8a8e71e4b05b4c5eebfde8348cc677038",
+            "name": "ENVO PIONEER"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x2d3f16019fb6874ebe09ff41c8b4401fbcc9f1ee",
+            "name": "Fanny Pack - Limited Edition"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x2d42adffa0d7ae957188371c7ffb746f5f54d61b",
+            "name": "Party Suit Set ~RGB~"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x2d4a9cb504ccf7b62cf0576bc7d0e49ede704470",
+            "name": "SIS-22 x METAKEY (Black)"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x2d4ae896f919046afd60d74ed95c0d34d47a1b8a",
+            "name": "#Monster Hall E02-b Character"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x2d5c61024e40236a4b8c334afc9415a006e74b20",
+            "name": "BeatBlox Early Supporter"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x2d5e8a94c10919d0a9342e1d94a41189c142e0f8",
+            "name": "Meta Jacket NFT The King"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x2d6fc818f575e244655f968e4d08935656fb6f83",
+            "name": "Prager Metis Taxedo - 2022"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x2d74fa5683f91a575081c4dd75ee623e005cee4a",
+            "name": "#KJUNSocks Into the Metaverse "
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x2d7f267cb5eecf04d3f2415376d99d3be3d3a392",
+            "name": "Furry Wolf"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x2d87781d448d25fcde3a8d908b3eeea434d037a5",
+            "name": "Tubular Bells 50"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x2d92c0d8641d9515319f6e477ba16a0cecac72b5",
+            "name": "Marc Cain MVFW 23"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x2d9560df9dd8ba8b3fc3746bc1d217698d258fb5",
+            "name": "Samba emote"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x2d98d3ac00f4a9e8d7661ce13f047be5508d4175",
+            "name": "ORPHE FOOTWEAR"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x2dab1140c3ca258363ff3d08ba4e0834dd573611",
+            "name": "Mr. Sinister"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x2dae1ede90ecd9aa6831292b7f9d8c56baa8e2dd",
+            "name": "ROBO-Accessories"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x2dbbc4f3b1386c7b373dce04a02aeeab999b16e6",
+            "name": "Colorful Urban Sneakers"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x2dbd653dac7ee6ba4ed768d7b928fb2f6f1d0d86",
+            "name": "HEXROID Captain Jacket"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x2dc4eb4691ad927967554813c27a0c2c6556183d",
+            "name": "The Frog"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x2dc68950bce0c870491e115e7fadf465fd34083b",
+            "name": "Rainbow Sparkle Aura"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x2dc7f6b5044ba0cdd0aa84cc02b32b4eb36e3f61",
+            "name": "MetaMineS2 × Meama 2"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x2dd06178eee2683c4b429ce32772d189fd3745c9",
+            "name": "Gecko Terminal x ICE Poker"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x2ddc413a446f6c659412ddf9343dc1e326b23f1f",
+            "name": "Mercenary Cyber Colections"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x2de89ec99eb0685956d63913a6b966b12ed2ff21",
+            "name": "Fashion Emotes"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x2dff8e87e8e4efe65c57630f98aff7fc5a4ee95a",
+            "name": "Moon Stars Space Aura Mood Glow"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x2e162b24da6c971b05067acedecd32ec6c4fb696",
+            "name": "Scuba Shirt CS"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x2e284b70981746839e9366370da97ba30ec4a217",
+            "name": "Red Team Bandana"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x2e28f39a564ed7477cca4ab07cfda3dc50d5c689",
+            "name": "Kraken Metaverse Festival"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x2e34cd906459f64a12a304bbc5562f1adb0d4294",
+            "name": "Invisibility Hat "
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x2e3a685b2cbcf10ded65860f8bc63a865658ae0c",
+            "name": "E00ONE"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x2e78cd7edcc3364724620c511355b27deaff56b3",
+            "name": "PK Skull"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x2e7e59f0185412632ed8027f62f11d0c83e6f4d3",
+            "name": "Seamm × Outsiders Division"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x2e8c4c2812d5c32be97607a59cb5155d8e5f4a06",
+            "name": "Emoheads"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x2ea26e36aaa23a604f0896668b1fc987211d2890",
+            "name": "It's 420 Weed Leaf Shades"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x2eacd09438b1c547329f357bf8ce067dd3fdf61d",
+            "name": "Jump Jump"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x2eb81d99e05b3d80f19a2552f8152f87bd1c16bc",
+            "name": "The Rebirth - Stella Wings"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x2ec0c5b705ca69346af5e01fd5eda57ce393d319",
+            "name": "Transformative Airdrops Vol. 3.3"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x2ec2d61828871861f3c332daaa50bea1f5b162b7",
+            "name": "Forbiden wings"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x2eca7999bd63599f0cb1e7fd001f696919b99fce",
+            "name": "Simple Ponytail"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x2ed93be8b289d0fff00554f83d4f42e43838a03a",
+            "name": "Coffee Classic"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x2eedda12e3c1a2d6d0e2838e0454b9f2aaf1b480",
+            "name": "Etro Liquid Paisley MVFW"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x2ef65cfb55efe3f4b2ce1c9d83bbc3d3c48e3d7d",
+            "name": "NF Studio Series  2"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x2ef75e26ff112c393697005528e4759a2da6f122",
+            "name": "Venomous Collection"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x2f03ab3bb32216b0265565fe25dbcc7e659a8f70",
+            "name": "Caps Collection"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x2f069e329e9bf89d3f108661414ebe22294df145",
+            "name": "Transformative Streetwear Vol. 1"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x2f1932c54374631b5fbaea8d4c5fef9cd8e82e3f",
+            "name": "VIRTEWEL x Walt Adler #11"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x2f1c03d983bc85bcc8a19f3a8964af28a87627c8",
+            "name": "Old Guy Hat"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x2f25313fe644157e0ea1e5dc57a95bd05415c3d4",
+            "name": "Honey Bear of Decentraland"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x2f273999e461cda716e705f1694e9a548025be7b",
+            "name": "Fly Health Collection"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x2f51aa83382a9dbfd6cb28d55f936b1fe3820310",
+            "name": "Tommy Hilfiger MVFW23-AI"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x2f52dfb98c0742d8ad3ed2f0f74839bbb38237a2",
+            "name": "SHOES HEART"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x2f643c05b1f5ec3185b6208f2305942a3b5cbcee",
+            "name": "Hovering Heads"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x2f6763f3240ab1510562c5e40a3d03378a5c9afe",
+            "name": "Vertualize it!"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x2f67ab53c91d73ef16718a96286cec18ed2b8a1d",
+            "name": "BPF x MetaMine S2"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x2f691d394f16e2f93cf1f7aab9753beff216bf1d",
+            "name": "Eight-Two-Eight"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x2f774a0ea0fff6fcec90e623e5c5520e33005481",
+            "name": "Ice Wings"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x2f7c1373b82ba1b85ad70793da9a11324c700170",
+            "name": "MBW x Glossybox"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x2f7e997674b58ae2fdcbf6f2adad3288de78db17",
+            "name": "Cherry Sundae Camisole"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x2f890cb7a8885b62a00c971554e8fe06442751e8",
+            "name": "Bit Dutch BMX Collection"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x2f8feff0722f6877785ad14fbe74ebd5501f8d80",
+            "name": "DIAMOND CRYPTO DUNK (OG DIAMOND)"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x2fa072a57964b9dd01919edad11ebf0d96e6ec8b",
+            "name": "Metaskins X DCL Angels"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x2fa4ddd62aab7955565b5368142b79d1375376d7",
+            "name": "Dusty Old Bones"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x2faf01640554d963a6639d5dc318e87294614c07",
+            "name": "Metaverse Summit x RLTY"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x2fc27e48a6af86b2d810ba3a1fa8fd00478cc422",
+            "name": "CryptoSuit"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x2fc59f2627ab5fe8f07292d8237a726dfe567a9a",
+            "name": "Christmas Gift"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x2fea0046dcb0f7a2b401092f4210344862943a42",
+            "name": "AlUla Desert Polo Tournament"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x2ffa40e4bdc311c6fc17df585d46d7d43a6a1e90",
+            "name": "Golem -Magma-"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x2ffea1c43e419472278186b5473410b567346231",
+            "name": "Rave Wear by Artemis Moon"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x300c8583c5f18fd3f2bcc251ce913394a8c5d8f9",
+            "name": "Poker Shades"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x3017f7bb4e7b199d2cdc80d7084634fe21ea14aa",
+            "name": "Portal Pistol"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x30253a3e42cab3d35a5cd0124f840a02a6921061",
+            "name": "Fashion for Meta"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x30257bd576595b10c3c5d889fbc8612245d980ab",
+            "name": "Swisscom Hoodie White"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x3028e7c3fc3eaa2d06918d4b3eee0f2faebd5600",
+            "name": "Nose Patch - Pink Camo"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x3029c7be61ebf08dad3b564583c7b6bd00cad254",
+            "name": "Golfcraft - Head Holder Dance"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x302dc3276e05c595ce01bb31240a5157e7939926",
+            "name": "Exodus Waifumon Valentine's Day"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x302dd98d9ca9954df96d43d5cbbae52ae360b0a0",
+            "name": "Cool For The Summer"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x302fc2c52829de9b34d988e2a9caad2ce05bf79a",
+            "name": "Nowhere Labs - Summer | 23"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x303043d124705ae7560a3cbc292e8a52641b8b1f",
+            "name": "Bored Vibes Black Jacket"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x30454b57fd49ccfc2f251540728e34b2c511d487",
+            "name": "JanCerny"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x30460e9f4bf8b20f04857d1708e27721c180c443",
+            "name": "Royal Runway Cap"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x304a2d14b22801dafee057629627d5c51ddbaa8f",
+            "name": "Snowball Fight - Xmas 2022"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x30517529cb5c16f686c6d0b48faae5d250d43005",
+            "name": "SHIBA INU "
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x305a98adbc3a78e482bb2d935da5401d6528d855",
+            "name": "WHATSTHEMINIMUM"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x3066a7b41280a8277050d6e7e15db18e3f97db5a",
+            "name": "Hippie Wings"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x3069e4e2da29779bf948735e1a91fe5da3c21b13",
+            "name": "KJ Strong"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x306b16a4f40ed2a54a2a77f98d648b4d261e4bd2",
+            "name": "Love Watts Gear"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x307b109e6fe8bcc19e00a93bfb9ea1978cf63732",
+            "name": "Fuego Draconic"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x3081a64774426eb4de8fa8d70c3cd742a885327a",
+            "name": "XO Collection"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x3089bd6040f88e60676888a034259e229e3b6d1f",
+            "name": "Rare Shoe Wearable"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x309a24ad7cf9a7fb26df91a923bb4c1aad3e42bb",
+            "name": "Seamm × Outsiders Division vol.2"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x30a5ff8765180c0d815fa489763ef08539886b0e",
+            "name": "Santander X Collection"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x30b3ea452e3ed173ba0c23e382db1046ba292a46",
+            "name": "⚡️ VOLTZ ⚡️ Genesis Drop #ØØ"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x30b4c8ac49f01264159c93f966eef945b7413af8",
+            "name": "Unicorn Punk Fantasy"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x30d7f2393298e86781a53b3be53f1155db9e1732",
+            "name": "Fang Gang Metawear"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x30daed61cd93ca2440ca5f24c975f0bd2be5a05a",
+            "name": "African Heritage  - MVFW23"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x30e1a6fd4b6145fa5ba2dc26f9ad3b2ce011c073",
+            "name": "Glenrose Tshirt (Burgundy)"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x30f0e9e232629b270b87dc9cdf71e1aac9d061c0",
+            "name": "SuperShiba"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x31171a8bc9832faa2a5428fb397ed95ff66a6cef",
+            "name": "Wagmii"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x312ddfd7ec16436a96105be34f5c9fb23c77900a",
+            "name": "SPAZ GANG x TrapKingPlays V1"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x3130c7dcad621257dc01ab1d464430ae8a70ec84",
+            "name": "Tommy Hilfiger MVFW23 Emotes"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x3142f991109d220b74a1d433283cfd67919146f4",
+            "name": "Pitzi Glasses"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x3147c88aed32b890df7ce10f9469377c96ab0d5e",
+            "name": "DG Gear"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x31573b6a588230cf0556995d3d2fc3361ba3902e",
+            "name": "ICE Poker - Mythic Collection"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x316bcb692e58bd74b7f0b0b8e9ad3f14df1ad606",
+            "name": "Roustan Star Gazer"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x316e1ee3b7cb2cc345929a7ffe4c9ada85ca3df3",
+            "name": "Radix XIII"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x31870174345671801eaeabb0cf8b2225bc41c292",
+            "name": "RGB Slouch Beanie by DOCTORdripp"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x3188c69da04f2e51da1df1ba882639dd8da29c48",
+            "name": "Property's Metaverse  Wearable"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x3188ec72b02645316bc1b26040e230437de6a2f6",
+            "name": "Banananguin Wearable"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x31927c1a69be21c0a1a6ae63588228a45be23dde",
+            "name": "Boys Noize"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x31cbe6bb67ac81ebe5f31cd77bf48683534f4560",
+            "name": "QuizZone S01Q07"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x31d0cb54c54aa7e9e699f2343e481511ff713147",
+            "name": "Trendscrafters Gag-Gift Emporium"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x31d1a77c810d6a4cb0e4bd781ffe7efa0100d88d",
+            "name": "Gargoyle Wings"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x31d380b8972f49f69893cd8d73c5095575311c66",
+            "name": "BNG MOAI"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x31d95e4c9afe69cbf9460873b8db0eb5dc8e8f2c",
+            "name": "Meta Naut"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x31f25715ca73d8b78c6b21333768bf1ba52a05b7",
+            "name": "That Brazilian Thing"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x31f900912a6c617c58d0628ff5aeadb7664f3da5",
+            "name": "DG High Rollers Crown "
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x3207047bc264258d832c66b66806da5f3eac8677",
+            "name": "Spottie WiFi Aura"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x32088eb375bc25b4e2a24e0c15971d3a1226022d",
+            "name": "Adopt-A-Xolo"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x3209ad29736c7078cec9998505d35f57161b39fc",
+            "name": "The Crypto Chicken Collective"
+        },
+        {
+            "id": "urn:decentraland:matic:collections-v2:0x320a144099546e6561f4747686f79ec6a5c24e27",
+            "name": "VroomVrooms"
+        }
+    ]
+}
