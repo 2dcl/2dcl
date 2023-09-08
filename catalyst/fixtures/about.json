@@ -1,0 +1,36 @@
+{
+    "healthy": true,
+    "content": {
+        "healthy": true,
+        "version": "6.8.0",
+        "synchronizationStatus": "Syncing",
+        "commitHash": "553334d3c4d16a05bbf7da0836ad76580c8e0063",
+        "publicUrl": "https://peer-ec2.decentraland.org/content/"
+    },
+    "lambdas": {
+        "healthy": true,
+        "version": "3.5.1",
+        "commitHash": "59399c769ea9a4989fb6514a235571284e318244",
+        "publicUrl": "https://peer-ec2.decentraland.org/lambdas/"
+    },
+    "configurations": {
+        "networkId": 1,
+        "globalScenesUrn": [],
+        "scenesUrn": [],
+        "realmName": "hela"
+    },
+    "comms": {
+        "healthy": true,
+        "protocol": "v3",
+        "version": "1.0.20",
+        "commitHash": "089c429335e93f36852ed49cdfa762dd93c9046c",
+        "usersCount": 8
+    },
+    "bff": {
+        "healthy": true,
+        "userCount": 8,
+        "protocolVersion": "1.0_0",
+        "publicUrl": "/bff"
+    },
+    "acceptingUsers": true
+}

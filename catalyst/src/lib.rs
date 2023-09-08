@@ -9,16 +9,26 @@ pub use content_client::*;
 
 mod archipelago_client;
 pub use archipelago_client::*;
+
+mod global_client;
+pub use global_client::*;
 // mod lambda_client;
 // pub use lambda_client::LambdaClient;
 
-pub mod deployment;
-pub mod emote;
-pub mod entity;
-pub mod island;
-pub mod profile;
-pub mod scene;
-pub mod wearable;
+mod deployment;
+pub use deployment::*;
+mod emote;
+pub use emote::*;
+mod island;
+pub use island::*;
+mod profile;
+pub use profile::*;
+mod scene;
+pub use scene::*;
+mod wearable;
+pub use wearable::*;
+mod entity;
+pub use entity::*;
 
 mod content_id;
 pub use content_id::ContentId;

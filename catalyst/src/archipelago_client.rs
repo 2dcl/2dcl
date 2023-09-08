@@ -17,7 +17,7 @@ pub struct PeersList {
     pub peers: Vec<Peer>,
 }
 
-/// Implements all the request to interact with [Catalyst Archipelago Servers](https://decentraland.github.io/catalyst-api-specs/#tag/Archipelago).
+/// Implements all the request to interact with [Catalyst Archipelago](https://decentraland.github.io/catalyst-api-specs/#tag/Archipelago).
 ///
 #[derive(Default)]
 pub struct ArchipelagoClient {}
