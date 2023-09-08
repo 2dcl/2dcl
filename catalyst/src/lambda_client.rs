@@ -1,6 +1,9 @@
 use crate::*;
 use dcl_common::Result;
 use serde::Deserialize;
+use std::path::Path;
+use std::fs::File;
+use std::io::Write;
 
 #[derive(Debug, Deserialize, Eq, PartialEq)]
 pub struct CollectionsResponse {
@@ -29,10 +32,22 @@ impl LambdaClient {
         Ok(collections)
     }
 
-    /// Implements [`/lambdas/collections/contents/{urn}/thumbnail`](https://decentraland.github.io/catalyst-api-specs/#tag/Lambdas/operation/getThumbnail)
-    pub async fn collection_thumbnail(server: &Server) -> Result<CollectionsResponse> {
-        let collections = server.get("/lambdas/collections").await?;
-        Ok(collections)
+    /// Implements [`/lambdas/collections/contents/{urn}/thumbnail`](https://decentraland.github.io/catalyst-api-specs/#tag/    
+    pub async fn collection_thumbnail<V, T>(server: &Server, urn: T, filename: V) -> Result<()>
+    where
+        V: AsRef<Path>,
+        T: AsRef<str>,
+    {
+        let response = server
+            .raw_get(format!("/lambdas/collections/{}/thumbnail", urn.as_ref()))
+            .await?;
+        if let Some(parent) = filename.as_ref().parent() {
+            std::fs::create_dir_all(parent)?;
+        }
+        let mut dest = File::create(filename)?;
+        let content = response.bytes().await?;
+        dest.write_all(&content)?;
+        Ok(())
     }
 
     /*    /// Implements [`/lambda/contracts/servers`](https://decentraland.github.io/catalyst-api-specs/#operation/getServers)
@@ -80,6 +95,7 @@ impl LambdaClient {
 mod tests {
     use super::*;
     use httpmock::prelude::*;
+    use tempdir::TempDir;
 
     #[test]
     fn it_can_be_created() {
@@ -127,6 +143,34 @@ mod tests {
 
         let expected: CollectionsResponse = serde_json::from_str(response).unwrap();
         assert_eq!(result, expected);
+    }
+
+    #[test]
+    fn it_downloads_collections_thumbnail() {
+        let response = "Collection thumbnail";
+
+        let server = MockServer::start();
+
+        let m = server.mock(|when, then| {
+            when.path("/lambdas/collections/a-urn/thumbnail");
+            then.status(200).body(response);
+        });
+
+        let server = Server::new(server.url(""));
+
+        let tmp_dir = TempDir::new("content-client-test").unwrap();
+        let filename = tmp_dir.path().join("thumbnail.png");
+
+        tokio_test::block_on(LambdaClient::collection_thumbnail(
+            &server,
+            &"a-urn".to_string(),
+            filename.clone(),
+        ))
+        .unwrap();
+
+        m.assert();
+
+        assert_eq!(std::fs::read_to_string(filename).unwrap(), "Collection thumbnail");
     }
     /*
 
