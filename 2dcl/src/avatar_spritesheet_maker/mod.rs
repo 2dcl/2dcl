@@ -1,3 +1,4 @@
+use crate::resources;
 use bevy::app::ScheduleRunnerPlugin;
 use bevy::gltf::Gltf;
 use bevy::log::LogPlugin;
@@ -23,19 +24,11 @@ use bevy::{
 use bevy_spritesheet_maker::data::ActiveRecorders;
 use bevy_spritesheet_maker::formats::png::is_ready_to_export;
 use bevy_spritesheet_maker::{CaptureState, MediaCapture};
-use catalyst::entity_files::EntityFile;
-//use bevy_toon_shader::{ToonShaderMainCamera, ToonShaderMaterial, ToonShaderPlugin, ToonShaderSun};
-use crate::resources;
 use catalyst::ContentClient;
 use glob::glob;
-use serde::{Deserialize, Serialize};
 use std::f32::consts::PI;
 use std::path::{Path, PathBuf};
 use std::time::Duration;
-
-use self::error::AvatarMakerError;
-
-mod error;
 
 const FRAMES_IDLE: usize = 5;
 const FRAMES_RUNNING: usize = 10;
@@ -50,16 +43,10 @@ const CAMERA_FOCAL_POINT: Vec3 = Vec3 {
     z: 0.,
 };
 
-pub fn start(eth_adress: &str) {
+pub async fn start(eth_adress: &str) -> dcl_common::Result<()> {
     println!("making avatar for :{:?}", eth_adress);
-    let avatar_properties = match download_avatar(eth_adress) {
-        Ok(properties) => properties,
-        Err(err) => {
-            println!("{:?}", err);
-            println!("could not find a decentraland avatar for the given ethereum address");
-            return;
-        }
-    };
+    let avatar_properties = download_avatar(eth_adress).await?;
+
     App::new()
         .insert_resource(resources::Config::from_config_file())
         .add_plugins(
@@ -92,58 +79,8 @@ pub fn start(eth_adress: &str) {
         .add_systems(Update, (material_update, setup_gltf, finish))
         .add_systems(Update, state_updater.after(setup_gltf))
         .run();
-}
 
-#[derive(Serialize, Deserialize, Debug)]
-struct CatalystColor {
-    r: f32,
-    g: f32,
-    b: f32,
-}
-#[derive(Serialize, Deserialize, Debug)]
-struct ColoredAvatarPart {
-    color: CatalystColor,
-}
-
-#[derive(Serialize)]
-struct CatalystId {
-    ids: Vec<String>,
-}
-
-#[derive(Serialize, Deserialize, Debug)]
-#[serde(rename_all = "camelCase")]
-struct Avatar {
-    body_shape: String,
-    eyes: ColoredAvatarPart,
-    hair: ColoredAvatarPart,
-    skin: ColoredAvatarPart,
-    wearables: Vec<String>,
-}
-
-#[derive(Serialize, Deserialize, Debug)]
-struct Profile {
-    avatars: AvatarList,
-}
-
-#[derive(Serialize, Deserialize, Debug)]
-struct AvatarList {
-    avatars: AvatarInfo,
-}
-
-#[derive(Serialize, Deserialize, Debug)]
-struct AvatarInfo {
-    avatar: UserData,
-}
-
-#[derive(Serialize, Deserialize, Debug)]
-#[serde(rename_all = "camelCase")]
-struct UserData {
-    avatar: Avatar,
-}
-
-#[derive(Serialize, Deserialize, Debug)]
-struct Request {
-    pointers: Vec<String>,
+    Ok(())
 }
 
 #[derive(Resource)]
@@ -153,8 +90,8 @@ struct Animations(Vec<Handle<AnimationClip>>);
 struct AvatarProperties {
     eth_address: String,
     body_shape: BodyShape,
-    hair_color: CatalystColor,
-    skin_color: CatalystColor,
+    hair_color: Color,
+    skin_color: Color,
     glb_loading_count: usize,
 }
 
@@ -382,36 +319,14 @@ fn material_update(
                 || material_name.starts_with("AvatarEyebrows")
                 || material_name.starts_with("AvatarEyes")
             {
-                standard_materials.get_mut(material).unwrap().base_color = Color::rgba(
-                    avatar_properties.skin_color.r,
-                    avatar_properties.skin_color.g,
-                    avatar_properties.skin_color.b,
-                    1.,
-                );
+                standard_materials.get_mut(material).unwrap().base_color =
+                    avatar_properties.skin_color;
             } else if material_name.starts_with("Hair_MAT") {
-                standard_materials.get_mut(material).unwrap().base_color = Color::rgba(
-                    avatar_properties.hair_color.r,
-                    avatar_properties.hair_color.g,
-                    avatar_properties.hair_color.b,
-                    1.,
-                );
+                standard_materials.get_mut(material).unwrap().base_color =
+                    avatar_properties.hair_color;
             }
         }
     }
-
-    /* if config.avatar.cell_shading {
-        for (entity, material) in query.iter() {
-            let material: &StandardMaterial = standard_materials.get(material).unwrap();
-            let toon_material = toon_materials.add(ToonShaderMaterial {
-                base_color_texture: material.clone().base_color_texture,
-                color: material.clone().base_color,
-                ..default()
-            });
-
-            commands.entity(entity).remove::<Handle<StandardMaterial>>();
-            commands.entity(entity).insert(toon_material);
-        }
-    } */
 }
 
 fn setup(
@@ -682,14 +597,10 @@ impl Material2d for PostProcessingMaterial {
     }
 }
 
-#[tokio::main]
 async fn download_avatar(eth_address: &str) -> dcl_common::Result<AvatarProperties> {
     let server = catalyst::Server::production();
-    let ids = vec![eth_address.to_string()];
-
-    let catalyst_id = CatalystId { ids };
-    let profile: Profile = server.post("/lambdas/profiles", &catalyst_id).await?;
-    let avatar = profile.avatars.avatars.avatar.avatar;
+    let profile = catalyst::LambdaClient::profile(&server, eth_address).await?;
+    let avatar = &profile.avatars[0].avatar;
     let mut avatar_save_path = std::env::current_exe().unwrap();
     avatar_save_path.pop();
     avatar_save_path.push("assets");
@@ -703,12 +614,13 @@ async fn download_avatar(eth_address: &str) -> dcl_common::Result<AvatarProperti
         }
     }
 
-    for urn in avatar.wearables {
-        download_urn(&urn, &avatar_save_path).await?;
+    for urn in &avatar.wearables {
+        download_files_by_urn(urn, &avatar_save_path).await?;
     }
 
     avatar_save_path.push("body_shape");
-    download_urn(&avatar.body_shape, &avatar_save_path).await?;
+
+    download_files_by_urn(&avatar.body_shape, &avatar_save_path).await?;
     let body_shape = match avatar.body_shape.contains("Female") {
         true => BodyShape::Female,
         false => BodyShape::Male,
@@ -717,31 +629,33 @@ async fn download_avatar(eth_address: &str) -> dcl_common::Result<AvatarProperti
     let new_avatar = AvatarProperties {
         eth_address: eth_address.to_string(),
         body_shape,
-        hair_color: avatar.hair.color,
-        skin_color: avatar.skin.color,
+        hair_color: catalyst_color_to_bevy_color(&avatar.hair.color),
+        skin_color: catalyst_color_to_bevy_color(&avatar.skin.color),
         glb_loading_count: 0,
     };
+
+    fn catalyst_color_to_bevy_color(catalyst_color: &catalyst::Color) -> Color {
+        let a = catalyst_color.a.unwrap_or(1.);
+        Color::rgba(catalyst_color.r, catalyst_color.g, catalyst_color.b, a)
+    }
 
     Ok(new_avatar)
 }
 
-async fn download_urn(urn: &str, save_path: &Path) -> dcl_common::Result<()> {
+async fn download_files_by_urn(urn: &str, save_path: &Path) -> dcl_common::Result<()> {
     let server = catalyst::Server::production();
-    let request = Request {
+    let pointers = catalyst::Pointers {
         pointers: vec![urn.to_string()],
     };
-    let result: Vec<EntityFile> = server.post("/content/entities/active", &request).await?;
-    for scene_file in result {
-        let scene_file_id = match scene_file.id {
-            Some(id) => id,
-            None => return Err(Box::new(AvatarMakerError::MissingEntityId)),
-        };
-        for downloadable in scene_file.content {
+    let entities = catalyst::ContentClient::entities_for_pointers(&server, &pointers).await?;
+    for entity in entities {
+        for content_file in entity.content {
             let mut download_path = save_path.to_path_buf();
-            download_path.push(scene_file_id.to_string());
-            download_path.push(downloadable.filename.to_str().unwrap());
-            ContentClient::download(&server, downloadable.cid, &download_path).await?;
+            download_path.push(entity.id.0.clone());
+            download_path.push(content_file.filename.to_str().unwrap());
+            ContentClient::download(&server, content_file.cid, &download_path).await?;
         }
     }
+
     Ok(())
 }

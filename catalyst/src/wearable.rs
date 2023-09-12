@@ -10,15 +10,15 @@ pub struct Wearable {
     #[serde(skip_serializing_if = "Option::is_none")]
     pub menu_bar_icon: Option<String>,
     pub id: WearableId,
-    pub name: String,
+    pub name: Option<String>,
     pub description: String,
     pub i18n: Vec<I18n>,
-    pub thumbnail: String,
-    pub image: String,
+    pub thumbnail: Option<String>,
+    pub image: Option<String>,
     #[serde(skip_serializing_if = "Option::is_none")]
     pub metrics: Option<Metrics>,
     #[serde(flatten)]
-    pub props: Props,
+    pub props: Option<Props>,
     pub data: WearableData,
 }
 
@@ -39,15 +39,20 @@ pub struct ThirdPartyProps {
 #[derive(Debug, Deserialize, Serialize, Clone, PartialEq)]
 #[serde(rename_all = "camelCase")]
 pub struct StandardProps {
-    pub collection_address: String,
-    pub rarity: Rarity,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub collection_address: Option<String>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub rarity: Option<Rarity>,
 }
 
 #[derive(Debug, Deserialize, Serialize, Clone, PartialEq)]
 pub struct WearableData {
-    pub replaces: Vec<HideableWearableCategory>,
-    pub hides: Vec<HideableWearableCategory>,
-    pub tags: Vec<String>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub replaces: Option<Vec<HideableWearableCategory>>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub hides: Option<Vec<HideableWearableCategory>>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub tags: Option<Vec<String>>,
     pub representations: Vec<WearableRepresentation>,
     pub category: WearableCategory,
     #[serde(skip_serializing_if = "Option::is_none")]
@@ -136,6 +141,8 @@ pub struct MerkleProof {
 #[derive(Debug, Deserialize, Serialize, Clone, PartialEq)]
 #[serde(rename_all = "snake_case")]
 pub enum Rarity {
+    #[serde(rename = "")]
+    None,
     Unique,
     Mythic,
     Legendary,
@@ -155,6 +162,7 @@ impl std::fmt::Display for Rarity {
             Rarity::Rare => write!(f, "rare"),
             Rarity::Uncommon => write!(f, "uncommon"),
             Rarity::Common => write!(f, "common"),
+            Rarity::None => write!(f, ""),
         }
     }
 }
@@ -186,20 +194,20 @@ mod test {
         let expected = Wearable {
             menu_bar_icon: None,
             id: "id".to_string(),
-            name: "name".to_string(),
+            name: Some("name".to_string()),
             description: "description".to_string(),
             i18n: Vec::default(),
-            thumbnail: "thumbnail.png".to_string(),
-            image: "image.png".to_string(),
+            thumbnail: Some("thumbnail.png".to_string()),
+            image: Some("image.png".to_string()),
             metrics: None,
-            props: Props::Standard(StandardProps {
-                collection_address: "address".to_string(),
-                rarity: Rarity::Common,
-            }),
+            props: Some(Props::Standard(StandardProps {
+                collection_address: Some("address".to_string()),
+                rarity: Some(Rarity::Common),
+            })),
             data: WearableData {
-                replaces: Vec::default(),
-                hides: Vec::default(),
-                tags: Vec::default(),
+                replaces: None,
+                hides: None,
+                tags: None,
                 representations: Vec::default(),
                 category: WearableCategory::LowerBody,
                 removes_default_hiding: None,

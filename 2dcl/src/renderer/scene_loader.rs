@@ -12,8 +12,7 @@ use crate::{
 };
 use bevy::prelude::*;
 use bevy::tasks::AsyncComputeTaskPool;
-use catalyst::entity_files::ContentFile;
-use catalyst::{ContentClient, Server};
+use catalyst::{ContentClient, ContentFile, Server};
 use dcl_common::Parcel;
 use futures_lite::future;
 use image::io::Reader as ImageReader;
@@ -327,24 +326,20 @@ pub fn parcel_to_world_location(parcel: Parcel) -> Vec3 {
 
 #[tokio::main]
 pub async fn download_scene_files(
-    scene_files: Vec<catalyst::entity_files::SceneFile>,
+    scene_entities: Vec<catalyst::Entity>,
 ) -> dcl_common::Result<Vec<PathBuf>> {
     let server = Server::production();
 
     let mut scene_paths: Vec<PathBuf> = Vec::new();
 
-    for scene_file in scene_files {
-        let id_str = match &scene_file.id {
-            Some(id) => id.to_string(),
-            None => String::default(),
-        };
-        let path_str = "./assets/scenes/".to_string() + &id_str;
+    for entity in scene_entities {
+        let path_str = "./assets/scenes/".to_string() + &entity.id.0;
         let scene_path = Path::new(&path_str);
 
-        for downloadable in scene_file.content {
+        for downloadable in entity.content {
             let filename = format!(
                 "./assets/scenes/{}/{}",
-                id_str,
+                entity.id,
                 downloadable.filename.to_str().unwrap()
             );
 
@@ -360,46 +355,42 @@ pub async fn download_scene_files(
 pub async fn get_newest_scene_files_for_parcels(
     parcels: Vec<Parcel>,
     scene_files_map: &SceneFilesMap,
-) -> dcl_common::Result<(Vec<catalyst::entity_files::SceneFile>, Vec<Parcel>)> {
-    let mut scene_files_to_download: Vec<catalyst::entity_files::SceneFile> = Vec::new();
+) -> dcl_common::Result<(Vec<catalyst::Entity>, Vec<Parcel>)> {
+    let mut scene_files_to_download: Vec<catalyst::Entity> = Vec::new();
     let mut parcels_to_download: Vec<Parcel> = Vec::new();
 
     let server = Server::production();
-    let scene_files = ContentClient::scene_entities_for_parcels(&server, &parcels).await?;
-    for scene_file in scene_files {
-        let id_str = match &scene_file.id {
-            Some(id) => id.to_string(),
-            None => String::default(),
-        };
-        let path_str = "./assets/scenes/".to_string() + &id_str;
+    let entities = ContentClient::scene_entities_for_parcels(&server, &parcels).await?;
+    for entity in entities {
+        let path_str = "./assets/scenes/".to_string() + &entity.id.0;
         let scene_path = Path::new(&path_str);
         let mut downloadable_2dcl: Option<ContentFile> = None;
 
-        for downloadable in scene_file.clone().content {
+        for downloadable in &entity.content {
             if downloadable
                 .filename
                 .to_str()
                 .unwrap()
                 .ends_with("scene.2dcl")
             {
-                downloadable_2dcl = Some(downloadable);
+                downloadable_2dcl = Some(downloadable.clone());
                 break;
             }
         }
 
         if !scene_path.exists() {
-            fs::create_dir_all(format!("./assets/scenes/{}", id_str))?;
+            fs::create_dir_all(format!("./assets/scenes/{}", entity.id.0))?;
         }
 
         if let Some(downloadable_2dcl) = downloadable_2dcl {
             let filename = format!(
                 "./assets/scenes/{}/{}-temp",
-                id_str,
+                entity.id.0,
                 downloadable_2dcl.filename.to_str().unwrap()
             );
             ContentClient::download(&server, downloadable_2dcl.cid, &filename).await?;
             let mut parcels = Vec::default();
-            for parcel in &scene_file.pointers {
+            for parcel in &entity.pointers {
                 if let Ok(parcel) = Parcel::from_str(parcel) {
                     parcels.push(parcel);
                 }
@@ -412,14 +403,14 @@ pub async fn get_newest_scene_files_for_parcels(
                         Some(parcel_data) => {
                             if let Some(previous_2dcl_scene) = read_scene_file(parcel_data.path) {
                                 if previous_2dcl_scene.timestamp != scene_2cl.timestamp {
-                                    scene_files_to_download.push(scene_file);
+                                    scene_files_to_download.push(entity);
                                     should_download = true;
                                     break;
                                 }
                             }
                         }
                         None => {
-                            scene_files_to_download.push(scene_file);
+                            scene_files_to_download.push(entity);
                             should_download = true;
                             break;
                         }
@@ -446,7 +437,7 @@ pub async fn get_newest_scene_files_for_parcels(
 #[tokio::main]
 pub async fn download_level_spawn_point(parcel: &Parcel, level_id: usize) -> Vec3 {
     let server = Server::production();
-    let scene_files =
+    let entities =
         match ContentClient::scene_entities_for_parcels(&server, &vec![parcel.clone()]).await {
             Ok(v) => v,
             Err(_) => {
@@ -455,29 +446,25 @@ pub async fn download_level_spawn_point(parcel: &Parcel, level_id: usize) -> Vec
             }
         };
 
-    for scene_file in scene_files {
-        let id_str = match &scene_file.id {
-            Some(id) => id.to_string(),
-            None => String::default(),
-        };
-        let path_str = "./assets/scenes/".to_string() + &id_str;
+    for entity in entities {
+        let path_str = "./assets/scenes/".to_string() + &entity.id.0;
         let scene_path = Path::new(&path_str);
         let mut downloadable_2dcl: Option<ContentFile> = None;
 
-        for downloadable in scene_file.clone().content {
+        for downloadable in &entity.content {
             if downloadable
                 .filename
                 .to_str()
                 .unwrap()
                 .ends_with("scene.2dcl")
             {
-                downloadable_2dcl = Some(downloadable);
+                downloadable_2dcl = Some(downloadable.clone());
                 break;
             }
         }
 
         if !scene_path.exists()
-            && fs::create_dir_all(format!("./assets/scenes/{}", id_str)).is_err()
+            && fs::create_dir_all(format!("./assets/scenes/{}", entity.id.0)).is_err()
         {
             continue;
         }
@@ -485,7 +472,7 @@ pub async fn download_level_spawn_point(parcel: &Parcel, level_id: usize) -> Vec
         if let Some(downloadable_2dcl) = downloadable_2dcl {
             let filename = format!(
                 "./assets/scenes/{}/{}-temp",
-                id_str,
+                entity.id.0,
                 downloadable_2dcl.filename.to_str().unwrap()
             );
 

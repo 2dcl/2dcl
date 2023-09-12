@@ -12,15 +12,19 @@ pub struct Emote {
     #[serde(skip_serializing_if = "Option::is_none")]
     pub menu_bar_icon: Option<String>,
     pub id: String,
-    pub name: String,
-    pub description: String,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub name: Option<String>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub description: Option<String>,
     pub i18n: Vec<I18n>,
-    pub thumbnail: String,
-    pub image: String,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub thumbnail: Option<String>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub image: Option<String>,
     #[serde(skip_serializing_if = "Option::is_none")]
     pub metrics: Option<Metrics>,
     #[serde(flatten)]
-    pub props: Props,
+    pub props: Option<Props>,
     #[serde(rename = "emoteDataADR74")]
     pub emote_data_adr74: EmoteDataADR74,
 }
@@ -68,16 +72,16 @@ mod test {
         let expected = Emote {
             menu_bar_icon: None,
             id: "id".to_string(),
-            name: "name".to_string(),
-            description: "description".to_string(),
+            name: Some("name".to_string()),
+            description: Some("description".to_string()),
             i18n: Vec::default(),
-            thumbnail: "thumbnail.png".to_string(),
-            image: "image.png".to_string(),
+            thumbnail: Some("thumbnail.png".to_string()),
+            image: Some("image.png".to_string()),
             metrics: None,
-            props: Props::Standard(StandardProps {
-                collection_address: "address".to_string(),
-                rarity: Rarity::Common,
-            }),
+            props: Some(Props::Standard(StandardProps {
+                collection_address: Some("address".to_string()),
+                rarity: Some(Rarity::Common),
+            })),
             emote_data_adr74: EmoteDataADR74 {
                 category: EmoteCategory::Dance,
                 representations: Vec::default(),
