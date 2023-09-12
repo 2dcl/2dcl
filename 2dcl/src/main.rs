@@ -85,7 +85,7 @@ pub async fn main() -> Result<()> {
             println!("{}", scenes);
         }
         Some(Action::ImportAvatar { eth_address }) => {
-            avatar_spritesheet_maker::start(&eth_address);
+            avatar_spritesheet_maker::start(&eth_address).await?;
         }
         None => {
             renderer::start();

@@ -50,16 +50,9 @@ const CAMERA_FOCAL_POINT: Vec3 = Vec3 {
     z: 0.,
 };
 
-pub fn start(eth_adress: &str) {
+pub async fn start(eth_adress: &str) -> dcl_common::Result<()>{
     println!("making avatar for :{:?}", eth_adress);
-    let avatar_properties = match download_avatar(eth_adress) {
-        Ok(properties) => properties,
-        Err(err) => {
-            println!("{:?}", err);
-            println!("could not find a decentraland avatar for the given ethereum address");
-            return;
-        }
-    };
+    let avatar_properties =  download_avatar(eth_adress).await?;
     App::new()
         .insert_resource(resources::Config::from_config_file())
         .add_plugins(
@@ -92,6 +85,8 @@ pub fn start(eth_adress: &str) {
         .add_systems(Update, (material_update, setup_gltf, finish))
         .add_systems(Update, state_updater.after(setup_gltf))
         .run();
+
+    Ok(())
 }
 
 #[derive(Serialize, Deserialize, Debug)]
@@ -682,7 +677,6 @@ impl Material2d for PostProcessingMaterial {
     }
 }
 
-#[tokio::main]
 async fn download_avatar(eth_address: &str) -> dcl_common::Result<AvatarProperties> {
     let server = catalyst::Server::production();
     let ids = vec![eth_address.to_string()];
