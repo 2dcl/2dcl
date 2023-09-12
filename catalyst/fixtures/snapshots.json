@@ -1,0 +1,297 @@
+[
+  {
+      "hash": "bafybeibnnogb3wctyvaipalf6xdanhxyckx7fq4brfux2g4qc7qgfxndmu",
+      "timeRange": {
+          "initTimestamp": 1577836800000,
+          "endTimestamp": 1606867200000
+      },
+      "replacedSnapshotHashes": [
+          "bafybeihspeke2uap3xbc4rxwriwa6it37teyn7ufcfhh4mj4msunrxcw7u"
+      ],
+      "numberOfEntities": 53590,
+      "generationTimestamp": 1693848574189
+  },
+  {
+      "hash": "bafybeiapwg5gtofkemrf5jze5hwi2hsnfawhujkkyzmjmmyejyuykvcwxa",
+      "timeRange": {
+          "initTimestamp": 1606867200000,
+          "endTimestamp": 1635897600000
+      },
+      "replacedSnapshotHashes": [
+          "bafybeibma357ncp446puhnsjw7nkvy5ovbmoab3mwjnzwv6h5eloield7e"
+      ],
+      "numberOfEntities": 323532,
+      "generationTimestamp": 1693826956590
+  },
+  {
+      "hash": "bafybeia7uwotsbbyxqo5de2e5fmjj5cktiftfc23q7ffh6fp32pgpdg32m",
+      "timeRange": {
+          "initTimestamp": 1635897600000,
+          "endTimestamp": 1664928000000
+      },
+      "replacedSnapshotHashes": [
+          "bafybeiggmsg4y77h6q6sc6dezrgmzgdwy6tbrtbamlcdge3jrgubli7crq"
+      ],
+      "numberOfEntities": 969121,
+      "generationTimestamp": 1693891978393
+  },
+  {
+      "hash": "bafybeigjrlgnrwvr7sr3lnmacq7nny4hcfqpnz33czejmu5isppra6dfle",
+      "timeRange": {
+          "initTimestamp": 1664928000000,
+          "endTimestamp": 1667347200000
+      },
+      "replacedSnapshotHashes": [
+          "bafybeigpasu4feg2icx4hruuoqlzsvtwhieogw223gv3p2rvomxqgw56hy"
+      ],
+      "numberOfEntities": 15112,
+      "generationTimestamp": 1693891993236
+  },
+  {
+      "hash": "bafybeihug3rdo6vj4h5fiygy4nmpscngrjce7eilqwwitdvriwn34q2ov4",
+      "timeRange": {
+          "initTimestamp": 1667347200000,
+          "endTimestamp": 1669766400000
+      },
+      "replacedSnapshotHashes": [
+          "bafybeibvku7pt6bnzyhcltcvfiuopxt6bp7p7yy3gq42uksohr3yt2mng4"
+      ],
+      "numberOfEntities": 23464,
+      "generationTimestamp": 1693891998999
+  },
+  {
+      "hash": "bafybeifaklgavbizgnwgcmynsqy5thypifvzgzy6k4qiqofv7dfenr7xou",
+      "timeRange": {
+          "initTimestamp": 1669766400000,
+          "endTimestamp": 1672185600000
+      },
+      "replacedSnapshotHashes": [
+          "bafybeibz7xn7vr22oejrcmqln62kargfl74ogmqsindfbx6xqu4xxizhwi"
+      ],
+      "numberOfEntities": 14967,
+      "generationTimestamp": 1692319028746
+  },
+  {
+      "hash": "bafybeidzkf6rgq2vpbjrgniwbi3i5mqgrush6zekvwif7vf5yjct6lwg4u",
+      "timeRange": {
+          "initTimestamp": 1672185600000,
+          "endTimestamp": 1674604800000
+      },
+      "replacedSnapshotHashes": [
+          "bafybeihcf4jrtpyllcvutjoh5i7o4jzh7tmcjk4b4aqcooorwjfbtmhsai"
+      ],
+      "numberOfEntities": 14610,
+      "generationTimestamp": 1692297412446
+  },
+  {
+      "hash": "bafybeihrbk7evf5g3qz4y2ra3nnusnssfjpqfr32g6w7zohikpc4ja7lyq",
+      "timeRange": {
+          "initTimestamp": 1674604800000,
+          "endTimestamp": 1677024000000
+      },
+      "replacedSnapshotHashes": [
+          "bafybeibd6glujwx63wnsuryfvbu4yzv7e5bui6qask74xfud5mxsjamidq"
+      ],
+      "numberOfEntities": 16158,
+      "generationTimestamp": 1692297418842
+  },
+  {
+      "hash": "bafybeiawqwkn7stm2edm7azigdbxjim5carp6ayqul73cpuvl334dcpt5i",
+      "timeRange": {
+          "initTimestamp": 1677024000000,
+          "endTimestamp": 1679443200000
+      },
+      "replacedSnapshotHashes": [
+          "bafybeigqwf4dh6ripfonqdxquzpmtp6hfgt5blaugw7eo2ogsxgc7mqkjy"
+      ],
+      "numberOfEntities": 12835,
+      "generationTimestamp": 1692275795882
+  },
+  {
+      "hash": "bafybeidg2tj4gfise4jbvbjwbb2uim2zxueoow2n2pay2sysbslr26k7qq",
+      "timeRange": {
+          "initTimestamp": 1679443200000,
+          "endTimestamp": 1681862400000
+      },
+      "replacedSnapshotHashes": [
+          "bafybeicq2bd6kw4i3n4q6b5i7hf4q5uw35yty64clzj6nwi2ugspblqwwe"
+      ],
+      "numberOfEntities": 13314,
+      "generationTimestamp": 1692275799934
+  },
+  {
+      "hash": "bafybeiadreglqhp5ti4bt5bjg7pjovbmo72af64vzphhw324xeikjfcc5m",
+      "timeRange": {
+          "initTimestamp": 1681862400000,
+          "endTimestamp": 1684281600000
+      },
+      "replacedSnapshotHashes": [
+          "bafybeif6txt6pniut3cejc6qzarsrqg65pquu2hbgttdhoypq7vo7ai2vi"
+      ],
+      "numberOfEntities": 7308,
+      "generationTimestamp": 1692254185911
+  },
+  {
+      "hash": "bafybeidxdmen2qvdaqyd5s26wilatb7sw26yrs2xtby4oxtmarjkjcmsui",
+      "timeRange": {
+          "initTimestamp": 1684281600000,
+          "endTimestamp": 1686700800000
+      },
+      "replacedSnapshotHashes": [
+          "bafybeifafzwrdd36rg7ufiq33rbdj4edsbispmoupscjxufoh7nitzarsy"
+      ],
+      "numberOfEntities": 14930,
+      "generationTimestamp": 1692254191351
+  },
+  {
+      "hash": "bafybeigeux4ulpznbb5d4hk7hix5d74sjdmlc7aw43fypfhpcnnooulpya",
+      "timeRange": {
+          "initTimestamp": 1686700800000,
+          "endTimestamp": 1689120000000
+      },
+      "replacedSnapshotHashes": [
+          "bafybeiewq3wo64cm3jwnaz3tkmscnljjvavtl7jagz72eq3q735clge7ta"
+      ],
+      "numberOfEntities": 6757,
+      "generationTimestamp": 1692232572908
+  },
+  {
+      "hash": "bafybeigpxfxqhdba7iiyndn2oxdnqtlgyiqu5s3exc6wbt63blf7swsgsy",
+      "timeRange": {
+          "initTimestamp": 1689120000000,
+          "endTimestamp": 1691539200000
+      },
+      "replacedSnapshotHashes": [
+          "bafybeibkclyvuk5s33a2pz4otalzahzqdnrrbobl6ujh6wqdvo6lriupq4",
+          "bafybeidzgnqnafzt772qcyqvxyvfigs2p33jppt4omdigy3jhmvnknkuja",
+          "bafybeibp2vceenyyuq2l4o2h4zjk3ljqfs7qedklgq3edgv54nklw57kzy",
+          "bafybeicmxzb5rdprevefmk5innobe52l27v46ywf72xslk54s72roev66u"
+      ],
+      "numberOfEntities": 6883,
+      "generationTimestamp": 1692232577545
+  },
+  {
+      "hash": "bafybeicdjvx52uhegb6u7vpbc47m54ocgwydf76l5ftda47nzoy3c6oloe",
+      "timeRange": {
+          "initTimestamp": 1691539200000,
+          "endTimestamp": 1692144000000
+      },
+      "replacedSnapshotHashes": [
+          "bafybeifvc5hcrkgab5ijukcq2cfzc7lonkgnirfojfvwf4okizr72jx2jq",
+          "bafybeicn5zfbzudonrvtkloutmidttxiexdm4scedb4rskactl3g26uuq4",
+          "bafybeib2gjf3njpe625ixyxnyifvfestcsxni62jyshcisbaoufovbru7e",
+          "bafybeidtzxfatzeylgm6ccfjgkqwbuavhjijit2ctosvgwnfcu2jeusjai",
+          "bafybeiga7mllwe4hnohjeb4gwzwsygvcfgzjplunhwulq4pb5worihitxa",
+          "bafybeih6fnpv6pwey7imjj7zl2s242jfctfvhik7v5xbwppglyvmkmhxlm",
+          "bafybeiaausrxehs7uolzraybzdbuznhv4pnv43q6uqbygw5gba54tkxzki"
+      ],
+      "numberOfEntities": 2903,
+      "generationTimestamp": 1692232579130
+  },
+  {
+      "hash": "bafybeicm47vujred6b4prxylhta26jfz3w365sqaonml2uyxc3rolacmua",
+      "timeRange": {
+          "initTimestamp": 1692144000000,
+          "endTimestamp": 1692748800000
+      },
+      "replacedSnapshotHashes": [],
+      "numberOfEntities": 4516,
+      "generationTimestamp": 1692837490936
+  },
+  {
+      "hash": "bafybeieapohjo67adkpcdg5kpnhy3zy2twpnpsxzf7okkogniymzma4pfi",
+      "timeRange": {
+          "initTimestamp": 1692748800000,
+          "endTimestamp": 1693353600000
+      },
+      "replacedSnapshotHashes": [
+          "bafybeiavazqxrbx7gdo7c7wnfpofb47fhlelimnazrymgpmsfesqrbyz54",
+          "bafybeihhyxrhjsjzd546guzmb2647cob6hc5thljpe2dmljvtdw7qghyqy",
+          "bafybeidf7w7mfrlxlreshdqxuqwwsc6r4yzgslomefymrfpzo6x7akrvbm",
+          "bafybeibix2nepmwydfefetvehernvciv2fvbuftgpuuqj5xgz7q3himxk4",
+          "bafybeifslbnki67rsusjbmvkrddf5drmifltwvwekvdinhdxsxv45umfqa",
+          "bafybeidfgbw3uitzjnv3gqvwh4azwfvonb32qxl75lkmtohdrwkfdnx5xq",
+          "bafybeihotavkqua37j36zuv4oonfegvjthfy6pwwvpfqact6qsrlfjtt3y"
+      ],
+      "numberOfEntities": 2738,
+      "generationTimestamp": 1693459644224
+  },
+  {
+      "hash": "bafybeift2q5aeex3t6op2k77b6yuaaynz2quuirrcpawqgiz6u4xqpe6va",
+      "timeRange": {
+          "initTimestamp": 1693353600000,
+          "endTimestamp": 1693958400000
+      },
+      "replacedSnapshotHashes": [
+          "bafybeiebfkqa6yljc5f44gvppx3so33qvxblzuf2ywlyiu2maaxc6sekvi",
+          "bafybeigjgir7jvaliyehqj5yrrx54ngebhfh7w3x3qhocofigje4obndeu",
+          "bafybeihf2vecerysucsj3fzw35clpw5a5efusgq24fbwxoei3illn3qewy",
+          "bafybeidh5glqb5swsf7qmogeq3gpfqfucdxv5cotnzrdkmis3zmcbvcm6q",
+          "bafybeighsi5kb6og6c44nyqip4rxq5l7wrbg3eja7pqisqwwutjtk5ipme",
+          "bafybeifprrft75jz2cpruuy27z35oygentfd6gbo23jq3pgvq3q3crkneq",
+          "bafybeifon3uwkrot7fmttw4h3pidup3txe3saepn4lr6dmx4r5noxpzbwa"
+      ],
+      "numberOfEntities": 2629,
+      "generationTimestamp": 1694064824607
+  },
+  {
+      "hash": "bafybeigrjo36z4h66pa3q5qsobai5f75gflyyztucbeckt7yqgdg6zu7xq",
+      "timeRange": {
+          "initTimestamp": 1693958400000,
+          "endTimestamp": 1694044800000
+      },
+      "replacedSnapshotHashes": [],
+      "numberOfEntities": 858,
+      "generationTimestamp": 1694064824775
+  },
+  {
+      "hash": "bafybeib2sqjd5ty73eps6uuuh6nbmfp2ymrhllibtk7q4s3fadgr3wtdhm",
+      "timeRange": {
+          "initTimestamp": 1694044800000,
+          "endTimestamp": 1694131200000
+      },
+      "replacedSnapshotHashes": [],
+      "numberOfEntities": 922,
+      "generationTimestamp": 1694151265548
+  },
+  {
+      "hash": "bafybeie56h5utoqcpmg76zlk5bb3ixgguwcixgjibdqvbm777pa3ndwhy4",
+      "timeRange": {
+          "initTimestamp": 1694131200000,
+          "endTimestamp": 1694217600000
+      },
+      "replacedSnapshotHashes": [],
+      "numberOfEntities": 865,
+      "generationTimestamp": 1694237673442
+  },
+  {
+      "hash": "bafybeiclzu4oscg6gn6mz6lajm4ticx4hmuekg5uamqbypfrcso52rqrbq",
+      "timeRange": {
+          "initTimestamp": 1694217600000,
+          "endTimestamp": 1694304000000
+      },
+      "replacedSnapshotHashes": [],
+      "numberOfEntities": 674,
+      "generationTimestamp": 1694324079472
+  },
+  {
+      "hash": "bafybeih5pwu2m22n2664vbdn6ktdi24drmybbvh7bxcurpjebufjp62zrm",
+      "timeRange": {
+          "initTimestamp": 1694304000000,
+          "endTimestamp": 1694390400000
+      },
+      "replacedSnapshotHashes": [],
+      "numberOfEntities": 623,
+      "generationTimestamp": 1694410490014
+  },
+  {
+      "hash": "bafybeibesnazyw7fbgmc3vmvqmpetlzlzzcqexo4k7hc4cjjwa3sruaxme",
+      "timeRange": {
+          "initTimestamp": 1694390400000,
+          "endTimestamp": 1694476800000
+      },
+      "replacedSnapshotHashes": [],
+      "numberOfEntities": 723,
+      "generationTimestamp": 1694496895665
+  }
+]

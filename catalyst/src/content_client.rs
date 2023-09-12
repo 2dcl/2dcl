@@ -10,7 +10,7 @@ use std::path::Path;
 use crate::deployment::Deployment;
 use crate::entity::{Entity, EntityId, EntityType};
 use crate::entity_information::EntityInformation;
-use crate::snapshot::{EntitySnapshot, Snapshot};
+use crate::snapshot::Snapshot;
 use crate::status::ContentServerStatus;
 use crate::*;
 use dcl_common::{Parcel, Result};
@@ -321,43 +321,9 @@ impl ContentClient {
         Ok(result)
     }
 
-    /// Returns a list of entities (in the form of `EntitySnapshot`) for the given `entity_type` and `snapshot`.
-    pub async fn snapshot_entities<T>(
-        server: &Server,
-        entity_type: EntityType,
-        snapshot: &Snapshot,
-    ) -> Result<Vec<EntitySnapshot<T>>>
-    where
-        T: for<'a> Deserialize<'a>,
-    {
-        let hash: &ContentId = match entity_type {
-            EntityType::Scene => &snapshot.entities.scene.hash,
-            EntityType::Profile => &snapshot.entities.profile.hash,
-            EntityType::Wearable => &snapshot.entities.wearable.hash,
-            EntityType::Emote => &snapshot.entities.emote.hash,
-        };
-
-        let response = server
-            .raw_get(format!("/content/contents/{}", hash))
-            .await?;
-
-        let text = response.text().await?;
-
-        let mut result: Vec<EntitySnapshot<T>> = vec![];
-
-        for line in text.lines() {
-            if line.find('{') == Some(0) {
-                let snapshot: EntitySnapshot<T> = serde_json::from_str(line)?;
-                result.push(snapshot);
-            }
-        }
-
-        Ok(result)
-    }
-
-    /// Returns a snapshot that includes the content ids for the entities available in the snapshot.
-    /// [See on Catalyst API Docs](https://decentraland.github.io/catalyst-api-specs/#operation/getActiveEntities)
-    pub async fn snapshot(server: &Server) -> Result<Snapshot> {
+    /// Returns all active deployments stored in the database in multiple snapshots for different time ranges.
+    /// [See on Catalyst API Docs](https://decentraland.github.io/catalyst-api-specs/#tag/Content-Server/operation/getSnapshots)
+    pub async fn snapshots(server: &Server) -> Result<Vec<Snapshot>> {
         let result = server.get("/content/snapshots").await?;
         Ok(result)
     }
@@ -709,8 +675,8 @@ mod tests {
     }
 
     #[test]
-    fn it_gets_snapshot() {
-        let response = include_str!("../fixtures/snapshot.json");
+    fn it_gets_snapshots() {
+        let response = include_str!("../fixtures/snapshots.json");
         let server = MockServer::start();
 
         let m = server.mock(|when, then| {
@@ -719,62 +685,13 @@ mod tests {
         });
 
         let server = Server::new(server.url(""));
-        let result: Snapshot = tokio_test::block_on(ContentClient::snapshot(&server)).unwrap();
+        let result: Vec<Snapshot> =
+            tokio_test::block_on(ContentClient::snapshots(&server)).unwrap();
 
         m.assert();
 
-        let expected: Snapshot = serde_json::from_str(response).unwrap();
+        let expected: Vec<Snapshot> = serde_json::from_str(response).unwrap();
         assert_eq!(result, expected);
-    }
-
-    #[test]
-    fn it_gets_scene_snapshot() {
-        let response = include_str!("../fixtures/snapshot_entities_scene.json");
-        let server = MockServer::start();
-
-        let m = server.mock(|when, then| {
-            when.method(GET).path(
-                "/content/contents/bafybeiep3b54f6rzh5lgx647m4alfydi65smdz63y4gtpxnu2ero4trlsy",
-            );
-            then.status(200).body(response);
-        });
-        let server = Server::new(server.url(""));
-        let snapshot: Snapshot =
-            serde_json::from_str(include_str!("../fixtures/snapshot.json")).unwrap();
-
-        let result: Vec<EntitySnapshot<Parcel>> = tokio_test::block_on(
-            ContentClient::snapshot_entities(&server, EntityType::Scene, &snapshot),
-        )
-        .unwrap();
-
-        m.assert();
-
-        assert_eq!(result.len(), 23485);
-    }
-
-    #[test]
-    fn it_gets_wearable_snapshot() {
-        let response = include_str!("../fixtures/snapshot_entities_wearable.json");
-        let server = MockServer::start();
-
-        let m = server.mock(|when, then| {
-            when.method(GET).path(
-                "/content/contents/bafybeifk2e6dsuwqz24s5bwxvhvajinr7tb7n6jzwzvafd6q4pwuy3jmua",
-            );
-            then.status(200).body(response);
-        });
-        let server = Server::new(server.url(""));
-        let snapshot: Snapshot =
-            serde_json::from_str(include_str!("../fixtures/snapshot.json")).unwrap();
-
-        let result: Vec<EntitySnapshot<Urn>> = tokio_test::block_on(
-            ContentClient::snapshot_entities(&server, EntityType::Wearable, &snapshot),
-        )
-        .unwrap();
-
-        m.assert();
-
-        assert_eq!(result.len(), 17325);
     }
 
     #[test]

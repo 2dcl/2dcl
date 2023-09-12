@@ -151,6 +151,8 @@ pub enum EntityType {
     Wearable,
     #[serde(rename = "emote")]
     Emote,
+    #[serde(rename = "outfits")]
+    Outfits,
 }
 
 impl fmt::Display for EntityType {
@@ -160,6 +162,7 @@ impl fmt::Display for EntityType {
             EntityType::Scene => "scene",
             EntityType::Wearable => "wearable",
             EntityType::Emote => "emote",
+            EntityType::Outfits => "outfits",
         };
         write!(f, "{}", serialization)
     }

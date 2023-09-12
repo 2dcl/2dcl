@@ -228,6 +228,19 @@ impl PageParameters {
     }
 }
 
+#[derive(Debug, Deserialize, Eq, PartialEq)]
+pub struct ThirdPartyIntegrations {
+    pub data: Vec<ThirdPartyIntegration>,
+}
+
+#[derive(Debug, Deserialize, Eq, PartialEq)]
+pub struct ThirdPartyIntegration {
+    pub name: String,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub description: Option<String>,
+    pub urn: Urn,
+}
+
 /// `LambdaClient` implements all the request to interact with [Catalyst Lambda](https://decentraland.github.io/catalyst-api-specs/#tag/Lambdas).
 ///
 #[derive(Default)]
@@ -503,41 +516,13 @@ impl LambdaClient {
             .await?;
         Ok(result)
     }
-    /*
-    /// Implements [`/lambda/contentv1/scenes`](https://decentraland.github.io/catalyst-api-specs/#operation/getScenes)
-    pub async fn scenes(server: &Server, start: &Parcel, end: &Parcel) -> Result<Vec<Scene>> {
-        let scenes: ScenesResult = server
-            .get(format!(
-                "/lambdas/contentv2/scenes?x1={}&y1={}&x2={}&y2={}",
-                start.0, start.1, end.0, end.1
-            ))
-            .await?;
-        Ok(scenes.data)
+
+    /// Implements [`/third-party-integrations`](https://decentraland.github.io/catalyst-api-specs/#tag/Lambdas/operation/getThirdPartyIntegrations)
+    pub async fn third_party_integrations(server: &Server) -> Result<ThirdPartyIntegrations> {
+        let result = server.get("/lambdas/third-party-integrations").await?;
+        Ok(result)
     }
-
-    pub async fn scene_descriptor<T>(server: &Server, scene: Entity<T>) -> Result<SceneDescriptor>
-    where T : AsRef<str>
-    {
-        Ok(SceneDescriptor {})
-    } */
 }
-
-// #[derive(Debug, Deserialize)]
-// pub struct SceneDescriptor {
-
-// }
-
-// #[derive(Debug, Deserialize)]
-// pub struct Scene {
-//     pub parcel_id: Parcel,
-//     pub root_cid: ContentId,
-//     pub scene_cid: ContentId,
-// }
-
-// #[derive(Debug, Deserialize)]
-// struct ScenesResult {
-//     data: Vec<Scene>,
-// }
 
 #[cfg(test)]
 mod tests {
@@ -1006,6 +991,25 @@ mod tests {
 
         m.assert();
         let expected: Entity = serde_json::from_str(response).unwrap();
+        assert_eq!(result, expected);
+    }
+
+    #[test]
+    fn it_implements_third_party_integrations() {
+        let response = include_str!("../fixtures/third_party_integrations.json");
+        let server = MockServer::start();
+
+        let m = server.mock(|when, then| {
+            when.method(GET).path("/lambdas/third-party-integrations");
+            then.status(200).body(response);
+        });
+
+        let server = Server::new(server.url(""));
+
+        let result = tokio_test::block_on(LambdaClient::third_party_integrations(&server)).unwrap();
+
+        m.assert();
+        let expected: ThirdPartyIntegrations = serde_json::from_str(response).unwrap();
         assert_eq!(result, expected);
     }
     /*

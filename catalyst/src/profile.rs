@@ -85,7 +85,7 @@ pub struct Color {
     pub g: f32,
     pub b: f32,
     #[serde(skip_serializing_if = "Option::is_none")]
-    pub a: Option<f32>
+    pub a: Option<f32>,
 }
 
 #[derive(Debug, Deserialize, Serialize, Clone, PartialEq)]
