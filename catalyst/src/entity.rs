@@ -1,7 +1,9 @@
 use serde::{Deserialize, Serialize};
 use std::{fmt, path::PathBuf};
 
-use crate::{emote::Emote, profile::Profile, scene::Scene, wearable::Wearable, ContentId, HashId};
+use crate::{
+    emote::Emote, profile::Profile, scene::Scene, wearable::Wearable, ContentId, HashId, Outfits,
+};
 
 /// Represents an entity from the server (scene, wearable, profile)
 ///
@@ -37,6 +39,8 @@ pub enum Metadata {
     Wearable(Wearable),
     #[serde(rename = "emote")]
     Emote(Emote),
+    #[serde(rename = "outfits")]
+    Outfits(Outfits),
 }
 
 impl Default for Entity {

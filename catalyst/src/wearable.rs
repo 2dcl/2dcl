@@ -2,12 +2,14 @@ use serde::Deserialize;
 use serde::Serialize;
 use std::collections::HashMap;
 
+pub type WearableId = String;
+
 #[derive(Debug, Deserialize, Serialize, Clone, PartialEq)]
 #[serde(rename_all = "camelCase")]
 pub struct Wearable {
     #[serde(skip_serializing_if = "Option::is_none")]
     pub menu_bar_icon: Option<String>,
-    pub id: String,
+    pub id: WearableId,
     pub name: String,
     pub description: String,
     pub i18n: Vec<I18n>,

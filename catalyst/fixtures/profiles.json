@@ -1,0 +1,111 @@
+[{
+  "avatars": [{
+    "userId": "0x5e5d9d1dfd87e9b8b069b8e5d708db92be5ade99",
+    "email": "",
+    "name": "Paralax24#de99",
+    "hasClaimedName": false,
+    "description": "",
+    "ethAddress": "0x5e5D9D1dfD87E9B8B069B8e5d708dB92bE5ADe99",
+    "version": 2,
+    "avatar": {
+      "bodyShape": "urn:decentraland:off-chain:base-avatars:BaseMale",
+      "snapshots": {
+        "face": "https://peer.decentraland.org/content/contents/QmcYhp7gvmq8eLiLEUs9MbYFkAekaMfM23Y8YPhWGP7nYq",
+        "face128": "https://peer.decentraland.org/content/contents/Qmc9FCM3HMGQpMbvyvkP6WweDGSxTL9Gxoyfsg6eAe8fyY",
+        "face256": "https://peer.decentraland.org/content/contents/QmUKJme83AmeaKg6adRZQFDPkBSKbafRXwgCjL7vfHsoJJ",
+        "body": "https://peer.decentraland.org/content/contents/QmY9Zoqg3Fngi9d3ALnt7PdLXVS8RrgcEaTsz9eBnCnvUB"
+      },
+      "eyes": {
+        "color": {
+          "r": 0.22265625,
+          "g": 0.484375,
+          "b": 0.69140625
+        }
+      },
+      "hair": {
+        "color": {
+          "r": 0.98046875,
+          "g": 0.82421875,
+          "b": 0.5078125
+        }
+      },
+      "skin": {
+        "color": {
+          "r": 0.94921875,
+          "g": 0.76171875,
+          "b": 0.6484375
+        }
+      },
+      "wearables": [
+        "urn:decentraland:off-chain:base-avatars:eyebrows_00",
+        "urn:decentraland:off-chain:base-avatars:eyes_06",
+        "urn:decentraland:off-chain:base-avatars:mouth_03",
+        "urn:decentraland:off-chain:base-avatars:casual_hair_03",
+        "urn:decentraland:off-chain:base-avatars:oxford_pants",
+        "urn:decentraland:off-chain:base-avatars:black_jacket",
+        "urn:decentraland:off-chain:base-avatars:m_feet_soccershoes",
+        "urn:decentraland:off-chain:base-avatars:italian_director",
+        "urn:decentraland:off-chain:base-avatars:lincoln_beard"
+      ]
+    },
+    "tutorialStep": 256,
+    "interests": [],
+    "unclaimedName": "Paralax24"
+  }]
+},
+{
+  "avatars": [{
+    "userId": "0x22480812a9a0669783c06d359182a583bd1d9fc2",
+    "email": "",
+    "name": "cestfini#9fc2",
+    "hasClaimedName": false,
+    "description": "",
+    "ethAddress": "0x22480812a9a0669783c06d359182a583bd1d9fc2",
+    "version": 2,
+    "avatar": {
+      "bodyShape": "urn:decentraland:off-chain:base-avatars:BaseMale",
+      "snapshots": {
+        "face": "https://peer.decentraland.org/content/contents/QmeBEgsxrxTAEs9kFxgwyfJN8vUtqw8WJ4bthwhti3S9aL",
+        "face128": "https://peer.decentraland.org/content/contents/QmVGRZxYmWL6z6JhkQtzo1KkWqdeZfxt6gzuCPY6nvbmhb",
+        "face256": "https://peer.decentraland.org/content/contents/Qma7zpPZkwFDyCe1gj62nBYsYTmD2ZSSvxcQXZDmR1FTnC",
+        "body": "https://peer.decentraland.org/content/contents/QmeqDMMK3KYSzuboKnPPtjG94bHCYtfCmHEeYRhpSBRuhn"
+      },
+      "eyes": {
+        "color": {
+          "r": 0.37109375,
+          "g": 0.22265625,
+          "b": 0.1953125
+        }
+      },
+      "hair": {
+        "color": {
+          "r": 0.234375,
+          "g": 0.12890625,
+          "b": 0.04296875
+        }
+      },
+      "skin": {
+        "color": {
+          "r": 0.94921875,
+          "g": 0.76171875,
+          "b": 0.6484375
+        }
+      },
+      "wearables": [
+        "urn:decentraland:off-chain:base-avatars:hair_coolshortstyle",
+        "urn:decentraland:off-chain:base-avatars:eyebrows_05",
+        "urn:decentraland:off-chain:base-avatars:eyes_08",
+        "urn:decentraland:off-chain:base-avatars:mouth_01",
+        "urn:decentraland:off-chain:base-avatars:full_beard",
+        "urn:decentraland:off-chain:base-avatars:red_square_shirt",
+        "urn:decentraland:off-chain:base-avatars:hip_hop_joggers",
+        "urn:decentraland:off-chain:base-avatars:m_mountainshoes.glb",
+        "urn:decentraland:off-chain:base-avatars:thug_life"
+      ]
+    },
+    "tutorialStep": 384,
+    "interests": [],
+    "unclaimedName": "cestfini"
+  }]
+}
+]

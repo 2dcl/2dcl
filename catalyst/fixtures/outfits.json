@@ -1,0 +1,35 @@
+{
+	"outfits": [{
+			"slot": 0,
+			"outfit": {
+				"bodyShape": "urn:decentraland:off-chain:base-avatars:BaseFemale",
+				"eyes": {
+					"color": {
+						"r": 0,
+						"g": 0,
+						"b": 0,
+						"a": 0
+					}
+				},
+				"hair": {
+					"color": {
+						"r": 0,
+						"g": 0,
+						"b": 0,
+						"a": 0
+					}
+				},
+				"skin": {
+					"color": {
+						"r": 0,
+						"g": 0,
+						"b": 0,
+						"a": 0
+					}
+				},
+				"wearables": []
+			}
+		}
+	],
+	"namesForExtraSlots": []
+}

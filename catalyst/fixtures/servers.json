@@ -1,0 +1,57 @@
+[
+  {
+      "baseUrl": "https://interconnected.online",
+      "owner": "0x75e1d32289679dfcB2F01fBc0e043B3d7F9Cd443",
+      "id": "0xa88ccc81441dd364f33f0db770508d63e6ce933e2a2f24039974c887e535e2cd"
+  },
+  {
+      "baseUrl": "https://peer.decentral.io",
+      "owner": "0xa7C825BB8c2C4d18288af8efe38c8Bf75A1AAB51",
+      "id": "0xad3b7e8fa348ce19794a65b7502866731d48ee273921fd454d26e03310d3d765"
+  },
+  {
+      "baseUrl": "https://peer.melonwave.com",
+      "owner": "0x6327Ef6bAE918584B86AcfD58bDEB6EF9211e371",
+      "id": "0xdc79f86d81f8be2e8ecf51f5be7df04edca3c815846f890c8b1bcade6bcf2a6c"
+  },
+  {
+      "baseUrl": "https://peer.kyllian.me",
+      "owner": "0xF78Dfd2a940c1c204d9eb5D1fF7988b7AEC3F01a",
+      "id": "0x77fa03b44621846a18358ca6e766a5fa6959a1b25ae2229f16be328dac8931df"
+  },
+  {
+      "baseUrl": "https://peer-ap1.decentraland.org",
+      "owner": "0xF1598bC1aD6474d6e884684706ABdd1e3468D199",
+      "id": "0x201a63dfe16e0e870f83367ac0ce1dd90b6e851f78baae140c81741e3f5fc9ec"
+  },
+  {
+      "baseUrl": "https://peer.uadevops.com",
+      "owner": "0x3f95F857F89357fb1592C74dEd1f4556c6272edB",
+      "id": "0x242d013bc99da6593970d01f044f46194eee33b8947384efbafc10ae1a7917fc"
+  },
+  {
+      "baseUrl": "https://peer.dclnodes.io",
+      "owner": "0x3d7C732f54f7D60d14eabca8A7Da3097cEc3AF1e",
+      "id": "0xd5d98a65db8d09437f138b06d112a630c762cca7082c96fa0dcd4102abfc0aef"
+  },
+  {
+      "baseUrl": "https://peer-eu1.decentraland.org",
+      "owner": "0xEfc549434A03756F6e37A43757a2927605D8839B",
+      "id": "0x4e55ad26203dfef9b2235dfea39d531b2b64814e606c0294768c0d1469124479"
+  },
+  {
+      "baseUrl": "https://peer-ec1.decentraland.org",
+      "owner": "0xe5d0c3fEA1e5F01CA4098e9580B93B3b5d0Ea768",
+      "id": "0x63edaad1a9bdfa5a492b12d4920655c5812c8572d1cdeca2f3f5e8cc49efc593"
+  },
+  {
+      "baseUrl": "https://peer-wc1.decentraland.org",
+      "owner": "0x4eAC6325e1DBF1Ac90434d39766e164Dca71139E",
+      "id": "0xca6c9aff525af8ae6fb73c59c402619030323150b0dfcb39574c9eed608e7309"
+  },
+  {
+      "baseUrl": "https://peer-ec2.decentraland.org",
+      "owner": "0xFE95E04A628087FCdD5f278E61F148B47471Af4A",
+      "id": "0xfb2e343efdf90aa09f8f02849e453fac3c0b21edbc1de23ac6e6fb1981f5d009"
+  }
+]

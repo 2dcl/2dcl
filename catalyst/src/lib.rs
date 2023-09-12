@@ -30,6 +30,8 @@ mod wearable;
 pub use wearable::*;
 mod entity;
 pub use entity::*;
+mod outfits;
+pub use outfits::*;
 
 mod content_id;
 pub use content_id::ContentId;

@@ -1,6 +1,6 @@
 use crate::*;
 use dcl_common::Result;
-use serde::Deserialize;
+use serde::{Deserialize, Serialize};
 use std::fs::File;
 use std::io::Write;
 use std::path::Path;
@@ -113,6 +113,34 @@ pub struct Land {
 pub enum WearableSortingOrder {
     TransferredAt,
     Rarity,
+}
+
+#[derive(Debug, Deserialize, Eq, PartialEq)]
+#[serde(rename_all = "camelCase")]
+pub struct HotScene {
+    pub id: String,
+    pub name: String,
+    pub base_coords: Parcel,
+    pub users_total_count: u32,
+    pub parcels: Vec<Parcel>,
+    pub thumbnail: Option<String>,
+    pub creator: Option<String>,
+    pub description: Option<String>,
+    pub project_id: Option<String>,
+}
+
+type Parcel = [i32; 2];
+
+#[derive(Debug, Deserialize, Eq, PartialEq)]
+#[serde(rename_all = "camelCase")]
+pub struct Realm {
+    pub server_name: String,
+    pub url: String,
+    pub user_parcels: Vec<Parcel>,
+    pub users_count: u32,
+    pub layer: Option<String>,
+    pub thumbnail: Option<String>,
+    pub max_users: Option<u32>,
 }
 
 impl std::fmt::Display for WearableSortingOrder {
@@ -409,12 +437,73 @@ impl LambdaClient {
             .await?;
         Ok(response)
     }
-    /*    /// Implements [`/lambda/contracts/servers`](https://decentraland.github.io/catalyst-api-specs/#operation/getServers)
+    /// Implements [`/lambdas/contracts/servers`](https://decentraland.github.io/catalyst-api-specs/#operation/getServers)
     pub async fn servers(server: &Server) -> Result<Vec<Server>> {
         let servers: Vec<Server> = server.get("/lambdas/contracts/servers").await?;
         Ok(servers)
     }
 
+    /// Implements [`/lambdas/contracts/pois`](https://peer.decentraland.org/lambdas/contracts/pois)
+    pub async fn points_of_interest(server: &Server) -> Result<Vec<dcl_common::Parcel>> {
+        let pois: Vec<dcl_common::Parcel> = server.get("/lambdas/contracts/pois").await?;
+        Ok(pois)
+    }
+
+    /// Implements [`/lambdas/contracts/denylisted-names`](https://decentraland.github.io/catalyst-api-specs/#tag/Lambdas/operation/getDenylistedUserNames)
+    pub async fn forbidden_names(server: &Server) -> Result<Vec<String>> {
+        let forbidden_names = server.get("/lambdas/contracts/denylisted-names").await?;
+        Ok(forbidden_names)
+    }
+
+    /// Implements [`/lambdas/explore/hot-scenes`](https://decentraland.github.io/catalyst-api-specs/#tag/Lambdas/operation/getHotScenes)
+    pub async fn hot_scenes(server: &Server) -> Result<Vec<HotScene>> {
+        let hot_scenes = server.get("/lambdas/explore/hot-scenes").await?;
+        Ok(hot_scenes)
+    }
+
+    /// Implements [`/lambdas/explore/realms`](https://decentraland.github.io/catalyst-api-specs/#tag/Lambdas/operation/getRealms)
+    pub async fn realms(server: &Server) -> Result<Vec<Realm>> {
+        let realms = server.get("/lambdas/explore/realms").await?;
+        Ok(realms)
+    }
+
+    /// Implements [`/lambdas/profiles`](https://decentraland.github.io/catalyst-api-specs/#tag/Lambdas/operation/getAvatarsDetailsByPost)
+    pub async fn profiles(server: &Server, addresses: &[String]) -> Result<Vec<Profile>> {
+        #[derive(Serialize)]
+        struct Addresses {
+            ids: Vec<String>,
+        }
+
+        let addresses = Addresses {
+            ids: addresses.to_vec(),
+        };
+
+        let profiles: Vec<Profile> = server.post("/lambdas/profiles", &addresses).await?;
+        Ok(profiles)
+    }
+
+    /// Implements [`/lambdas/profiles/{id}`](https://decentraland.github.io/catalyst-api-specs/#tag/Lambdas/operation/getAvatarDetails)
+    pub async fn profile<T>(server: &Server, address: T) -> Result<Profile>
+    where
+        T: AsRef<str>,
+    {
+        let profile = server
+            .get(format!("/lambdas/profiles/{}", &address.as_ref()))
+            .await?;
+        Ok(profile)
+    }
+
+    /// Implements [`/lambdas/outfits/{id}`](https://decentraland.github.io/catalyst-api-specs/#tag/Lambdas/operation/getOutfits)
+    pub async fn outfits<T>(server: &Server, address: T) -> Result<Entity>
+    where
+        T: AsRef<str>,
+    {
+        let result = server
+            .get(format!("/lambdas/outfits/{}", &address.as_ref()))
+            .await?;
+        Ok(result)
+    }
+    /*
     /// Implements [`/lambda/contentv1/scenes`](https://decentraland.github.io/catalyst-api-specs/#operation/getScenes)
     pub async fn scenes(server: &Server, start: &Parcel, end: &Parcel) -> Result<Vec<Scene>> {
         let scenes: ScenesResult = server
@@ -756,31 +845,170 @@ mod tests {
         let expected: ItemsResponse = serde_json::from_str(response).unwrap();
         assert_eq!(result, expected);
     }
+
+    #[test]
+    fn it_implements_server_list() {
+        let response = include_str!("../fixtures/servers.json");
+
+        let server = MockServer::start();
+
+        let m = server.mock(|when, then| {
+            when.path("/lambdas/contracts/servers");
+            then.status(200).body(response);
+        });
+
+        let server = Server::new(server.url(""));
+
+        let servers = tokio_test::block_on(LambdaClient::servers(&server)).unwrap();
+
+        m.assert();
+        let expected: Vec<Server> = serde_json::from_str(response).unwrap();
+        assert_eq!(servers, expected);
+    }
+
+    #[test]
+    fn it_implements_pois_list() {
+        let response = include_str!("../fixtures/pois.json");
+
+        let server = MockServer::start();
+
+        let m = server.mock(|when, then| {
+            when.path("/lambdas/contracts/pois");
+            then.status(200).body(response);
+        });
+
+        let server = Server::new(server.url(""));
+
+        let result = tokio_test::block_on(LambdaClient::points_of_interest(&server)).unwrap();
+
+        m.assert();
+        let expected: Vec<dcl_common::Parcel> = serde_json::from_str(response).unwrap();
+        assert_eq!(result, expected);
+    }
+
+    #[test]
+    fn it_implements_forbidden_names_list() {
+        let response = include_str!("../fixtures/forbidden_names.json");
+
+        let server = MockServer::start();
+
+        let m = server.mock(|when, then| {
+            when.path("/lambdas/contracts/denylisted-names");
+            then.status(200).body(response);
+        });
+
+        let server = Server::new(server.url(""));
+
+        let result = tokio_test::block_on(LambdaClient::forbidden_names(&server)).unwrap();
+
+        m.assert();
+        let expected: Vec<String> = serde_json::from_str(response).unwrap();
+        assert_eq!(result, expected);
+    }
+
+    #[test]
+    fn it_implements_hot_scenes_list() {
+        let response = include_str!("../fixtures/hot_scenes.json");
+
+        let server = MockServer::start();
+
+        let m = server.mock(|when, then| {
+            when.path("/lambdas/explore/hot-scenes");
+            then.status(200).body(response);
+        });
+
+        let server = Server::new(server.url(""));
+
+        let result = tokio_test::block_on(LambdaClient::hot_scenes(&server)).unwrap();
+
+        m.assert();
+        let expected: Vec<HotScene> = serde_json::from_str(response).unwrap();
+        assert_eq!(result, expected);
+    }
+
+    #[test]
+    fn it_implements_realms() {
+        let response = include_str!("../fixtures/realms.json");
+
+        let server = MockServer::start();
+
+        let m = server.mock(|when, then| {
+            when.path("/lambdas/explore/realms");
+            then.status(200).body(response);
+        });
+
+        let server = Server::new(server.url(""));
+
+        let result = tokio_test::block_on(LambdaClient::realms(&server)).unwrap();
+
+        m.assert();
+        let expected: Vec<Realm> = serde_json::from_str(response).unwrap();
+        assert_eq!(result, expected);
+    }
+
+    #[test]
+    fn it_implements_profiles() {
+        let response = include_str!("../fixtures/profiles.json");
+
+        let server = MockServer::start();
+
+        let m = server.mock(|when, then| {
+            when.method(POST)
+                .path("/lambdas/profiles")
+                .body_contains("{\"ids\":[\"id\"]}");
+            then.status(200).body(response);
+        });
+
+        let server = Server::new(server.url(""));
+
+        let result =
+            tokio_test::block_on(LambdaClient::profiles(&server, &vec!["id".to_string()])).unwrap();
+
+        m.assert();
+        let expected: Vec<Profile> = serde_json::from_str(response).unwrap();
+        assert_eq!(result, expected);
+    }
+
+    #[test]
+    fn it_implements_profile() {
+        let response = include_str!("../fixtures/profile.json");
+
+        let server = MockServer::start();
+
+        let m = server.mock(|when, then| {
+            when.method(GET).path("/lambdas/profiles/id");
+            then.status(200).body(response);
+        });
+
+        let server = Server::new(server.url(""));
+
+        let result = tokio_test::block_on(LambdaClient::profile(&server, "id")).unwrap();
+
+        m.assert();
+        let expected: Profile = serde_json::from_str(response).unwrap();
+        assert_eq!(result, expected);
+    }
+
+    #[test]
+    fn it_implements_outfits() {
+        let response = include_str!("../fixtures/outfits_entity.json");
+
+        let server = MockServer::start();
+
+        let m = server.mock(|when, then| {
+            when.method(GET).path("/lambdas/outfits/id");
+            then.status(200).body(response);
+        });
+
+        let server = Server::new(server.url(""));
+
+        let result = tokio_test::block_on(LambdaClient::outfits(&server, "id")).unwrap();
+
+        m.assert();
+        let expected: Entity = serde_json::from_str(response).unwrap();
+        assert_eq!(result, expected);
+    }
     /*
-
-     #[test]
-     fn it_implements_server_list() {
-         let response = "[
-             {\"baseUrl\": \"https://server.com\",\"owner\": \"owner\",\"id\": \"id\"}
-         ]";
-
-         let server = MockServer::start();
-
-         let m = server.mock(|when, then| {
-             when.path("/lambdas/contracts/servers");
-             then.status(200).body(response);
-         });
-
-         let server = Server::new(server.url(""));
-
-         let servers = tokio_test::block_on(LambdaClient::servers(&server)).unwrap();
-
-         m.assert();
-         assert_eq!(servers[0].base_url, "https://server.com");
-         assert_eq!(servers[0].owner, "owner");
-         assert_eq!(servers[0].id, "id")
-     }
-
     #[test]
      fn it_implements_scenes() {
          let response = "{

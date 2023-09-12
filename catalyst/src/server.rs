@@ -14,6 +14,12 @@ pub struct Server {
     http_client: ReqwestClient,
 }
 
+impl PartialEq for Server {
+    fn eq(&self, other: &Self) -> bool {
+        self.base_url == other.base_url && self.owner == other.owner && self.id == other.id
+    }
+}
+
 #[derive(Deserialize, Debug, PartialEq)]
 #[serde(rename_all = "camelCase")]
 pub struct Status {

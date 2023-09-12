@@ -84,6 +84,8 @@ pub struct Color {
     pub r: f32,
     pub g: f32,
     pub b: f32,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub a: Option<f32>
 }
 
 #[derive(Debug, Deserialize, Serialize, Clone, PartialEq)]
@@ -138,6 +140,7 @@ mod test {
                             r: 1.,
                             g: 1.,
                             b: 1.,
+                            a: Some(1.),
                         },
                     },
                     hair: ColoredAvatarPart {
@@ -145,6 +148,7 @@ mod test {
                             r: 1.,
                             g: 1.,
                             b: 1.,
+                            a: Some(1.),
                         },
                     },
                     skin: ColoredAvatarPart {
@@ -152,6 +156,7 @@ mod test {
                             r: 1.,
                             g: 1.,
                             b: 1.,
+                            a: Some(1.),
                         },
                     },
                     wearables: Vec::default(),
