@@ -63,6 +63,7 @@ pub fn start() {
         ScenesIOPlugin,
         MyConsolePlugin,
         MetamaskLoginPlugin,
+        DiscoveryUiPlugin,
     ))
     .run();
 }
@@ -106,7 +107,6 @@ where
         PlayerPlugin,
         TransparencyPlugin,
         CollisionPlugin,
-        DiscoveryUiPlugin,
     ))
     .insert_resource(Msaa::Off)
     .add_state::<AppState>()
