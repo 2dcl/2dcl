@@ -6,7 +6,7 @@ use std::{
 };
 
 use catalyst::EntityId;
-use chrono::{DateTime, Utc};
+use chrono::prelude::*;
 use dcl2d_ecs_v1::Scene;
 use dcl_common::Result;
 use dcl_crypto::{
@@ -39,12 +39,11 @@ where
     println!("Deploying to Catalyst...");
 
     let response = scene_deployer::deploy(entity_id, deploy_data, chain, server).await?;
-    if response.status() == 200 {
-        println!("Scene deployed");
-    } else {
-        println!("Scene could not be deployed");
-        println!("{}", response.text().await?);
-    }
+
+    let timestamp = NaiveDateTime::from_timestamp_millis(response.creation_timestamp as i64)
+        .unwrap_or_default();
+    let timestamp: DateTime<Utc> = DateTime::from_utc(timestamp, Utc);
+    println!("Scene deployed succesfully {}", timestamp);
 
     Ok(())
 }

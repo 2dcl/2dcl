@@ -4,7 +4,7 @@ use std::{
     time::{Duration, SystemTime},
 };
 
-use chrono::{DateTime, Utc};
+use chrono::prelude::*;
 use dcl2d_ecs_v1::Scene;
 use dcl_common::Result;
 use dcl_crypto::{
@@ -114,9 +114,11 @@ async fn main() -> Result<()> {
     println!("Deploying to Catalyst...");
 
     let response = deploy(entity_id, deploy_data, chain, server).await.unwrap();
-    println!("{:?}", response);
-    // Figure out how to upload files.
 
-    println!("Done with Deployment");
+    let timestamp = NaiveDateTime::from_timestamp_millis(response.creation_timestamp as i64)
+        .unwrap_or_default();
+    let timestamp: DateTime<Utc> = DateTime::from_utc(timestamp, Utc);
+
+    println!("Done with Deployment {}", timestamp);
     Ok(())
 }

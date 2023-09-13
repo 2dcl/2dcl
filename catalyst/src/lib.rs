@@ -13,8 +13,8 @@ pub use archipelago_client::*;
 mod global_client;
 pub use global_client::*;
 
-mod lambda_client;
-pub use lambda_client::*;
+mod lambdas_client;
+pub use lambdas_client::*;
 
 mod deployment;
 pub use deployment::*;

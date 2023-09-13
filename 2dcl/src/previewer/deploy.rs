@@ -6,6 +6,7 @@ use bevy::{
     tasks::{AsyncComputeTaskPool, Task},
 };
 use catalyst::EntityId;
+use chrono::prelude::*;
 use dcl_crypto::{Account, AuthChain, AuthLink, Signer};
 use futures_lite::future;
 use scene_deployer::FileData;
@@ -16,7 +17,7 @@ pub struct Deploying(Task<DeployState>);
 enum DeployState {
     Signed(Account, Vec<AuthLink>),
     FilesPrepared(Account, Vec<AuthLink>, Vec<FileData>, EntityId),
-    Success,
+    Success(u128),
     Error(String),
 }
 
@@ -78,8 +79,12 @@ pub fn handle_tasks(
 
                     commands.entity(entity).insert(Deploying(task));
                 }
-                DeployState::Success => {
-                    println!("Scene deployed succesfully.");
+                DeployState::Success(timestamp) => {
+                    let timestamp =
+                        NaiveDateTime::from_timestamp_millis(timestamp as i64).unwrap_or_default();
+                    let timestamp: DateTime<Utc> = DateTime::from_utc(timestamp, Utc);
+
+                    println!("Scene deployed succesfully {}", timestamp);
                     for mut message in messages.iter_mut() {
                         *message = Message::Success(Timer::new(
                             Duration::from_secs_f32(10.),
@@ -135,20 +140,9 @@ async fn deploy(
     auth_chain: AuthChain,
 ) -> DeployState {
     let server = catalyst::Server::production();
-    let response = match scene_deployer::deploy(entity_id, deploy_data, auth_chain, server).await {
-        Ok(v) => v,
-        Err(err) => return DeployState::Error(format!("{}", err)),
-    };
 
-    if response.status() == 200 {
-        DeployState::Success
-    } else {
-        let error = match response.text().await {
-            Ok(error) => error,
-            Err(error) => format!("{}", error),
-        };
-
-        println!("{}", error);
-        DeployState::Error(error)
+    match scene_deployer::deploy(entity_id, deploy_data, auth_chain, server).await {
+        Ok(response) => DeployState::Success(response.creation_timestamp),
+        Err(err) => DeployState::Error(format!("{}", err)),
     }
 }

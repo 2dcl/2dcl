@@ -599,7 +599,7 @@ impl Material2d for PostProcessingMaterial {
 
 async fn download_avatar(eth_address: &str) -> dcl_common::Result<AvatarProperties> {
     let server = catalyst::Server::production();
-    let profile = catalyst::LambdaClient::profile(&server, eth_address).await?;
+    let profile = catalyst::LambdasClient::profile(&server, eth_address).await?;
     let avatar = &profile.avatars[0].avatar;
     let mut avatar_save_path = std::env::current_exe().unwrap();
     avatar_save_path.pop();

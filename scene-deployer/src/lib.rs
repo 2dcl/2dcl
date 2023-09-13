@@ -7,12 +7,11 @@ use std::{
     time::{SystemTime, UNIX_EPOCH},
 };
 
-use catalyst::{ContentFile, ContentId, Entity, EntityId, EntityType, Metadata};
+use catalyst::{ContentFile, ContentId, DeployResponse, Entity, EntityId, EntityType, Metadata};
 use cid::{multihash::MultihashDigest, Cid};
 use dcl_common::{Parcel, Result};
 use dcl_crypto::{AuthChain, AuthLink};
 use error::SceneDeployError;
-use reqwest::Response;
 
 pub struct FileData {
     cid: String,
@@ -25,7 +24,7 @@ pub async fn deploy(
     deploy_data: Vec<FileData>,
     auth_chain: AuthChain,
     server: catalyst::Server,
-) -> Result<Response> {
+) -> Result<DeployResponse> {
     if let Some(entity) = find_entity(&deploy_data) {
         if let Some(Metadata::Scene(scene_3d)) = entity.metadata {
             let expected_parcels = parcels_vec_to_strings_vec(&scene_3d.scene.parcels);
@@ -56,7 +55,7 @@ pub async fn deploy(
 
     let form =
         build_entity_form_data_for_deployment(entity_id.to_string(), deploy_data, auth_chain);
-    server.raw_post_form("/content/entities", form).await
+    catalyst::ContentClient::deploy_entity(&server, form).await
 }
 
 pub fn build_entity_form_data_for_deployment(

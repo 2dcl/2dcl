@@ -241,11 +241,11 @@ pub struct ThirdPartyIntegration {
     pub urn: Urn,
 }
 
-/// `LambdaClient` implements all the request to interact with [Catalyst Lambda](https://decentraland.github.io/catalyst-api-specs/#tag/Lambdas).
+/// `LambdasClient` implements all the request to interact with [Catalyst Lambda](https://decentraland.github.io/catalyst-api-specs/#tag/Lambdas).
 ///
 #[derive(Default)]
-pub struct LambdaClient {}
-impl LambdaClient {
+pub struct LambdasClient {}
+impl LambdasClient {
     /// Implements [`/lambdas/status`](https://decentraland.github.io/catalyst-api-specs/#operation/getLambdaStatus)
     pub async fn status(server: &Server) -> Result<server::Status> {
         let status: server::Status = server.get("/lambdas/status").await?;
@@ -532,7 +532,7 @@ mod tests {
 
     #[test]
     fn it_can_be_created() {
-        LambdaClient::default();
+        LambdasClient::default();
         assert!(true)
     }
 
@@ -549,7 +549,7 @@ mod tests {
 
         let server = Server::new(server.url(""));
 
-        let result = tokio_test::block_on(LambdaClient::status(&server)).unwrap();
+        let result = tokio_test::block_on(LambdasClient::status(&server)).unwrap();
 
         m.assert();
 
@@ -570,7 +570,7 @@ mod tests {
 
         let server = Server::new(server.url(""));
 
-        let result = tokio_test::block_on(LambdaClient::collections(&server)).unwrap();
+        let result = tokio_test::block_on(LambdasClient::collections(&server)).unwrap();
 
         m.assert();
 
@@ -594,7 +594,7 @@ mod tests {
         let tmp_dir = TempDir::new("lambda-client-test").unwrap();
         let filename = tmp_dir.path().join("thumbnail.png");
 
-        tokio_test::block_on(LambdaClient::download_collection_thumbnail(
+        tokio_test::block_on(LambdasClient::download_collection_thumbnail(
             &server,
             &"a-urn".to_string(),
             filename.clone(),
@@ -625,7 +625,7 @@ mod tests {
         let tmp_dir = TempDir::new("lambda-client-test").unwrap();
         let filename = tmp_dir.path().join("image.png");
 
-        tokio_test::block_on(LambdaClient::download_collection_image(
+        tokio_test::block_on(LambdasClient::download_collection_image(
             &server,
             &"a-urn".to_string(),
             filename.clone(),
@@ -655,7 +655,7 @@ mod tests {
 
         let server = Server::new(server.url(""));
 
-        let result = tokio_test::block_on(LambdaClient::erc721_entity(
+        let result = tokio_test::block_on(LambdasClient::erc721_entity(
             &server,
             "chain_id",
             "contract_hash",
@@ -683,7 +683,7 @@ mod tests {
 
         let server = Server::new(server.url(""));
 
-        let result = tokio_test::block_on(LambdaClient::wearables_for_address(
+        let result = tokio_test::block_on(LambdasClient::wearables_for_address(
             &server,
             "an-address",
             WearablesSearchParameters::default(),
@@ -709,7 +709,7 @@ mod tests {
 
         let server = Server::new(server.url(""));
 
-        let result = tokio_test::block_on(LambdaClient::emotes_for_address(
+        let result = tokio_test::block_on(LambdasClient::emotes_for_address(
             &server,
             "an-address",
             EmotesSearchParameters::default(),
@@ -735,7 +735,7 @@ mod tests {
 
         let server = Server::new(server.url(""));
 
-        let result = tokio_test::block_on(LambdaClient::names_for_address(
+        let result = tokio_test::block_on(LambdasClient::names_for_address(
             &server,
             "an-address",
             PageParameters::default(),
@@ -761,7 +761,7 @@ mod tests {
 
         let server = Server::new(server.url(""));
 
-        let result = tokio_test::block_on(LambdaClient::lands_for_address(
+        let result = tokio_test::block_on(LambdasClient::lands_for_address(
             &server,
             "an-address",
             PageParameters::default(),
@@ -788,7 +788,7 @@ mod tests {
 
         let server = Server::new(server.url(""));
 
-        let result = tokio_test::block_on(LambdaClient::third_party_wearables_for_address(
+        let result = tokio_test::block_on(LambdasClient::third_party_wearables_for_address(
             &server,
             "an-address",
             PageParameters::default(),
@@ -816,7 +816,7 @@ mod tests {
         let server = Server::new(server.url(""));
 
         let result = tokio_test::block_on(
-            LambdaClient::third_party_wearables_of_collection_for_address(
+            LambdasClient::third_party_wearables_of_collection_for_address(
                 &server,
                 "an-address",
                 "a-collection",
@@ -844,7 +844,7 @@ mod tests {
 
         let server = Server::new(server.url(""));
 
-        let servers = tokio_test::block_on(LambdaClient::servers(&server)).unwrap();
+        let servers = tokio_test::block_on(LambdasClient::servers(&server)).unwrap();
 
         m.assert();
         let expected: Vec<Server> = serde_json::from_str(response).unwrap();
@@ -864,7 +864,7 @@ mod tests {
 
         let server = Server::new(server.url(""));
 
-        let result = tokio_test::block_on(LambdaClient::points_of_interest(&server)).unwrap();
+        let result = tokio_test::block_on(LambdasClient::points_of_interest(&server)).unwrap();
 
         m.assert();
         let expected: Vec<dcl_common::Parcel> = serde_json::from_str(response).unwrap();
@@ -884,7 +884,7 @@ mod tests {
 
         let server = Server::new(server.url(""));
 
-        let result = tokio_test::block_on(LambdaClient::forbidden_names(&server)).unwrap();
+        let result = tokio_test::block_on(LambdasClient::forbidden_names(&server)).unwrap();
 
         m.assert();
         let expected: Vec<String> = serde_json::from_str(response).unwrap();
@@ -904,7 +904,7 @@ mod tests {
 
         let server = Server::new(server.url(""));
 
-        let result = tokio_test::block_on(LambdaClient::hot_scenes(&server)).unwrap();
+        let result = tokio_test::block_on(LambdasClient::hot_scenes(&server)).unwrap();
 
         m.assert();
         let expected: Vec<HotScene> = serde_json::from_str(response).unwrap();
@@ -924,7 +924,7 @@ mod tests {
 
         let server = Server::new(server.url(""));
 
-        let result = tokio_test::block_on(LambdaClient::realms(&server)).unwrap();
+        let result = tokio_test::block_on(LambdasClient::realms(&server)).unwrap();
 
         m.assert();
         let expected: Vec<Realm> = serde_json::from_str(response).unwrap();
@@ -947,7 +947,8 @@ mod tests {
         let server = Server::new(server.url(""));
 
         let result =
-            tokio_test::block_on(LambdaClient::profiles(&server, &vec!["id".to_string()])).unwrap();
+            tokio_test::block_on(LambdasClient::profiles(&server, &vec!["id".to_string()]))
+                .unwrap();
 
         m.assert();
         let expected: Vec<Profile> = serde_json::from_str(response).unwrap();
@@ -967,7 +968,7 @@ mod tests {
 
         let server = Server::new(server.url(""));
 
-        let result = tokio_test::block_on(LambdaClient::profile(&server, "id")).unwrap();
+        let result = tokio_test::block_on(LambdasClient::profile(&server, "id")).unwrap();
 
         m.assert();
         let expected: Profile = serde_json::from_str(response).unwrap();
@@ -987,7 +988,7 @@ mod tests {
 
         let server = Server::new(server.url(""));
 
-        let result = tokio_test::block_on(LambdaClient::outfits(&server, "id")).unwrap();
+        let result = tokio_test::block_on(LambdasClient::outfits(&server, "id")).unwrap();
 
         m.assert();
         let expected: Entity = serde_json::from_str(response).unwrap();
@@ -1006,7 +1007,8 @@ mod tests {
 
         let server = Server::new(server.url(""));
 
-        let result = tokio_test::block_on(LambdaClient::third_party_integrations(&server)).unwrap();
+        let result =
+            tokio_test::block_on(LambdasClient::third_party_integrations(&server)).unwrap();
 
         m.assert();
         let expected: ThirdPartyIntegrations = serde_json::from_str(response).unwrap();
